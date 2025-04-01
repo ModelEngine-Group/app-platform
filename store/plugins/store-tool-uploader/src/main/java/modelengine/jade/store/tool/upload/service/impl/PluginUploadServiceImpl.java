@@ -173,8 +173,8 @@ public class PluginUploadServiceImpl implements PluginUploadService {
             return 0;
         }
         this.pluginService.deletePlugin(pluginId);
-        if (pluginData.getExtension().get(PROPERTIES_TYPE) != null
-                && pluginData.getExtension().get(PROPERTIES_TYPE) != HTTP) {
+        Object type = pluginData.getExtension().get(PROPERTIES_TYPE);
+        if (type != null && !Objects.equals(type, HTTP)) {
             String toolName = objToString(pluginData.getExtension().get(PLUGIN_FULL_NAME));
             Path toolPath = toolName.endsWith(JAR) ? Paths.get(TOOL_PATH, JAVA) : Paths.get(TOOL_PATH, PYTHON);
             Path deployPath = Paths.get(toolPath.toString(), toolName);
