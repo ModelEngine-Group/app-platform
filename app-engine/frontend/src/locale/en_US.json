@@ -696,12 +696,12 @@
   "toolResult": "Tool Result",
   "thinkProcess": "Thinking Process",
   "pushResultToChat": "待翻译",
-  "codeErrorUnauthorized": "Authentication failed",
-  "codeErrorRequest": "Access Denied",
-  "codeErrorAccess": "Bad Request",
-  "codeErrorNotExist": "The requested resource does not exist",
-  "codeErrorInternal": "Internal server error",
-  "codeErrorGateway": "Gateway error",
-  "codeErrorBusy": "The system is busy. Please try again later",
-  "codeErrorTimeout": "Gateway timeout"
+  "codeErrorUnauthorized": "Login status has expired, please log in again",
+  "codeErrorRequest": "Invalid request format. Please verify your input and retry",
+  "codeErrorAccess": "Sorry, you do not have access to this resource",
+  "codeErrorNotExist": "The requested resource does not exist. Please check if the access path is correct",
+  "codeErrorInternal": "Internal server error, please try again later",
+  "codeErrorGateway": "The current network connection is experiencing an issue. Please try again later",
+  "codeErrorBusy": "The system is busy and in queue. Please try again later",
+  "codeErrorTimeout": "Request response timeout, please check your network connection and try again"
 }

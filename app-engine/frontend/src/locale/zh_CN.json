@@ -930,12 +930,12 @@
   "formItemDefaultValue": "表单项默认值",
   "formItemOptionsValue": "表单选项",
   "pushResultToChat": "输出结果至聊天",
-  "codeErrorUnauthorized": "认证失败",
-  "codeErrorRequest": "请求语法错误",
-  "codeErrorAccess": "拒绝访问",
-  "codeErrorNotExist": "请求资源不存在",
-  "codeErrorInternal": "服务器内部错误",
-  "codeErrorGateway": "网关错误",
-  "codeErrorBusy": "系统繁忙，请稍后重试",
-  "codeErrorTimeout": "网关超时"
+  "codeErrorUnauthorized": "登录状态已失效，请重新登录",
+  "codeErrorRequest": "请求格式不正确，请检查输入信息后重试",
+  "codeErrorAccess": "抱歉，您没有访问该资源的权限",
+  "codeErrorNotExist": "请求资源不存在，请检查访问路径是否正确",
+  "codeErrorInternal": "服务器内部错误，请稍后重试",
+  "codeErrorGateway": "当前网络连接出现异常，请稍后重试",
+  "codeErrorBusy": "系统繁忙，排队中，请稍后重试",
+  "codeErrorTimeout": "请求响应超时，请检查网络连接后重试"
 }
