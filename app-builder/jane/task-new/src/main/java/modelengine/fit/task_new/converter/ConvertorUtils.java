@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -46,7 +47,8 @@ import java.util.stream.Collectors;
  * @since 2025-03-31
  */
 public class ConvertorUtils {
-    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss",
+            Locale.ROOT);
 
     public static MetaInstance toMetaInstance(InstanceDeclarationInfo instanceDeclarationInfo,
             OperationContext context) {
@@ -96,7 +98,7 @@ public class ConvertorUtils {
         info.put(INST_CURR_FORM_ID_KEY, ObjectUtils.cast(metaInstance.getCurrFormId()));
         info.put(INST_CURR_FORM_VERSION_KEY, ObjectUtils.cast(metaInstance.getCurrFormVersion()));
         info.put(INST_CURR_FORM_DATA_KEY, ObjectUtils.cast(metaInstance.getCurrFormData()));
-        info.put(INST_SMART_FORM_TIME_KEY, ObjectUtils.cast(metaInstance.getSmartFormTime()));
+        info.put(INST_SMART_FORM_TIME_KEY, getFormatTime(metaInstance.getSmartFormTime()));
         info.put(INST_RESUME_DURATION_KEY, ObjectUtils.cast(metaInstance.getResumeDuration()));
         info.put(INST_STATUS_KEY, ObjectUtils.cast(metaInstance.getInstanceStatus()));
         info.put(INST_PROGRESS_KEY, ObjectUtils.cast(metaInstance.getInstanceProgress()));

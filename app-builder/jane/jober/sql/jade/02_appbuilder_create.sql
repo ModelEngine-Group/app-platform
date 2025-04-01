@@ -336,7 +336,7 @@ CREATE TABLE IF NOT EXISTS task_instance_new (
     "curr_form_id" char(32),
     "curr_form_version" varchar(127),
     "curr_form_data" text,
-    "smart_form_time" varchar(127),
+    "smart_form_time" timestamp(6),
     "instance_status" varchar(32),
     "instance_progress" varchar(127),
     "instance_agent_result" text,

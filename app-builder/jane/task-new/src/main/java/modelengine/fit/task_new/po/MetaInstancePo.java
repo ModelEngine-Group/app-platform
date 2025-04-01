@@ -58,7 +58,7 @@ public class MetaInstancePo {
     private String currFormData;
 
     @Property(description = "elsa 表单渲染时间戳")
-    private String smartFormTime;
+    private LocalDateTime smartFormTime;
 
     @Property(description = "人工节点时间耗时")
     private String resumeDuration;

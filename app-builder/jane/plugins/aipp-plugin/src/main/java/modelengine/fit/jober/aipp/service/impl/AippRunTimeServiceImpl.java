@@ -96,6 +96,7 @@ import modelengine.jade.common.globalization.LocaleService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -121,6 +122,7 @@ import java.util.stream.Stream;
 public class AippRunTimeServiceImpl
         implements AippRunTimeService, modelengine.fit.jober.aipp.genericable.AippRunTimeService {
     private static final String DEFAULT_QUESTION = "请解析以下文件。";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
 
     private static final Logger log = Logger.get(AippRunTimeServiceImpl.class);
 
@@ -953,8 +955,9 @@ public class AippRunTimeServiceImpl
         Instance instDetail = MetaInstanceUtils.getInstanceDetail(versionId, instanceId, context, metaInstanceService);
         // 获取人工节点开始时间戳 [记录人工节点时延]
         String smartFormTimeStr = instDetail.getInfo().get(AippConst.INST_SMART_FORM_TIME_KEY);
-        LocalDateTime smartFormTime =
-                StringUtils.isBlank(smartFormTimeStr) ? LocalDateTime.now() : LocalDateTime.parse(smartFormTimeStr);
+        LocalDateTime smartFormTime = StringUtils.isBlank(smartFormTimeStr)
+                ? LocalDateTime.now()
+                : LocalDateTime.parse(smartFormTimeStr, FORMATTER);
         long resumeDuration =
                 Long.parseLong(StringUtils.blankIf(instDetail.getInfo().get(AippConst.INST_RESUME_DURATION_KEY), "0"));
         Duration duration = Duration.between(smartFormTime, LocalDateTime.now());
