@@ -7,6 +7,7 @@
 import { del, get, post, patch } from './http';
 import serviceConfig from './httpConfig';
 const { APP_URL } = serviceConfig;
+import { getCookie } from '@/shared/utils/common';
 
 // 获取应用市场列表
 export function queryAppsApi(tenantId, params) {
@@ -141,19 +142,21 @@ export function getFeedBackData(data) {
 // 导出数据
 export function exportFeedBackData(data) {
   const url = `${APP_URL}/metrics/export`;
-  var xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest();
   xhr.open('POST', url, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('X-Auth-Token', getCookie('__Host-X-Auth-Token'));
+  xhr.setRequestHeader('X-Csrf-Token', getCookie('__Host-X-Csrf-Token'));
   xhr.responseType = 'blob';
   xhr.onload = function () {
     if (xhr.status === 200) {
-      var contentDisposition = xhr.getResponseHeader('Content-Disposition');
-      var match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-      var filename = match[1].replace(/['"]/g, '');
+      let contentDisposition = xhr.getResponseHeader('Content-Disposition');
+      let match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      let filename = match[1].replace(/['"]/g, '');
       filename = decodeURI(filename.split('UTF-8')[1]);
-      var blob = new Blob([xhr.response], { type: 'application/octet-stream' });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
+      let blob = new Blob([xhr.response], { type: 'application/octet-stream' });
+      let url = URL.createObjectURL(blob);
+      let a = document.createElement('a');
       a.href = url;
       a.download = filename;
       document.body.appendChild(a);
@@ -162,7 +165,6 @@ export function exportFeedBackData(data) {
     }
   };
   xhr.send(JSON.stringify(data));
-  return post(url, data);
 }
 
 // 获取公告
