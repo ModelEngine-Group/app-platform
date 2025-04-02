@@ -68,16 +68,6 @@ const AddIns = (props) => {
       )
     },
     {
-      title: t('multiple'),
-      dataIndex: 'multiple',
-      key: 'multiple',
-      render: (checked, record) => (
-        <>
-          <Switch checked={checked} onChange={(checked) => handleTableChange(checked, record, 'multiple')} />
-        </>
-      )
-    },
-    {
       title: t('operate'),
       key: 'action',
       render: (text, record) => {
