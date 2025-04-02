@@ -41,12 +41,7 @@ import modelengine.fit.jober.aipp.repository.AppBuilderAppRepository;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AippRunTimeService;
 import modelengine.fit.jober.aipp.service.AppChatService;
-import modelengine.fit.jober.aipp.util.AippLogUtils;
-import modelengine.fit.jober.aipp.util.AppUtils;
-import modelengine.fit.jober.aipp.util.FlowUtils;
-import modelengine.fit.jober.aipp.util.JsonUtils;
-import modelengine.fit.jober.aipp.util.MetaUtils;
-import modelengine.fit.jober.aipp.util.UUIDUtil;
+import modelengine.fit.jober.aipp.util.*;
 import modelengine.fit.jober.common.ServerInternalException;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Value;
@@ -132,11 +127,13 @@ public class AppChatServiceImpl implements AppChatService {
         Map<String, Object> businessData = this.convertContextToBusinessData(body, isDebug);
         // 这里几行代码的顺序不可以调整，必须先把对话的appId查询出来，再去创建chatId
         String chatAppId = this.getAppId(body);
-        boolean hasAtOtherApp = this.hasAtOtherApp(body);
+        boolean hasAtOtherApp = body.hasAtOtherApp();
         this.createChatId(body, hasAtOtherApp, businessData);
         // create instance —— 根据实际的那个app创建
         AppUtils.setAppChatInfo(body.getAppId(), isDebug);
-        this.appService.updateFlow(chatAppId, context);
+        if (isDebug) {
+            this.appService.updateFlow(chatAppId, context);
+        }
         LOGGER.info("[perf] [{}] chat updateFlow end, appId={}", System.currentTimeMillis(), body.getAppId());
         this.addUserContext(body, businessData, isDebug, context, app.getType());
         Tuple tuple = this.aippRunTimeService.createInstanceByApp(chatAppId,
@@ -150,8 +147,8 @@ public class AppChatServiceImpl implements AppChatService {
             this.saveChatInfos(body,
                     context,
                     ObjectUtils.cast(tuple.get(0).orElseThrow(this::generalServerException)),
-                    hasAtOtherApp,
-                    chatAppId);
+                    chatAppId,
+                    isDebug);
         } catch (AippTaskNotFoundException e) {
             throw new AippException(TASK_NOT_FOUND);
         }
@@ -243,15 +240,15 @@ public class AppChatServiceImpl implements AppChatService {
     }
 
     private void saveChatInfos(CreateAppChatRequest body, OperationContext context, String instId,
-            boolean hasAtOtherApp, String chatAppId) throws AippTaskNotFoundException {
+            String chatAppId, boolean isDebug) throws AippTaskNotFoundException {
         AppBuilderApp app = this.appFactory.create(body.getAppId());
         Map<String, String> attributes = new HashMap<>();
-        List<Meta> metas = MetaUtils.getAllMetasByAppId(this.metaService, chatAppId, context);
-        if (CollectionUtils.isEmpty(metas)) {
-            LOGGER.error("metas is empty.");
+        Meta meta = CacheUtils.getMetaByAppId(this.metaService, chatAppId, isDebug, context);
+        if (meta == null) {
+            LOGGER.error("Cannot find meta for chat app. [appId={}, instId={}]", chatAppId, instId);
             throw new AippTaskNotFoundException(TASK_NOT_FOUND);
         }
-        String aippId = metas.get(0).getId();
+        String aippId = meta.getId();
         attributes.put(AippConst.ATTR_CHAT_INST_ID_KEY, instId);
         attributes.put(AippConst.ATTR_CHAT_STATE_KEY, app.getState());
         attributes.put(AippConst.BS_AIPP_ID_KEY, aippId);
@@ -261,7 +258,7 @@ public class AppChatServiceImpl implements AppChatService {
         String chatId = body.getChatId();
         this.buildAndInsertChatInfo(app, attributes, body.getQuestion(), chatId, context.getOperator());
         this.buildAndInsertWideRelationInfo(instId, chatId);
-        if (hasAtOtherApp) {
+        if (body.hasAtOtherApp()) {
             AppBuilderApp chatApp = this.appFactory.create(chatAppId);
             // 被@的应用的对话
             Map<String, String> originAttributes = new HashMap<>();
@@ -287,9 +284,9 @@ public class AppChatServiceImpl implements AppChatService {
 
     private void addUserContext(CreateAppChatRequest body, Map<String, Object> businessData, boolean isDebug,
             OperationContext context, String appType) {
-        Meta meta = getMetaByAppId(metaService, body.getAppId(), isDebug, context);
+        Meta meta = CacheUtils.getMetaByAppId(this.metaService, body.getAppId(), isDebug, context);
         String flowDefinitionId = ObjectUtils.cast(meta.getAttributes().get(ATTR_FLOW_DEF_ID_KEY));
-        List<AppInputParam> inputParams = FlowUtils.getAppInputParams(flowsService, flowDefinitionId, context);
+        List<AppInputParam> inputParams = FlowUtils.getAppInputParams(this.flowsService, flowDefinitionId, context);
         if (StringUtils.equals(APP.code(), appType)) {
             inputParams = inputParams.stream()
                     .filter(param -> !StringUtils.equals("Question", param.getName()))
@@ -374,11 +371,6 @@ public class AppChatServiceImpl implements AppChatService {
             return atAppId;
         }
         return body.getAppId();
-    }
-
-    private boolean hasAtOtherApp(CreateAppChatRequest body) {
-        return StringUtils.isNotBlank(body.getContext().getAtChatId()) || StringUtils.isNotBlank(body.getContext()
-                .getAtAppId());
     }
 
     private void createChatId(CreateAppChatRequest body, boolean hasAtOtherApp, Map<String, Object> businessData) {
