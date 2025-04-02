@@ -8,7 +8,7 @@
 import React, { useEffect, useState, useRef, useImperativeHandle } from 'react';
 import { Form, Input, Drawer, Switch, Table, Popover, Select, Button } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { useParams } from 'react-router-dom';
+import { TENANT_ID } from "@/pages/chatPreview/components/send-editor/common/config";
 import { uuid } from '@/common/util';
 import { useTranslation } from 'react-i18next';
 import { addInspiration, editInspiration } from '@/shared/http/aipp';
@@ -19,7 +19,7 @@ import { useAppSelector } from '@/store/hook';
 const AddIns = (props) => {
   const { t } = useTranslation();
   const { addRef, refreshData } = props;
-  const { tenantId, appId } = useParams();
+  const appId = useAppSelector((state) => state.appStore.appId);
   const [showModal, setShowModal] = useState(false);
   const [cachePromptVar, setCachePromptVar] = useState(null);
   const [promptVar, setPromptVar] = useState([]);
@@ -91,7 +91,7 @@ const AddIns = (props) => {
   const addCallback = async (params) => {
     params.id = uuid();
     let parentId = 'root';
-    const res: any = await addInspiration(tenantId, appId, parentId, params);
+    const res: any = await addInspiration(TENANT_ID, appId, parentId, params);
     if (res.code === 0) {
       setShowModal(false);
       Message({ type: 'success', content: t('addedSuccessfully') });
@@ -105,7 +105,7 @@ const AddIns = (props) => {
     let parentId = '';
     let categoryArr = category.current.split(':');
     parentId = categoryArr[categoryArr.length - 1] || '';
-    const res: any = await editInspiration(tenantId, appId, parentId, editId.current, params);
+    const res: any = await editInspiration(TENANT_ID, appId, parentId, editId.current, params);
     if (res.code === 0) {
       setShowModal(false);
       Message({ type: 'success', content: t('operationSucceeded') });
