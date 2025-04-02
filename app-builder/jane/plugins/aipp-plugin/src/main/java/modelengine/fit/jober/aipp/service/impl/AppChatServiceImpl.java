@@ -12,7 +12,6 @@ import static modelengine.fit.jober.aipp.constants.AippConst.ATTR_FLOW_DEF_ID_KE
 import static modelengine.fit.jober.aipp.constants.AippConst.BUSINESS_INFOS_KEY;
 import static modelengine.fit.jober.aipp.constants.AippConst.BUSINESS_INPUT_KEY;
 import static modelengine.fit.jober.aipp.enums.AppTypeEnum.APP;
-import static modelengine.fit.jober.aipp.service.impl.AippRunTimeServiceImpl.getMetaByAppId;
 
 import modelengine.fit.jade.waterflow.FlowsService;
 import modelengine.fit.jane.common.entity.OperationContext;
@@ -41,7 +40,12 @@ import modelengine.fit.jober.aipp.repository.AppBuilderAppRepository;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AippRunTimeService;
 import modelengine.fit.jober.aipp.service.AppChatService;
-import modelengine.fit.jober.aipp.util.*;
+import modelengine.fit.jober.aipp.util.AippLogUtils;
+import modelengine.fit.jober.aipp.util.AppUtils;
+import modelengine.fit.jober.aipp.util.CacheUtils;
+import modelengine.fit.jober.aipp.util.FlowUtils;
+import modelengine.fit.jober.aipp.util.JsonUtils;
+import modelengine.fit.jober.aipp.util.UUIDUtil;
 import modelengine.fit.jober.common.ServerInternalException;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Value;
