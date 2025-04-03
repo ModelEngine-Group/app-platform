@@ -78,7 +78,7 @@ const TextEditor = forwardRef((props, ref) => {
 
   // 基于环境调整tinymce初始化文件路径
   const adjustInitPathByEnv = url => {
-    if (process.env.NODE_ENV === 'production' && process.env.PACKAGE_NODE === 'spa') {
+    if (process.env.NODE_ENV === 'production' && process.env.PACKAGE_MODE === 'spa') {
         return `/apps/appengine/${url}`;
     }
     return url;
