@@ -101,6 +101,13 @@ public class DefaultFlowTraceRepo implements FlowTraceRepo {
         flowTraceMapper.deleteByIdList(traceIds);
     }
 
+    @Override
+    public List<String> getExpiredTrace(int expiredDays, int limit) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expired = now.minusDays(expiredDays);
+        return flowTraceMapper.getExpiredTrace(expired, limit);
+    }
+
     private FlowTracePO serializer(FlowTrace flowTrace) {
         String contextPool = String.join(", ", flowTrace.getContextPool());
         return FlowTracePO.builder()

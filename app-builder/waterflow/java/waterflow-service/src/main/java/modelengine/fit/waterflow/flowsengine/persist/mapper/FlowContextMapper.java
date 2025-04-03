@@ -523,4 +523,11 @@ public interface FlowContextMapper {
      * @return trans id
      */
     String getTransIdByTrace(String traceId);
+
+    /**
+     * 根据trace列表删除对应的context
+     *
+     * @param traceIds trace id列表
+     */
+    void deleteByTraceIdList(List<String> traceIds);
 }

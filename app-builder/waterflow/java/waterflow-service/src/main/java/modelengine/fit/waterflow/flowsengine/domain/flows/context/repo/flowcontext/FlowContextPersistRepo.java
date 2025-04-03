@@ -736,4 +736,12 @@ public class FlowContextPersistRepo implements FlowContextRepo<FlowData> {
     public String getTransIdByTrace(String traceId) {
         return contextMapper.getTransIdByTrace(traceId);
     }
+
+    @Override
+    public void deleteByTraceIdList(List<String> traceIdList) {
+        if (traceIdList.isEmpty()) {
+            return;
+        }
+        contextMapper.deleteByTraceIdList(traceIdList);
+    }
 }

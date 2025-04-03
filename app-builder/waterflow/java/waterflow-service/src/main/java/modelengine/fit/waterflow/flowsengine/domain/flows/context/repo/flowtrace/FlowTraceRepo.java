@@ -100,4 +100,13 @@ public interface FlowTraceRepo {
      * @param traceIds traceId列表
      */
     void deleteByIdList(List<String> traceIds);
+
+    /**
+     * 查询超期并且已完成的trace id
+     *
+     * @param expiredDays 超期天数
+     * @param limit 查询限制
+     * @return trace id列表
+     */
+    List<String> getExpiredTrace(int expiredDays, int limit);
 }

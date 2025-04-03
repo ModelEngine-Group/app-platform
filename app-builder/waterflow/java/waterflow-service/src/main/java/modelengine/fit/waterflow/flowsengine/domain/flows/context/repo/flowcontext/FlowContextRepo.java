@@ -671,5 +671,14 @@ public interface FlowContextRepo<T> {
      * @return trans id
      */
     String getTransIdByTrace(String traceId);
+
+    /**
+     * 根据trace列表删除对应的context数据
+     *
+     * @param traceIdList trace id列表
+     */
+    default void deleteByTraceIdList(List<String> traceIdList) {
+        throw new WaterflowException(ErrorCodes.FLOW_ENGINE_DATABASE_NOT_SUPPORT, "deleteByTraceIdList");
+    }
 }
 

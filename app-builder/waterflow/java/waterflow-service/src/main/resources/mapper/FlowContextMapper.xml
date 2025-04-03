@@ -765,4 +765,14 @@
         trace_id = #{traceId}
         LIMIT 1
     </select>
+
+    <delete id="deleteByTraceIdList">
+        DELETE FROM
+        <include refid="table"/>
+        WHERE
+        trace_id IN
+        <foreach item="id" collection="traceIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>
