@@ -21,7 +21,6 @@ import 'tinymce/plugins/wordcount/index.js';
 import 'tinymce/skins/ui/oxide/skin.min.css';
 import 'tinymce/themes/silver/theme.min.js';
 const { AIPP_URL } = serviceConfig;
-const { NODE_ENV, PACKAGE_NODE }= process.env;
 
 /**
  * 发布应用富文本编辑器组件
@@ -79,7 +78,7 @@ const TextEditor = forwardRef((props, ref) => {
 
   // 基于环境调整tinymce初始化文件路径
   const adjustInitPathByEnv = url => {
-    if (NODE_ENV === 'production' && PACKAGE_NODE === 'spa') {
+    if (process.env.NODE_ENV === 'production' && process.env.PACKAGE_NODE === 'spa') {
         return `/apps/appengine/${url}`;
     }
     return url;
