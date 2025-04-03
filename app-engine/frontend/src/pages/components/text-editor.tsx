@@ -75,14 +75,24 @@ const TextEditor = forwardRef((props, ref) => {
       Message({ type: 'error', content: err.message || t('uploadImageFail') });
     }
   }
+  const setUrl = (url) => {
+    if (process.env.NODE_ENV === 'production') {
+      if (process.env.PACKAGE_NODE !== 'spa') {
+        return url;
+      } else {
+        return `/apps/appengine/${url}`;
+      }
+    }
+    return url;
+  }
   useEffect(() => {
     tinymce.init({
       selector: '#publish-editor',
       plugins: 'lists image table wordcount',
       language: 'zh_CN',
-      language_url: './src/assets/tinymce/lang/zh-CN.js',
-      skin_url: './src/assets/tinymce/skins/ui/oxide',
-      content_css: './src/assets/tinymce/skins/content/default/content.css',
+      language_url: cLocale === 'en-us' ? '': `${setUrl('/src/assets/tinymce/lang/zh-CN.js')}`,
+      skin_url: `${setUrl('/src/assets/tinymce/skins/ui/oxide')}`,
+      content_css: `${setUrl('/src/assets/tinymce/skins/content/default/content.css')}`,
       height: 260,
       menubar: false,
       statusbar: false,
