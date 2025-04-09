@@ -171,7 +171,7 @@ public class AppImExportUtilTest {
         String iconContent = new String(
                 Base64.getEncoder().encode("This is an icon png.".getBytes(StandardCharsets.UTF_8)),
                 StandardCharsets.UTF_8);
-        String iconUrl = AppImExportUtil.saveIconFile(iconContent, "png", "123");
+        String iconUrl = AppImExportUtil.saveIconFile(iconContent, "png", "123", "/api/jober");
         assertThat(iconUrl).startsWith("/api/jober/v1/api/123");
 
         String iconPath = AippFileUtils.getFileNameFromIcon(iconUrl);
@@ -189,10 +189,10 @@ public class AppImExportUtilTest {
         String iconContent = new String(
                 Base64.getEncoder().encode("This is an icon png.".getBytes(StandardCharsets.UTF_8)),
                 StandardCharsets.UTF_8);
-        String iconUrl = AppImExportUtil.saveIconFile(iconContent, "txt", "123");
+        String iconUrl = AppImExportUtil.saveIconFile(iconContent, "txt", "123", "/api/jober");
         assertThat(iconUrl).isEqualTo(StringUtils.EMPTY);
 
-        iconUrl = AppImExportUtil.saveIconFile(iconContent, "../../../.jpg", "123");
+        iconUrl = AppImExportUtil.saveIconFile(iconContent, "../../../.jpg", "123", "/api/jober");
         assertThat(iconUrl).isEqualTo(StringUtils.EMPTY);
     }
 

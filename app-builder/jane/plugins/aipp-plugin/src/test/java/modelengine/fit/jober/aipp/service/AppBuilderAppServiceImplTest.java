@@ -191,7 +191,7 @@ public class AppBuilderAppServiceImplTest {
                 .put("version", "1.0.1")
                 .put("hash-template", "123")
                 .put("digest", "MD5")
-                .build(), appTypeService, null, null, flowDefinitionService, aippFlowDefinitionService);
+                .build(), appTypeService, null, null, flowDefinitionService, aippFlowDefinitionService, "");
     }
 
     private AppBuilderApp mockApp() {
@@ -546,7 +546,7 @@ public class AppBuilderAppServiceImplTest {
                 this.aippFlowService, this.appRepository, null, 64, this.metaService, this.usrAppCollectionService,
                 this.appUpdateValidator, this.metaInstanceService, this.uploadedFileManageService, this.aippLogMapper,
                 this.flowsService, this.appService, this.aippChatService, this.aippModelCenter, this.aippChatMapper,
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, "");
 
         @Test
         @DisplayName("更新 config")
@@ -752,7 +752,8 @@ public class AppBuilderAppServiceImplTest {
                     null,
                     null,
                     null,
-                    null));
+                    null,
+                    ""));
             doNothing().when(service).validateUpdateApp(any(), any(), any());
             doNothing().when(appUpdateValidator).validate(anyString());
             when(appFactory.create(anyString())).thenReturn(mockApp());

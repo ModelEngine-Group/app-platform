@@ -251,6 +251,8 @@ public class AppBuilderAppServiceImpl
 
     private final AippFlowDefinitionService aippFlowDefinitionService;
 
+    private final String contextRoot;
+
     public AppBuilderAppServiceImpl(AppBuilderAppFactory appFactory, AippFlowService aippFlowService,
             AppBuilderAppRepository appRepository, AppTemplateFactory templateFactory,
             @Value("${validation.task.name.length.maximum:64}") int nameLengthMaximum, MetaService metaService,
@@ -260,7 +262,8 @@ public class AppBuilderAppServiceImpl
             AippChatService aippChatService, AippModelCenter aippModelCenter, AippChatMapper aippChatMapper,
             @Value("${export-meta}") Map<String, String> exportMeta, AppTypeService appTypeService,
             PluginToolService pluginToolService, PluginService pluginService,
-            FlowDefinitionService flowDefinitionService, AippFlowDefinitionService aippFlowDefinitionService) {
+            FlowDefinitionService flowDefinitionService, AippFlowDefinitionService aippFlowDefinitionService,
+            @Value("${app-engine.contextRoot}") String contextRoot) {
         this.nameLengthMaximum = nameLengthMaximum;
         this.appFactory = appFactory;
         this.templateFactory = templateFactory;
@@ -282,6 +285,7 @@ public class AppBuilderAppServiceImpl
         this.pluginService = pluginService;
         this.flowDefinitionService = flowDefinitionService;
         this.aippFlowDefinitionService = aippFlowDefinitionService;
+        this.contextRoot = contextRoot;
     }
 
     @Override
@@ -1134,7 +1138,8 @@ public class AppBuilderAppServiceImpl
                 return appDto;
             }
             String iconExtension = ObjectUtils.cast(ObjectUtils.<Map<String, Object>>cast(iconAttr).get("type"));
-            String iconPath = AppImExportUtil.saveIconFile(iconContent, iconExtension, context.getTenantId());
+            String iconPath = AppImExportUtil.saveIconFile(iconContent, iconExtension, context.getTenantId(),
+                    this.contextRoot);
             if (StringUtils.isBlank(iconPath)) {
                 return appDto;
             }
