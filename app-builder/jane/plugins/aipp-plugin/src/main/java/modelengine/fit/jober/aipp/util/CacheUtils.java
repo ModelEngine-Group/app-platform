@@ -50,7 +50,7 @@ public class CacheUtils {
     /**
      * 用于缓存app_id和aipp_id的关系
      */
-    public static final Cache<String, String> APP_ID_TO_AIPP_ID_CACHE =
+    private static final Cache<String, String> APP_ID_TO_AIPP_ID_CACHE =
             Caffeine.newBuilder().expireAfterAccess(30, TimeUnit.DAYS).maximumSize(1000).build();
 
     /**
