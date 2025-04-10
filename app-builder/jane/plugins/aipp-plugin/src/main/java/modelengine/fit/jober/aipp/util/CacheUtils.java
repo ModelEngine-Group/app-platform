@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class CacheUtils {
     private static final Logger log = Logger.get(CacheUtils.class);
+
     /**
      * 用于缓存appId to app
      */
@@ -90,11 +91,11 @@ public class CacheUtils {
     /**
      * 根据appId查询对应meta
      *
-     * @param metaService 用于查询meta的服务实例
-     * @param appId 应用appId
-     * @param isDebug 是否为debug会话
-     * @param context 操作上下文
-     * @return app对应的meta信息
+     * @param metaService 表示用于查询meta的服务实例的 {@link MetaService}
+     * @param appId 表示应用appId的 {@link String}
+     * @param isDebug 表示是否为debug会话的 {@link boolean}
+     * @param context 表示操作上下文的 {@link OperationContext}
+     * @return 表示app对应的meta信息的 {@link Meta}
      */
     public static Meta getMetaByAppId(MetaService metaService, String appId, boolean isDebug,
             OperationContext context) {
