@@ -79,10 +79,14 @@ export const recursion = (el: any, deep = 1) => {
         item.items.key = uuidv4();
         item.children = [item.items];
       } else {
-        item.children = Object.keys(item.properties).map((ite) => ({
-          ...item.properties[ite],
+        item.children = Object.keys(
+          (typeof item.properties === 'object' && item.properties !== null && !Array.isArray(item.properties))
+            ? item.properties
+            : {}
+        ).map(ite => ({
+          ...(item.properties?.[ite] || {}),
           name: ite,
-          key: uuidv4(),
+          key: uuidv4()
         }));
       }
       recursion(item.children, deep + 1);
