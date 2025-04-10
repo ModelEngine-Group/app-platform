@@ -98,5 +98,45 @@
     "code": "model.developer.description",
     "language": "zh_cn",
     "content": "该角色拥有数据使能模块数据集管理的操作权限，拥有模型使能模块所有功能的操作权限。"
+  },
+  {
+    "code": "data.app.developer.name",
+    "language": "en_us",
+    "content": "Data application development engineer"
+  },
+  {
+    "code": "data.app.developer.name",
+    "language": "zh_cn",
+    "content": "数据应用开发工程师"
+  },
+  {
+    "code": "data.app.developer.description",
+    "language": "en_us",
+    "content": "This role has all operation permissions on the data enablement module and application enablement module, and has the read-only permission on the model enablement module."
+  },
+  {
+    "code": "data.app.developer.description",
+    "language": "zh_cn",
+    "content": "该角色拥有数据使能模块以及应用使能模块的全部操作权限，拥有模型使能模块只读权限。"
+  },
+  {
+    "code": "app.trial.developer.name",
+    "language": "en_us",
+    "content": "Application development trial engineer"
+  },
+  {
+    "code": "app.trial.developer.name",
+    "language": "zh_cn",
+    "content": "应用开发体验工程师"
+  },
+  {
+    "code": "app.trial.developer.description",
+    "language": "en_us",
+    "content": "This role has the operation permission on the application enablement module and the read-only permission on the data enablement module and model enablement module."
+  },
+  {
+    "code": "app.trial.developer.description",
+    "language": "zh_cn",
+    "content": "该角色拥有应用使能模块的操作权限，拥有数据使能与模型使能模块的只读权限。"
   }
 ]

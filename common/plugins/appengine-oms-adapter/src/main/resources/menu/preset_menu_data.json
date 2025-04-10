@@ -24,6 +24,14 @@
       {
         "roleName": "READ_ONLY",
         "scenId": "4"
+      },
+      {
+        "roleName": "DataAppDeveloper",
+        "scenId": "4"
+      },
+      {
+        "roleName": "AppExDeveloper",
+        "scenId": "4"
       }
     ],
     "weight": 4
@@ -53,6 +61,14 @@
       {
         "roleName": "READ_ONLY",
         "scenId": "4"
+      },
+      {
+        "roleName": "DataAppDeveloper",
+        "scenId": "4"
+      },
+      {
+        "roleName": "AppExDeveloper",
+        "scenId": "4"
       }
     ]
   },
@@ -80,6 +96,14 @@
       },
       {
         "roleName": "READ_ONLY",
+        "scenId": "4"
+      },
+      {
+        "roleName": "DataAppDeveloper",
+        "scenId": "4"
+      },
+      {
+        "roleName": "AppExDeveloper",
         "scenId": "4"
       }
     ]
@@ -109,6 +133,14 @@
       {
         "roleName": "READ_ONLY",
         "scenId": "4"
+      },
+      {
+        "roleName": "DataAppDeveloper",
+        "scenId": "4"
+      },
+      {
+        "roleName": "AppExDeveloper",
+        "scenId": "4"
       }
     ]
   },
@@ -136,6 +168,14 @@
       },
       {
         "roleName": "READ_ONLY",
+        "scenId": "4"
+      },
+      {
+        "roleName": "DataAppDeveloper",
+        "scenId": "4"
+      },
+      {
+        "roleName": "AppExDeveloper",
         "scenId": "4"
       }
     ]
@@ -169,6 +209,14 @@
       {
         "roleName": "READ_ONLY",
         "scenId": "4"
+      },
+      {
+        "roleName": "DataAppDeveloper",
+        "scenId": "4"
+      },
+      {
+        "roleName": "AppExDeveloper",
+        "scenId": "4"
       }
     ]
   },
@@ -196,6 +244,14 @@
       },
       {
         "roleName": "READ_ONLY",
+        "scenId": "4"
+      },
+      {
+        "roleName": "DataAppDeveloper",
+        "scenId": "4"
+      },
+      {
+        "roleName": "AppExDeveloper",
         "scenId": "4"
       }
     ]

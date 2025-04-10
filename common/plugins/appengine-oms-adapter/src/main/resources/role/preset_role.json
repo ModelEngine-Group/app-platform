@@ -33,5 +33,19 @@
     "description": "model.developer.description",
     "creatable": true,
     "supportLoginType": 1
+  },
+  {
+    "name": "DataAppDeveloper",
+    "nameCode": "data.app.developer.name",
+    "description": "data.app.developer.description",
+    "creatable": true,
+    "supportLoginType": 1
+  },
+  {
+    "name": "AppExDeveloper",
+    "nameCode": "app.trial.developer.name",
+    "description": "app.trial.developer.description",
+    "creatable": true,
+    "supportLoginType": 1
   }
 ]
