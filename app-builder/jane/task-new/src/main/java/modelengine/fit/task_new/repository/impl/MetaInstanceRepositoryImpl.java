@@ -12,7 +12,9 @@ import modelengine.fit.task_new.mapper.MetaInstanceMapper;
 import modelengine.fit.task_new.repository.MetaInstanceRepository;
 import modelengine.fit.task_new.serializer.impl.MetaInstanceSerializer;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,5 +60,20 @@ public class MetaInstanceRepositoryImpl implements MetaInstanceRepository {
     @Override
     public long count(MetaInstanceCondition cond) {
         return this.metaInstanceMapper.count(cond);
+    }
+
+    @Override
+    public List<String> getExpiredInstanceIds(int expiredDays, int limit) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expired = now.minusDays(expiredDays);
+        return this.metaInstanceMapper.getExpiredInstanceIds(expired, limit);
+    }
+
+    @Override
+    public void forceDelete(List<String> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        this.metaInstanceMapper.forceDelete(ids);
     }
 }

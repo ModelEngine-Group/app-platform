@@ -146,3 +146,24 @@ create table if not exists app_template (
     update_at timestamp(6) not null default CURRENT_TIMESTAMP,
     is_deleted int2 not null default 0
 );
+
+create table if not exists app_builder_runtime_info
+(
+    id                 BIGSERIAL primary key,
+    trace_id           varchar(64) not null,
+    flow_definition_id varchar(64) not null,
+    instance_id        varchar(64) not null,
+    node_id            varchar(64) not null,
+    node_type          varchar(32) not null,
+    start_time         bigint not null,
+    end_time           bigint not null,
+    status             varchar(32),
+    published          smallint not null,
+    error_msg          text,
+    next_position_id   varchar(64),
+    parameters         json not null DEFAULT '[]',
+    create_by          varchar(64),
+    create_at          timestamp    not null default current_timestamp,
+    update_by          varchar(64),
+    update_at          timestamp    not null default current_timestamp
+);

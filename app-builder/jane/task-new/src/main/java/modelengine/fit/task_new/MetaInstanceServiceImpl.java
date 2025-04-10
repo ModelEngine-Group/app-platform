@@ -20,6 +20,10 @@ import modelengine.fit.task_new.entity.MetaInstance;
 import modelengine.fit.task_new.repository.MetaInstanceRepository;
 import modelengine.fit.task_new.util.UUIDUtil;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.annotation.Value;
+import modelengine.fitframework.log.Logger;
+import modelengine.fitframework.schedule.annotation.Scheduled;
+import modelengine.fitframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,10 +37,18 @@ import java.util.Map;
  */
 @Component
 public class MetaInstanceServiceImpl implements MetaInstanceService {
+    private static final Logger log = Logger.get(MetaInstanceServiceImpl.class);
+
+    private static final int LIMIT = 1000;
+
     private final MetaInstanceRepository metaInstanceRepository;
 
-    public MetaInstanceServiceImpl(MetaInstanceRepository metaInstanceRepository) {
+    private final int expiredDays;
+
+    public MetaInstanceServiceImpl(MetaInstanceRepository metaInstanceRepository,
+            @Value("${task.expiredDays}") int expiredDays) {
         this.metaInstanceRepository = metaInstanceRepository;
+        this.expiredDays = expiredDays;
     }
 
     @Override
@@ -103,5 +115,25 @@ public class MetaInstanceServiceImpl implements MetaInstanceService {
     public Instance retrieveById(String instanceId, OperationContext context) {
         RangedResultSet<Instance> resultSet = this.list(Collections.singletonList(instanceId), 0, 1, null);
         return resultSet.getResults().get(0);
+    }
+
+    /**
+     * 每天凌晨 3 点定时清理超期指定天数的任务实例数据。
+     */
+    @Scheduled(strategy = Scheduled.Strategy.CRON, value = "0 0 3 * * ?")
+    public void taskInstanceDbCleanSchedule() {
+        log.info("Start clean task instance db");
+        try {
+            while (true) {
+                List<String> expiredInstanceIds = this.metaInstanceRepository.getExpiredInstanceIds(expiredDays, LIMIT);
+                if (CollectionUtils.isEmpty(expiredInstanceIds)) {
+                    break;
+                }
+                this.metaInstanceRepository.forceDelete(expiredInstanceIds);
+            }
+        } catch (Exception e) {
+            log.error("Error clean task instance db, exception:", e);
+        }
+        log.info("Finish clean task instance db");
     }
 }

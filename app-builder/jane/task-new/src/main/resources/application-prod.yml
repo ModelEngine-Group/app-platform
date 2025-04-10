@@ -26,3 +26,5 @@ fit:
           testOnReturn: false
 mybatis:
   mapper-locations: mapper/*Mapper.xml
+task:
+  expiredDays: 7

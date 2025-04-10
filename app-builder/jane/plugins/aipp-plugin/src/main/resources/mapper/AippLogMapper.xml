@@ -263,4 +263,25 @@
             #{item}
         </foreach>
     </update>
+
+    <select id="getExpirePreviewInstanceLogs" resultType="long">
+        SELECT
+        log_id
+        FROM
+        aipp_instance_log
+        WHERE
+        aipp_type = 'PREVIEW'
+        AND
+        create_at &lt; #{expiredDays}
+        LIMIT #{limit};
+    </select>
+
+    <delete id="forceDeleteInstanceLogsByIds">
+        DELETE FROM
+        aipp_instance_log
+        where log_id in
+        <foreach collection="instanceIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

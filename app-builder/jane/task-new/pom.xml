@@ -63,6 +63,10 @@
             <groupId>modelengine.fit.jane</groupId>
             <artifactId>aipp-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.fitframework.extension</groupId>
+            <artifactId>fit-schedule</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

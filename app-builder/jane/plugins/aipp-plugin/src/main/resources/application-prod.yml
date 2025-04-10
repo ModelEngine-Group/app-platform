@@ -51,6 +51,7 @@ app-engine:
   file:
     upload:
       maxStorageRatio: 0.9
+  expiredDays: 7
 elsa:
   endpoint:
   elsaKey:

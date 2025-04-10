@@ -8,6 +8,7 @@ package modelengine.fit.jober.aipp.mapper;
 
 import modelengine.fit.jober.aipp.po.AppBuilderRuntimeInfoPo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -31,4 +32,20 @@ public interface AppBuilderRuntimeInfoMapper {
      * @param appBuilderRuntimeInfoPO {@link AppBuilderRuntimeInfoPo} 对象.
      */
     void insertOne(AppBuilderRuntimeInfoPo appBuilderRuntimeInfoPO);
+
+    /**
+     * 获取超期的运行时信息唯一标识列表。
+     *
+     * @param expiredDays 表示超期时间的 {@link LocalDateTime}。
+     * @param limit 表示查询条数的 {@code int}。
+     * @return 表示运行时信息id列表的 {@link List}{@code <}{@link Long}{@code >}。
+     */
+    List<Long> getExpiredRuntimeInfos(LocalDateTime expiredDays, int limit);
+
+    /**
+     * 根据运行时信息id列表强制删除会话记录。
+     *
+     * @param runtimeInfoIds 表示运行时信息id列表的 {@link List}{@code <}{@link Long}{@code >}。
+     */
+    void deleteRuntimeInfos(List<Long> runtimeInfoIds);
 }

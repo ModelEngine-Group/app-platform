@@ -139,4 +139,25 @@
             </if>
         </where>
     </select>
+
+    <select id="getExpiredInstanceIds" resultType="string">
+        SELECT
+        id
+        FROM
+        task_instance_new
+        WHERE
+        instance_status != 'RUNNING'
+        AND
+        finish_time &lt; #{expiredDays}
+        LIMIT #{limit};
+    </select>
+
+    <delete id="forceDelete">
+        DELETE FROM
+        task_instance_new
+        where id in
+        <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

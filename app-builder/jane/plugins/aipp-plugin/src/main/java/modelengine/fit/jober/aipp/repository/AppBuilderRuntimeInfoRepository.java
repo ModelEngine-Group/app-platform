@@ -31,4 +31,20 @@ public interface AppBuilderRuntimeInfoRepository {
      * @param info {@link AppBuilderRuntimeInfo} 运行时信息.
      */
     void insertOne(AppBuilderRuntimeInfo info);
+
+    /**
+     * 获取运行时信息过期历史记录。
+     *
+     * @param expiredDays 表示超期天数的 {@code int}。
+     * @param limit 表示查询条数的 {@code int}。
+     * @return 表示超期运行时信息id的 {@link List}{@code <}{@link Long}{@code >}。
+     */
+    List<Long> getExpiredRuntimeInfos(int expiredDays, int limit);
+
+    /**
+     * 根据运行时信息id列表强制删除历史记录。
+     *
+     * @param runtimeInfoIds 表示历史记录的id列表的 {@link List}{@code <}{@link Long}{@code >}。
+     */
+    void deleteRuntimeInfos(List<Long> runtimeInfoIds);
 }
