@@ -525,9 +525,9 @@ public interface FlowContextMapper {
     String getTransIdByTrace(String traceId);
 
     /**
-     * 根据trace列表删除对应的context
+     * 根据 trace 列表删除对应的上下文数据。
      *
-     * @param traceIds 表示trace id列表的 {@link List}{@code <}{@link String}{@code >}
+     * @param traceIds 表示 trace 唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
      */
     void deleteByTraceIdList(List<String> traceIds);
 }

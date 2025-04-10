@@ -115,11 +115,11 @@ public interface FlowTraceMapper {
     List<String> findRunningTrace(List<String> applications);
 
     /**
-     * 查询超期并且已完成的trace id
+     * 查询超期并且已完成的 trace 唯一标识。
      *
-     * @param expiredDays 表示超期天数的 {@link LocalDateTime}
-     * @param limit 表示查询限制的 {@link int}
-     * @return 表示trace id列表的 {@link List}{@code <}{@link String}{@code >}
+     * @param expiredDays 表示超期天数的 {@link LocalDateTime}。
+     * @param limit 表示查询限制的 {@link int}。
+     * @return 表示 trace 唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
      */
     List<String> getExpiredTrace(LocalDateTime expiredDays, int limit);
 }

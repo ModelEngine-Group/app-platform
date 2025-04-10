@@ -55,7 +55,7 @@ public class CacheUtils {
             Caffeine.newBuilder().expireAfterAccess(30, TimeUnit.DAYS).maximumSize(1000).build();
 
     /**
-     * 用于缓存app_id和最新发布的meta关系
+     * 用于缓存应用ID和最新发布的元数据关系
      */
     private static final Cache<String, Meta> AIPP_ID_TO_LAST_META_CACHE =
             Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.SECONDS).maximumSize(1000).build();
@@ -89,13 +89,13 @@ public class CacheUtils {
     }
 
     /**
-     * 根据appId查询对应meta
+     * 根据应用唯一标识查询对应元数据。
      *
-     * @param metaService 表示用于查询meta的服务实例的 {@link MetaService}
-     * @param appId 表示应用appId的 {@link String}
-     * @param isDebug 表示是否为debug会话的 {@link boolean}
-     * @param context 表示操作上下文的 {@link OperationContext}
-     * @return 表示app对应的meta信息的 {@link Meta}
+     * @param metaService 表示用于查询元数据的服务实例的 {@link MetaService}。
+     * @param appId 表示应用唯一标识的 {@link String}。
+     * @param isDebug 表示是否为调试会话的 {@link boolean}。
+     * @param context 表示操作上下文的 {@link OperationContext}。
+     * @return 表示应用对应的元数据信息的 {@link Meta}。
      */
     public static Meta getMetaByAppId(MetaService metaService, String appId, boolean isDebug,
             OperationContext context) {

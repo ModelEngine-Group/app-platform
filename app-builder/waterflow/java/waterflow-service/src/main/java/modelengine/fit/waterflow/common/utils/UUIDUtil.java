@@ -10,26 +10,26 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Uuid的Utils类。
+ * Uuid 的工具类。
  *
  * @author 孙怡菲
  * @since 2025-04-09
  */
 public class UUIDUtil {
     /**
-     * 随机生成uuid。
+     * 随机生成 uuid。
      *
-     * @return 表示随机生成的uuid的 {@link String}。
+     * @return 表示随机生成的 uuid 的 {@link String}。
      */
     public static String uuid() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
     /**
-     * 使用线程本地随机数生成UUID。
+     * 使用线程本地随机数生成 UUID。
      * 生成的 UUID 在唯一性和不可预测性上可能不如 UUID.randomUUID()，但在性能上有显著提升
      *
-     * @return 表示随机生成UUID的 {@link String}。
+     * @return 表示随机生成 UUID 的 {@link String}。
      */
     public static String fastUuid() {
         long mostSigBits = ThreadLocalRandom.current().nextLong();
