@@ -65,6 +65,10 @@
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>modelengine.fit.jade.service</groupId>
+            <artifactId>tool-service</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

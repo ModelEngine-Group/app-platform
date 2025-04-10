@@ -29,4 +29,14 @@
             #{item}
         </foreach>
     </select>
+
+    <insert id="insertModel" parameterType="modelengine.fit.jade.aipp.model.po.ModelPo">
+        INSERT INTO t_app_engine_model (model_id, name, tag, base_url, type, created_by, updated_by)
+        VALUES (#{modelId}, #{name}, #{tag}, #{baseUrl}, #{type}, #{createdBy}, #{updatedBy})
+    </insert>
+
+    <delete id="deleteByModelId">
+        DELETE FROM t_app_engine_model
+        WHERE model_id = #{modelId}
+    </delete>
 </mapper>

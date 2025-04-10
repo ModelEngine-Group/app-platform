@@ -27,4 +27,37 @@
         where user_id = #{userId}
         and is_default = 1
     </select>
+
+    <select id="userHasDefaultModel" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM t_app_engine_user_model
+            WHERE user_id = #{userId}
+              AND is_default = 1
+        )
+    </select>
+
+    <insert id="addUserModel" parameterType="modelengine.fit.jade.aipp.model.po.UserModelPo">
+        INSERT INTO t_app_engine_user_model (user_id, model_id, api_key, is_default, created_by, updated_by)
+        VALUES (#{userId}, #{modelId}, #{apiKey}, #{isDefault}, #{createdBy}, #{updatedBy})
+    </insert>
+
+    <delete id="deleteByModelId">
+        DELETE FROM t_app_engine_user_model
+        WHERE model_id = #{modelId}
+    </delete>
+
+    <select id="findLatestUserModel" resultType="modelengine.fit.jade.aipp.model.po.UserModelPo">
+        SELECT user_id, model_id, api_key, is_default
+        FROM t_app_engine_user_model
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+            LIMIT 1
+    </select>
+
+    <update id="switchDefaultForUser" parameterType="map">
+        UPDATE t_app_engine_user_model
+        SET is_default = CASE WHEN model_id = #{modelId} THEN 1 ELSE 0 END
+        WHERE user_id = #{userId}
+    </update>
 </mapper>
