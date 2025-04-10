@@ -117,9 +117,9 @@ public interface FlowTraceMapper {
     /**
      * 查询超期并且已完成的trace id
      *
-     * @param expiredDays 超期天数
-     * @param limit 查询数量
-     * @return trace id列表
+     * @param expiredDays 表示超期天数的 {@link LocalDateTime}
+     * @param limit 表示查询限制的 {@link int}
+     * @return 表示trace id列表的 {@link List}{@code <}{@link String}{@code >}
      */
     List<String> getExpiredTrace(LocalDateTime expiredDays, int limit);
 }

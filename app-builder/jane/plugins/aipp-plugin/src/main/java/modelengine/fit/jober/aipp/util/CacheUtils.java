@@ -115,7 +115,7 @@ public class CacheUtils {
     private static Meta getLatestMetaByAppId(MetaService metaService, String appId, OperationContext context) {
         List<Meta> metas = MetaUtils.getAllMetasByAppId(metaService, appId, context);
         if (CollectionUtils.isEmpty(metas)) {
-            log.error("No metas found for appId: " + appId);
+            log.error("No metas found for appId: {}" + appId);
             throw new AippException(AippErrCode.APP_CHAT_DEBUG_META_NOT_FOUND);
         }
         return metas.get(0);

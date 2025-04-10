@@ -739,7 +739,7 @@ public class FlowContextPersistRepo implements FlowContextRepo<FlowData> {
 
     @Override
     public void deleteByTraceIdList(List<String> traceIdList) {
-        if (traceIdList.isEmpty()) {
+        if (CollectionUtils.isEmpty(traceIdList)) {
             return;
         }
         contextMapper.deleteByTraceIdList(traceIdList);
