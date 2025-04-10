@@ -50,11 +50,12 @@ public class CleanContextSchedule {
     public void cleanContextSchedule() {
         log.info("Start clean flow expired contexts");
         try {
-            List<String> traceIds = flowTraceRepo.getExpiredTrace(expiredDays, LIMIT);
-            while (!traceIds.isEmpty()) {
+            while (true) {
+                List<String> traceIds = flowTraceRepo.getExpiredTrace(expiredDays, LIMIT);
+                if (traceIds.isEmpty()) {
+                    break;
+                }
                 deleteFlowContext(traceIds);
-                traceIds = flowTraceRepo.getExpiredTrace(expiredDays, LIMIT);
-                SleepUtil.sleep(60000);
             }
         } catch (Exception ex) {
             log.error("Clean context error, error message: {}" + ex.getMessage());
