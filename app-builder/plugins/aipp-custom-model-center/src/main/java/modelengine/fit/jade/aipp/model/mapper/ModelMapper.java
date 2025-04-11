@@ -34,4 +34,18 @@ public interface ModelMapper {
      * @return 模型信息列表 {@link List}{@code <}{@link ModelPo}{@code >}.
      */
     List<ModelPo> listModels(List<String> modelIds);
+
+    /**
+     * 插入模型信息。
+     *
+     * @param model 模型对象。
+     */
+    void insertModel(ModelPo model);
+
+    /**
+     * 根据模型ID删除模型信息。
+     *
+     * @param modelId 模型ID。
+     */
+    void deleteByModelId(String modelId);
 }

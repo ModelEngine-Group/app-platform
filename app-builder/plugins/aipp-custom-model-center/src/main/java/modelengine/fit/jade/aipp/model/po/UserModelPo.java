@@ -6,7 +6,9 @@
 
 package modelengine.fit.jade.aipp.model.po;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import modelengine.jade.common.po.BasePo;
 
 /**
@@ -16,6 +18,8 @@ import modelengine.jade.common.po.BasePo;
  * @since 2025/3/11
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
 public class UserModelPo extends BasePo {
     private String userId;
     private String modelId;
