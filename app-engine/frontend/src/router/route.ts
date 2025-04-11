@@ -34,12 +34,6 @@ export type MenuItem = Required<MenuProps>['items'][number] & {
 
 export const routeList: MenuItem[] = [
   {
-    key: '/home',
-    icon: Icons.home({}),
-    label: i18n.t('homepage'),
-    component: ChatHome
-  },
-  {
     key: '/chat/:uid',
     icon: Icons.app({}),
     label: i18n.t('applicationMarket'),

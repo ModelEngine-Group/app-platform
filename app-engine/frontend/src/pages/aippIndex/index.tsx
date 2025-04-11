@@ -52,7 +52,7 @@ const AippIndex = () => {
     dispatch(setAppId(appId));
     aippId && dispatch(setAippId(aippId));
     dispatch(setInspirationOpen(false));
-    getUser();
+    // TODO: 待后端接口归一后调用 getUser()
     getAippDetails();
     if (window.location.href.indexOf('type=chatWorkflow') !== -1) {
       setShowElsa(true);

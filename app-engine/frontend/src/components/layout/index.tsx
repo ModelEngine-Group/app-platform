@@ -64,7 +64,7 @@ const AppLayout: React.FC = () => {
         len--;
       }
     } else {
-      setDefaultActive(['/home']);
+      setDefaultActive(['/app-develop']);
     }
   }
   const menuClick = (e: any) => {
@@ -108,7 +108,7 @@ const AppLayout: React.FC = () => {
 
   useEffect(() => {
     if (process.env.PACKAGE_MODE === 'common') {
-      getUser();
+    // TODO: 待后端接口归一后调用 getUser()
     } else {
       getOmsUser();
       getRole();
@@ -164,7 +164,7 @@ const AppLayout: React.FC = () => {
                 />
               ))}
               <Route exact path='/' key='/' >
-                <Redirect to='/home' />
+                <Redirect to='/app-develop' />
               </Route>
             </Switch>
           </Content>

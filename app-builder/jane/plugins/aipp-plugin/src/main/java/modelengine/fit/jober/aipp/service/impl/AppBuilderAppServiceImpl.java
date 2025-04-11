@@ -1983,12 +1983,16 @@ public class AppBuilderAppServiceImpl
     }
 
     private String[] getFirstModelInfo(OperationContext context) {
-        ModelListDto modelList = this.aippModelCenter.fetchModelList(AippConst.CHAT_MODEL_TYPE, null, context);
-        if (modelList != null && modelList.getModels() != null && !modelList.getModels().isEmpty()) {
-            ModelAccessInfo firstModel = modelList.getModels().get(0);
-            return new String[] {firstModel.getServiceName(), firstModel.getTag()};
-        } else {
-            return new String[] {StringUtils.EMPTY, StringUtils.EMPTY};
+        try {
+            ModelListDto modelList = this.aippModelCenter.fetchModelList(AippConst.CHAT_MODEL_TYPE, null, context);
+            if (modelList != null && modelList.getModels() != null && !modelList.getModels().isEmpty()) {
+                ModelAccessInfo firstModel = modelList.getModels().get(0);
+                return new String[]{firstModel.getServiceName(), firstModel.getTag()};
+            } else {
+                return new String[]{StringUtils.EMPTY, StringUtils.EMPTY};
+            }
+        } catch (Exception e) {
+            return new String[]{StringUtils.EMPTY, StringUtils.EMPTY};
         }
     }
 

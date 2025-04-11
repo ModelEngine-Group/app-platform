@@ -81,7 +81,7 @@ public class FileController extends AbstractController {
             @RequestParam(value = "filePath", required = false) String fileCanonicalPath,
             @RequestParam(value = "fileName") String fileName, HttpClassicServerResponse httpClassicServerResponse)
             throws IOException {
-        OperationContext context = this.contextOf(httpRequest, tenantId);
+        OperationContext context = new OperationContext();
         return this.fileService.getFile(context, fileCanonicalPath, fileName, httpClassicServerResponse);
     }
 
