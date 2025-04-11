@@ -246,7 +246,7 @@ public class AippRunTimeServiceImpl
     @Fitable("default")
     public String createLatestAippInstanceByAppId(String appId, boolean isDebug, Map<String, Object> initContext,
             OperationContext context) {
-        Meta meta = getMetaByAppId(metaService, appId, isDebug, context);
+        Meta meta = CacheUtils.getMetaByAppId(metaService, appId, isDebug, context);
         String metaInstId = this.createAippInstance(meta.getId(), meta.getVersion(), initContext, context);
         return metaInstanceService.list(Collections.singletonList(metaInstId), 0, 1, context)
                 .getResults()
@@ -268,44 +268,14 @@ public class AippRunTimeServiceImpl
     @Override
     public Tuple createInstanceByApp(String appId, String question, Map<String, Object> businessData,
             OperationContext context, boolean isDebug) {
-        Meta meta = getMetaByAppId(metaService, appId, isDebug, context);
+        Meta meta = CacheUtils.getMetaByAppId(metaService, appId, isDebug, context);
         return this.createInstanceHandle(question, businessData, meta, context, isDebug);
     }
 
     @Override
     public MetaVo queryLatestMetaVoByAppId(String appId, boolean isDebug, OperationContext context) {
-        Meta meta = getMetaByAppId(metaService, appId, isDebug, context);
+        Meta meta = CacheUtils.getMetaByAppId(metaService, appId, isDebug, context);
         return MetaVo.builder().id(meta.getId()).version(meta.getVersion()).build();
-    }
-
-    /**
-     * 根据appid查询对应meta
-     *
-     * @param metaService 操作meta的service
-     * @param appId 应用appId
-     * @param isDebug 是否为debug会话
-     * @param context 操作上下文
-     * @return app对应的meta信息
-     */
-    public static Meta getMetaByAppId(MetaService metaService, String appId, boolean isDebug,
-            OperationContext context) {
-        if (isDebug) {
-            return getLatestMetaByAppId(metaService, appId, context);
-        }
-        // get 一个aipp_id的缓存，然后根据aipp_id查询最新发布版的meta
-        String aippId = CacheUtils.APP_ID_TO_AIPP_ID_CACHE.get(appId,
-                (id) -> getLatestMetaByAppId(metaService, id, context).getId());
-        Meta lastPublishedMeta = MetaUtils.getLastPublishedMeta(metaService, aippId, context);
-        return Optional.ofNullable(lastPublishedMeta)
-                .orElseThrow(() -> new AippException(AippErrCode.APP_CHAT_PUBLISHED_META_NOT_FOUND));
-    }
-
-    private static Meta getLatestMetaByAppId(MetaService metaService, String appId, OperationContext context) {
-        List<Meta> meta = MetaUtils.getAllMetasByAppId(metaService, appId, context);
-        if (CollectionUtils.isEmpty(meta)) {
-            throw new AippException(AippErrCode.APP_CHAT_DEBUG_META_NOT_FOUND);
-        }
-        return meta.get(0);
     }
 
     @Override

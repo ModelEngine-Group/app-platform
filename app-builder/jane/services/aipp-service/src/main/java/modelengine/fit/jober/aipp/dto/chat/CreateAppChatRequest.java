@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fitframework.annotation.Property;
+import modelengine.fitframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -37,6 +38,15 @@ public class CreateAppChatRequest {
 
     @Property(description = "context", name = "context")
     private Context context;
+
+    /**
+     * 判断是否有标记的应用。
+     *
+     * @return 表示是否有标记的应用的 {@code boolean}。
+     */
+    public boolean hasAtOtherApp() {
+        return StringUtils.isNotBlank(getContext().getAtChatId()) || StringUtils.isNotBlank(getContext().getAtAppId());
+    }
 
     /**
      * 本类表示对话的上下文

@@ -445,6 +445,16 @@ public class FlowContextMapperTest extends DatabaseBaseTest {
         Assertions.assertEquals("5", contextPO.get(1).getContextId());
     }
 
+    @Test
+    @DisplayName("测试根据trace id列表删除成功")
+    void testDeleteByTraceIds() {
+        executeSqlInFile(sqlFile);
+        flowContextMapper.deleteByTraceIdList(Collections.singletonList("4"));
+
+        FlowContextPO flowContextPO = flowContextMapper.find("4");
+        Assertions.assertNull(flowContextPO);
+    }
+
     private FlowContextPO getFlowContextPO() {
         LocalDateTime time = LocalDateTime.now();
         return FlowContextPO.builder()

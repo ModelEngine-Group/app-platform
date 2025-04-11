@@ -169,24 +169,17 @@ public class FlowContextPersistRepo implements FlowContextRepo<FlowData> {
         if (flowContexts == null || flowContexts.size() == 0) {
             return;
         }
-        log.warn("save before after");
         FlowContextPO flowContextPO = contextMapper.find(flowContexts.get(0).getId());
-        log.warn("save find after");
         List<FlowContextPO> flowContextPOS = flowContexts.stream().map(this::serializer).collect(Collectors.toList());
-        log.warn("save after serializer");
         if (flowContextPO == null) {
             contextMapper.batchCreate(flowContextPOS);
-            log.warn("save after batchCreate");
         } else {
             batchUpdate(flowContextPOS);
-            log.warn("save after batchUpdate");
         }
     }
 
     private void batchUpdate(List<FlowContextPO> flowContextPOS) {
-        log.warn("batchUpdate before");
         contextMapper.batchUpdate(flowContextPOS);
-        log.warn("batchUpdate after");
     }
 
     @Override
@@ -742,5 +735,13 @@ public class FlowContextPersistRepo implements FlowContextRepo<FlowData> {
     @Override
     public String getTransIdByTrace(String traceId) {
         return contextMapper.getTransIdByTrace(traceId);
+    }
+
+    @Override
+    public void deleteByTraceIdList(List<String> traceIdList) {
+        if (CollectionUtils.isEmpty(traceIdList)) {
+            return;
+        }
+        contextMapper.deleteByTraceIdList(traceIdList);
     }
 }

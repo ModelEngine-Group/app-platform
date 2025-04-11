@@ -163,4 +163,15 @@
             #{traceId}
         </foreach>
     </delete>
+
+    <select id="getExpiredTrace" resultType="string">
+        SELECT
+        trace_id
+        FROM
+        <include refid="table"/>
+        WHERE
+        status != 'RUNNING'
+        AND end_time &lt; #{expiredDays}
+        LIMIT #{limit};
+    </select>
 </mapper>

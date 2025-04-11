@@ -9,6 +9,7 @@ package modelengine.fit.jober.aipp.fitable;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.domain.AppBuilderRuntimeInfo;
 import modelengine.fit.jober.aipp.dto.chat.AppChatRsp;
+import modelengine.fit.jober.aipp.entity.ChatSession;
 import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
 import modelengine.fit.jober.aipp.service.AppChatSessionService;
 import modelengine.fit.jober.aipp.service.AppChatSseService;
@@ -88,13 +89,17 @@ public class FlowPublishSubscriber implements FlowPublishService {
 
     private void stageProcessedHandle(FlowNodePublishInfo flowNodePublishInfo, Map<String, Object> businessData,
                                       String aippInstId) {
+        Optional<ChatSession<Object>> instanceSession = this.appChatSessionService.getSession(aippInstId);
+        if (instanceSession.isPresent() && !instanceSession.get().isDebug()) {
+            return;
+        }
         FlowPublishContext context = flowNodePublishInfo.getFlowContext();
         String traceId = context.getTraceId();
         String nodeId = flowNodePublishInfo.getNodeId();
         String nodeType = flowNodePublishInfo.getNodeType();
         FlowErrorInfo errorInfo = flowNodePublishInfo.getErrorMsg();
         AtomicReference<Locale> locale = new AtomicReference<>(Locale.getDefault());
-        appChatSessionService.getSession(aippInstId).ifPresent(e -> locale.set(e.getLocale()));
+        instanceSession.ifPresent(session -> locale.set(session.getLocale()));
         ToolExceptionHandle.handleFitException(errorInfo);
         String finalErrorMsg = this.toolExceptionHandle.getFixErrorMsg(errorInfo, locale.get(), false);
         if (StringUtils.isBlank(finalErrorMsg)) {
@@ -103,7 +108,7 @@ public class FlowPublishSubscriber implements FlowPublishService {
         AppBuilderRuntimeInfo runtimeInfo = AppBuilderRuntimeInfo.builder()
                 .traceId(traceId)
                 .flowDefinitionId(flowNodePublishInfo.getFlowDefinitionId())
-                .instanceId(ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_INST_ID_KEY)))
+                .instanceId(aippInstId)
                 .nodeId(nodeId)
                 .nodeType(nodeType)
                 .startTime(ConvertUtils.toLong(context.getCreateAt()))

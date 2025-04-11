@@ -27,13 +27,19 @@ const SkillList = (props) => {
   };
 
   // 工具流详情
+  const setLocationUrl = () => {
+    if (process.env.PACKAGE_MODE === 'spa') {
+      return 'appengine';
+    }
+    return '#';
+  }
   const workflowDetail = (item) => {
     if (item.type === 'workflow') {
       if (item.appId.length) {
-        window.open(`${location.origin}/#/app-develop/${tenantId}/app-detail/flow-detail/${item.appId}`);
+        window.open(`${location.origin}/${setLocationUrl()}/app-develop/${tenantId}/app-detail/flow-detail/${item.appId}`);
       }
     } else {
-      window.open(`${location.origin}/#/plugin/detail/${item.pluginId}`);
+      window.open(`${location.origin}/${setLocationUrl()}/plugin/detail/${item.pluginId}`);
     }
   }
 

@@ -19,12 +19,12 @@
         <dependency>
             <groupId>org.fitframework</groupId>
             <artifactId>fit-api</artifactId>
-            <version>3.5.0-SNAPSHOT</version>
+            <version>3.5.0-M1</version>
         </dependency>
         <dependency>
             <groupId>org.fitframework</groupId>
             <artifactId>fit-util</artifactId>
-            <version>3.5.0-SNAPSHOT</version>
+            <version>3.5.0-M1</version>
         </dependency>
         <dependency>
             <groupId>modelengine.fit.jane</groupId>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.fitframework.service</groupId>
             <artifactId>fit-http-classic</artifactId>
-            <version>3.5.0-SNAPSHOT</version>
+            <version>3.5.0-M1</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

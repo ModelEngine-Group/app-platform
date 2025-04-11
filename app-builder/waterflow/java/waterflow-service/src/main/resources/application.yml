@@ -16,5 +16,6 @@ jane:
       scheduleRate: 10000
       maxCount: 0
     isNeedFlowCallbackAdapt: false
+    contextExpiredDays: 7
 
 distributed-lock-provider: databaseDistributedLockProvider

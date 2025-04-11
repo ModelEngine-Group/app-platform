@@ -133,4 +133,27 @@ public class FlowTraceMapperTest extends DatabaseBaseTest {
         Assertions.assertEquals("2", flowTracePOS.get(1).getTraceId());
         Assertions.assertEquals("ERROR", flowTracePOS.get(1).getStatus());
     }
+
+    @Test
+    @DisplayName("查询过期trace成功")
+    void testGetExpiredTraceSuccess() {
+        FlowTracePO tracePO = FlowTracePO
+                .builder()
+                .traceId("123")
+                .streamId("123")
+                .operator("yxy")
+                .application("flow")
+                .startNode("start")
+                .startTime(LocalDateTime.now())
+                .status("ERROR")
+                .endTime(LocalDateTime.of(2023, 1, 1, 1, 1))
+                .build();
+        flowTraceMapper.create(tracePO);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expired = now.minusDays(30);
+
+        List<String> expiredTrace = flowTraceMapper.getExpiredTrace(expired, 2);
+
+        Assertions.assertEquals(1, expiredTrace.size());
+    }
 }
