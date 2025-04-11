@@ -103,8 +103,8 @@ public interface FlowTraceRepo {
     /**
      * 查询超期并且已完成的 trace 唯一标识。
      *
-     * @param expiredDays 表示超期天数的 {@link int}。
-     * @param limit 表示查询限制的 {@link int}。
+     * @param expiredDays 表示超期天数的 {@code int}。
+     * @param limit 表示查询限制的 {@code int}。
      * @return 表示 trace 唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
      */
     List<String> getExpiredTrace(int expiredDays, int limit);

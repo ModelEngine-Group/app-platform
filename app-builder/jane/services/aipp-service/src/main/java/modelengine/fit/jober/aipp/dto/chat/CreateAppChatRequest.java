@@ -42,7 +42,7 @@ public class CreateAppChatRequest {
     /**
      * 判断是否有标记的应用。
      *
-     * @return 表示是否有标记的应用的 {@link boolean}。
+     * @return 表示是否有标记的应用的 {@code boolean}。
      */
     public boolean hasAtOtherApp() {
         return StringUtils.isNotBlank(getContext().getAtChatId()) || StringUtils.isNotBlank(getContext().getAtAppId());

@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author 孙怡菲
  * @since 2025-04-09
  */
-public class UUIDUtil {
+public class UuidUtils {
     /**
      * 随机生成 uuid。
      *

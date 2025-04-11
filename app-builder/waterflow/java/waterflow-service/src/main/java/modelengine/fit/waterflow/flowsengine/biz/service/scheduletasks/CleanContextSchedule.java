@@ -42,9 +42,8 @@ public class CleanContextSchedule {
 
     /**
      * 每天凌晨3点定时清理超期EXPIRED_DAYS天的流程运行数据。
-     * 多实例并发执行分析：会并发执行getExpiredTrace()查询，可能导致重复获取相同traceIds，
-     * 重复删除trace以及context数据不会对结果有影响。
-     *
+     * <p>多实例并发执行分析：会并发执行getExpiredTrace()查询，可能导致重复获取相同traceIds，
+     * 重复删除trace以及context数据不会对结果有影响。</p>
      */
     @Scheduled(strategy = Scheduled.Strategy.CRON, value = "0 0 3 * * ?")
     public void cleanContextSchedule() {

@@ -136,7 +136,7 @@ public class FlowTraceMapperTest extends DatabaseBaseTest {
 
     @Test
     @DisplayName("查询过期trace成功")
-    public void testGetExpiredTraceSuccess() {
+    void testGetExpiredTraceSuccess() {
         FlowTracePO tracePO = FlowTracePO
                 .builder()
                 .traceId("123")

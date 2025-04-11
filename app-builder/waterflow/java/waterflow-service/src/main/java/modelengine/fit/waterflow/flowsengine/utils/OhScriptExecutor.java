@@ -17,7 +17,7 @@ import modelengine.fit.ohscript.script.interpreter.ASTEnv;
 import modelengine.fit.ohscript.script.parser.AST;
 import modelengine.fit.ohscript.script.parser.ParserBuilder;
 import modelengine.fit.waterflow.common.Constant;
-import modelengine.fit.waterflow.common.utils.UUIDUtil;
+import modelengine.fit.waterflow.common.utils.UuidUtils;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.ObjectUtils;
@@ -65,7 +65,7 @@ public final class OhScriptExecutor {
             formatConditionRule = formatConditionRule.substring(1);
         }
         String ohScript = CODE_SEGMENT_PREFIX + formatConditionRule;
-        String uuid = UUIDUtil.fastUuid();
+        String uuid = UuidUtils.fastUuid();
         log.warn("uuid:{0}, evaluateConditionRule:{1}", uuid, ohScript);
         Object execResult = getExecResult(conditionRule, parserBuilder, ohScript, businessData);
         log.warn("uuid:{0}, execResult:{1}", uuid, execResult);

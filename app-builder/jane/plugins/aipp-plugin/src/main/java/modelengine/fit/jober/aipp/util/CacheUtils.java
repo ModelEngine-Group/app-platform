@@ -93,7 +93,7 @@ public class CacheUtils {
      *
      * @param metaService 表示用于查询元数据的服务实例的 {@link MetaService}。
      * @param appId 表示应用唯一标识的 {@link String}。
-     * @param isDebug 表示是否为调试会话的 {@link boolean}。
+     * @param isDebug 表示是否为调试会话的 {@code boolean}。
      * @param context 表示操作上下文的 {@link OperationContext}。
      * @return 表示应用对应的元数据信息的 {@link Meta}。
      */
