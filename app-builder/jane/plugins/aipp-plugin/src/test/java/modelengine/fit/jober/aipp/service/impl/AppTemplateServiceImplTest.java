@@ -115,7 +115,7 @@ public class AppTemplateServiceImplTest {
                 this.templateRepository);
         this.appService = new AppBuilderAppServiceImpl(appFactory, this.aippFlowService, this.appRepository,
                 templateFactory, 64, null, null, null, null, this.uploadedFileManageService, null, null, null, null,
-                null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, "");
         this.templateService = new AppTemplateServiceImpl(this.appService, this.templateRepository);
     }
 

@@ -71,7 +71,7 @@ public class AppImExportUtil {
 
     private static final Pattern VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+");
 
-    private static final String ICON_URL_PATTERN = "/appbuilder/v1/api/{0}/file?filePath={1}&fileName={2}";
+    private static final String ICON_URL_PATTERN = "/v1/api/{0}/file?filePath={1}&fileName={2}";
 
     private static final String[] FORM_PROPERTY_GROUP_SET = new String[] {
             "null", "ability", "basic", "workflow", "chat"
@@ -535,9 +535,10 @@ public class AppImExportUtil {
      * @param iconContent 表示 base64 编码的图像字节的 {@link String}。
      * @param iconExtension 表示图像类型后缀的 {@link String}。
      * @param tenantId 表示租户 id 的 {@link String}。
-     * @return 表示构造好的图像的路径，可以存放在 attribute 中。
+     * @param contextRoot 表示请求上下文根的 {@link String}。
+     * @return 表示构造好的图像的路径，可以存放在 attribute 中的 {@link String}。
      */
-    public static String saveIconFile(String iconContent, String iconExtension, String tenantId) {
+    public static String saveIconFile(String iconContent, String iconExtension, String tenantId, String contextRoot) {
         boolean isValidExtension = Stream.of(LEGAL_ICON_TYPE)
                 .anyMatch(type -> StringUtils.equalsIgnoreCase(type, iconExtension));
         if (!isValidExtension) {
@@ -548,7 +549,8 @@ public class AppImExportUtil {
         byte[] iconBytes = iconContent.getBytes(StandardCharsets.UTF_8);
         try (InputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(iconBytes))) {
             FileUtils.copyInputStreamToFile(inputStream, iconFile);
-            return MessageFormat.format(ICON_URL_PATTERN, tenantId, iconFile.getCanonicalPath(), newFileName);
+            return MessageFormat.format(contextRoot + ICON_URL_PATTERN, tenantId, iconFile.getCanonicalPath(),
+                    newFileName);
         } catch (IOException | IllegalArgumentException e) {
             iconFile.delete();
             return StringUtils.EMPTY;
