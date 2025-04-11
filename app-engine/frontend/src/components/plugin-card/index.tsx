@@ -155,7 +155,7 @@ const PluginCard = ({ pluginData, cardType, getPluginList, pluginId, cardStatus,
         onCancel={() => setDeleteOpen(false)}
       >
         <div style={{ margin: '8px 0' }}>
-          <span>{t('deleteKnowledgeTips')}</span>
+          <span>{t('deletePluginTips')}</span>
         </div>
       </Modal>
     </>

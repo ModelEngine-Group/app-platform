@@ -60,36 +60,40 @@ export const FormatQaNumber = (val) => {
  * @param el 传入递归的初始数据
  */
 export const recursion = (el: any, deep = 1) => {
-  el.forEach((item: any) => {
-    if (item.type === 'object') {
-      item.key = uuidv4();
-      if (item.properties) {
-        item.children = Object.keys(item.properties).map((ite) => ({
-          ...item.properties[ite],
-          name: ite,
-          key: uuidv4(),
-        }));
+  try {
+    el.forEach((item: any) => {
+      if (item.type === 'object') {
+        item.key = uuidv4();
+        if (item.properties) {
+          item.children = Object.keys(item.properties).map((ite) => ({
+            ...item.properties[ite],
+            name: ite,
+            key: uuidv4(),
+          }));
+          recursion(item.children, deep + 1);
+        }
+      }
+      if (item.type === 'array') {
+        item.key = uuidv4();
+        if (item.items) {
+          item.items.name = '';
+          item.items.key = uuidv4();
+          item.children = [item.items];
+        } else {
+          item.children = Object.keys(
+            (typeof item.properties === 'object' && item.properties !== null && !Array.isArray(item.properties))
+              ? item.properties
+              : {}
+          ).map(ite => ({
+            ...(item.properties?.[ite] || {}),
+            name: ite,
+            key: uuidv4()
+          }));
+        }
         recursion(item.children, deep + 1);
       }
-    }
-    if (item.type === 'array') {
-      item.key = uuidv4();
-      if (item.items) {
-        item.items.name = '';
-        item.items.key = uuidv4();
-        item.children = [item.items];
-      } else {
-        item.children = Object.keys(
-          (typeof item.properties === 'object' && item.properties !== null && !Array.isArray(item.properties))
-            ? item.properties
-            : {}
-        ).map(ite => ({
-          ...(item.properties?.[ite] || {}),
-          name: ite,
-          key: uuidv4()
-        }));
-      }
-      recursion(item.children, deep + 1);
-    }
-  });
+    });
+  } catch (error){
+    console.error(error);
+  }
 };

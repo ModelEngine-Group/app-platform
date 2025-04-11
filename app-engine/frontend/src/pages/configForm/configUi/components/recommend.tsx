@@ -15,6 +15,7 @@ const Recommend = (props) => {
   const { updateData, recommendValues, recommendRef, updateRecommendNum } = props;
   const [list, setList] = useState([]);
   const listCrrent = useRef([]);
+  const recommendRender = useRef(false);
 
   const handleDeleteIns = (index) => {
     if (recommendValues.showRecommend) {
@@ -57,7 +58,7 @@ const Recommend = (props) => {
     !recommondEqual(arr, recommendValues.list) && updateData({ ...recommendValues, list: arr });
   }
   useEffect(() => {
-    if (recommendValues.list) {
+    if (recommendValues.list && !recommendRender.current) {
       setList(() => {
         listCrrent.current = JSON.parse(JSON.stringify(recommendValues.list)).map(item => {
           return {
@@ -67,6 +68,7 @@ const Recommend = (props) => {
         })
         return listCrrent.current;
       });
+      recommendRender.current = true;
     };
   }, [props.recommendValues]);
   useEffect(() => {
