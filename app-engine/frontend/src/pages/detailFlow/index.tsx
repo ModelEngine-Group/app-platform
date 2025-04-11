@@ -20,6 +20,9 @@ const FlowDetail = () => {
 
   useEffect(() => {
     getAippDetails();
+    return () => {
+      window.agent = null;
+    }
   }, [])
   // 获取aipp详情
   async function getAippDetails() {

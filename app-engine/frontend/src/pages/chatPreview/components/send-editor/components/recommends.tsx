@@ -97,9 +97,7 @@ const Recommends = (props) => {
     const inspirationItem = findConfigValue(appInfo, 'inspiration');
     setShowRecommend(recommendItem?.showRecommend || false);
     setShowInspiration(inspirationItem?.showInspiration || false);
-    if (!curRecommendList.current?.length) {
-      setRecommendList(recommendItem?.list || []);
-    }
+    setRecommendList(recommendItem?.list || []);
   }, [appInfo]);
 
   useEffect(() => {

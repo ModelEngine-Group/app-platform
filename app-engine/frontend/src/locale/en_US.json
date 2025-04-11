@@ -707,5 +707,6 @@
   "appConfig": "App Configuration",
   "heatMap": "Heatmap",
   "appChatStyle": "App Interface Configuration",
-  "appChatStyleCannotBeEmpty": "App interface configuration cannot be empty"
+  "appChatStyleCannotBeEmpty": "App interface configuration cannot be empty",
+  "deletePluginTips": "Deletion cannot be undone and may cause running applications to become unavailable. Are you sure you want to delete?"
 }

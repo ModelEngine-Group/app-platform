@@ -361,7 +361,7 @@ const ChatPreview = (props) => {
           const receiveData = JSON.parse(msgStr);
           if (receiveData.code) {
             closeConnected();
-            onStop(val.msg || t('conversationFailed'));
+            onStop(value.msg || t('conversationFailed'));
             clearInterval(chatRender.current)
           } else {
             sseReceiveProcess(receiveData);
@@ -583,20 +583,14 @@ const ChatPreview = (props) => {
     }
     if (!runningInstanceId.current) {
       onStop(params.content);
-      clearInterval(chatRender.current);
-      setShowStop(false);
-      dispatch(setReference(false));
-      dispatch(setReferenceList({}));
-      return
+      return;
     };
     setStopLoading(true);
     try {
       const res:any = await stopInstance(tenantId, runningInstanceId.current, terminateParams);
       if (res.code === 0) {
-        setShowStop(false);
         onStop(res.data || terminateParams.content);
         Message({ type: 'success', content: t('conversationTerminated') });
-        closeConnected();
       } else {
         Message({ type: 'error', content: t('terminateFailed') });
       }
