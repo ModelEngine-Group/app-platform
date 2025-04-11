@@ -673,9 +673,9 @@ public interface FlowContextRepo<T> {
     String getTransIdByTrace(String traceId);
 
     /**
-     * 根据 trace 列表删除对应的上下文数据。
+     * 根据链路唯一标识列表删除对应的上下文数据。
      *
-     * @param traceIdList 表示 trace 唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     * @param traceIdList 表示链路唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
      */
     default void deleteByTraceIdList(List<String> traceIdList) {
         throw new WaterflowException(ErrorCodes.FLOW_ENGINE_DATABASE_NOT_SUPPORT, "deleteByTraceIdList");
