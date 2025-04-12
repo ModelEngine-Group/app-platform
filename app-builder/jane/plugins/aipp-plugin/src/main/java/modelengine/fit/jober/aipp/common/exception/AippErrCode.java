@@ -747,6 +747,11 @@ public enum AippErrCode implements ErrorCode, RetCode {
     FORM_RUNNING_FAILED_CAUSE_NOT_EXISTED(90002138, "运行失败，表单不存在或已经被删除。"),
 
     /**
+     * 调用大模型报错，并且透传具体报错信息和错误码。
+     */
+    MODEL_SERVICE_INVOKE_ERROR(90002139, "调用大模型服务失败，{0}。"),
+
+    /**
      * 应用模板不存在。
      */
     TEMPLATE_NOT_FOUND(90003000, "应用模板不存在"),

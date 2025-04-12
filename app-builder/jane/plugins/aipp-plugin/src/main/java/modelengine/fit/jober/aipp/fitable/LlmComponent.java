@@ -29,7 +29,6 @@ import modelengine.fit.jade.aipp.prompt.PromptMessage;
 import modelengine.fit.jade.aipp.prompt.UserAdvice;
 import modelengine.fit.jade.aipp.prompt.repository.PromptBuilderChain;
 import modelengine.fit.jade.waterflow.FlowInstanceService;
-import modelengine.fit.jade.waterflow.FlowInstanceService;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.meta.multiversion.MetaInstanceService;
 import modelengine.fit.jane.meta.multiversion.instance.InstanceDeclarationInfo;
@@ -429,20 +428,8 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
 
     private void doOnAgentError(AippLlmMeta llmMeta, String errorMessage) {
         log.error("versionId {} errorMessage {}", llmMeta.getVersionId(), errorMessage);
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(REGEX_MODEL);
-        java.util.regex.Matcher matcher = pattern.matcher(errorMessage);
-        JoberErrorInfo joberErrorInfo = new JoberErrorInfo(errorMessage);
-        if (!matcher.find()) {
-            joberErrorInfo.setCode(AippErrCode.MODEL_SERVICE_GENERIC_ERROR.getErrorCode());
-        } else {
-            try {
-                int statusCode = Integer.parseInt(matcher.group(1));
-                setErrorCode(joberErrorInfo, statusCode);
-            } catch (NumberFormatException e) {
-                log.error("Failed to call the large model service.");
-                joberErrorInfo.setCode(AippErrCode.MODEL_SERVICE_GENERIC_ERROR.getErrorCode());
-            }
-        }
+        JoberErrorInfo joberErrorInfo = new JoberErrorInfo(errorMessage,
+                AippErrCode.MODEL_SERVICE_INVOKE_ERROR.getErrorCode(), errorMessage);
         this.failLlmComponentNode(llmMeta, joberErrorInfo);
     }
 
