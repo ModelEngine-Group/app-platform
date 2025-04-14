@@ -16,6 +16,7 @@ import modelengine.jade.carver.tool.annotation.Attribute;
 import modelengine.jade.carver.tool.annotation.Group;
 import modelengine.jade.carver.tool.annotation.ToolMethod;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,8 +38,8 @@ public class UserModelPluginRepoImpl implements UserModelPluginRepo {
     /**
      * 构造方法。
      *
-     * @param modelMapper       模型信息表的 MyBatis 映射接口，用于处理模型增删查改。
-     * @param userModelMapper   用户与模型绑定关系的 MyBatis 映射接口，用于管理用户模型映射数据。
+     * @param modelMapper 表示模型信息表的 MyBatis 映射接口 {@link ModelMapper}，用于处理模型的增删查改操作。
+     * @param userModelMapper 表示用户与模型绑定关系的 MyBatis 映射接口 {@link UserModelMapper}，用于管理用户模型映射数据。
      */
     public UserModelPluginRepoImpl(ModelMapper modelMapper, UserModelMapper userModelMapper) {
         this.modelMapper = modelMapper;
@@ -73,14 +74,12 @@ public class UserModelPluginRepoImpl implements UserModelPluginRepo {
                 ));
         return userModelPos.stream().map(userModel -> {
             ModelPo model = modelMap.get(userModel.getModelId());
-            return new UserModelDetailPo(
-                    userModel.getCreatedAt(),
+            return new UserModelDetailPo(userModel.getCreatedAt(),
                     userModel.getModelId(),
                     userModel.getUserId(),
                     model != null ? model.getName() : null,
                     model != null ? model.getBaseUrl() : null,
-                    userModel.getIsDefault()
-            );
+                    userModel.getIsDefault());
         }).collect(Collectors.toList());
     }
 
@@ -90,8 +89,7 @@ public class UserModelPluginRepoImpl implements UserModelPluginRepo {
             @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "MODEL")
     })
     @Property(description = "为用户添加可用的模型信息")
-    public String addUserModel(String userId, String apiKey,
-                               String modelName, String baseUrl) {
+    public String addUserModel(String userId, String apiKey, String modelName, String baseUrl) {
         log.info("start add user model for {}.", userId);
         String modelId = UUID.randomUUID().toString().replace("-", "");
         int isDefault = this.userModelMapper.userHasDefaultModel(userId) ? 0 : 1;
@@ -101,7 +99,7 @@ public class UserModelPluginRepoImpl implements UserModelPluginRepo {
         modelPo.setUpdatedBy(userId);
         this.modelMapper.insertModel(modelPo);
 
-        UserModelPo userModelPo = new UserModelPo(userId, modelId, apiKey, isDefault);
+        UserModelPo userModelPo = new UserModelPo(LocalDateTime.now(), userId, modelId, apiKey, isDefault);
         userModelPo.setCreatedBy(userId);
         userModelPo.setUpdatedBy(userId);
         this.userModelMapper.addUserModel(userModelPo);
@@ -141,7 +139,8 @@ public class UserModelPluginRepoImpl implements UserModelPluginRepo {
                     .max(Comparator.comparing(UserModelPo::getCreatedAt))
                     .orElse(null);
             this.userModelMapper.switchDefaultForUser(userId, latest.getModelId());
-            return String.format("删除默认模型成功，添加%s为默认模型。", this.modelMapper.get(latest.getModelId()).getName());
+            return String.format("删除默认模型成功，添加%s为默认模型。",
+                    this.modelMapper.get(latest.getModelId()).getName());
         }
         return "删除模型成功，当前无默认模型。";
     }

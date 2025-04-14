@@ -3,6 +3,7 @@
 <mapper namespace="modelengine.fit.jade.aipp.model.mapper.UserModelMapper">
     <resultMap id="BaseResultMap" type="modelengine.fit.jade.aipp.model.po.UserModelPo">
         <id property="id" column="id"/>
+        <result property="createdAt" column="created_at"/>
         <result property="userId" column="user_id"/>
         <result property="modelId" column="model_id"/>
         <result property="apiKey" column="api_key"/>
@@ -10,7 +11,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        user_id, model_id, api_key, is_default
+        created_at, user_id, model_id, api_key, is_default
     </sql>
 
     <select id="listUserModels" resultType="modelengine.fit.jade.aipp.model.po.UserModelPo" resultMap="BaseResultMap">
@@ -48,11 +49,10 @@
     </delete>
 
     <select id="findLatestUserModel" resultType="modelengine.fit.jade.aipp.model.po.UserModelPo">
-        SELECT user_id, model_id, api_key, is_default
+        SELECT created_at, user_id, model_id, api_key, is_default
         FROM t_app_engine_user_model
         WHERE user_id = #{userId}
-        ORDER BY created_at DESC
-            LIMIT 1
+        ORDER BY created_at DESC LIMIT 1
     </select>
 
     <update id="switchDefaultForUser" parameterType="map">

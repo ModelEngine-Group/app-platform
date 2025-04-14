@@ -14,21 +14,42 @@ import modelengine.jade.common.po.BasePo;
 import java.time.LocalDateTime;
 
 /**
- * 用户模型关系信息 ORM 对象。
+ * 用户模型关系信息用于前端表单展示。
  *
- * @author lixin
- * @since 2025/3/11
+ * @author lizhichao
+ * @since 2025/4/8
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class UserModelPo extends BasePo {
+public class UserModelDetailPo extends BasePo {
     /**
      * 表示创建时间。
      */
     private LocalDateTime createdAt;
-    private String userId;
+
+    /**
+     * 模型 ID。
+     */
     private String modelId;
-    private String apiKey;
+
+    /**
+     * 用户标识。
+     */
+    private String userId;
+
+    /**
+     * 模型名称。
+     */
+    private String modelName;
+
+    /**
+     * 模型访问地址。
+     */
+    private String baseUrl;
+
+    /**
+     * 是否为默认模型（1表示默认，0表示非默认）。
+     */
     private int isDefault;
 }

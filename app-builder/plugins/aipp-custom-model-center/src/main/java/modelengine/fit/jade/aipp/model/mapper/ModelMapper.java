@@ -7,6 +7,7 @@
 package modelengine.fit.jade.aipp.model.mapper;
 
 import modelengine.fit.jade.aipp.model.po.ModelPo;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -38,14 +39,14 @@ public interface ModelMapper {
     /**
      * 插入模型信息。
      *
-     * @param model 模型对象。
+     * @param model 表示待插入的模型信息 {@link ModelPo}。
      */
     void insertModel(ModelPo model);
 
     /**
      * 根据模型ID删除模型信息。
      *
-     * @param modelId 模型ID。
+     * @param modelId 表示删除模型标识 {@link String}。
      */
     void deleteByModelId(String modelId);
 }
