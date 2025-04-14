@@ -217,8 +217,10 @@ const EditorBtnHome = (props) => {
     dispatch(setUseMemory(checked));
   }
   //点击“新聊天”按钮回调
-  const onClickNewChat = () => {
+  const onClickNewChat = async () => {
     if (isChatRunning()) { return; }
+    const res = await getAppInfo(tenantId, appId);
+    if (res.code !== 0) return;
     dispatch(setChatRunning(false));
     updateChatId(null, storageId)
     dispatch(setChatId(null));
