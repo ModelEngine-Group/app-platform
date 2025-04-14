@@ -1983,6 +1983,7 @@ public class AppBuilderAppServiceImpl
     }
 
     private String[] getFirstModelInfo(OperationContext context) {
+        // TODO: 缩小异常捕获的范围。
         try {
             ModelListDto modelList = this.aippModelCenter.fetchModelList(AippConst.CHAT_MODEL_TYPE, null, context);
             if (modelList != null && modelList.getModels() != null && !modelList.getModels().isEmpty()) {
@@ -1992,6 +1993,7 @@ public class AppBuilderAppServiceImpl
                 return new String[]{StringUtils.EMPTY, StringUtils.EMPTY};
             }
         } catch (Exception e) {
+            log.error("Failed to get first model information.", e);
             return new String[]{StringUtils.EMPTY, StringUtils.EMPTY};
         }
     }
