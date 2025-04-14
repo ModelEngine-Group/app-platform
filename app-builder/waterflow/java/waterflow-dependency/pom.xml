@@ -14,7 +14,7 @@
         <java.version>17</java.version>
 
         <!-- Framework version -->
-        <fit.version>3.5.0-M1</fit.version>
+        <fit.version>3.5.0-SNAPSHOT</fit.version>
         <fel.version>1.0.0-SNAPSHOT</fel.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
         <ohscript.version>0.0.3.6-SNAPSHOT</ohscript.version>
