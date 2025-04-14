@@ -51,7 +51,9 @@ app-engine:
   file:
     upload:
       maxStorageRatio: 0.9
-  expiredDays: 7
+  ttl:
+    businessData: 15
+    nonBusinessData: 1
 elsa:
   endpoint:
   elsaKey:

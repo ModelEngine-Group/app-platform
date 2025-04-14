@@ -16,6 +16,7 @@ import modelengine.fit.jober.aipp.po.MsgInfoPO;
 
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -178,4 +179,10 @@ public interface AippChatMapper {
      */
     List<QueryChatRsp> selectChatByCondition(@Param("condition") Map<String, String> condition,
             @Param("requestParam") QueryChatInfoRequest queryChatInfoRequest);
+
+    List<String> getExpiredChatIds(LocalDateTime expiredDays, int limit);
+
+    void forceDeleteChat(List<String> chatIds);
+
+    void deleteWideRelationshipByChatIds(List<String> chatIds);
 }

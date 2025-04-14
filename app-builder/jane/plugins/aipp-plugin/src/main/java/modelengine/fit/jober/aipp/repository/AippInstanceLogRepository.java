@@ -26,6 +26,8 @@ public interface AippInstanceLogRepository {
      */
     List<Long> getExpirePreviewInstanceLogs(int expiredDays, int limit);
 
+    List<Long> getExpireNormalInstanceLogs(int expiredDays, int limit);
+
     /**
      * 根据日志唯一标识列表强制删除历史记录。
      *

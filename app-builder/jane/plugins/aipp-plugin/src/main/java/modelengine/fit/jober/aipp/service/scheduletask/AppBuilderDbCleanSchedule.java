@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.service.scheduletask;
 
+import modelengine.fit.jober.aipp.repository.AippChatRepository;
 import modelengine.fit.jober.aipp.repository.AippInstanceLogRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
 import modelengine.fitframework.annotation.Component;
@@ -27,17 +28,24 @@ public class AppBuilderDbCleanSchedule {
 
     private static final int LIMIT = 1000;
 
-    private final int expiredDays;
+    private final int nonBusinessDataTtl;
+
+    private final int businessDataTtl;
 
     private final AippInstanceLogRepository instanceLogRepo;
 
     private final AppBuilderRuntimeInfoRepository runtimeInfoRepo;
 
-    public AppBuilderDbCleanSchedule(@Value("${app-engine.expiredDays}") int expiredDays, AippInstanceLogRepository
-            instanceLogRepo, AppBuilderRuntimeInfoRepository runtimeInfoRepo) {
-        this.expiredDays = expiredDays;
+    private final AippChatRepository chatRepo;
+
+    public AppBuilderDbCleanSchedule(@Value("${app-engine.ttl.nonBusinessData}") int nonBusinessDataTtl,
+            @Value("${app-engine.ttl.businessData}") int businessDataTtl, AippInstanceLogRepository instanceLogRepo,
+            AppBuilderRuntimeInfoRepository runtimeInfoRepo, AippChatRepository chatRepo) {
+        this.nonBusinessDataTtl = nonBusinessDataTtl;
+        this.businessDataTtl = businessDataTtl;
         this.instanceLogRepo = instanceLogRepo;
         this.runtimeInfoRepo = runtimeInfoRepo;
+        this.chatRepo = chatRepo;
     }
 
     /**
@@ -47,13 +55,48 @@ public class AppBuilderDbCleanSchedule {
     public void appBuilderDbCleanSchedule() {
         aippInstanceLogCleaner();
         appBuilderRuntimeInfoCleaner();
+        businessDataCleaner();
+    }
+
+    private void businessDataCleaner() {
+        // todo 备份超期的sql文件
+        aippInstanceLogCleaner();
+        chatSessionCleaner();
+    }
+
+    private void chatSessionCleaner() {
+        try {
+            while (true) {
+                List<String> expiredChatIds = chatRepo.getExpiredChatIds(businessDataTtl, LIMIT);
+                if (expiredChatIds.isEmpty()) {
+                    break;
+                }
+                chatRepo.forceDeleteChat(expiredChatIds);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while business data cleaner, exception:.", e);
+        }
+    }
+
+    private void aippInstanceNormalLogCleaner() {
+        try {
+            while (true) {
+                List<Long> instanceLogIds = instanceLogRepo.getExpireNormalInstanceLogs(businessDataTtl, LIMIT);
+                if (instanceLogIds.isEmpty()) {
+                    break;
+                }
+                instanceLogRepo.forceDeleteInstanceLogs(instanceLogIds);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while business data cleaner, exception:.", e);
+        }
     }
 
     private void aippInstanceLogCleaner() {
         log.info("Start cleaning aipp instance logs");
         try {
             while (true) {
-                List<Long> instanceLogIds = instanceLogRepo.getExpirePreviewInstanceLogs(expiredDays, LIMIT);
+                List<Long> instanceLogIds = instanceLogRepo.getExpirePreviewInstanceLogs(nonBusinessDataTtl, LIMIT);
                 if (instanceLogIds.isEmpty()) {
                     break;
                 }
@@ -69,7 +112,7 @@ public class AppBuilderDbCleanSchedule {
         log.info("Start cleaning app builder runtime infos");
         try {
             while (true) {
-                List<Long> expiredRuntimeInfoIds = runtimeInfoRepo.getExpiredRuntimeInfos(expiredDays, LIMIT);
+                List<Long> expiredRuntimeInfoIds = runtimeInfoRepo.getExpiredRuntimeInfos(nonBusinessDataTtl, LIMIT);
                 if (expiredRuntimeInfoIds.isEmpty()) {
                     break;
                 }

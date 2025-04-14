@@ -220,4 +220,32 @@
         order by update_at desc
         offset #{requestParam.offset} limit #{requestParam.limit}
     </select>
+
+    <select id="getExpiredChatIds" resultType="string">
+        SELECT
+            chat_id
+        FROM
+            t_chat_session
+        WHERE
+            create_at &lt; #{expiredDays}
+        LIMIT #{limit};
+    </select>
+
+    <delete id="forceDeleteChat">
+        DELETE FROM
+        t_chat_session
+        where chat_id in
+        <foreach collection="chatIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteWideRelationshipByChatIds">
+        DELETE FROM
+        t_chat_session_task_instance_wide_relationship
+        where chat_id in
+        <foreach collection="chatIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

@@ -6,43 +6,41 @@
 
 package modelengine.fit.jober.aipp.repository.impl;
 
-import modelengine.fit.jober.aipp.mapper.AippLogMapper;
-import modelengine.fit.jober.aipp.repository.AippInstanceLogRepository;
+import modelengine.fit.jober.aipp.mapper.AippChatMapper;
+import modelengine.fit.jober.aipp.repository.AippChatRepository;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.transaction.Transactional;
 import modelengine.fitframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * {@link AippInstanceLogRepository}对应实现类。
+ * {@link AippChatRepository}对应实现类。
  *
  * @author 杨祥宇
  * @since 2025-04-09
  */
 @Component
-public class AippInstanceLogRepositoryImpl implements AippInstanceLogRepository {
-    private final AippLogMapper aippLogMapper;
+public class AippChatRepositoryImpl implements AippChatRepository {
+    private final AippChatMapper aippChatMapper;
 
-    public AippInstanceLogRepositoryImpl(AippLogMapper aippLogMapper) {this.aippLogMapper = aippLogMapper;}
+    public AippChatRepositoryImpl(AippChatMapper aippChatMapper) {this.aippChatMapper = aippChatMapper;}
 
     @Override
-    public List<Long> getExpirePreviewInstanceLogs(int expiredDays, int limit) {
+    public List<String> getExpiredChatIds(int expiredDays, int limit) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expired = now.minusDays(expiredDays);
-        return aippLogMapper.getExpirePreviewInstanceLogs(expired, limit);
+        return aippChatMapper.getExpiredChatIds(expired, limit);
     }
 
     @Override
-    public List<Long> getExpireNormalInstanceLogs(int expiredDays, int limit) {
-        return List.of();
-    }
-
-    @Override
-    public void forceDeleteInstanceLogs(List<Long> logIds) {
-        if (CollectionUtils.isEmpty(logIds)) {
+    @Transactional
+    public void forceDeleteChat(List<String> chatIds) {
+        if (CollectionUtils.isEmpty(chatIds)) {
             return;
         }
-        aippLogMapper.forceDeleteInstanceLogsByIds(logIds);
+        aippChatMapper.forceDeleteChat(chatIds);
+        aippChatMapper.deleteWideRelationshipByChatIds(chatIds);
     }
 }
