@@ -58,7 +58,9 @@ body {
   margin: 0 !important;
   font-size: 14px;
   font-variant: tabular-nums;
-  * {
+  .ant-model-root,
+  .layout-container,
+  .ant-drawer {
     font-family: 'HarmonyOS Sans SC', 微软雅黑, Arial !important;
   }
   line-height: 1.5;

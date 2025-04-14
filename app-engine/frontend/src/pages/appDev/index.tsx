@@ -339,6 +339,7 @@ const AppDev: React.FC = () => {
         okButtonProps={{ loading }}
         okText={t('ok')}
         cancelText={t('cancel')}
+        destroyOnClose
       >
         <p>{t('deleteAppModalAlert')}</p>
       </Modal>
