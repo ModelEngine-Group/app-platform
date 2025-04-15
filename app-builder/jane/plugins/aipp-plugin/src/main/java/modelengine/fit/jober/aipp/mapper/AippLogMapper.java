@@ -204,12 +204,14 @@ public interface AippLogMapper {
      * @param limit 表示查询条数的 {@code int}。
      * @return 表示历史会话记录的id列表的 {@link List}{@code <}{@link Long}{@code >}。
      */
-    List<Long> getExpirePreviewInstanceLogs(LocalDateTime expiredDays, int limit);
+    List<Long> getExpireInstanceLogIds(String aippType, LocalDateTime expiredDays, int limit);
 
     /**
      * 根据实例id列表强制删除会话记录。
      *
-     * @param instanceIds 表示会话实例id列表的 {@link List}{@code <}{@link Long}{@code >}。
+     * @param logIds 表示会话实例id列表的 {@link List}{@code <}{@link Long}{@code >}。
      */
-    void forceDeleteInstanceLogsByIds(List<Long> instanceIds);
+    void forceDeleteInstanceLogsByIds(List<Long> logIds);
+
+    List<AippInstLog> selectByLogIds(@Param("logIds") List<Long> logIds);
 }

@@ -221,6 +221,11 @@
             <groupId>modelengine.jade.service</groupId>
             <artifactId>waterflow-appfactory-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.7.1</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>

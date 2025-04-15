@@ -15,6 +15,28 @@
         <result column="log_data" property="logData"/>
     </resultMap>
 
+    <resultMap id="chatSessionResultMap" type="modelengine.fit.jober.aipp.entity.ChatInfo">
+        <result column="chat_id" property="chatId"/>
+        <result column="app_id" property="appId"/>
+        <result column="app_version" property="version"/>
+        <result column="name" property="chatName"/>
+        <result column="attributes" property="attributes"/>
+        <result column="create_at" property="createTime"/>
+        <result column="create_by" property="creator"/>
+        <result column="update_at" property="updateTime"/>
+        <result column="update_by" property="updater"/>
+    </resultMap>
+
+    <resultMap id="chatSessionTaskInstanceRelation" type="modelengine.fit.jober.aipp.entity.ChatAndInstanceMap">
+        <result column="msg_id" property="msgId"/>
+        <result column="chat_id" property="chatId"/>
+        <result column="task_instance_wide_id" property="instanceId"/>
+        <result column="create_at" property="createTime"/>
+        <result column="create_by" property="creator"/>
+        <result column="update_at" property="updateTime"/>
+        <result column="update_by" property="updater"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
         chat_id, app_id, app_version, name, attributes, create_at, create_by, update_at, update_by, status
     </sql>
@@ -248,4 +270,25 @@
             #{item}
         </foreach>
     </delete>
+
+    <select id="selectByChatIds" resultMap="chatSessionResultMap"
+            resultType="modelengine.fit.jober.aipp.entity.ChatInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from t_chat_session
+        where chat_id in
+        <foreach collection="chatIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectTaskInstanceRelationsByChatIds" resultMap="chatSessionTaskInstanceRelation"
+            resultType="modelengine.fit.jober.aipp.entity.ChatAndInstanceMap">
+        select *
+        from t_chat_session_task_instance_wide_relationship
+        where chat_id in
+        <foreach collection="chatIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

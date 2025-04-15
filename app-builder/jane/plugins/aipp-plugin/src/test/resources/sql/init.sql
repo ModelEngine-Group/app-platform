@@ -167,3 +167,16 @@ create table if not exists app_builder_runtime_info
     update_by          varchar(64),
     update_at          timestamp    not null default current_timestamp
 );
+
+CREATE TABLE IF NOT EXISTS t_chat_session (
+    chat_id     VARCHAR(32)   NOT NULL DEFAULT NULL,
+    app_id      VARCHAR(32)   NULL     DEFAULT NULL,
+    app_version VARCHAR(32)   NULL     DEFAULT NULL,
+    name        VARCHAR(2000) NULL     DEFAULT NULL,
+    attributes  JSON          NULL     DEFAULT NULL,
+    create_at   TIMESTAMP(6)  NULL     DEFAULT NULL,
+    create_by   VARCHAR(32)   NULL     DEFAULT NULL,
+    update_at   TIMESTAMP(6)  NULL     DEFAULT NULL,
+    update_by   VARCHAR(32)   NULL     DEFAULT NULL,
+    status      INT4          NULL     DEFAULT NULL
+);

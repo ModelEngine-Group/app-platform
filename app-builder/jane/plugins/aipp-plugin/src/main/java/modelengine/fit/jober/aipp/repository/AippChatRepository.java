@@ -6,7 +6,9 @@
 
 package modelengine.fit.jober.aipp.repository;
 
-import java.time.LocalDateTime;
+import modelengine.fit.jober.aipp.entity.ChatAndInstanceMap;
+import modelengine.fit.jober.aipp.entity.ChatInfo;
+
 import java.util.List;
 
 /**
@@ -16,7 +18,25 @@ import java.util.List;
  * @since 2025-04-09
  */
 public interface AippChatRepository {
+    /**
+     * 插入会话信息.
+     *
+     * @param info 会话信息
+     */
+    void insertChat(ChatInfo info);
+
+    /**
+     * 插入关系宽表
+     *
+     * @param info 会话信息
+     */
+    void insertWideRelationship(ChatAndInstanceMap info);
+
     List<String> getExpiredChatIds(int expiredDays, int limit);
 
     void forceDeleteChat(List<String> chatIds);
+
+    List<ChatInfo> selectByChatIds(List<String> chatIds);
+
+    List<ChatAndInstanceMap> selectTaskInstanceRelationsByChatIds(List<String> chatIds);
 }

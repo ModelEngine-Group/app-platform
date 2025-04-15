@@ -185,4 +185,8 @@ public interface AippChatMapper {
     void forceDeleteChat(List<String> chatIds);
 
     void deleteWideRelationshipByChatIds(List<String> chatIds);
+
+    List<ChatInfo> selectByChatIds(@Param("chatIds") List<String> chatIds);
+
+    List<ChatAndInstanceMap> selectTaskInstanceRelationsByChatIds(@Param("chatIds") List<String> chatIds);
 }

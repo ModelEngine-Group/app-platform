@@ -6,7 +6,7 @@
 
 package modelengine.fit.jober.aipp.repository;
 
-import org.apache.ibatis.annotations.Param;
+import modelengine.fit.jober.aipp.entity.AippInstLog;
 
 import java.util.List;
 
@@ -24,14 +24,14 @@ public interface AippInstanceLogRepository {
      * @param limit 表示查询条数的 {@code int}。
      * @return 表示超期历史记录id的 {@link List}{@code <}{@link Long}{@code >}。
      */
-    List<Long> getExpirePreviewInstanceLogs(int expiredDays, int limit);
-
-    List<Long> getExpireNormalInstanceLogs(int expiredDays, int limit);
+    List<Long> getExpireInstanceLogIds(String aippType, int expiredDays, int limit);
 
     /**
      * 根据日志唯一标识列表强制删除历史记录。
      *
      * @param logIds 表示历史记录的唯一标识列表的 {@link List}{@code <}{@link Long}{@code >}。
      */
-    void forceDeleteInstanceLogs(@Param("logIds") List<Long> logIds);
+    void forceDeleteInstanceLogs(List<Long> logIds);
+
+    List<AippInstLog> selectByLogIds(List<Long> logIds);
 }

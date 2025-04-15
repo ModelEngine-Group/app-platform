@@ -6,15 +6,10 @@
 
 package modelengine.fit.jober.aipp.service.scheduletask;
 
-import modelengine.fit.jober.aipp.repository.AippChatRepository;
-import modelengine.fit.jober.aipp.repository.AippInstanceLogRepository;
-import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.schedule.annotation.Scheduled;
-
-import java.util.List;
 
 /**
  * 数据库定时清理数据任务。
@@ -26,26 +21,26 @@ import java.util.List;
 public class AppBuilderDbCleanSchedule {
     private static final Logger log = Logger.get(AppBuilderDbCleanSchedule.class);
 
-    private static final int LIMIT = 1000;
+    public static final int LIMIT = 1000;
 
     private final int nonBusinessDataTtl;
 
     private final int businessDataTtl;
 
-    private final AippInstanceLogRepository instanceLogRepo;
+    private final AippInstanceLogCleaner aippInstanceLogCleaner;
 
-    private final AppBuilderRuntimeInfoRepository runtimeInfoRepo;
+    private final ChatSessionCleaner chatSessionCleaner;
 
-    private final AippChatRepository chatRepo;
+    private final AppBuilderRuntimeInfoCleaner appBuilderRuntimeInfoCleaner;
 
     public AppBuilderDbCleanSchedule(@Value("${app-engine.ttl.nonBusinessData}") int nonBusinessDataTtl,
-            @Value("${app-engine.ttl.businessData}") int businessDataTtl, AippInstanceLogRepository instanceLogRepo,
-            AppBuilderRuntimeInfoRepository runtimeInfoRepo, AippChatRepository chatRepo) {
+            @Value("${app-engine.ttl.businessData}") int businessDataTtl, AippInstanceLogCleaner aippInstanceLogCleaner,
+            ChatSessionCleaner chatSessionCleaner, AppBuilderRuntimeInfoCleaner appBuilderRuntimeInfoCleaner) {
         this.nonBusinessDataTtl = nonBusinessDataTtl;
         this.businessDataTtl = businessDataTtl;
-        this.instanceLogRepo = instanceLogRepo;
-        this.runtimeInfoRepo = runtimeInfoRepo;
-        this.chatRepo = chatRepo;
+        this.aippInstanceLogCleaner = aippInstanceLogCleaner;
+        this.chatSessionCleaner = chatSessionCleaner;
+        this.appBuilderRuntimeInfoCleaner = appBuilderRuntimeInfoCleaner;
     }
 
     /**
@@ -53,75 +48,18 @@ public class AppBuilderDbCleanSchedule {
      */
     @Scheduled(strategy = Scheduled.Strategy.CRON, value = "0 0 3 * * ?")
     public void appBuilderDbCleanSchedule() {
-        aippInstanceLogCleaner();
-        appBuilderRuntimeInfoCleaner();
-        businessDataCleaner();
-    }
-
-    private void businessDataCleaner() {
-        // todo 备份超期的sql文件
-        aippInstanceLogCleaner();
-        chatSessionCleaner();
-    }
-
-    private void chatSessionCleaner() {
         try {
-            while (true) {
-                List<String> expiredChatIds = chatRepo.getExpiredChatIds(businessDataTtl, LIMIT);
-                if (expiredChatIds.isEmpty()) {
-                    break;
-                }
-                chatRepo.forceDeleteChat(expiredChatIds);
-            }
-        } catch (Exception e) {
-            log.error("Error occurred while business data cleaner, exception:.", e);
-        }
-    }
+            // 清理非业务数据
+            aippInstanceLogCleaner.cleanAippInstancePreviewLog(nonBusinessDataTtl, LIMIT);
+            appBuilderRuntimeInfoCleaner.appBuilderRuntimeInfoCleaner(nonBusinessDataTtl, LIMIT);
 
-    private void aippInstanceNormalLogCleaner() {
-        try {
-            while (true) {
-                List<Long> instanceLogIds = instanceLogRepo.getExpireNormalInstanceLogs(businessDataTtl, LIMIT);
-                if (instanceLogIds.isEmpty()) {
-                    break;
-                }
-                instanceLogRepo.forceDeleteInstanceLogs(instanceLogIds);
-            }
+            // todo 备份超期的sql文件,需要做成根据类自动转换成String[]
+            // 注意：未来业务相关的表新增字段时，这里的备份文件也要新增字段
+            // 清理业务数据
+            aippInstanceLogCleaner.cleanAippInstanceNormalLog(businessDataTtl, LIMIT);
+            chatSessionCleaner.chatSessionCleaner(businessDataTtl, LIMIT);
         } catch (Exception e) {
-            log.error("Error occurred while business data cleaner, exception:.", e);
+            log.error("App builder Db Clean Error, exception:", e);
         }
-    }
-
-    private void aippInstanceLogCleaner() {
-        log.info("Start cleaning aipp instance logs");
-        try {
-            while (true) {
-                List<Long> instanceLogIds = instanceLogRepo.getExpirePreviewInstanceLogs(nonBusinessDataTtl, LIMIT);
-                if (instanceLogIds.isEmpty()) {
-                    break;
-                }
-                instanceLogRepo.forceDeleteInstanceLogs(instanceLogIds);
-            }
-        } catch (Exception e) {
-            log.error("clean instance logs failed, exception:", e);
-        }
-        log.info("Finish cleaning aipp instance logs");
-    }
-
-    private void appBuilderRuntimeInfoCleaner() {
-        log.info("Start cleaning app builder runtime infos");
-        try {
-            while (true) {
-                List<Long> expiredRuntimeInfoIds = runtimeInfoRepo.getExpiredRuntimeInfos(nonBusinessDataTtl, LIMIT);
-                if (expiredRuntimeInfoIds.isEmpty()) {
-                    break;
-                }
-                runtimeInfoRepo.deleteRuntimeInfos(expiredRuntimeInfoIds);
-
-            }
-        } catch (Exception e) {
-            log.error("cleaning app builder runtime infos failed, exception:", e);
-        }
-        log.info("Finish cleaning app builder runtime infos");
     }
 }

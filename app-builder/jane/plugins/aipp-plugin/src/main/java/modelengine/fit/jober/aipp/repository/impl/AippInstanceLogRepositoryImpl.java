@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.repository.impl;
 
+import modelengine.fit.jober.aipp.entity.AippInstLog;
 import modelengine.fit.jober.aipp.mapper.AippLogMapper;
 import modelengine.fit.jober.aipp.repository.AippInstanceLogRepository;
 import modelengine.fitframework.annotation.Component;
@@ -27,15 +28,10 @@ public class AippInstanceLogRepositoryImpl implements AippInstanceLogRepository 
     public AippInstanceLogRepositoryImpl(AippLogMapper aippLogMapper) {this.aippLogMapper = aippLogMapper;}
 
     @Override
-    public List<Long> getExpirePreviewInstanceLogs(int expiredDays, int limit) {
+    public List<Long> getExpireInstanceLogIds(String aippType, int expiredDays, int limit) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expired = now.minusDays(expiredDays);
-        return aippLogMapper.getExpirePreviewInstanceLogs(expired, limit);
-    }
-
-    @Override
-    public List<Long> getExpireNormalInstanceLogs(int expiredDays, int limit) {
-        return List.of();
+        return aippLogMapper.getExpireInstanceLogIds(aippType, expired, limit);
     }
 
     @Override
@@ -44,5 +40,10 @@ public class AippInstanceLogRepositoryImpl implements AippInstanceLogRepository 
             return;
         }
         aippLogMapper.forceDeleteInstanceLogsByIds(logIds);
+    }
+
+    @Override
+    public List<AippInstLog> selectByLogIds(List<Long> logIds) {
+        return aippLogMapper.selectByLogIds(logIds);
     }
 }

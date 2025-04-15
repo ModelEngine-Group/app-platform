@@ -7,6 +7,7 @@
 package modelengine.fit.jober.aipp.repository.impl;
 
 import modelengine.fit.jober.aipp.dto.aipplog.AippLogCreateDto;
+import modelengine.fit.jober.aipp.entity.AippInstLog;
 import modelengine.fit.jober.aipp.mapper.AippLogMapper;
 import modelengine.fit.jober.aipp.repository.AippInstanceLogRepository;
 import modelengine.fit.jober.aipp.service.DatabaseBaseTest;
@@ -53,7 +54,7 @@ public class AippInstanceLogRepositoryImplTest extends DatabaseBaseTest {
 
         repo.forceDeleteInstanceLogs(Collections.singletonList(1L));
 
-        List<Long> expirePreviewInstanceLogs = repo.getExpirePreviewInstanceLogs(0, 1);
+        List<Long> expirePreviewInstanceLogs = repo.getExpireInstanceLogIds(dto.getAippType(), 0, 1);
 
         Assertions.assertEquals(0, expirePreviewInstanceLogs.size());
     }
@@ -71,8 +72,28 @@ public class AippInstanceLogRepositoryImplTest extends DatabaseBaseTest {
                 .build();
         mapper.insertOne(dto);
 
-        List<Long> expirePreviewInstanceLogs = repo.getExpirePreviewInstanceLogs(0, 1);
+        List<Long> expirePreviewInstanceLogs = repo.getExpireInstanceLogIds(dto.getAippType(), 0, 1);
 
         Assertions.assertEquals(1, expirePreviewInstanceLogs.size());
+    }
+
+    @Test
+    @DisplayName("测试根据对话id成功查询对话详细信息")
+    void testSelectByLogIdSuccess() {
+        AippLogCreateDto dto = AippLogCreateDto.builder()
+                .logId("3")
+                .aippId("3")
+                .aippType("PREVIEW")
+                .instanceId("3")
+                .logData("{}")
+                .logType("QUESTION")
+                .createUserAccount("yyy")
+                .build();
+        mapper.insertOne(dto);
+
+        List<AippInstLog> aippInstLogs = repo.selectByLogIds(Collections.singletonList(3L));
+
+        Assertions.assertEquals(1, aippInstLogs.size());
+        Assertions.assertEquals("3", aippInstLogs.get(0).getInstanceId());
     }
 }

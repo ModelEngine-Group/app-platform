@@ -6,6 +6,8 @@
 
 package modelengine.fit.jober.aipp.repository.impl;
 
+import modelengine.fit.jober.aipp.entity.ChatAndInstanceMap;
+import modelengine.fit.jober.aipp.entity.ChatInfo;
 import modelengine.fit.jober.aipp.mapper.AippChatMapper;
 import modelengine.fit.jober.aipp.repository.AippChatRepository;
 import modelengine.fitframework.annotation.Component;
@@ -13,6 +15,7 @@ import modelengine.fitframework.transaction.Transactional;
 import modelengine.fitframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,6 +29,16 @@ public class AippChatRepositoryImpl implements AippChatRepository {
     private final AippChatMapper aippChatMapper;
 
     public AippChatRepositoryImpl(AippChatMapper aippChatMapper) {this.aippChatMapper = aippChatMapper;}
+
+    @Override
+    public void insertChat(ChatInfo info) {
+        aippChatMapper.insertChat(info);
+    }
+
+    @Override
+    public void insertWideRelationship(ChatAndInstanceMap info) {
+        aippChatMapper.insertWideRelationship(info);
+    }
 
     @Override
     public List<String> getExpiredChatIds(int expiredDays, int limit) {
@@ -42,5 +55,21 @@ public class AippChatRepositoryImpl implements AippChatRepository {
         }
         aippChatMapper.forceDeleteChat(chatIds);
         aippChatMapper.deleteWideRelationshipByChatIds(chatIds);
+    }
+
+    @Override
+    public List<ChatInfo> selectByChatIds(List<String> chatIds) {
+        if (CollectionUtils.isEmpty(chatIds)) {
+            return new ArrayList<>();
+        }
+        return aippChatMapper.selectByChatIds(chatIds);
+    }
+
+    @Override
+    public List<ChatAndInstanceMap> selectTaskInstanceRelationsByChatIds(List<String> chatIds) {
+        if (CollectionUtils.isEmpty(chatIds)) {
+            return new ArrayList<>();
+        }
+        return aippChatMapper.selectTaskInstanceRelationsByChatIds(chatIds);
     }
 }
