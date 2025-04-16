@@ -45,7 +45,7 @@ class CustomAippModelCenterTest {
         ModelPo modelPo = ModelPo.builder()
                 .modelId("id")
                 .name("gpt")
-                .baseUrl("http://xxx")
+                .baseUrl("http://testUrl")
                 .type("type")
                 .tag("tag1")
                 .build();
@@ -73,7 +73,7 @@ class CustomAippModelCenterTest {
         ModelPo modelPo = ModelPo.builder()
                 .modelId("id")
                 .name("gpt")
-                .baseUrl("http://xxx")
+                .baseUrl("http://testUrl")
                 .type(type)
                 .tag("tag1")
                 .build();
@@ -100,7 +100,7 @@ class CustomAippModelCenterTest {
         ModelPo modelPo = ModelPo.builder()
                 .modelId("id")
                 .name("gpt")
-                .baseUrl("http://xxx")
+                .baseUrl("http://testUrl")
                 .type("type")
                 .tag("tag1")
                 .build();
@@ -129,7 +129,7 @@ class CustomAippModelCenterTest {
         ModelPo modelPo = ModelPo.builder()
                 .modelId("id")
                 .name("gpt")
-                .baseUrl("http://xxx")
+                .baseUrl("http://testUrl")
                 .type(type)
                 .tag("tag1")
                 .build();
@@ -153,7 +153,7 @@ class CustomAippModelCenterTest {
         ModelPo modelPo = ModelPo.builder()
                 .modelId("id")
                 .name("gpt")
-                .baseUrl("http://xxx")
+                .baseUrl("http://testUrl")
                 .type("type")
                 .tag("tag1")
                 .build();
@@ -177,7 +177,7 @@ class CustomAippModelCenterTest {
         ModelPo modelPo = ModelPo.builder()
                 .modelId("id")
                 .name("gpt")
-                .baseUrl("http://xxx")
+                .baseUrl("http://testUrl")
                 .type(type)
                 .tag("tag1")
                 .build();
