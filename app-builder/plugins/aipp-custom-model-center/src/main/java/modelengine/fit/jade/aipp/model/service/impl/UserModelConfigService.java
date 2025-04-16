@@ -1,12 +1,17 @@
-package modelengine.fit.jade.aipp.model.repository.impl;
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) 2025 Huawei Technologies Co., Ltd. All rights reserved.
+ *  This file is a part of the ModelEngine Project.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-import modelengine.fit.jade.aipp.model.mapper.ModelMapper;
-import modelengine.fit.jade.aipp.model.mapper.UserModelMapper;
+package modelengine.fit.jade.aipp.model.service.impl;
+
+import modelengine.fit.jade.aipp.model.dto.UserModelDetailDto;
+
 import modelengine.fit.jade.aipp.model.po.ModelPo;
-import modelengine.fit.jade.aipp.model.po.UserModelDetailPo;
 import modelengine.fit.jade.aipp.model.po.UserModelPo;
-import modelengine.fit.jade.aipp.model.repository.UserModelPluginRepo;
 import modelengine.fit.jade.aipp.model.repository.UserModelRepo;
+import modelengine.fit.jade.aipp.model.service.UserModelConfig;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.annotation.Property;
@@ -16,34 +21,30 @@ import modelengine.jade.carver.tool.annotation.Attribute;
 import modelengine.jade.carver.tool.annotation.Group;
 import modelengine.jade.carver.tool.annotation.ToolMethod;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 表示用户模型信息用于插件的持久化层的接口 {@link UserModelRepo} 的实现。
+ * 表示用户模型信息用于插件的持久化层的接口的实现。
  *
- * @author lizhichao
- * @since 2025/4/9
+ * @author 李智超
+ * @since 2025-04-09
  */
 @Component
-@Group(name = "User_Model_Tool_Impl")
-public class UserModelPluginRepoImpl implements UserModelPluginRepo {
-    private static final Logger log = Logger.get(UserModelRepoImpl.class);
-    private static final String FITABLE_ID = "aipp.model.repository";
+@Group(name = "User_Model_Config_Service")
+public class UserModelConfigService implements UserModelConfig {
+    private static final Logger log = Logger.get(UserModelConfig.class);
+    private static final String FITABLE_ID = "aipp.model.service.impl";
     public static final String DEFAULT_MODEL_TYPE = "chat_completions";
-    private final ModelMapper modelMapper;
-    private final UserModelMapper userModelMapper;
+    private final UserModelRepo userModelRepo;
 
     /**
      * 构造方法。
      *
-     * @param modelMapper 表示模型信息表的 MyBatis 映射接口 {@link ModelMapper}，用于处理模型的增删查改操作。
-     * @param userModelMapper 表示用户与模型绑定关系的 MyBatis 映射接口 {@link UserModelMapper}，用于管理用户模型映射数据。
+     * @param userModelRepo 用于访问用户模型数据的仓库接口实例。
      */
-    public UserModelPluginRepoImpl(ModelMapper modelMapper, UserModelMapper userModelMapper) {
-        this.modelMapper = modelMapper;
-        this.userModelMapper = userModelMapper;
+    public UserModelConfigService(UserModelRepo userModelRepo) {
+        this.userModelRepo = userModelRepo;
     }
 
     @Override
@@ -52,34 +53,33 @@ public class UserModelPluginRepoImpl implements UserModelPluginRepo {
             @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "MODEL")
     })
     @Property(description = "返回该用户可用的模型列表")
-    public List<UserModelDetailPo> getUserModelList(String userId) {
+    public List<UserModelDetailDto> getUserModelList(String userId) {
         log.info("start get model list for {}.", userId);
-        List<UserModelPo> userModelPos = this.userModelMapper.listUserModels(userId);
+        List<UserModelPo> userModelPos = this.userModelRepo.listUserModels(userId);
         if (CollectionUtils.isEmpty(userModelPos)) {
             log.warn("No user model records found for userId={}.", userId);
             return Collections.emptyList();
         }
-        List<String> modelIds = userModelPos.stream()
-                .map(UserModelPo::getModelId)
-                .distinct()
-                .collect(Collectors.toList());
-        List<ModelPo> modelPos = this.modelMapper.listModels(modelIds);
+
+        List<String> modelIds =
+                userModelPos.stream().map(UserModelPo::getModelId).distinct().collect(Collectors.toList());
+        List<ModelPo> modelPos = this.userModelRepo.listModels(modelIds);
+
         // 构建 modelId → ModelPo 映射
         Map<String, ModelPo> modelMap = modelPos.stream()
                 .map(model -> Map.entry(model.getModelId(), model))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (a, b) -> a
-                ));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
+
         return userModelPos.stream().map(userModel -> {
             ModelPo model = modelMap.get(userModel.getModelId());
-            return new UserModelDetailPo(userModel.getCreatedAt(),
-                    userModel.getModelId(),
-                    userModel.getUserId(),
-                    model != null ? model.getName() : null,
-                    model != null ? model.getBaseUrl() : null,
-                    userModel.getIsDefault());
+            return UserModelDetailDto.builder()
+                    .createdAt(userModel.getCreatedAt())
+                    .modelId(userModel.getModelId())
+                    .userId(userModel.getUserId())
+                    .modelName(model != null ? model.getName() : null)
+                    .baseUrl(model != null ? model.getBaseUrl() : null)
+                    .isDefault(userModel.getIsDefault())
+                    .build();
         }).collect(Collectors.toList());
     }
 
@@ -92,17 +92,28 @@ public class UserModelPluginRepoImpl implements UserModelPluginRepo {
     public String addUserModel(String userId, String apiKey, String modelName, String baseUrl) {
         log.info("start add user model for {}.", userId);
         String modelId = UUID.randomUUID().toString().replace("-", "");
-        int isDefault = this.userModelMapper.userHasDefaultModel(userId) ? 0 : 1;
+        int isDefault = this.userModelRepo.hasDefaultModel(userId);
 
-        ModelPo modelPo = new ModelPo(modelId, modelName, modelId, baseUrl, DEFAULT_MODEL_TYPE);
-        modelPo.setCreatedBy(userId);
-        modelPo.setUpdatedBy(userId);
-        this.modelMapper.insertModel(modelPo);
+        ModelPo modelPo = ModelPo.builder()
+                .modelId(modelId)
+                .name(modelName)
+                .tag(modelId)
+                .baseUrl(baseUrl)
+                .type(DEFAULT_MODEL_TYPE)
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+        this.userModelRepo.insertModel(modelPo);
 
-        UserModelPo userModelPo = new UserModelPo(LocalDateTime.now(), userId, modelId, apiKey, isDefault);
-        userModelPo.setCreatedBy(userId);
-        userModelPo.setUpdatedBy(userId);
-        this.userModelMapper.addUserModel(userModelPo);
+        UserModelPo userModelPo = UserModelPo.builder()
+                .userId(userId)
+                .modelId(modelId)
+                .apiKey(apiKey)
+                .isDefault(isDefault)
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+        this.userModelRepo.insertUserModel(userModelPo);
         return "添加模型成功。";
     }
 
@@ -114,8 +125,8 @@ public class UserModelPluginRepoImpl implements UserModelPluginRepo {
     @Property(description = "删除用户绑定的模型信息")
     public String deleteUserModel(String userId, String modelId) {
         log.info("start delete user model for {}.", userId);
-        List<UserModelPo> userModels = this.userModelMapper.listUserModels(userId);
-        if (userModels == null || userModels.isEmpty()) {
+        List<UserModelPo> userModels = this.userModelRepo.listUserModels(userId);
+        if (CollectionUtils.isEmpty(userModels)) {
             return "删除模型失败，当前用户没有任何模型记录。";
         }
 
@@ -126,21 +137,24 @@ public class UserModelPluginRepoImpl implements UserModelPluginRepo {
         if (target == null) {
             return "删除模型失败，该模型不属于当前用户。";
         }
-        this.userModelMapper.deleteByModelId(modelId);
-        this.modelMapper.deleteByModelId(modelId);
+        this.userModelRepo.deleteByModelId(modelId);
         // 如果删除的不是默认模型，直接返回
         if (target.getIsDefault() != 1) {
             return "删除模型成功。";
         }
         userModels.remove(target);
         // 如果没有默认模型，但还有其他记录，则设置最新创建的为默认
-        if (!userModels.isEmpty()) {
-            UserModelPo latest = userModels.stream()
+        if (CollectionUtils.isNotEmpty(userModels)) {
+            UserModelPo latestUserModel = userModels.stream()
+                    .filter(m -> m.getCreatedAt() != null)
                     .max(Comparator.comparing(UserModelPo::getCreatedAt))
                     .orElse(null);
-            this.userModelMapper.switchDefaultForUser(userId, latest.getModelId());
-            return String.format("删除默认模型成功，添加%s为默认模型。",
-                    this.modelMapper.get(latest.getModelId()).getName());
+
+            if (latestUserModel != null) {
+                this.userModelRepo.switchDefaultForUser(userId, latestUserModel.getModelId());
+                return String.format("删除默认模型成功，已将%s设为默认模型。",
+                        this.userModelRepo.getModel(latestUserModel.getModelId()).getName());
+            }
         }
         return "删除模型成功，当前无默认模型。";
     }
@@ -153,10 +167,10 @@ public class UserModelPluginRepoImpl implements UserModelPluginRepo {
     @Property(description = "将指定模型设置为用户的默认模型")
     public String switchDefaultModel(String userId, String modelId) {
         log.info("start switch default model for {}.", userId);
-        int rows = this.userModelMapper.switchDefaultForUser(userId, modelId);
+        int rows = this.userModelRepo.switchDefaultForUser(userId, modelId);
         if (rows == 0) {
             return "未查到对应模型。";
         }
-        return String.format("已切换%s为默认模型。", this.modelMapper.get(modelId).getName());
+        return String.format("已切换%s为默认模型。", this.userModelRepo.getModel(modelId).getName());
     }
 }

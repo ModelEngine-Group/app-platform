@@ -37,7 +37,7 @@ public class UserModelRepoImpl implements UserModelRepo {
     }
 
     @Override
-    public List<ModelPo> get(String userId) {
+    public List<ModelPo> getModelList(String userId) {
         return this.getModelPos(this.userModelMapper.listUserModels(userId));
     }
 
@@ -75,6 +75,47 @@ public class UserModelRepoImpl implements UserModelRepo {
         if (defaultModel == null) {
             return null;
         }
-        return this.modelMapper.get(defaultModel.getModelId());
+        return this.modelMapper.getModel(defaultModel.getModelId());
+    }
+
+    @Override
+    public List<UserModelPo> listUserModels(String userId) {
+        return this.userModelMapper.listUserModels(userId);
+    }
+
+    @Override
+    public List<ModelPo> listModels(List<String> modelIds) {
+        return this.modelMapper.listModels(modelIds);
+    }
+
+    @Override
+    public int hasDefaultModel(String userId) {
+        return this.userModelMapper.hasDefaultModel(userId) ? 0 : 1;
+    }
+
+    @Override
+    public void insertModel(ModelPo modelPo) {
+        this.modelMapper.insertModel(modelPo);
+    }
+
+    @Override
+    public void insertUserModel(UserModelPo userModelPo) {
+        this.userModelMapper.insertUserModel(userModelPo);
+    }
+
+    @Override
+    public void deleteByModelId(String modelId) {
+        this.userModelMapper.deleteByModelId(modelId);
+        this.modelMapper.deleteByModelId(modelId);
+    }
+
+    @Override
+    public int switchDefaultForUser(String userId, String modelId) {
+        return this.userModelMapper.switchDefaultForUser(userId, modelId);
+    }
+
+    @Override
+    public ModelPo getModel(String modelId) {
+        return this.modelMapper.getModel(modelId);
     }
 }

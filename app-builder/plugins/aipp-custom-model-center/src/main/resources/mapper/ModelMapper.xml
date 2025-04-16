@@ -14,17 +14,17 @@
         model_id, name, tag, base_url, type
     </sql>
 
-    <select id="get" resultType="modelengine.fit.jade.aipp.model.po.ModelPo" resultMap="BaseResultMap">
-        select
+    <select id="getModel" resultType="modelengine.fit.jade.aipp.model.po.ModelPo" resultMap="BaseResultMap">
+        SELECT
         <include refid="Base_Column_List"/>
-        from t_app_engine_model
-        where model_id = #{modelId}
+        FROM t_app_engine_model
+        WHERE model_id = #{modelId}
     </select>
     <select id="listModels" resultType="modelengine.fit.jade.aipp.model.po.ModelPo"  resultMap="BaseResultMap">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from t_app_engine_model
-        where model_id in
+        FROM t_app_engine_model
+        WHERE model_id in
         <foreach item="item" index="index" collection="modelIds" open="(" separator="," close=")">
             #{item}
         </foreach>

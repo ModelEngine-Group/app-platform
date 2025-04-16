@@ -42,8 +42,14 @@ class CustomAippModelCenterTest {
     @Test
     void shouldGetResultWhenFetchModelListGivenUserModelRepoHasData() {
         String userId = "user1";
-        ModelPo modelPo = new ModelPo("id", "gpt", "tag1", "http://xxx", "type");
-        Mockito.when(this.userModelRepo.get(userId)).thenReturn(Collections.singletonList(modelPo));
+        ModelPo modelPo = ModelPo.builder()
+                .modelId("id")
+                .name("gpt")
+                .baseUrl("http://xxx")
+                .type("type")
+                .tag("tag1")
+                .build();
+        Mockito.when(this.userModelRepo.getModelList(userId)).thenReturn(Collections.singletonList(modelPo));
         OperationContext context = new OperationContext();
         context.setOperator(userId);
 
@@ -64,9 +70,15 @@ class CustomAippModelCenterTest {
         String userId = "user1";
         String type = "type";
         String scene = "scene";
-        ModelPo modelPo = new ModelPo("id", "gpt", "tag1", "http://xxx", type);
+        ModelPo modelPo = ModelPo.builder()
+                .modelId("id")
+                .name("gpt")
+                .baseUrl("http://xxx")
+                .type(type)
+                .tag("tag1")
+                .build();
         ModelAccessInfo model1 = ModelAccessInfo.builder().serviceName("gpt").baseUrl("").tag("").build();
-        Mockito.when(this.userModelRepo.get(userId)).thenReturn(Collections.emptyList());
+        Mockito.when(this.userModelRepo.getModelList(userId)).thenReturn(Collections.emptyList());
         ModelListDto expectModelList = ModelListDto.builder()
                 .models(Collections.singletonList(model1))
                 .total(1)
@@ -85,7 +97,13 @@ class CustomAippModelCenterTest {
     @Test
     void shouldGetResultWhenGetModelAccessInfoGivenUserModelRepoHasData() {
         String userId = "user1";
-        ModelPo modelPo = new ModelPo("id", "gpt", "tag1", "http://xxx", "type");
+        ModelPo modelPo = ModelPo.builder()
+                .modelId("id")
+                .name("gpt")
+                .baseUrl("http://xxx")
+                .type("type")
+                .tag("tag1")
+                .build();
         ModelAccessPo modelAccessPo = ModelAccessPo.builder().modelPO(modelPo).apiKey("key").build();
         Mockito.when(this.userModelRepo.getModelAccessInfo(userId, modelPo.getTag(), modelPo.getName()))
                 .thenReturn(modelAccessPo);
@@ -108,7 +126,13 @@ class CustomAippModelCenterTest {
     void shouldGetDefaultWhenGetModelAccessInfoGivenUserModelRepoNoData() {
         String userId = "user1";
         String type = "type";
-        ModelPo modelPo = new ModelPo("id", "gpt", "tag1", "http://xxx", type);
+        ModelPo modelPo = ModelPo.builder()
+                .modelId("id")
+                .name("gpt")
+                .baseUrl("http://xxx")
+                .type(type)
+                .tag("tag1")
+                .build();
         ModelAccessInfo expectModel = ModelAccessInfo.builder().serviceName("gpt").baseUrl("").tag("").build();
         OperationContext context = new OperationContext();
         context.setOperator(userId);
@@ -126,7 +150,13 @@ class CustomAippModelCenterTest {
     @Test
     void shouldGetResultWhenGetDefaultModelGivenUserModelRepoHasData() {
         String userId = "user1";
-        ModelPo modelPo = new ModelPo("id", "gpt", "tag1", "http://xxx", "type");
+        ModelPo modelPo = ModelPo.builder()
+                .modelId("id")
+                .name("gpt")
+                .baseUrl("http://xxx")
+                .type("type")
+                .tag("tag1")
+                .build();
         Mockito.when(this.userModelRepo.getDefaultModel(userId)).thenReturn(modelPo);
         OperationContext context = new OperationContext();
         context.setOperator(userId);
@@ -144,7 +174,13 @@ class CustomAippModelCenterTest {
     void shouldGetDefaultWhenGetDefaultModelGivenUserModelRepoNoData() {
         String userId = "user1";
         String type = "type";
-        ModelPo modelPo = new ModelPo("id", "gpt", "tag1", "http://xxx", type);
+        ModelPo modelPo = ModelPo.builder()
+                .modelId("id")
+                .name("gpt")
+                .baseUrl("http://xxx")
+                .type(type)
+                .tag("tag1")
+                .build();
         ModelAccessInfo expectModel = ModelAccessInfo.builder().serviceName("gpt").baseUrl("").tag("").build();
         OperationContext context = new OperationContext();
         context.setOperator(userId);

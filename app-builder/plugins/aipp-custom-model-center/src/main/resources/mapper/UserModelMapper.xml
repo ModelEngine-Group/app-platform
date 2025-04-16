@@ -15,21 +15,21 @@
     </sql>
 
     <select id="listUserModels" resultType="modelengine.fit.jade.aipp.model.po.UserModelPo" resultMap="BaseResultMap">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from t_app_engine_user_model
-        where user_id = #{userId}
+        FROM t_app_engine_user_model
+        WHERE user_id = #{userId}
     </select>
 
     <select id="getDefault" resultType="modelengine.fit.jade.aipp.model.po.UserModelPo" resultMap="BaseResultMap">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from t_app_engine_user_model
-        where user_id = #{userId}
-        and is_default = 1
+        FROM t_app_engine_user_model
+        WHERE user_id = #{userId}
+        AND is_default = 1
     </select>
 
-    <select id="userHasDefaultModel" resultType="boolean">
+    <select id="hasDefaultModel" resultType="boolean">
         SELECT EXISTS (
             SELECT 1
             FROM t_app_engine_user_model
@@ -38,7 +38,7 @@
         )
     </select>
 
-    <insert id="addUserModel" parameterType="modelengine.fit.jade.aipp.model.po.UserModelPo">
+    <insert id="insertUserModel" parameterType="modelengine.fit.jade.aipp.model.po.UserModelPo">
         INSERT INTO t_app_engine_user_model (user_id, model_id, api_key, is_default, created_by, updated_by)
         VALUES (#{userId}, #{modelId}, #{apiKey}, #{isDefault}, #{createdBy}, #{updatedBy})
     </insert>
