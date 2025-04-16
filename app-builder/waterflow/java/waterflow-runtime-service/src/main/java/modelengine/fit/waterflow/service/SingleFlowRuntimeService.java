@@ -6,7 +6,7 @@
 
 package modelengine.fit.waterflow.service;
 
-import modelengine.fit.jade.waterflow.entity.OperationContext;
+import modelengine.fit.waterflow.entity.OperationContext;
 import modelengine.fit.waterflow.entity.FlowStartDTO;
 import modelengine.fit.waterflow.entity.FlowStartInfo;
 import modelengine.fit.waterflow.entity.FlowStartParameter;

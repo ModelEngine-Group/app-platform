@@ -6,8 +6,8 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.context;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_EXECUTE_FITABLE_TASK_FAILED;
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_EXECUTE_FITABLE_TASK_FAILED;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
 import static modelengine.fit.waterflow.flowsengine.domain.flows.FlowsTestUtil.MAX_WAIT_TIME_MS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -24,8 +24,8 @@ import static org.mockito.Mockito.when;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.ohscript.util.UUIDUtil;
 import modelengine.fit.waterflow.DatabaseBaseTest;
 import modelengine.fit.waterflow.FlowsDataBaseTest;

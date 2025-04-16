@@ -11,12 +11,12 @@
     <modules>
         <module>waterflow-common</module>
         <module>waterflow-runtime-service</module>
-        <module>waterflow-core</module>
+<!--        <module>waterflow-core</module>-->
         <module>waterflow-dependency</module>
         <module>waterflow-service</module>
-        <module>waterflow-domain-definition</module>
+<!--        <module>waterflow-domain-definition</module>-->
         <module>waterflow-definition-service</module>
-        <module>waterflow-eco</module>
+<!--        <module>waterflow-eco</module>-->
     </modules>
 
     <properties>

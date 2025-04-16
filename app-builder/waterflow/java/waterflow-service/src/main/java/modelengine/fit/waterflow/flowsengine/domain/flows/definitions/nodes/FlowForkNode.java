@@ -7,7 +7,7 @@
 package modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes;
 
 import lombok.Getter;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowContext;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowcontext.FlowContextMessenger;
@@ -19,7 +19,7 @@ import modelengine.fitframework.log.Logger;
 
 import java.util.Optional;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_NODE_OPERATOR_NOT_SUPPORT;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_NODE_OPERATOR_NOT_SUPPORT;
 
 /**
  * 流程定义结束节点核心类

@@ -6,7 +6,7 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.streams;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.ohscript.util.UUIDUtil;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowContext;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;
@@ -45,8 +45,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_ENGINE_INVALID_MANUAL_TASK;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_ENGINE_INVALID_NODE_ID;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_ENGINE_INVALID_MANUAL_TASK;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_ENGINE_INVALID_NODE_ID;
 
 /**
  * 数据发送者

@@ -6,9 +6,9 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.definitions;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.ENTITY_NOT_FOUND;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_FIND_TO_NODE_BY_EVENT_FAILED;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_HAS_NO_START_NODE;
+import static modelengine.fit.waterflow.ErrorCodes.ENTITY_NOT_FOUND;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_FIND_TO_NODE_BY_EVENT_FAILED;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_HAS_NO_START_NODE;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowcontext.FlowContextMessenger;

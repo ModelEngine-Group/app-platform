@@ -6,11 +6,11 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_NODE_OPERATOR_NOT_SUPPORT;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_NODE_OPERATOR_NOT_SUPPORT;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
 import lombok.Getter;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowContext;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;

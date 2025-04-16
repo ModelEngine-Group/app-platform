@@ -8,8 +8,8 @@ package modelengine.fit.waterflow;
 
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
-import modelengine.fit.jade.waterflow.utils.Dates;
-import modelengine.fit.jade.waterflow.utils.Entities;
+import modelengine.fit.waterflow.utils.Dates;
+import modelengine.fit.waterflow.utils.Entities;
 import org.mockito.ArgumentMatcher;
 
 import java.time.LocalDateTime;

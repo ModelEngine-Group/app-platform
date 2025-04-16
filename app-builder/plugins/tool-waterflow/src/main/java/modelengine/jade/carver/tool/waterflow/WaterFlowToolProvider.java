@@ -6,11 +6,7 @@
 
 package modelengine.jade.carver.tool.waterflow;
 
-import modelengine.fel.core.chat.support.FlatChatMessage;
-import modelengine.fel.core.chat.support.ToolMessage;
 import modelengine.fel.core.tool.ToolCall;
-import modelengine.fel.core.tool.ToolInfo;
-import modelengine.fel.core.tool.ToolProvider;
 import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fit.jade.tool.SyncToolCall;
 import modelengine.fit.jober.aipp.constants.AippConst;
@@ -26,17 +22,16 @@ import modelengine.jade.store.service.ToolService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
- * 表示 {@link ToolProvider} 的默认实现。
+ * 表示 {@link SyncToolCall} 的实现。
  *
  * @author 刘信宏
  * @since 2024-4-17
  */
 @Component
-public class WaterFlowToolProvider implements ToolProvider, SyncToolCall {
+public class WaterFlowToolProvider implements SyncToolCall {
+    private static final String DEFAULT_USER_ID = "jade";
     private final ToolService toolService;
     private static final Logger logger = Logger.get(WaterFlowToolProvider.class);
     private final List<ToolInvoker> toolInvokers;
@@ -54,20 +49,18 @@ public class WaterFlowToolProvider implements ToolProvider, SyncToolCall {
 
     @Override
     @Fitable(id = "app-factory")
-    public FlatChatMessage call(ToolCall toolCall, Map<String, Object> toolContext) {
+    public String call(String uniqueName, String toolArgs, Map<String, Object> toolContext) {
+        ToolCall toolCall = ToolCall.custom()
+                .id(UuidUtils.randomUuidString())
+                .name(uniqueName)
+                .index(0)
+                .arguments(toolArgs)
+                .build();
         ToolInvoker toolInvoker = this.getToolInvoker(toolCall.name());
-        logger.warn("toolName:{}, toolArgs:{}.", toolCall.name(), toolCall.arguments());
-        return FlatChatMessage.from(new ToolMessage(toolCall.id(), toolInvoker.invoke(toolCall, toolContext)));
-    }
-
-    @Override
-    @Fitable(id = "app-factory")
-    public List<ToolInfo> getTool(List<String> uniqueNames) {
-        return uniqueNames.stream()
-                .map(this.toolService::getTool)
-                .filter(Objects::nonNull)
-                .map(toolData -> this.getToolInvoker(toolData).getToolInfo(toolData))
-                .collect(Collectors.toList());
+        return toolInvoker.invoke(toolCall,
+                (toolContext == null || toolContext.isEmpty()) ? MapBuilder.<String, Object>get()
+                        .put(AippConst.CONTEXT_USER_ID, DEFAULT_USER_ID)
+                        .build() : toolContext);
     }
 
     private ToolInvoker getToolInvoker(String uniqueName) {
@@ -83,20 +76,5 @@ public class WaterFlowToolProvider implements ToolProvider, SyncToolCall {
                         .findAny()
                         .orElse(null),
                 StringUtils.format("Cannot find tool invoker. [uniqueName={0}]", toolData.getUniqueName()));
-    }
-
-    @Override
-    @Fitable(id = "app-factory")
-    public String call(String uniqueName, String toolArgs) {
-        ToolCall toolCall = ToolCall.custom()
-                .id(UuidUtils.randomUuidString())
-                .name(uniqueName)
-                .index(0)
-                .arguments(toolArgs)
-                .build();
-        ToolInvoker toolInvoker = this.getToolInvoker(toolCall.name());
-        Map<String, Object> toolContext =
-                MapBuilder.<String, Object>get().put(AippConst.CONTEXT_USER_ID, "jade").build();
-        return toolInvoker.invoke(toolCall, toolContext);
     }
 }

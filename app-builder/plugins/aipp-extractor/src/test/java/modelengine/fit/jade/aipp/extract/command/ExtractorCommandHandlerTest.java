@@ -14,7 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import modelengine.fel.core.chat.ChatOption;
-import modelengine.fel.core.memory.CacheMemory;
+import modelengine.fel.core.memory.support.CacheMemory;
 import modelengine.fit.jade.aipp.extract.command.impl.ExtractCommandHandlerImpl;
 import modelengine.fit.jade.aipp.extract.domain.entity.ContentExtractor;
 import modelengine.fit.jade.aipp.extract.util.TestUtils;

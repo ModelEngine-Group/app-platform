@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import modelengine.fit.jade.waterflow.ErrorCodes;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.ErrorCodes;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;
 import modelengine.fit.waterflow.spi.FlowableService;
 import modelengine.fitframework.broker.client.BrokerClient;

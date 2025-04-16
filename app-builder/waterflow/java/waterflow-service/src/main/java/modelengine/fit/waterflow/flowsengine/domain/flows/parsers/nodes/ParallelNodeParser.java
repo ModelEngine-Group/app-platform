@@ -6,9 +6,9 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.parsers.nodes;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_ENGINE_PARSER_NOT_SUPPORT;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_ENGINE_PARSER_NOT_SUPPORT;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.FlowNode;
 import modelengine.fit.waterflow.flowsengine.domain.flows.parsers.FlowGraphData;
 

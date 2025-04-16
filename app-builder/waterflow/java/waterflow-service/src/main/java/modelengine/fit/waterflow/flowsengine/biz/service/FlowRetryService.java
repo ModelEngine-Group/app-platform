@@ -6,7 +6,7 @@
 
 package modelengine.fit.waterflow.flowsengine.biz.service;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.common.utils.SleepUtil;
 import modelengine.fit.waterflow.flowsengine.biz.service.cache.FlowDefinitionQueryService;
 import modelengine.fit.waterflow.flowsengine.biz.service.cache.FlowQueryService;
@@ -41,8 +41,8 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_NODE_MAX_TASK;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_RETRY_JOBER_UPDATE_DATABASE_FAILED;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_NODE_MAX_TASK;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_RETRY_JOBER_UPDATE_DATABASE_FAILED;
 import static modelengine.fit.waterflow.common.Constant.STREAM_ID_SEPARATOR;
 import static modelengine.fit.waterflow.common.Constant.TO_BATCH_KEY;
 import static modelengine.fit.waterflow.flowsengine.domain.flows.enums.ProcessType.PROCESS;

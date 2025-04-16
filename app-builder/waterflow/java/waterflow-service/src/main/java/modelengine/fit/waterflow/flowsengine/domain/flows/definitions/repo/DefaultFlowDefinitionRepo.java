@@ -11,7 +11,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import lombok.RequiredArgsConstructor;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.ohscript.util.UUIDUtil;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.FlowDefinition;
@@ -33,8 +33,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.ENTITY_NOT_FOUND;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_ALREADY_EXIST;
+import static modelengine.fit.waterflow.ErrorCodes.ENTITY_NOT_FOUND;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_ALREADY_EXIST;
 
 /**
  * DefaultFlowDefinitionRepo

@@ -102,7 +102,7 @@
         </dependency>
 
         <dependency>
-            <groupId>modelengine.fit.jade.fel</groupId>
+            <groupId>org.fitframework.fel</groupId>
             <artifactId>fel-flow</artifactId>
         </dependency>
         <dependency>
@@ -262,6 +262,10 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>2.9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>modelengine.fit.jade.tool</groupId>
+            <artifactId>sync-tool-call-service</artifactId>
         </dependency>
         <dependency>
             <groupId>modelengine.fit.jade.service</groupId>

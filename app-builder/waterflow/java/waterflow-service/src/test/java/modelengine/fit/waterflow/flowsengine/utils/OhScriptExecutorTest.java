@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import modelengine.fit.jade.waterflow.ErrorCodes;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.ErrorCodes;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;
 
 import org.junit.jupiter.api.DisplayName;

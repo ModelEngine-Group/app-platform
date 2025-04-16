@@ -16,6 +16,7 @@
         <!-- Framework version -->
         <fit.version>3.5.0-M3</fit.version>
         <fel.version>1.0.0-SNAPSHOT</fel.version>
+        <waterflow.core.version>3.5.0-M3</waterflow.core.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
         <ohscript.version>3.5.0-M3</ohscript.version>
 
@@ -81,19 +82,14 @@
 
             <!-- WaterFlow -->
             <dependency>
-                <groupId>modelengine.fit.jade.waterflow</groupId>
+                <groupId>org.fitframework.fel</groupId>
                 <artifactId>waterflow-bridge-fit-reactor</artifactId>
-                <version>${waterflow.version}</version>
+                <version>${waterflow.core.version}</version>
             </dependency>
             <dependency>
-                <groupId>modelengine.fit.jade.waterflow</groupId>
+                <groupId>org.fitframework.fel</groupId>
                 <artifactId>waterflow-core</artifactId>
-                <version>${waterflow.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>modelengine.fit.jade.waterflow</groupId>
-                <artifactId>waterflow-genericable</artifactId>
-                <version>${waterflow.version}</version>
+                <version>${waterflow.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>modelengine.fit.jade.waterflow</groupId>
@@ -101,9 +97,9 @@
                 <version>${waterflow.version}</version>
             </dependency>
             <dependency>
-                <groupId>modelengine.fit.jade.waterflow</groupId>
+                <groupId>org.fitframework.waterflow</groupId>
                 <artifactId>waterflow-common</artifactId>
-                <version>${waterflow.version}</version>
+                <version>${waterflow.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>modelengine.fit.jade.waterflow</groupId>

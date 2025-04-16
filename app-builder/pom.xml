@@ -18,7 +18,6 @@
         <module>plugins</module>
         <module>services</module>
         <module>jane</module>
-        <module>fel/java</module>
         <module>waterflow/java</module>
     </modules>
 </project>

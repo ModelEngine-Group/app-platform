@@ -11,10 +11,10 @@ import com.alibaba.fastjson.JSONObject;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.common.Constant;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
 
 /**
  * 运算符相关信息

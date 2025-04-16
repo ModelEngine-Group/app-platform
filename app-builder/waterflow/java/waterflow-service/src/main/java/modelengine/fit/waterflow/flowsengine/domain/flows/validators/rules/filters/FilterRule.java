@@ -6,7 +6,7 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.validators.rules.filters;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.filters.FlowFilter;
 import modelengine.fit.waterflow.flowsengine.domain.flows.validators.rules.Rules;
 

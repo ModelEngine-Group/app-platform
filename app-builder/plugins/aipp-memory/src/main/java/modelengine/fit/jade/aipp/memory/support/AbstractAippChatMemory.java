@@ -38,7 +38,14 @@ public abstract class AbstractAippChatMemory implements Memory {
     }
 
     @Override
-    public final void add(ChatMessage question, ChatMessage answer) {}
+    public final void add(ChatMessage question) {}
+
+
+    @Override
+    public void set(List<ChatMessage> messages) {}
+
+    @Override
+    public void clear() {}
 
     @Override
     public List<ChatMessage> messages() {

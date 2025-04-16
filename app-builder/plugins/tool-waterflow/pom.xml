@@ -23,7 +23,7 @@
             <artifactId>fit-util</artifactId>
         </dependency>
         <dependency>
-            <groupId>modelengine.fit.jade.fel</groupId>
+            <groupId>org.fitframework.fel</groupId>
             <artifactId>fel-core</artifactId>
         </dependency>
 
@@ -31,6 +31,10 @@
         <dependency>
             <groupId>modelengine.fit.jade.service</groupId>
             <artifactId>store-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fitframework.fel</groupId>
+            <artifactId>tool-service</artifactId>
         </dependency>
         <dependency>
             <groupId>modelengine.fit.jober</groupId>

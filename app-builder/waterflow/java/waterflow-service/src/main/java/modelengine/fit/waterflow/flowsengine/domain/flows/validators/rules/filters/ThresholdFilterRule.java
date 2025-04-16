@@ -6,13 +6,13 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.validators.rules.filters;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.filters.FlowFilter;
 import modelengine.fitframework.inspection.Validation;
 
 import java.util.Objects;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
 
 /**
  * 最小Size过滤器校验规则

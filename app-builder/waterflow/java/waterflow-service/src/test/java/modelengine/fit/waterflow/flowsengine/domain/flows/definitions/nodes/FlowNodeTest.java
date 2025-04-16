@@ -14,8 +14,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import modelengine.fit.jade.waterflow.ErrorCodes;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.ErrorCodes;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.entity.FlowErrorInfo;
 import modelengine.fit.waterflow.spi.FlowExceptionService;
 import modelengine.fitframework.broker.client.BrokerClient;

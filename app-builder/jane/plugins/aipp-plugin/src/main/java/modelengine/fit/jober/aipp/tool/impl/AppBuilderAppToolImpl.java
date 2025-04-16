@@ -6,6 +6,9 @@
 
 package modelengine.fit.jober.aipp.tool.impl;
 
+import modelengine.fel.core.format.OutputParser;
+import modelengine.fel.core.format.json.JsonOutputParser;
+import modelengine.fel.core.format.MarkdownCompatibleParser;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.converters.ConverterFactory;
@@ -20,9 +23,6 @@ import modelengine.fit.jober.aipp.enums.AppTypeEnum;
 import modelengine.fit.jober.aipp.service.AppBuilderAppService;
 import modelengine.fit.jober.aipp.tool.AppBuilderAppTool;
 
-import modelengine.fel.core.formatters.OutputParser;
-import modelengine.fel.core.formatters.json.JsonOutputParser;
-import modelengine.fel.core.formatters.support.MarkdownParser;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
@@ -77,8 +77,8 @@ public class AppBuilderAppToolImpl implements AppBuilderAppTool {
         AppCreateToolDto dto;
         try {
             OutputParser<AppCreateToolDto> parser =
-                    new MarkdownParser<>(JsonOutputParser.create(this.objectSerializer, AppCreateToolDto.class),
-                            "json");
+                    new MarkdownCompatibleParser<>(JsonOutputParser.create(this.objectSerializer,
+                            AppCreateToolDto.class), "json");
             dto = parser.parse(appInfo);
         } catch (SerializationException exception) {
             log.error("Failed to create app, parse json str error: {}", appInfo, exception);

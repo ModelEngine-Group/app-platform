@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fitframework.util.MapBuilder;
 
 import org.junit.jupiter.api.DisplayName;

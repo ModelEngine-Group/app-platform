@@ -6,7 +6,7 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.validators.rules.callbacks;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.callbacks.FlowCallback;
 import modelengine.fit.waterflow.flowsengine.domain.flows.validators.rules.Rules;
 

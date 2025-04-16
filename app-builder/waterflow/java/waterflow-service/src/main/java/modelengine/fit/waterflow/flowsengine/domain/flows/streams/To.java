@@ -8,7 +8,7 @@ package modelengine.fit.waterflow.flowsengine.domain.flows.streams;
 
 import lombok.Getter;
 import lombok.Setter;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.ohscript.util.UUIDUtil;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.common.utils.SleepUtil;
@@ -45,8 +45,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_NODE_CREATE_ERROR;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_NODE_MAX_TASK;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_NODE_CREATE_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_NODE_MAX_TASK;
 
 /**
  * FitStream的数据处理节点，上一个节点是下一个节点的publisher

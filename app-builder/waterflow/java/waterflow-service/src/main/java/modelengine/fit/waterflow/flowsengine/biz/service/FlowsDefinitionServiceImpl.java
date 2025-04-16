@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import modelengine.fit.jade.waterflow.entity.FlowDefinitionResult;
 import modelengine.fit.jade.waterflow.entity.FlowNodeFormInfo;
 import modelengine.fit.jade.waterflow.entity.FlowNodeInfo;
-import modelengine.fit.jade.waterflow.entity.OperationContext;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.entity.OperationContext;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.jade.waterflow.service.FlowDefinitionService;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowcontext.FlowContextPersistRepo;
@@ -38,12 +38,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.ENTITY_NOT_FOUND;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_DEFINITION_UPDATE_NOT_SUPPORT;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_GRAPH_DATA_PARSE_FAILED;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_VALIDATE_ERROR;
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_EMPTY;
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
+import static modelengine.fit.waterflow.ErrorCodes.ENTITY_NOT_FOUND;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_DEFINITION_UPDATE_NOT_SUPPORT;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_GRAPH_DATA_PARSE_FAILED;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_VALIDATE_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_EMPTY;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
 
 /**
  * 流程定义相关服务

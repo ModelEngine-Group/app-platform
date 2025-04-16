@@ -6,7 +6,7 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.parsers.nodes.events;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.FlowNode;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.events.FlowEvent;
 import modelengine.fit.waterflow.flowsengine.domain.flows.parsers.FlowGraphData;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
 
 /**
  * 流程中event解析类

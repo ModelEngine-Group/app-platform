@@ -6,10 +6,10 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.converter;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fitframework.log.Logger;
 
 import java.util.Map;

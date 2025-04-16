@@ -6,7 +6,7 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.validators.rules;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.FlowDefinition;
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowDefinitionStatus;
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeType;
@@ -15,7 +15,7 @@ import modelengine.fitframework.inspection.Validation;
 
 import java.util.regex.Pattern;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.INVALID_FLOW_NODE_SIZE;
+import static modelengine.fit.waterflow.ErrorCodes.INVALID_FLOW_NODE_SIZE;
 
 /**
  * 流程定义校验规则

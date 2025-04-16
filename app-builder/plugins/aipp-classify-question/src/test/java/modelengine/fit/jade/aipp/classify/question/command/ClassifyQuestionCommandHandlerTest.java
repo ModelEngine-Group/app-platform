@@ -14,7 +14,7 @@ import modelengine.fel.core.chat.ChatModel;
 import modelengine.fel.core.chat.ChatOption;
 import modelengine.fel.core.chat.Prompt;
 import modelengine.fel.core.chat.support.AiMessage;
-import modelengine.fel.core.memory.CacheMemory;
+import modelengine.fel.core.memory.support.CacheMemory;
 import modelengine.fit.jade.aipp.classify.question.command.impl.ClassifyQuestionCommandHandlerImpl;
 import modelengine.fit.jade.aipp.classify.question.utils.TestUtils;
 import modelengine.fit.jade.aipp.memory.AippMemoryFactory;

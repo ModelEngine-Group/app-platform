@@ -6,8 +6,8 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowcontext;
 
-import modelengine.fit.jade.waterflow.ErrorCodes;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.ErrorCodes;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.flowsengine.biz.service.TraceOwnerService;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowContext;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;

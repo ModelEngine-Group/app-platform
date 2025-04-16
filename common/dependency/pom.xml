@@ -15,7 +15,8 @@
 
         <!-- Framework version -->
         <fit.version>3.5.0-M3</fit.version>
-        <fel.version>1.0.0-SNAPSHOT</fel.version>
+        <fel.version>3.5.0-M3</fel.version>
+        <waterflow.core.version>3.5.0-M3</waterflow.core.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
         <carver.version>1.0.0-SNAPSHOT</carver.version>
         <store.version>1.0.0-SNAPSHOT</store.version>
@@ -146,18 +147,18 @@
             <dependency>
                 <groupId>org.fitframework.plugin</groupId>
                 <artifactId>fit-message-serializer-json-jackson</artifactId>
-                <version>3.5.0-M3</version>
+                <version>${fit.version}</version>
             </dependency>
             <!-- WaterFlow -->
             <dependency>
-                <groupId>modelengine.fit.jade.waterflow</groupId>
+                <groupId>org.fitframework.fel</groupId>
                 <artifactId>waterflow-core</artifactId>
-                <version>${waterflow.version}</version>
+                <version>${waterflow.core.version}</version>
             </dependency>
             <dependency>
-                <groupId>modelengine.fit.jade.waterflow</groupId>
+                <groupId>org.fitframework.fel</groupId>
                 <artifactId>waterflow-bridge-fit-reactor</artifactId>
-                <version>${waterflow.version}</version>
+                <version>${waterflow.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>modelengine.fit.jade</groupId>
@@ -185,9 +186,9 @@
                 <version>${waterflow.version}</version>
             </dependency>
             <dependency>
-                <groupId>modelengine.fit.jade.waterflow</groupId>
+                <groupId>org.fitframework.waterflow</groupId>
                 <artifactId>waterflow-common</artifactId>
-                <version>${waterflow.version}</version>
+                <version>${waterflow.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>modelengine.fit.jade.waterflow</groupId>
@@ -207,22 +208,22 @@
 
             <!-- FEL -->
             <dependency>
-                <groupId>modelengine.fit.jade.fel</groupId>
+                <groupId>org.fitframework.fel</groupId>
                 <artifactId>fel-core</artifactId>
                 <version>${fel.version}</version>
             </dependency>
             <dependency>
-                <groupId>modelengine.fit.jade.service</groupId>
+                <groupId>org.fitframework.fel</groupId>
                 <artifactId>fel-langchain-service</artifactId>
                 <version>${fel.version}</version>
             </dependency>
             <dependency>
-                <groupId>modelengine.fit.jade.service</groupId>
+                <groupId>org.fitframework.fel</groupId>
                 <artifactId>fel-pipeline-service</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${fel.version}</version>
             </dependency>
             <dependency>
-                <groupId>modelengine.fit.jade.fel</groupId>
+                <groupId>org.fitframework.fel</groupId>
                 <artifactId>fel-flow</artifactId>
                 <version>${fel.version}</version>
             </dependency>
@@ -235,7 +236,7 @@
             <dependency>
                 <groupId>org.fitframework.fel</groupId>
                 <artifactId>tool-service</artifactId>
-                <version>3.5.0-M3</version>
+                <version>${fel.version}</version>
             </dependency>
             <dependency>
                 <groupId>modelengine.fit.jade.service</groupId>

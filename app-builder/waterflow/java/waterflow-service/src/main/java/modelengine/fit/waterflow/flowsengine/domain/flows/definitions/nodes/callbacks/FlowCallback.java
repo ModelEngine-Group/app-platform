@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowContext;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.converter.FlowDataConverter;
@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_EXECUTE_CALLBACK_FITABLES_FAILED;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_EXECUTE_CALLBACK_FITABLES_FAILED;
 
 /**
  * 流程定义回调函数类

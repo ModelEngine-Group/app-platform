@@ -15,6 +15,7 @@ import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.log.Logger;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,6 +38,6 @@ public class ToolCallServiceImpl implements ToolCallService {
     public Object call(String uniqueName, Map<?, ?> toolArgs) {
         String argStr = JSONObject.toJSONString(toolArgs);
         log.warn("ToolCallService. uniqueName:{}, toolArgs:{}", uniqueName, argStr);
-        return JSONArray.parse(syncToolCall.call(uniqueName, argStr));
+        return JSONArray.parse(syncToolCall.call(uniqueName, argStr, new HashMap<>()));
     }
 }

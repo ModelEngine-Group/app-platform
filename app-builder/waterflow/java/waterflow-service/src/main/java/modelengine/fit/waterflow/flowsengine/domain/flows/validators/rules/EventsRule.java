@@ -6,8 +6,8 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.validators.rules;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.FlowDefinition;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.FlowNode;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.events.FlowEvent;
@@ -18,7 +18,7 @@ import modelengine.fitframework.log.Logger;
 
 import java.util.regex.Pattern;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.INVALID_EVENT_CONFIG;
+import static modelengine.fit.waterflow.ErrorCodes.INVALID_EVENT_CONFIG;
 
 /**
  * 节点事件校验规则

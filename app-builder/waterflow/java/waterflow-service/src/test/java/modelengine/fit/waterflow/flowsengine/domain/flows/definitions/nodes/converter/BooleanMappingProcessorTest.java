@@ -9,7 +9,7 @@ package modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.con
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
