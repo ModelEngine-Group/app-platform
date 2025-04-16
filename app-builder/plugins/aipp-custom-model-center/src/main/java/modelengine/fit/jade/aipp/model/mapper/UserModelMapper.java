@@ -75,5 +75,5 @@ public interface UserModelMapper {
      * @param modelId 表示需设为默认的模型标识的 {@link String}。
      * @return 成功更新的记录条数的 {@code int}。
      */
-    int switchDefaultForUser(@Param("userId") String userId, @Param("modelId") String modelId);
+    int setDefault(@Param("userId") String userId, @Param("modelId") String modelId);
 }

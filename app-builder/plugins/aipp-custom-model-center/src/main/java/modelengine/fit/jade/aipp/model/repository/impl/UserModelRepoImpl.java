@@ -110,8 +110,8 @@ public class UserModelRepoImpl implements UserModelRepo {
     }
 
     @Override
-    public int switchDefaultForUser(String userId, String modelId) {
-        return this.userModelMapper.switchDefaultForUser(userId, modelId);
+    public int switchDefaultUserModel(String userId, String modelId) {
+        return this.userModelMapper.setDefault(userId, modelId);
     }
 
     @Override

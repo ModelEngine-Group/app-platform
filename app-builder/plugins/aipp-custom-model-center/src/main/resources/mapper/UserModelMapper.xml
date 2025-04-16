@@ -55,7 +55,7 @@
         ORDER BY created_at DESC LIMIT 1
     </select>
 
-    <update id="switchDefaultForUser" parameterType="map">
+    <update id="setDefault" parameterType="map">
         UPDATE t_app_engine_user_model
         SET is_default = CASE WHEN model_id = #{modelId} THEN 1 ELSE 0 END
         WHERE user_id = #{userId}

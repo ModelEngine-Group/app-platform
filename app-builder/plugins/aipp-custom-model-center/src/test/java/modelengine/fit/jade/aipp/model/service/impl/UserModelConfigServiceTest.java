@@ -111,7 +111,7 @@ public class UserModelConfigServiceTest {
         String userId = "user1";
         String modelId = "m1";
 
-        Mockito.when(userModelRepo.switchDefaultForUser(userId, modelId)).thenReturn(1);
+        Mockito.when(userModelRepo.switchDefaultUserModel(userId, modelId)).thenReturn(1);
         Mockito.when(userModelRepo.getModel(modelId)).thenReturn(ModelPo.builder().name("gpt").build());
 
         String result = userModelConfigService.switchDefaultModel(userId, modelId);
