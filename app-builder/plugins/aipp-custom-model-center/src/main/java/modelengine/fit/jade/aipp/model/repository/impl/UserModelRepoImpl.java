@@ -89,8 +89,8 @@ public class UserModelRepoImpl implements UserModelRepo {
     }
 
     @Override
-    public int hasDefaultModel(String userId) {
-        return this.userModelMapper.hasDefaultModel(userId) ? 0 : 1;
+    public boolean hasDefaultModel(String userId) {
+        return this.userModelMapper.hasDefaultModel(userId);
     }
 
     @Override

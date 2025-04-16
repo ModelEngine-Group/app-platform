@@ -6,11 +6,15 @@
 
 package modelengine.fit.jade.aipp.model.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import modelengine.fit.jade.aipp.model.dto.UserModelDetailDto;
 import modelengine.fit.jade.aipp.model.po.ModelPo;
 import modelengine.fit.jade.aipp.model.po.UserModelPo;
 import modelengine.fit.jade.aipp.model.repository.UserModelRepo;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -19,13 +23,18 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * 表示 {@link UserModelConfigService} 的单元测试。
+ *
+ * @author 李智超
+ * @since 2025-04-016
+ */
+@DisplayName("测试 UserModelConfigService")
 @ExtendWith(MockitoExtension.class)
-class UserModelConfigServiceTest {
-
+public class UserModelConfigServiceTest {
     private UserModelConfigService userModelConfigService;
 
     @Mock
@@ -37,6 +46,7 @@ class UserModelConfigServiceTest {
     }
 
     @Test
+    @DisplayName("当用户拥有模型时，返回用户模型列表")
     void shouldReturnUserModelListWhenUserHasModels() {
         String userId = "user1";
         String modelId = "m1";
@@ -48,14 +58,9 @@ class UserModelConfigServiceTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        ModelPo modelPo = ModelPo.builder()
-                .modelId(modelId)
-                .name("gpt")
-                .baseUrl("http://xxx")
-                .build();
+        ModelPo modelPo = ModelPo.builder().modelId(modelId).name("gpt").baseUrl("http://testUrl").build();
 
-        Mockito.when(userModelRepo.listUserModels(userId))
-                .thenReturn(Collections.singletonList(userModelPo));
+        Mockito.when(userModelRepo.listUserModels(userId)).thenReturn(Collections.singletonList(userModelPo));
         Mockito.when(userModelRepo.listModels(Collections.singletonList(modelId)))
                 .thenReturn(Collections.singletonList(modelPo));
 
@@ -65,13 +70,14 @@ class UserModelConfigServiceTest {
     }
 
     @Test
+    @DisplayName("成功添加用户模型")
     void shouldAddUserModelSuccessfully() {
         String userId = "user1";
         String apiKey = "key";
         String modelName = "gpt";
-        String baseUrl = "http://xxx";
+        String baseUrl = "http://testUrl";
 
-        Mockito.when(userModelRepo.hasDefaultModel(userId)).thenReturn(1);
+        Mockito.when(userModelRepo.hasDefaultModel(userId)).thenReturn(Boolean.TRUE);
 
         String result = userModelConfigService.addUserModel(userId, apiKey, modelName, baseUrl);
         assertEquals("添加模型成功。", result);
@@ -80,6 +86,7 @@ class UserModelConfigServiceTest {
     }
 
     @Test
+    @DisplayName("删除非默认模型时，执行删除操作")
     void shouldDeleteModelWhenItIsNotDefault() {
         String userId = "user1";
         String modelId = "m1";
@@ -99,13 +106,13 @@ class UserModelConfigServiceTest {
     }
 
     @Test
+    @DisplayName("成功切换默认模型")
     void shouldSwitchDefaultModel() {
         String userId = "user1";
         String modelId = "m1";
 
         Mockito.when(userModelRepo.switchDefaultForUser(userId, modelId)).thenReturn(1);
-        Mockito.when(userModelRepo.getModel(modelId))
-                .thenReturn(ModelPo.builder().name("gpt").build());
+        Mockito.when(userModelRepo.getModel(modelId)).thenReturn(ModelPo.builder().name("gpt").build());
 
         String result = userModelConfigService.switchDefaultModel(userId, modelId);
         assertEquals("已切换gpt为默认模型。", result);

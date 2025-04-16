@@ -23,7 +23,7 @@ public interface ModelMapper {
     /**
      * 根据模型标识查询模型信息。
      *
-     * @param modelId 表示模型标识。
+     * @param modelId 表示模型标识的 {@link String}。
      * @return 模型信息的 {@link ModelPo}。
      */
     ModelPo getModel(String modelId);
@@ -31,8 +31,8 @@ public interface ModelMapper {
     /**
      * 根据模型标识列表批量查询模型信息。
      *
-     * @param modelIds 表示模型标识列表。
-     * @return 模型信息列表的 {@link List}{@code <}{@link ModelPo}{@code >}.
+     * @param modelIds 表示模型标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     * @return 模型信息列表的 {@link List}{@code <}{@link ModelPo}{@code >}。
      */
     List<ModelPo> listModels(List<String> modelIds);
 

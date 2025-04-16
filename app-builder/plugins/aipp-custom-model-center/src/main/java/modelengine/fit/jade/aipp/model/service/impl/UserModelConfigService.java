@@ -21,7 +21,12 @@ import modelengine.jade.carver.tool.annotation.Attribute;
 import modelengine.jade.carver.tool.annotation.Group;
 import modelengine.jade.carver.tool.annotation.ToolMethod;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +46,7 @@ public class UserModelConfigService implements UserModelConfig {
     /**
      * 构造方法。
      *
-     * @param userModelRepo 用于访问用户模型数据的仓库接口实例。
+     * @param userModelRepo 表示用于访问用户模型数据的仓储接口的 {@link UserModelRepo}。
      */
     public UserModelConfigService(UserModelRepo userModelRepo) {
         this.userModelRepo = userModelRepo;
@@ -92,7 +97,7 @@ public class UserModelConfigService implements UserModelConfig {
     public String addUserModel(String userId, String apiKey, String modelName, String baseUrl) {
         log.info("start add user model for {}.", userId);
         String modelId = UUID.randomUUID().toString().replace("-", "");
-        int isDefault = this.userModelRepo.hasDefaultModel(userId);
+        boolean hasDefault = this.userModelRepo.hasDefaultModel(userId);
 
         ModelPo modelPo = ModelPo.builder()
                 .modelId(modelId)
@@ -109,7 +114,7 @@ public class UserModelConfigService implements UserModelConfig {
                 .userId(userId)
                 .modelId(modelId)
                 .apiKey(apiKey)
-                .isDefault(isDefault)
+                .isDefault(hasDefault ? 0 : 1)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();

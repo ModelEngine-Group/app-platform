@@ -24,15 +24,15 @@ public interface UserModelMapper {
     /**
      * 根据用户标识获取用户模型关系列表。
      *
-     * @param userId 表示用户标识。
-     * @return 用户模型关系列表的 {@link List}{@code <}{@link UserModelPo}{@code >}.
+     * @param userId 表示用户标识的 {@link String}。
+     * @return 用户模型关系列表的 {@link List}{@code <}{@link UserModelPo}{@code >}。
      */
     List<UserModelPo> listUserModels(String userId);
 
     /**
      * 根据用户标识获取默认用户模型关系。
      *
-     * @param userId 表示用户标识。
+     * @param userId 表示用户标识的 {@link String}。
      * @return 默认的用户模型关系的 {@link UserModelPo}。
      */
     UserModelPo getDefault(String userId);

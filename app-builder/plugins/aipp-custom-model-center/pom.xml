@@ -48,10 +48,6 @@
             <groupId>modelengine.fit.jade.service</groupId>
             <artifactId>tool-service</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-        </dependency>
 
         <!-- Test -->
         <dependency>
