@@ -21,7 +21,9 @@ import modelengine.fitframework.schedule.annotation.Scheduled;
 public class AppBuilderDbCleanSchedule {
     private static final Logger log = Logger.get(AppBuilderDbCleanSchedule.class);
 
-    public static final int LIMIT = 1000;
+    private static final int LIMIT = 1000;
+
+    public static final int FILE_MAX_NUM = 15;
 
     private final int nonBusinessDataTtl;
 
@@ -46,14 +48,13 @@ public class AppBuilderDbCleanSchedule {
     /**
      * 每天凌晨 3 点定时清理超期指定天数的应用相关数据。
      */
-    @Scheduled(strategy = Scheduled.Strategy.CRON, value = "0 0 3 * * ?")
+    @Scheduled(strategy = Scheduled.Strategy.CRON, value = "0 0 * * * ?")
     public void appBuilderDbCleanSchedule() {
         try {
             // 清理非业务数据
             aippInstanceLogCleaner.cleanAippInstancePreviewLog(nonBusinessDataTtl, LIMIT);
             appBuilderRuntimeInfoCleaner.appBuilderRuntimeInfoCleaner(nonBusinessDataTtl, LIMIT);
 
-            // todo 备份超期的sql文件,需要做成根据类自动转换成String[]
             // 注意：未来业务相关的表新增字段时，这里的备份文件也要新增字段
             // 清理业务数据
             aippInstanceLogCleaner.cleanAippInstanceNormalLog(businessDataTtl, LIMIT);

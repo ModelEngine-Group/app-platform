@@ -6,6 +6,8 @@
 
 package modelengine.fit.jober.aipp.service.scheduletask;
 
+import static modelengine.fit.jober.aipp.service.scheduletask.AppBuilderDbCleanSchedule.FILE_MAX_NUM;
+
 import com.opencsv.CSVWriter;
 
 import modelengine.fit.jober.aipp.entity.AippInstLog;
@@ -60,7 +62,7 @@ public class AippInstanceLogCleaner {
                 backupData(instanceLogIds);
                 instanceLogRepo.forceDeleteInstanceLogs(instanceLogIds);
             }
-            cleanupOldBackups(ttl);
+            cleanupOldBackups(FILE_MAX_NUM);
         } catch (Exception e) {
             log.error("Error occurred while business data cleaner, exception:.", e);
         }

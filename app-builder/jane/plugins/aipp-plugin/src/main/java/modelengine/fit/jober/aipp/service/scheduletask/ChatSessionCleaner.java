@@ -6,6 +6,8 @@
 
 package modelengine.fit.jober.aipp.service.scheduletask;
 
+import static modelengine.fit.jober.aipp.service.scheduletask.AppBuilderDbCleanSchedule.FILE_MAX_NUM;
+
 import com.opencsv.CSVWriter;
 
 import modelengine.fit.jober.aipp.entity.ChatAndInstanceMap;
@@ -61,8 +63,8 @@ public class ChatSessionCleaner {
                 backupInstanceRelationData(expiredChatIds);
                 chatRepo.forceDeleteChat(expiredChatIds);
             }
-            cleanupOldBackups(CHAT_SESSION_FILE_NAME, ttl);
-            cleanupOldBackups(INSTANCE_RELATIONS_FILE_NAME, ttl);
+            cleanupOldBackups(CHAT_SESSION_FILE_NAME, FILE_MAX_NUM);
+            cleanupOldBackups(INSTANCE_RELATIONS_FILE_NAME, FILE_MAX_NUM);
         } catch (Exception e) {
             log.error("Error occurred while business data cleaner, exception:.", e);
         }
