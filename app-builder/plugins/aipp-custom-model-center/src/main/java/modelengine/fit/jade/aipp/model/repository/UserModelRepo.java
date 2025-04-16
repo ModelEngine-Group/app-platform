@@ -86,7 +86,7 @@ public interface UserModelRepo {
     /**
      * 根据模型标识删除该模型的用户关联信息。
      *
-     * @param modelId 表示模型标识的 {@link String}。
+     * @param modelId 表示待删除模型标识的 {@link String}。
      */
     void deleteByModelId(String modelId);
 

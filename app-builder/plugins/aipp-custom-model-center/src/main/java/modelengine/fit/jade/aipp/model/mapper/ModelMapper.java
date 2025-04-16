@@ -46,7 +46,7 @@ public interface ModelMapper {
     /**
      * 根据模型标识删除模型信息。
      *
-     * @param modelId 表示删除模型标识的 {@link String}。
+     * @param modelId 表示待删除模型标识的 {@link String}。
      */
     void deleteByModelId(String modelId);
 }
