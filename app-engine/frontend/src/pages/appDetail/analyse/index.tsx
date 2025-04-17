@@ -169,7 +169,7 @@ const AppAnalyse: React.FC = () => {
           defaultValue={
             time
           }
-          style={{ width: 120 }}
+          style={{ width: 220 }}
           disabled={pageDisabled}
           onChange={setTime}
           options={timeOption}

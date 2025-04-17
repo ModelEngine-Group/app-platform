@@ -18,7 +18,7 @@
       cursor: pointer;
     }
   }
-  .apps_main {
+  .apps_main_market {
     height: calc(100% - 50px);
     min-width: 1400px;
     padding: 24px;
@@ -35,17 +35,12 @@
       overflow-y: auto;
       display: flex;
       flex-wrap: wrap;
-      margin: 20px 0;
+      margin: 16px 0;
+      gap: 16px;
       .card_box {
         width: calc(25% - 16px);
         height: 190px;
       }
-    }
-    .page_box {
-      padding-top: 10px;
-      height: 40px;
-      line-height: 40px;
-      width: 100%;
     }
   }
   .empty-box {

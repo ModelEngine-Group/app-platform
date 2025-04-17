@@ -11,9 +11,8 @@ import GoBack from '@/components/go-back/GoBack';
 import AppOverview from './overview';
 import AppAnalyse from './analyse';
 import FeedBack from './feedback';
-import AppEvaluate from './evaluate';
 import { useTranslation } from 'react-i18next';
-
+import './style.scoped.scss';
 
 const AppDetail: React.FC = () => {
   const [tabsKey, setTabsKey] = useState('1');
@@ -38,11 +37,6 @@ const AppDetail: React.FC = () => {
       label: t('feedback'),
       children: <FeedBack />,
     },
-    // {
-    //   key: '4',
-    //   label: t('evaluate'),
-    //   children: <AppEvaluate />,
-    // },
   ];
   useEffect(() => {
     setTabsKey(sessionStorage.getItem('defaultKey') as string || '1');
@@ -56,7 +50,7 @@ const AppDetail: React.FC = () => {
         </div>
       </div>
       <div className='aui-block appenine-detail' style={{ paddingTop: 0 }}>
-        <Tabs activeKey={tabsKey} items={items} onChange={onChange} />
+        <Tabs type='card' activeKey={tabsKey} items={items} onChange={onChange} />
         <div />
       </div>
     </div>

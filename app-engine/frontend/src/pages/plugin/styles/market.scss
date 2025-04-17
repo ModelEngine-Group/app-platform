@@ -10,21 +10,18 @@
     .market-input {
       margin-bottom: 16px;
       width: 600px;
-      height: 40px;
-      border-radius: 20px;
+      height: 32px;
       border: 1px solid rgb(230, 230, 230);
     }
     .market-button {
-      width: 98px;
-      height: 40px;
+      width: 96px;
+      height: 32px;
       margin-left: 8px;
       display: flex;
       justify-content: center;
       align-items: center;
       color: #FFFFFF;
       padding: 0 16px 0 16px;
-      border-radius: 23px;
-      background: linear-gradient(135.00deg, rgb(94, 124, 224) 0%, rgb(70, 146, 255) 0%, rgb(111, 88, 254) 99.878%)
     }
   }
   .market-card {

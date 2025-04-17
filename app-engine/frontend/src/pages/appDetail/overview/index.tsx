@@ -5,19 +5,22 @@
  *--------------------------------------------------------------------------------------------*/
 
 import React, { useEffect, useState } from 'react';
-import { Button, Divider, Spin } from 'antd';
-import { getAppInfo, getAppInfoByVersion } from '@/shared/http/aipp';
+import { Modal, Button, Divider, Spin } from 'antd';
+import { getAppInfo, getAppInfoByVersion, exportApp } from '@/shared/http/aipp';
+import { deleteAppApi } from '@/shared/http/appDev';
 import { Message } from '@/shared/utils/message';
 import { useHistory, useParams } from 'react-router';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { setAppInfo } from "@/store/appInfo/appInfo";
 import { findConfigValue } from '@/shared/utils/common';
+import { exportJson } from '@/shared/utils/chat';
 import { convertImgPath } from '@/common/util';
 import { useTranslation } from "react-i18next";
 import knowledgeImg from '@/assets/images/knowledge/knowledge-base.png';
 import complateImg from '@/assets/images/ai/complate.png';
 import publishImg from '@/assets/images/ai/publish.png';
 import userImg from '@/assets/images/ai/user.jpg';
+import WarningIcon from '@/assets/images/warning_icon.svg';
 import PublicCard from './public-card';
 import './style.scoped.scss';
 
@@ -32,8 +35,11 @@ const AppOverview: React.FC = () => {
   const navigate = useHistory().push;
   const { appId, tenantId } = useParams();
   const [opening, setOpening] = useState('');
+  const [open, setOpen] = useState('');
   const [detail, setDetail] = useState<any>({});
   const [loading, setLoading] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
   const [appIcon, setAppIcon] = useState('');
   const dispatch = useAppDispatch();
@@ -89,7 +95,37 @@ const AppOverview: React.FC = () => {
       setBtnLoading(false);
     })
   };
-
+  // 应用导出
+  const handleExportApp = async () => {
+    try{
+      setExportLoading(true);
+      const res = await exportApp(tenantId, detail.id);
+      exportJson(res, detail.name);
+    } finally {
+      setExportLoading(false);
+    }
+  }
+  // 删除应用
+  const  deleteApp = async () => {
+    const storage = {
+      appId: detail.id,
+      type: 'deleteApp'
+    }
+    try {
+      setDeleteLoading(true);
+      const res: any = await deleteAppApi(tenantId, detail.id);
+      if (res.code === 0) {
+        setOpen(false);
+        Message({ type: 'success', content: t('deleteAppSuccess') });
+        localStorage.setItem('storageMessage', JSON.stringify(storage));
+        navigate('/app-develop');
+      } else {
+        Message({ type: 'error', content: res.msg || t('deleteFail') });
+      }
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
   useEffect(() => {
     const opening = findConfigValue(detail, 'opening');
     setOpening(opening || '-');
@@ -125,6 +161,13 @@ const AppOverview: React.FC = () => {
                         </div>
                       )
                   }
+                  {
+                    <div className='app-btn'>
+                      { !readOnly && <Button type='primary' loading={btnLoading} onClick={gotoArrange}>{t('toArrange')}</Button> }
+                      <Button loading={exportLoading} onClick={handleExportApp}>{t('export')}</Button>
+                      { !readOnly && <Button loading={deleteLoading} onClick={() => setOpen(true)}>{t('delete')}</Button> }
+                    </div>
+                  }
                 </div>
                 <div className='detail-footer'>
                   <div className='icon'>
@@ -142,15 +185,12 @@ const AppOverview: React.FC = () => {
           <div className='app-desc' title={detail?.attributes?.description}>
             {detail?.attributes?.description}
           </div>
-          <div className='app-btn'>
-            { !readOnly && <Button type='primary' loading={btnLoading} onClick={gotoArrange}>{t('toArrange')}</Button> }
-          </div>
           <Divider style={{ margin: 0, backgroundColor: 'rgb(230, 230, 230)' }} />
           <div>
             <div className='remarks-content'>
               <div className='remarks'>
-                <span className='left'>{t('prologue')}</span>
-                <span className='right'>{opening}</span>
+                <div className='left'>{t('prologue')}</div>
+                <div className='right'>{opening}</div>
               </div>
             </div>
           </div>
@@ -160,6 +200,26 @@ const AppOverview: React.FC = () => {
           <PublicCard url={`/${process.env.PACKAGE_MODE === 'spa' ? `agent/v1/api/${tenantId}` : 'api/jober'}`} type='API' auth={readOnly} detail={detail} />
         </div>
       </div>
+      {/* 删除弹窗 */}
+      <Modal
+        title={
+          <div className='delete-title'>
+            <img src={WarningIcon}></img>
+            <span>{t('deleteAppModalTitle')}</span>
+          </div>
+      }
+        width='380px'
+        open={open}
+        centered
+        onOk={() => deleteApp()}
+        onCancel={() => setOpen(false)}
+        okButtonProps={{ loading: deleteLoading }}
+        okText={t('ok')}
+        cancelText={t('cancel')}
+        destroyOnClose
+      >
+        <p>{t('deleteAppModalAlert')}</p>
+      </Modal>
     </Spin>
   )
 }

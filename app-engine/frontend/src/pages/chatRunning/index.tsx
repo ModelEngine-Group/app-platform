@@ -168,7 +168,7 @@ const ChatRunning = () => {
         </div> :  
         <div className={`chat-running-container ${isPreview ? 'chat-running-full' : ''}`}>
           {isPreview ? <Login login={login} /> : <div className='chat-running-chat'>
-            <Button type='text' onClick={() => { window.history.back() }}>{t('return')}</Button>
+            <Button size='small' type='text' style={{ margin: '6px 12px' }} onClick={() => { window.history.back() }}>{t('return')}</Button>
             <span className='running-app-name'>{appInfo.name}</span>
           </div>}
           <CommonChat  />

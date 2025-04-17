@@ -82,18 +82,18 @@ const AppCard = ({ cardInfo, clickMore, showOptions = true, isTemplate = false, 
       setMenu([
         {
           key: 'export',
-          label: <div>{t('export')}</div>,
+          label: <div style={{ with: '90px' }}>{t('export')}</div>,
         },
       ]);
     } else {
       setMenu([
         {
-          key: 'delete',
-          label: <div>{t('delete')}</div>,
+          key: 'export',
+          label: <div style={{ with: '90px' }}>{t('export')}</div>,
         },
         {
-          key: 'export',
-          label: <div>{t('export')}</div>,
+          key: 'delete',
+          label: <div style={{ with: '90px' }}>{t('delete')}</div>,
         },
       ]);
     }

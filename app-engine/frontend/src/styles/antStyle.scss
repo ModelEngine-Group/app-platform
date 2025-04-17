@@ -4,6 +4,11 @@
   }
   .ant-btn {
     border-radius: 4px;
+    min-width: 96px;
+  }
+  .ant-btn-sm {
+    width: auto;
+    min-width: auto;
   }
   .ant-modal-content {
     border-radius: 4px;
@@ -84,6 +89,17 @@
     }
     & > .ant-btn + .ant-btn {
       margin-left: 16px !important;
+    }
+  }
+  .ant-btn {
+    min-width: 96px;
+  }
+}
+.ant-drawer-content {
+  .ant-drawer-footer,
+  .ant-drawer-body {
+    .ant-btn {
+      min-width: 96px;
     }
   }
 }
@@ -203,6 +219,11 @@
   content: '*';
   top: -1.5px;
   font-weight: 700;
+}
+.ant-btn-primary:hover, .ant-btn-primary:focus {
+  color: #ffffff;
+  border-color: #1664d9 !important;
+  background-color: #1664d9 !important;
 }
 .edit-form-content {
   .ant-form-item {

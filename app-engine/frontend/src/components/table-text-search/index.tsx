@@ -18,7 +18,7 @@ const TableTextSearch = (searchKeyName: string, async: boolean = true): TableCol
   const { t } = useTranslation();
   return ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, close }) => (
-      <div style={{ padding: 8, width: 250 }} onKeyDown={(e) => e.stopPropagation()}>
+      <div style={{ padding: 8, width: 250, height: 84 }} onKeyDown={(e) => e.stopPropagation()}>
         <Input
           value={selectedKeys[0]}
           onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}

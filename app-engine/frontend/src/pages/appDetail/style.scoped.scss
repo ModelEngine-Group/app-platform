@@ -1,0 +1,30 @@
+.appengine-detail {
+    padding: 0 !important;
+    .page-component {
+        margin-top: 12px;
+    }
+    .ant-tabs {
+        .ant-tabs-nav {
+            .ant-tabs-nav-warp {
+                background-color: #fafafa;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                .ant-tabs-nav-list {
+                    .ant-tabs-tab {
+                        margin-left: 0;
+                        border: none;
+                        padding: 8px 24px;
+                        border-radius: 0;
+                        border: 2px solid transparent;
+                        &:hover {
+                            color: #2673e5;
+                        }
+                    }
+                    .ant-tabs-tab-active {
+                        border-color: #2673e5;
+                    }
+                }
+            }
+        }
+    }
+}

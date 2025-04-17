@@ -69,10 +69,10 @@ const CreateWorkfowDrawer = (props) => {
       title={t('createWorkflow')}
       placement='right'
       closeIcon={false}
-      onClose={false}
-      width={500}
-      maxCount={3}
+      onClose={() => setOpen(false)}
+      width={520}
       open={open}
+      maskClosable={false}
       extra={
         <CloseOutlined
           onClick={() => {

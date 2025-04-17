@@ -180,6 +180,11 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({ openHistorySignal, setL
       setLoading(false);
     }
   }
+  const removeTagContent = (content: string) => {
+    if (!content) return '';
+    const thinkReg = /<think>[\s\S]*?<\/think>/gm;
+    return content.replaceAll(thinkReg, '');
+  }
 
   useEffect(() => {
     if (openHistorySignal > 0 && !open) {
@@ -224,7 +229,7 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({ openHistorySignal, setL
       onClose={() => setOpen(false)}
       open={open}
       closeIcon={false}
-      width='420px'
+      width='460px'
       bodyStyle={{ padding: 0 }}
     >
       <Spin spinning={loading}>
@@ -245,7 +250,7 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({ openHistorySignal, setL
                       {t('continueChat')}
                     </span>
                   </div>
-                  <div className='history-item-desc'>{item?.recent_info}</div>
+                  <div className='history-item-desc'>{removeTagContent(item?.recent_info)}</div>
                 </div>
                 <div className='history-item-footer'>
                   <span>{formatLocalDate(item?.update_time_timestamp)}</span>
