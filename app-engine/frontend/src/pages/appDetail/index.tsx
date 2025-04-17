@@ -49,7 +49,7 @@ const AppDetail: React.FC = () => {
           <GoBack path={'/app-develop'} title={t('appDetail')} />
         </div>
       </div>
-      <div className='aui-block appenine-detail' style={{ paddingTop: 0 }}>
+      <div className='aui-block appengine-detail' style={{ paddingTop: 0 }}>
         <Tabs type='card' activeKey={tabsKey} items={items} onChange={onChange} />
         <div />
       </div>
