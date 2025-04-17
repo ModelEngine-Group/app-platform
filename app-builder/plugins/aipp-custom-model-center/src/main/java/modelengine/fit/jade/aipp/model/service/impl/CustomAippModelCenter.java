@@ -50,7 +50,7 @@ public class CustomAippModelCenter implements AippModelCenterExtension {
     @Override
     public ModelListDto fetchModelList(String type, String scene, OperationContext context) {
         LOG.info("[Custom][fetchModelList] operator={}, type={}, scene={}.", context.getOperator(), type, scene);
-        List<ModelPo> modelList = this.userModelRepo.getModelList(context.getOperator());
+        List<ModelPo> modelList = this.userModelRepo.listModelsByUserId(context.getOperator());
         if (CollectionUtils.isEmpty(modelList)) {
             return this.defaultModelCenter.fetchModelList(type, scene, context);
         }

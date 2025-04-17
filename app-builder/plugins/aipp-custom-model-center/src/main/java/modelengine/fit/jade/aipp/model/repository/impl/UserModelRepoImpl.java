@@ -37,7 +37,7 @@ public class UserModelRepoImpl implements UserModelRepo {
     }
 
     @Override
-    public List<ModelPo> getModelList(String userId) {
+    public List<ModelPo> listModelsByUserId(String userId) {
         return this.getModelPos(this.userModelMapper.listUserModels(userId));
     }
 
@@ -79,7 +79,7 @@ public class UserModelRepoImpl implements UserModelRepo {
     }
 
     @Override
-    public List<UserModelPo> listUserModels(String userId) {
+    public List<UserModelPo> listUserModelsByUserId(String userId) {
         return this.userModelMapper.listUserModels(userId);
     }
 

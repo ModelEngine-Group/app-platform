@@ -60,7 +60,7 @@ public class UserModelConfigServiceTest {
 
         ModelPo modelPo = ModelPo.builder().modelId(modelId).name("gpt").baseUrl("http://testUrl").build();
 
-        Mockito.when(userModelRepo.listUserModels(userId)).thenReturn(Collections.singletonList(userModelPo));
+        Mockito.when(userModelRepo.listUserModelsByUserId(userId)).thenReturn(Collections.singletonList(userModelPo));
         Mockito.when(userModelRepo.listModels(Collections.singletonList(modelId)))
                 .thenReturn(Collections.singletonList(modelPo));
 
@@ -98,7 +98,7 @@ public class UserModelConfigServiceTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        Mockito.when(userModelRepo.listUserModels(userId)).thenReturn(Collections.singletonList(userModelPo));
+        Mockito.when(userModelRepo.listUserModelsByUserId(userId)).thenReturn(Collections.singletonList(userModelPo));
 
         String result = userModelConfigService.deleteUserModel(userId, modelId);
         assertEquals("删除模型成功。", result);

@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 public class UserModelConfigService implements UserModelConfig {
     private static final Logger log = Logger.get(UserModelConfig.class);
     private static final String FITABLE_ID = "aipp.model.service.impl";
-    public static final String DEFAULT_MODEL_TYPE = "chat_completions";
+    private static final String DEFAULT_MODEL_TYPE = "chat_completions";
     private final UserModelRepo userModelRepo;
 
     /**
@@ -60,7 +60,7 @@ public class UserModelConfigService implements UserModelConfig {
     @Property(description = "返回该用户可用的模型列表")
     public List<UserModelDetailDto> getUserModelList(String userId) {
         log.info("start get model list for {}.", userId);
-        List<UserModelPo> userModelPos = this.userModelRepo.listUserModels(userId);
+        List<UserModelPo> userModelPos = this.userModelRepo.listUserModelsByUserId(userId);
         if (CollectionUtils.isEmpty(userModelPos)) {
             log.warn("No user model records found for userId={}.", userId);
             return Collections.emptyList();
@@ -130,7 +130,7 @@ public class UserModelConfigService implements UserModelConfig {
     @Property(description = "删除用户绑定的模型信息")
     public String deleteUserModel(String userId, String modelId) {
         log.info("start delete user model for {}.", userId);
-        List<UserModelPo> userModels = this.userModelRepo.listUserModels(userId);
+        List<UserModelPo> userModels = this.userModelRepo.listUserModelsByUserId(userId);
         if (CollectionUtils.isEmpty(userModels)) {
             return "删除模型失败，当前用户没有任何模型记录。";
         }

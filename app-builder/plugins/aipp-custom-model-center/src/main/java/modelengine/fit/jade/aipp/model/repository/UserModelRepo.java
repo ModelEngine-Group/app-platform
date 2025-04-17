@@ -25,7 +25,7 @@ public interface UserModelRepo {
      * @param userId 表示用户标识的 {@link String}。
      * @return 该用户可用的模型列表的 {@link List}{@code <}{@link ModelPo}{@code >}。
      */
-    List<ModelPo> getModelList(String userId);
+    List<ModelPo> listModelsByUserId(String userId);
 
     /**
      * 查询特定的模型访问信息。
@@ -51,7 +51,7 @@ public interface UserModelRepo {
      * @param userId 表示用户标识的 {@link String}。
      * @return 该用户可用的用户模型列表的 {@link List}{@code <}{@link UserModelPo}{@code >}。
      */
-    List<UserModelPo> listUserModels(String userId);
+    List<UserModelPo> listUserModelsByUserId(String userId);
 
     /**
      * 根据模型标识列表批量查询模型信息。

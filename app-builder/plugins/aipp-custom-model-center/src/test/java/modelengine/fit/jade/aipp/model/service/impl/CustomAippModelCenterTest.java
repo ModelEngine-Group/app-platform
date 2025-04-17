@@ -49,7 +49,7 @@ class CustomAippModelCenterTest {
                 .type("type")
                 .tag("tag1")
                 .build();
-        Mockito.when(this.userModelRepo.getModelList(userId)).thenReturn(Collections.singletonList(modelPo));
+        Mockito.when(this.userModelRepo.listModelsByUserId(userId)).thenReturn(Collections.singletonList(modelPo));
         OperationContext context = new OperationContext();
         context.setOperator(userId);
 
@@ -78,7 +78,7 @@ class CustomAippModelCenterTest {
                 .tag("tag1")
                 .build();
         ModelAccessInfo model1 = ModelAccessInfo.builder().serviceName("gpt").baseUrl("").tag("").build();
-        Mockito.when(this.userModelRepo.getModelList(userId)).thenReturn(Collections.emptyList());
+        Mockito.when(this.userModelRepo.listModelsByUserId(userId)).thenReturn(Collections.emptyList());
         ModelListDto expectModelList = ModelListDto.builder()
                 .models(Collections.singletonList(model1))
                 .total(1)
