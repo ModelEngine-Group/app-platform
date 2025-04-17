@@ -86,6 +86,7 @@ public class ChatSessionCleaner {
             csvWriter.writeAll(backupData);
         } catch (IOException e) {
             log.error("Error occurred while backup chat session data, exception:", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -105,6 +106,7 @@ public class ChatSessionCleaner {
             csvWriter.writeAll(backupData);
         } catch (IOException e) {
             log.error("Error occurred while backup instance relation data, exception:", e);
+            throw new RuntimeException(e);
         }
     }
 
