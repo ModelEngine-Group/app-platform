@@ -4,9 +4,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Modal, Spin } from 'antd';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { getAppInfo, getPublishAppId, getPreviewAppInfo } from '@/shared/http/aipp';
 import { setAppId, setAppInfo, setAippId, setAppVersion } from '@/store/appInfo/appInfo';
 import { setHistorySwitch } from '@/store/common/common';
@@ -15,7 +15,8 @@ import { setIsDebug } from "@/store/common/common";
 import { setInspirationOpen } from '@/store/chatStore/chatStore';
 import { storage } from '@/shared/storage';
 import { useTranslation } from 'react-i18next';
-import { findConfigValue } from '@/shared/utils/common';
+import { findConfigValue, getAppConfig } from '@/shared/utils/common';
+import useSearchParams from '@/shared/hooks/useSearchParams';
 import { TENANT_ID } from '../chatPreview/components/send-editor/common/config';
 import CommonChat from '../chatPreview/chatComminPage';
 import Login from './login';
@@ -30,6 +31,7 @@ import './index.scoped..scss';
  */
 const ChatRunning = () => {
   const { t } = useTranslation();
+  const history = useHistory();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
@@ -40,6 +42,11 @@ const ChatRunning = () => {
   const appInfo = useAppSelector((state) => state.appStore.appInfo);
   const loginStatus = useAppSelector((state) => state.chatCommonStore.loginStatus);
   const noAuth = useAppSelector((state) => state.chatCommonStore.noAuth);
+  const pluginList = useAppSelector((state) => state.chatCommonStore.pluginList);
+
+  // 插件不显示app name，可能遮挡插件内容，仅留返回按钮
+  const [pluginName, setPluginName] = useState('default');
+  const [plugin, setPlugin] = useState();
 
   // 获取publishId
   const getPublishId = async () => {
@@ -75,6 +82,7 @@ const ChatRunning = () => {
     try {
       const res:any = await getPublishAppId(TENANT_ID, id);
       if (res && res.code === 0) {
+        getAippDetails(res.data.app_id);
         dispatch(setAippId(res.data.aipp_id));
         dispatch(setAppVersion(res.data.version));
       }
@@ -85,7 +93,7 @@ const ChatRunning = () => {
   // 获取aipp详情
   const getAippDetails = async (appId: string) => {
     try {
-      const res:any = await getAppInfo(tenantId, appId);
+      const res:any = await getAppInfo(tenantId || TENANT_ID, appId);
       setLoading(false);
       if (res.code === 0) {
         res.data.notShowHistory = false;
@@ -95,6 +103,8 @@ const ChatRunning = () => {
         setNotice('');
         announcements(res.data);
         dispatch(setInspirationOpen(true));
+        const appChatStyle = getAppConfig(res.data) ? getAppConfig(res.data).appChatStyle : null;
+        setPluginName(appChatStyle || 'default');
       }
     } finally {
       setLoading(false);
@@ -140,6 +150,12 @@ const ChatRunning = () => {
       storage.set('chatVersionMap', arr);
     }
   }
+
+  useEffect(() => {
+    const found = pluginList.find((item: any) => item.name === pluginName);
+    setPlugin(found);
+  }, [pluginList, pluginName]);
+
   // 点击显示弹层
   useEffect(() => {
     if (uid) {
@@ -159,7 +175,17 @@ const ChatRunning = () => {
     if (!loginStatus) {
       setLogin(false);
     }
-  }, [loginStatus])
+  }, [loginStatus]);
+
+  // 插件中可能调用history.push，导致无法返回应用市场
+  const handleBack = () => {
+    if (plugin) {
+      history.push({ pathname: '/app' });
+    } else {
+      history.goBack();
+    }
+  };
+
   return (
     <Spin spinning={loading}>
       { noAuth ? 
@@ -168,10 +194,10 @@ const ChatRunning = () => {
         </div> :  
         <div className={`chat-running-container ${isPreview ? 'chat-running-full' : ''}`}>
           {isPreview ? <Login login={login} /> : <div className='chat-running-chat'>
-            <Button type='text' onClick={() => { window.history.back() }}>{t('return')}</Button>
-            <span className='running-app-name'>{appInfo.name}</span>
+            <Button type='text' onClick={handleBack}>{t('return')}</Button>
+            {plugin ? null : <span className='running-app-name'>{appInfo.name}</span>}
           </div>}
-          <CommonChat  />
+          <CommonChat pluginName={pluginName} />
           <Modal
             title={t('updateLog')}
             width={800}

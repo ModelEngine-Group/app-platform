@@ -6,8 +6,9 @@
 
 import { getCurUser, getOmsCurUser, getUserRole } from '../shared/http/aipp';
 import { v4 as uuidv4 } from 'uuid';
-import { setUserRole, setReadOnly } from '@/store/chatStore/chatStore';
+import { setUserRole, setReadOnly, setPluginList } from '@/store/chatStore/chatStore';
 import store from '@/store/store';
+import { queryPluginList } from '@/shared/http/chat';
 
 export const getUser = async () => {
   let userName = localStorage.getItem('__account_name__');
@@ -43,6 +44,11 @@ export const getRole = async () => {
     store.dispatch(setReadOnly(userRole === 'READ_ONLY'));
   }
 };
+
+export const getChatPluginList = async () => {
+  const pluginList = await queryPluginList();
+  store.dispatch(setPluginList(pluginList));
+}
 
 // 超过一千，转为K
 export const FormatQaNumber = (val) => {

@@ -7,7 +7,6 @@
 import { TENANT_ID } from '../chatPreview/components/send-editor/common/config';
 import i18n from '../../locale/i18n';
 import chatScreenshot from '../../assets/images/appConfig/chat-screenshot.jpg';
-import heatmapScreenshot from '../../assets/images/appConfig/heatmap-screenshot.jpg';
 const { origin } = window.location;
 let baseUrl = '';
 if (process.env.PACKAGE_MODE === 'spa') {
@@ -33,11 +32,6 @@ export const configMap = {
                 value: 'default',
                 label: i18n.t('default'),
                 image: chatScreenshot,
-              },
-              {
-                value: 'heatMap',
-                label: i18n.t('heatMap'),
-                image: heatmapScreenshot,
               },
             ],
             rules: [{required: true, message: 'appChatStyleCannotBeEmpty'}],
@@ -128,16 +122,6 @@ export const configMap = {
                 value: 'default',
                 label: i18n.t('default'),
                 image: chatScreenshot,
-              },
-              {
-                value: 'heatMap',
-                label: i18n.t('heatMap'),
-                image: heatmapScreenshot,
-              },
-              {
-                value: 'default1',
-                label: i18n.t('default'),
-                image: heatmapScreenshot,
               },
             ],
             rules: [{required: true, message: 'appChatStyleCannotBeEmpty'}],

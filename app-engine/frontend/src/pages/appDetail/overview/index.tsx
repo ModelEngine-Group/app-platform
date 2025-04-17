@@ -4,14 +4,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Divider, Spin } from 'antd';
 import { getAppInfo, getAppInfoByVersion } from '@/shared/http/aipp';
 import { Message } from '@/shared/utils/message';
 import { useHistory, useParams } from 'react-router';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { setAppInfo } from "@/store/appInfo/appInfo";
-import { findConfigValue } from '@/shared/utils/common';
+import { findConfigValue, getAppConfig } from '@/shared/utils/common';
 import { convertImgPath } from '@/common/util';
 import { useTranslation } from "react-i18next";
 import knowledgeImg from '@/assets/images/knowledge/knowledge-base.png';
@@ -58,11 +58,13 @@ const AppOverview: React.FC = () => {
       setLoading(false);
     });
   }, []);
+
   // 获取图片
   const getImgPath = async (icon) => {
     const res: any = await convertImgPath(icon);
     setAppIcon(res);
   };
+
   // 去编排点击回调
   const gotoArrange = () => {
     setBtnLoading(true);
@@ -72,18 +74,16 @@ const AppOverview: React.FC = () => {
         dispatch(setAppInfo({}));
         const newAppId = res.data.id;
         const aippId = res.data.aippId;
+
+        let url = `/app-develop/${tenantId}/app-detail/${newAppId}`;
         if (aippId) {
-          if (detail.appCategory === 'workflow') {
-            navigate({
-              pathname: `/app-develop/${tenantId}/app-detail/${newAppId}/${aippId}`,
-              search: '?type=chatWorkflow',
-            });
-          } else {
-            navigate(`/app-develop/${tenantId}/app-detail/${newAppId}/${aippId}`);
-          }
-        } else {
-          navigate(`/app-develop/${tenantId}/app-detail/${newAppId}`);
+          url += `/${aippId}`;
         }
+        if (detail.appCategory === 'workflow') {
+          url += '?type=chatWorkflow';
+        }
+
+        navigate(url);
       }
     }).catch(() => {
       setBtnLoading(false);
@@ -94,6 +94,7 @@ const AppOverview: React.FC = () => {
     const opening = findConfigValue(detail, 'opening');
     setOpening(opening || '-');
   }), [detail];
+
 
   return (
     <Spin spinning={loading}>

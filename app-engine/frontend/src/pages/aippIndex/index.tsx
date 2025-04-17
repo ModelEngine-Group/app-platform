@@ -13,7 +13,13 @@ import CommonChat from '../chatPreview/chatComminPage';
 import ChoreographyHead from '../components/header';
 import { getAppInfo } from '@/shared/http/aipp';
 import { updateFormInfo } from '@/shared/http/aipp';
-import { debounce, getUiD, getCurrentTime, setSpaClassName } from '@/shared/utils/common';
+import {
+  debounce,
+  getUiD,
+  getCurrentTime,
+  setSpaClassName,
+  getAppConfig
+} from '@/shared/utils/common';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { setInspirationOpen } from '@/store/chatStore/chatStore';
 import { setAppId, setAippId, setAppInfo, setChoseNodeId, setValidateInfo  } from '@/store/appInfo/appInfo';
@@ -30,6 +36,7 @@ import { setTestStatus } from "@/store/flowTest/flowTest";
 const AippIndex = () => {
   const { appId, tenantId, aippId } = useParams();
   const [showElsa, setShowElsa] = useState(false);
+  const [showConfig, setShowConfig] = useState(true);
   const [spinning, setSpinning] = useState(false);
   const [saveTime, setSaveTime] = useState('');
   const [reloadInspiration, setReloadInspiration] = useState('');
@@ -40,12 +47,32 @@ const AippIndex = () => {
   const inspirationRefresh = useRef<any>(false);
   const dispatch = useAppDispatch();
   const appInfo = useAppSelector((state) => state.appStore.appInfo);
+  const pluginList = useAppSelector((state) => state.chatCommonStore.pluginList);
   const addFlowRef = useRef<any>(null);
+  
+  const [pluginName, setPluginName] = useState('default');
+  const [plugin, setPlugin] = useState();
+
 
   const elsaChange = () => {
     setShowElsa(!showElsa);
     showElsa && getAippDetails(true);
   }
+
+  const handleChangeShowConfig = () => {
+    setShowConfig(!showConfig);
+  };
+
+  useEffect(() => {
+    const found = pluginList.find((item: any) => item.name === pluginName);
+    setPlugin(found);
+  }, [pluginList, pluginName]);
+
+  useEffect(() => {
+    if (plugin) {
+      setShowConfig(false);
+    }
+  }, [plugin]);
 
   useEffect(() => {
     dispatch(setAppInfo({}));
@@ -79,11 +106,19 @@ const AippIndex = () => {
         res.data.hideHistory = true;
         aippRef.current = res.data;
         dispatch(setAppInfo(res.data));
+        RefreshChatStyle(res.data);
       }
     } finally {
       setSpinning(false);
     }
   }
+
+  // 基于appInfo更新对话界面
+  const RefreshChatStyle = (appInfo) => {
+    const appChatStyle = getAppConfig(appInfo) ? getAppConfig(appInfo).appChatStyle : null;
+    setPluginName(appChatStyle || 'default');
+  };
+
   // 修改aipp更新回调
   const updateAippCallBack = (data) => {
     if (data) {
@@ -171,11 +206,15 @@ const AippIndex = () => {
                   handleConfigDataChange={handleConfigDataChange}
                   inspirationChange={inspirationChange}
                   showElsa={showElsa}
+                  showConfig={showConfig}
+                  onChangeShowConfig={handleChangeShowConfig}
                 />
               )}
             <CommonChat
+              showElsa={showElsa}
               contextProvider={contextProvider}
               previewBack={changeChat}
+              pluginName={pluginName}
             />
           </div>
         </div>

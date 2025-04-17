@@ -25,7 +25,7 @@ import { Provider } from 'react-redux';
 import { Icons, KnowledgeIcons } from '../icons/index';
 import store from '@/store/store';
 import { setSpaClassName } from '@/shared/utils/common';
-import { getUser, getOmsUser, getRole } from '../../pages/helper';
+import { getUser, getOmsUser, getRole, getChatPluginList } from '../../pages/helper';
 import './style.scoped.scss';
 
 const { Content, Sider } = Layout;
@@ -113,6 +113,7 @@ const AppLayout: React.FC = () => {
       getOmsUser();
       getRole();
     }
+    getChatPluginList();
   }, [])
   return (
     <Layout>

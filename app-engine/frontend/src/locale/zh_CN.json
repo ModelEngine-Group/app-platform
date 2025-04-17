@@ -203,6 +203,8 @@
   "knowledgeCreated": "恭喜您，知识库已完成创建",
   "enterNameRule": "输入字符长度范围：1 - 64",
   "expandArrange": "展开编排区",
+  "expandConfig": "展开配置区",
+  "collapseConfig":  "收起配置区",
   "flowChangeWarningContent": "工作流配置项已变更，请重新调试，调试成功后即可发布",
   "debugAlert": "工具流暂不支持调试历史记录",
   "consumer": "自定义",
@@ -939,7 +941,6 @@
   "codeErrorBusy": "系统繁忙，排队中，请稍后重试",
   "codeErrorTimeout": "请求响应超时，请检查网络连接后重试",
   "appConfig": "应用配置",
-  "heatMap": "热力图",
   "appChatStyle": "应用界面配置",
   "appChatStyleCannotBeEmpty": "应用界面配置不能为空",
   "deletePluginTips": "删除后无法恢复，会导致正在运行的应用不可用，是否确定删除"
