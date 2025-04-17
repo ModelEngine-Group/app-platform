@@ -27,4 +27,4 @@ fit:
 mybatis:
   mapper-locations: mapper/*Mapper.xml
 task:
-  expiredDays: 7
+  expiredDays: 1

@@ -9,6 +9,7 @@ package modelengine.fit.jober.aipp.repository;
 import modelengine.fit.jober.aipp.entity.ChatAndInstanceMap;
 import modelengine.fit.jober.aipp.entity.ChatInfo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -19,24 +20,34 @@ import java.util.List;
  */
 public interface AippChatRepository {
     /**
-     * 插入会话信息.
+     * 获取超期的对话唯一标识列表。
      *
-     * @param info 会话信息
+     * @param expiredDays 表示超期时长的 {@code int}。
+     * @param limit 表示查询数量的 {@code int}。
+     * @return 表示对话唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
      */
-    void insertChat(ChatInfo info);
-
-    /**
-     * 插入关系宽表
-     *
-     * @param info 会话信息
-     */
-    void insertWideRelationship(ChatAndInstanceMap info);
-
     List<String> getExpiredChatIds(int expiredDays, int limit);
 
+    /**
+     * 根据对话标识列表强制删除对话。
+     *
+     * @param chatIds 表示对话唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     */
     void forceDeleteChat(List<String> chatIds);
 
+    /**
+     * 根据对话唯一标识列表批量查询会话记录实体。
+     *
+     * @param chatIds 表示对话唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     * @return 表示会话记录实体列表的 {@link List}{@code <}{@link ChatInfo}{@code >}。
+     */
     List<ChatInfo> selectByChatIds(List<String> chatIds);
 
+    /**
+     * 根据对话唯一标识列表批量查询会话记录和任务实例的关系。
+     *
+     * @param chatIds 表示对话唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     * @return 表示会话记录和任务实例的关系的 {@link List}{@code <}{@link ChatAndInstanceMap}{@code >}。
+     */
     List<ChatAndInstanceMap> selectTaskInstanceRelationsByChatIds(List<String> chatIds);
 }

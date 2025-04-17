@@ -52,6 +52,12 @@ public class ChatSessionCleaner {
         this.chatRepo = chatRepo;
     }
 
+    /**
+     * 清理对话 session 相关数据，并备份。
+     *
+     * @param ttl 表示数据最大保留时长的 {@code int}。
+     * @param limit 表示批量处理数量的 {@code int}。
+     */
     public void chatSessionCleaner(int ttl, int limit) {
         try {
             while (true) {

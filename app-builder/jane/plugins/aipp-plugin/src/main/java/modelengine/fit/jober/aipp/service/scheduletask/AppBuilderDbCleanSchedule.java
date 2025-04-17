@@ -48,14 +48,13 @@ public class AppBuilderDbCleanSchedule {
     /**
      * 每天凌晨 3 点定时清理超期指定天数的应用相关数据。
      */
-    @Scheduled(strategy = Scheduled.Strategy.CRON, value = "0 0 * * * ?")
+    @Scheduled(strategy = Scheduled.Strategy.CRON, value = "0 0 3 * * ?")
     public void appBuilderDbCleanSchedule() {
         try {
             // 清理非业务数据
             aippInstanceLogCleaner.cleanAippInstancePreviewLog(nonBusinessDataTtl, LIMIT);
             appBuilderRuntimeInfoCleaner.appBuilderRuntimeInfoCleaner(nonBusinessDataTtl, LIMIT);
 
-            // 注意：未来业务相关的表新增字段时，这里的备份文件也要新增字段
             // 清理业务数据
             aippInstanceLogCleaner.cleanAippInstanceNormalLog(businessDataTtl, LIMIT);
             chatSessionCleaner.chatSessionCleaner(businessDataTtl, LIMIT);

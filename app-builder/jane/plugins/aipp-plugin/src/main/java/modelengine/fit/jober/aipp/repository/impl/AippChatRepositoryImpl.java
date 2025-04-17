@@ -31,16 +31,6 @@ public class AippChatRepositoryImpl implements AippChatRepository {
     public AippChatRepositoryImpl(AippChatMapper aippChatMapper) {this.aippChatMapper = aippChatMapper;}
 
     @Override
-    public void insertChat(ChatInfo info) {
-        aippChatMapper.insertChat(info);
-    }
-
-    @Override
-    public void insertWideRelationship(ChatAndInstanceMap info) {
-        aippChatMapper.insertWideRelationship(info);
-    }
-
-    @Override
     public List<String> getExpiredChatIds(int expiredDays, int limit) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expired = now.minusDays(expiredDays);

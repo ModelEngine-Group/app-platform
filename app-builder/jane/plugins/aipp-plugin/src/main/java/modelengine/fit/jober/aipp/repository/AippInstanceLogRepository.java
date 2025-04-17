@@ -33,5 +33,11 @@ public interface AippInstanceLogRepository {
      */
     void forceDeleteInstanceLogs(List<Long> logIds);
 
+    /**
+     * 根据日志唯一标识列表查询会话历史记录
+     *
+     * @param logIds 标识日志唯一标识列表的 {@link List}{@code <}{@link Long}{@code >}。
+     * @return 表示实例历史记录列表的 {@link List}{@code <}{@link AippInstLog}{@code >}。
+     */
     List<AippInstLog> selectByLogIds(List<Long> logIds);
 }

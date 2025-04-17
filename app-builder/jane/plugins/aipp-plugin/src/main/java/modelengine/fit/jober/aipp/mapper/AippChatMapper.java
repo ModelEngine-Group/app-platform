@@ -180,13 +180,42 @@ public interface AippChatMapper {
     List<QueryChatRsp> selectChatByCondition(@Param("condition") Map<String, String> condition,
             @Param("requestParam") QueryChatInfoRequest queryChatInfoRequest);
 
+    /**
+     * 获取超期的对话唯一标识。
+     *
+     * @param expiredDays 表示超期时长的 {@link LocalDateTime}。
+     * @param limit 表示查询数量的 {@code int}。
+     * @return 表示对话唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     */
     List<String> getExpiredChatIds(LocalDateTime expiredDays, int limit);
 
+    /**
+     * 根据对话标识列表强制删除对话。
+     *
+     * @param chatIds 表示对话唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     */
     void forceDeleteChat(List<String> chatIds);
 
+    /**
+     * 根据对话标识列表强制删除对话和任务实例关系。
+     *
+     * @param chatIds 表示对话唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     */
     void deleteWideRelationshipByChatIds(List<String> chatIds);
 
+    /**
+     * 根据对话唯一标识列表批量查询会话记录实体。
+     *
+     * @param chatIds 表示对话唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     * @return 表示会话记录实体列表的 {@link List}{@code <}{@link ChatInfo}{@code >}。
+     */
     List<ChatInfo> selectByChatIds(@Param("chatIds") List<String> chatIds);
 
+    /**
+     * 根据对话唯一标识列表批量查询会话记录和任务实例的关系。
+     *
+     * @param chatIds 表示对话唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     * @return 表示会话记录和任务实例的关系的 {@link List}{@code <}{@link ChatAndInstanceMap}{@code >}。
+     */
     List<ChatAndInstanceMap> selectTaskInstanceRelationsByChatIds(@Param("chatIds") List<String> chatIds);
 }

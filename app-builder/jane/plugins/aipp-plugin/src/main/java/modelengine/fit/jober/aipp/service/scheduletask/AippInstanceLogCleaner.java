@@ -6,15 +6,12 @@
 
 package modelengine.fit.jober.aipp.service.scheduletask;
 
-import static modelengine.fit.jober.aipp.service.scheduletask.AppBuilderDbCleanSchedule.FILE_MAX_NUM;
-
 import com.opencsv.CSVWriter;
 
 import modelengine.fit.jober.aipp.entity.AippInstLog;
 import modelengine.fit.jober.aipp.enums.AippTypeEnum;
 import modelengine.fit.jober.aipp.repository.AippInstanceLogRepository;
 import modelengine.fitframework.annotation.Component;
-import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 
@@ -28,6 +25,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
+import static modelengine.fit.jober.aipp.service.scheduletask.AppBuilderDbCleanSchedule.FILE_MAX_NUM;
 
 /**
  * AippInstanceLog数据库表清理任务
@@ -51,6 +50,12 @@ public class AippInstanceLogCleaner {
         this.instanceLogRepo = instanceLogRepo;
     }
 
+    /**
+     * 清理已发布的应用对话历史记录表数据，并备份。
+     *
+     * @param ttl 表示数据最大保留时长的 {@code int}。
+     * @param limit 表示批量处理数量的 {@code int}。
+     */
     public void cleanAippInstanceNormalLog(int ttl, int limit) {
         try {
             while (true) {
@@ -68,7 +73,7 @@ public class AippInstanceLogCleaner {
         }
     }
 
-    private void backupData(List<Long> logIds){
+    private void backupData(List<Long> logIds) {
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
         Path backupPath = Paths.get(AIPP_INSTANCE_LOG_FILE_PATH, FILE_NAME + currentDate + ".csv");
         try (CSVWriter csvWriter = new CSVWriter(new FileWriter(backupPath.toFile(), true))) {
@@ -101,6 +106,12 @@ public class AippInstanceLogCleaner {
         }
     }
 
+    /**
+     * 清理调试应用对话历史记录表数据。
+     *
+     * @param ttl 表示数据最大保留时长的 {@code int}。
+     * @param limit 表示批量处理数量的 {@code int}。
+     */
     public void cleanAippInstancePreviewLog(int ttl, int limit) {
         log.info("Start cleaning aipp preview instance logs");
         try {
