@@ -9,7 +9,7 @@ import type { TableColumnType } from 'antd';
 import { Button, Input, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import './index/scoped.scss';
+import './index.scoped.scss';
 
 /*
 * @params:

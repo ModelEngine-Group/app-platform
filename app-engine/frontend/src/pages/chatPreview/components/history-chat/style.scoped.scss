@@ -64,6 +64,19 @@
     &-title {
       font-size: 14px;
       font-weight: 600;
+      flex-grow: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    &-btn {
+      color: #047bfc;
+      cursor: pointer;
+      display: inline-block;
+      width: 60px;
+      flex-shrink: 0;
+      margin-left: 24px;
     }
 
     &-footer {

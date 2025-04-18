@@ -240,10 +240,10 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({ openHistorySignal, setL
                 <div className='history-item-content'>
                   <div className='history-item-header'>
                     <Tooltip placement='top' title={<span style={{ color: '#4d4d4d' }}>{item?.chat_name}</span>} color='#ffffff'>
-                      <div className='history-item-title'>{item?.chat_name?.length > 10 ? item?.chat_name?.substring(0, 10) + '...' : item?.chat_name}</div>
+                      <div className='history-item-title'>{item?.chat_name}</div>
                     </Tooltip>
                     <span
-                      style={{ cursor: "pointer", color: "#1677ff" }}
+                      className='history-item-btn'
                       onClick={() => { continueChat(item?.chat_id, item.attributes.dimension_id); }}
                     >
                       {t('continueChat')}
