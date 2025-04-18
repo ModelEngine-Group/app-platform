@@ -249,7 +249,7 @@
         FROM
             t_chat_session
         WHERE
-            create_at &lt; #{expiredDays}
+            update_at &lt; #{expiredDays}
         LIMIT #{limit};
     </select>
 
