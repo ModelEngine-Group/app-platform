@@ -46,8 +46,11 @@ public class AippInstanceLogCleaner {
 
     private final AippInstanceLogRepository instanceLogRepo;
 
-    public AippInstanceLogCleaner(AippInstanceLogRepository instanceLogRepo) {
+    private final CsvWriterHelper csvWriterHelper;
+
+    public AippInstanceLogCleaner(AippInstanceLogRepository instanceLogRepo, CsvWriterHelper csvWriterHelper) {
         this.instanceLogRepo = instanceLogRepo;
+        this.csvWriterHelper = csvWriterHelper;
     }
 
     /**
@@ -76,7 +79,7 @@ public class AippInstanceLogCleaner {
     private void backupData(List<Long> logIds) {
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
         Path backupPath = Paths.get(AIPP_INSTANCE_LOG_FILE_PATH, FILE_NAME + currentDate + ".csv");
-        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(backupPath.toFile(), true))) {
+        try (CSVWriter csvWriter = csvWriterHelper.createCsvWriter(backupPath, true)) {
             List<AippInstLog> aippInstLogs = this.instanceLogRepo.selectByLogIds(logIds);
             if (CollectionUtils.isEmpty(aippInstLogs)) {
                 return;
@@ -94,7 +97,7 @@ public class AippInstanceLogCleaner {
     }
 
     private void cleanupOldBackups(int fileMaxNum) {
-        File backupFolder = new File(AIPP_INSTANCE_LOG_FILE_PATH);
+        File backupFolder = csvWriterHelper.getFile(AIPP_INSTANCE_LOG_FILE_PATH);
         File[] backupFiles = backupFolder.listFiles((dir, name) -> name.startsWith(FILE_NAME) && name.endsWith(".csv"));
         if (backupFiles == null) {
             return;

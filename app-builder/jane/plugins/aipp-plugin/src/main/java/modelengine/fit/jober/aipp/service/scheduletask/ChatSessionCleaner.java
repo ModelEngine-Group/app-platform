@@ -48,8 +48,11 @@ public class ChatSessionCleaner {
 
     private final AippChatRepository chatRepo;
 
-    public ChatSessionCleaner(AippChatRepository chatRepo) {
+    private final CsvWriterHelper csvWriterHelper;
+
+    public ChatSessionCleaner(AippChatRepository chatRepo, CsvWriterHelper csvWriterHelper) {
         this.chatRepo = chatRepo;
+        this.csvWriterHelper = csvWriterHelper;
     }
 
     /**
@@ -79,7 +82,7 @@ public class ChatSessionCleaner {
     private void backupChatSessionData(List<String> chatIds) {
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
         Path backupPath = Paths.get(CHAT_SESSION_FILE_PATH, CHAT_SESSION_FILE_NAME + currentDate + ".csv");
-        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(backupPath.toFile(), true))) {
+        try (CSVWriter csvWriter = csvWriterHelper.createCsvWriter(backupPath, true)) {
             List<ChatInfo> chatSessionPos = this.chatRepo.selectByChatIds(chatIds);
             if (CollectionUtils.isEmpty(chatSessionPos)) {
                 return;
@@ -99,7 +102,7 @@ public class ChatSessionCleaner {
     private void backupInstanceRelationData(List<String> chatIds) {
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
         Path backupPath = Paths.get(CHAT_SESSION_FILE_PATH, INSTANCE_RELATIONS_FILE_NAME + currentDate + ".csv");
-        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(backupPath.toFile(), true))) {
+        try (CSVWriter csvWriter = csvWriterHelper.createCsvWriter(backupPath, true)) {
             List<ChatAndInstanceMap> relationPos = this.chatRepo.selectTaskInstanceRelationsByChatIds(chatIds);
             if (CollectionUtils.isEmpty(relationPos)) {
                 return;
@@ -118,7 +121,7 @@ public class ChatSessionCleaner {
 
     private void cleanupOldBackups(String fileName, int fileMaxNum) {
         try {
-            File backupFolder = new File(CHAT_SESSION_FILE_PATH);
+            File backupFolder = csvWriterHelper.getFile(CHAT_SESSION_FILE_PATH);
             File[] backupFiles =
                     backupFolder.listFiles((dir, name) -> name.startsWith(fileName) && name.endsWith(".csv"));
             if (backupFiles == null) {
