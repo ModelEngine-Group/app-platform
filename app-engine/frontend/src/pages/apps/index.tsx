@@ -113,10 +113,10 @@ const Apps: React.FC = () => {
       <div className='apps_main_market'>
         <div className='operatorArea'>
           <Input
+            className='apps-search-input'
             showCount
             maxLength={64}
             placeholder={t('search')}
-            style={{ width: 'calc(25% - 16px)', height: '35px' }}
             prefix={<Icons.search color={'rgb(230, 230, 230)'} />}
             onChange={(e) => handleSearch(e.target.value)}
           />

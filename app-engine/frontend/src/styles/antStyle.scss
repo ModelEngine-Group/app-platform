@@ -220,10 +220,11 @@
   top: -1.5px;
   font-weight: 700;
 }
-.ant-btn-primary:hover, .ant-btn-primary:focus {
+.ant-btn.ant-btn-primary:hover,
+.ant-btn.ant-btn-primary:focus {
   color: #ffffff;
-  border-color: #1664d9 !important;
-  background-color: #1664d9 !important;
+  border-color: #1664d9;
+  background-color: #1664d9;
 }
 .edit-form-content {
   .ant-form-item {

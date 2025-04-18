@@ -182,8 +182,7 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({ openHistorySignal, setL
   }
   const removeTagContent = (content: string) => {
     if (!content) return '';
-    const thinkReg = /<think>[\s\S]*?<\/think>/gm;
-    return content.replaceAll(thinkReg, '');
+    return content.replace(/^[\s\S]*?<\/think>/s, '');
   }
 
   useEffect(() => {

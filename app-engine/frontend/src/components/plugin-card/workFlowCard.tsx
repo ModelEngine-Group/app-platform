@@ -91,7 +91,7 @@ const WorkflowCard = ({ pluginData, type, getWaterFlowList }: any) => {
     >
       <div className='plugin-card-header'>
         {imgPath ? <img src={imgPath} alt='' /> : <img src={knowledgeImg} alt='' />}
-        <div>
+        <div className='plugin-header-item'>
           <div className='plugin-title'>
             <div className='plugin-head'>
               <span className='text' title={pluginData?.name}>{pluginData?.name}</span>
@@ -119,8 +119,8 @@ const WorkflowCard = ({ pluginData, type, getWaterFlowList }: any) => {
             <span>
               {
                 (pluginData?.attributes?.latest_version || pluginData.state === 'active') ?
-                  <Tag bordered={false} color='processing' className='footer-type'>{t('active')}</Tag> :
-                  <Tag bordered={false} className='footer-type'>{t('draft')}</Tag>
+                  <Tag color='processing' className='footer-type'>{t('active')}</Tag> :
+                  <Tag className='footer-type'>{t('draft')}</Tag>
               }
             </span>
             <span hidden>

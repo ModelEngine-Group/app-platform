@@ -29,6 +29,10 @@
     .operatorArea {
       display: flex;
       align-items: center;
+      .apps-search-input {
+        width: calc(25% - 16px);
+        height: 35px;
+      }
     }
     .card_list {
       max-height: calc(100vh - 360px);

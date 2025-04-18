@@ -9,6 +9,8 @@ import type { TableColumnType } from 'antd';
 import { Button, Input, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import './index/scoped.scss';
+
 /*
 * @params:
 * searchKeyName：筛选字段名key
@@ -18,18 +20,18 @@ const TableTextSearch = (searchKeyName: string, async: boolean = true): TableCol
   const { t } = useTranslation();
   return ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, close }) => (
-      <div style={{ padding: 8, width: 250, height: 84 }} onKeyDown={(e) => e.stopPropagation()}>
+      <div className='table-header-search' onKeyDown={(e) => e.stopPropagation()}>
         <Input
+          className='search-input'
           value={selectedKeys[0]}
           onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => confirm()}
-          style={{ marginBottom: 8, display: 'block' }}
         />
-        <Space style={{ float: 'right', marginBottom: 8 }}>
+        <Space className='search-btn'>
           <Button
+            className='search-btn-item'
             type='default'
             size='small'
-            style={{ minWidth: 60, height: 24 }}
             onClick={() => {
               close();
             }}
@@ -37,10 +39,10 @@ const TableTextSearch = (searchKeyName: string, async: boolean = true): TableCol
             {t('close')}
           </Button>
           <Button
+            className='search-btn-item'
             type='primary'
             onClick={() => confirm()}
             size='small'
-            style={{ minWidth: 60, height: 24, backgroundColor: '#2673e5' }}
           >
             {t('ok')}
           </Button>
