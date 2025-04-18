@@ -106,7 +106,7 @@ public class CacheUtils {
         String aippId =
                 APP_ID_TO_AIPP_ID_CACHE.get(appId, id -> getLatestMetaByAppId(metaService, id, context).getId());
         return AIPP_ID_TO_LAST_META_CACHE.get(aippId, (ignore) -> {
-            Meta lastPublishedMeta = MetaUtils.getLastPublishedMeta(metaService, appId, context);
+            Meta lastPublishedMeta = MetaUtils.getLastPublishedMeta(metaService, aippId, context);
             return Optional.ofNullable(lastPublishedMeta)
                     .orElseThrow(() -> new AippException(AippErrCode.APP_CHAT_PUBLISHED_META_NOT_FOUND));
         });
