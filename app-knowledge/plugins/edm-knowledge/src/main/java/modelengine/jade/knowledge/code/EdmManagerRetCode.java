@@ -18,7 +18,7 @@ public enum EdmManagerRetCode implements RetCode {
     /**
      * 获取 edm 知识库响应的数据内容失败。
      */
-    EDM_EXCHANGE_ERROR(130703001, "The feature of linking to external knowledge base will be launched on 430, so stay tuned.");
+    EDM_EXCHANGE_ERROR(130703001, "The feature of linking to external knowledge base will be launched on 2025-04-30, so stay tuned.");
 
     private final int code;
     private final String msg;
