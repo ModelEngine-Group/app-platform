@@ -82,18 +82,18 @@ const AppCard = ({ cardInfo, clickMore, showOptions = true, isTemplate = false, 
       setMenu([
         {
           key: 'export',
-          label: <div>{t('export')}</div>,
+          label: <div className='menu-items'>{t('export')}</div>,
         },
       ]);
     } else {
       setMenu([
         {
-          key: 'delete',
-          label: <div>{t('delete')}</div>,
+          key: 'export',
+          label: <div className='menu-items'>{t('export')}</div>,
         },
         {
-          key: 'export',
-          label: <div>{t('export')}</div>,
+          key: 'delete',
+          label: <div className='menu-items'>{t('delete')}</div>,
         },
       ]);
     }
@@ -147,6 +147,7 @@ const AppCard = ({ cardInfo, clickMore, showOptions = true, isTemplate = false, 
                   },
                 }}
                 placement='bottomLeft'
+                overlayClassName='app-card-menu'
                 trigger={['click']}
               >
                 <div

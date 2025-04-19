@@ -35,6 +35,29 @@
         overflow: hidden;
         text-overflow: ellipsis;
         color: rgba(5, 5, 5, 0.96);
+        cursor: pointer;
+      }
+    }
+    .plugin-header-item {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-grow: 1;
+      width: 0;
+      .plugin-head {
+        display: flex;
+        align-items: center;
+        .text {
+          display: inline-block;
+          max-width: 70%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .version {
+          min-width: 60px;
+        }
       }
     }
   }
@@ -46,6 +69,10 @@
     color: rgb(107 107 107);
     img {
       border-radius: 50%;
+    }
+    .creator {
+      margin-right: 8px;
+      cursor: pointer;
     }
   }
   .card-content {

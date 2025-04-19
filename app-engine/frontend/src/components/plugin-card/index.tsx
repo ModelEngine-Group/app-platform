@@ -83,7 +83,7 @@ const PluginCard = ({ pluginData, cardType, getPluginList, pluginId, cardStatus,
             </div>
             <div className='plugin-card-user'>
               <img width="18" height="18" src={userImg} alt="" />
-              <span style={{ marginRight: 8 }}>{pluginData.creator}</span>
+              <span className='creator'>{pluginData.creator}</span>
               {pluginData?.tags?.map((tag: string, index: number) => {
                  if (tag.trim().length > 0) {
                   return <Tag style={{ margin: 0 }} key={index}>{tag}</Tag>

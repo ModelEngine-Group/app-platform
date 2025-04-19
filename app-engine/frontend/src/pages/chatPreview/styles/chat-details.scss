@@ -1,8 +1,7 @@
 .chat-details-content {
-  //font-family: 'PingFangSC-Medium';
   padding: 0 48px;
   margin: 0 auto;
-  margin-top: 100px;
+  margin-top: 50px;
   .top {
     text-align: center;
     .head {
@@ -29,6 +28,7 @@
       line-height: 26px;
       color: #71757F;
       word-break: break-all;
+      text-align: left;
     }
   }
 

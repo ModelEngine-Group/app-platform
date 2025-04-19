@@ -1,0 +1,18 @@
+.table-header-search {
+    padding: 8px;
+    width: 250px;
+    height: 84px;
+    .search-input {
+        margin-bottom: 8px;
+        display: block;
+    }
+    .search-btn {
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: flex-end;
+        .search-btn-item {
+            min-width: 60px;
+            height: 24px;
+        }
+    }
+}

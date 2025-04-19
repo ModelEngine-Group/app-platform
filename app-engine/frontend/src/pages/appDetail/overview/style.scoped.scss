@@ -1,12 +1,12 @@
 .tab-content {
   height: calc(100vh - 160px);
-  padding-right: 15px;
-  padding-bottom: 60px;
+  padding: 24px;
+  padding-top: 8px;
   overflow: auto;
   .content-inner {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     .inner-box {
       display: flex;
       justify-content: space-between;
@@ -32,10 +32,6 @@
           }
         }
       }
-    }
-    .remarks-content {
-      display: flex;
-      gap: 24px;
     }
   }
   .detail-card {
@@ -107,6 +103,7 @@
   width: 100%;
   display: flex;
   align-items: center;
+  position: relative;
   .text {
     max-width: 80%;
     font-weight: 700;
@@ -124,23 +121,24 @@
       margin-right: 8px;
     }
   }
+  .app-btn {
+    position: absolute;
+    right: 0;
+    .ant-btn {
+      margin-left: 16px;
+    }
+  }
 }
 .app-desc {
   word-break: break-all;
 }
-.app-btn {
-  button {
-    min-width: 96px;
-  }
-}
 .remarks {
-  display: flex;
   .left {
     width: 90px;
     color: rgb(113, 117, 127);
   }
   .right {
-    flex: 1;
+    margin-top: 8px;
     word-break: break-all;
   }
 }

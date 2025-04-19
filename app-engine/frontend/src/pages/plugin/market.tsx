@@ -159,14 +159,14 @@ const MarketItems = ({ reload, readOnly }) => {
         <Input
           showCount
           maxLength={20}
-          placeholder='Search'
+          placeholder={t('search')}
           className='market-input'
           onChange={(e) => handleSearch(e.target.value)}
           prefix={<Icons.search color={'rgb(230, 230, 230)'} />}
           defaultValue={name}
         />
         { !readOnly &&  <Dropdown menu={{ items }}>
-          <Button className='market-button'>
+          <Button type='primary' className='market-button'>
             {t('upload')}
           </Button>
         </Dropdown> }
