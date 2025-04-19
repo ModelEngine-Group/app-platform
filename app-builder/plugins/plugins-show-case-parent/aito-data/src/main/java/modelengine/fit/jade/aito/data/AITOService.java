@@ -4,7 +4,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-package modelengine.fit.jade.wenjie.data;
+package modelengine.fit.jade.aito.data;
 
 import modelengine.fitframework.annotation.Genericable;
 import modelengine.fitframework.annotation.Property;
@@ -20,8 +20,8 @@ import java.util.Map;
  * @author 夏斐
  * @since 2025/3/17
  */
-@Group(name = "Wenjie")
-public interface WenjieService {
+@Group(name = "AITO")
+public interface AITOService {
     /**
      * 问界产品信息查询。
      *
@@ -29,7 +29,7 @@ public interface WenjieService {
      * @return 表示查询结果的 {@link String}。
      */
     @ToolMethod(name = "问界产品信息查询", description = "用于查询问界产品信息查询")
-    @Genericable("modelengine.jober.aipp.wenjie.describe")
+    @Genericable("modelengine.jober.aipp.AITO.describe")
     String allDescribe(@Property(description = "预留参数，当前传入空字符串即可", required = true) String args);
 
     /**
@@ -39,6 +39,6 @@ public interface WenjieService {
      * @return 表示车辆图片的 {@link String}。
      */
     @ToolMethod(name = "问界产品宣传图", description = "用于查询问界产品宣传图")
-    @Genericable("modelengine.jober.aipp.wenjie.url")
+    @Genericable("modelengine.jober.aipp.AITO.url")
     List<Map<String, String>> url(@Property(description = "车的型号", required = true) String carType);
 }

@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>modelengine.fit.jade.plugin</groupId>
-    <artifactId>wenjie-data</artifactId>
+    <artifactId>aito-data</artifactId>
 
     <dependencies>
         <!-- FIT -->

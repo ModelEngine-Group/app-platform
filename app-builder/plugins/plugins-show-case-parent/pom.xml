@@ -15,6 +15,6 @@
     <modules>
         <module>agent-test</module>
         <module>fortune-telling</module>
-        <module>wenjie-data</module>
+        <module>aito-data</module>
     </modules>
 </project>

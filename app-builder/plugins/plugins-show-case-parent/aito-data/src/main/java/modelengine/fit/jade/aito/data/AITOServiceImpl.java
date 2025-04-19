@@ -4,7 +4,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-package modelengine.fit.jade.wenjie.data;
+package modelengine.fit.jade.aito.data;
 
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
@@ -46,10 +46,10 @@ import java.util.stream.Collectors;
  * @author 夏斐
  * @since 2025/3/17
  */
-@Group(name = "WenjieImpl")
+@Group(name = "AITOImpl")
 @Component
-public class WenjieServiceImpl implements WenjieService {
-    private static final Logger log = Logger.get(WenjieServiceImpl.class);
+public class AITOServiceImpl implements AITOService {
+    private static final Logger log = Logger.get(AITOServiceImpl.class);
     // 基础图片 URL 前缀
     private static final String BASE_URL =
             "http://localhost:8001/api/jober/v1/api/31f20efc7e0848deab6a6bc10fc3021e/file?filePath=/var/share/";
@@ -166,14 +166,14 @@ public class WenjieServiceImpl implements WenjieService {
      *
      * @param resourceDir 表示原文件夹的 {@link String}。
      * @param targetDir 表示目标文件夹的 {@link String}。
-     * @throws IOException 表示抛出异常的 {@link IOException}。
+     * @throws IOException 当生成 JarFile 异常时 {@link IOException}。
      */
     public static void copyImagesFromJar(String resourceDir, String targetDir) throws IOException {
         // 获取ClassLoader
-        ClassLoader classLoader = WenjieServiceImpl.class.getClassLoader();
+        ClassLoader classLoader = AITOServiceImpl.class.getClassLoader();
 
         // 获取JAR文件的路径
-        String jarPath = WenjieServiceImpl.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String jarPath = AITOServiceImpl.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         File jarFile = new File(jarPath);
 
         if (jarFile.isFile()) { // 如果是JAR文件
@@ -263,7 +263,7 @@ public class WenjieServiceImpl implements WenjieService {
      * @return 表示文件内容字符串的 {@link String}。
      */
     public static String readResourceFile(String resourcePath) {
-        ClassLoader classLoader = WenjieServiceImpl.class.getClassLoader();
+        ClassLoader classLoader = AITOServiceImpl.class.getClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream(resourcePath)) {
             if (inputStream == null) {
                 throw new IllegalArgumentException("文件不存在：" + resourcePath);

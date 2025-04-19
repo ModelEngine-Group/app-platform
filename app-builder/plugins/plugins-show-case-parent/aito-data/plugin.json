@@ -1,10 +1,10 @@
 {
   "checksum": "5d7c74d64eeb078ff02a1ea287371282d443bb269168f7c9102500048eca3469",
   "type": "java",
-  "name": "wenjie-cars",
+  "name": "AITO-cars",
   "description": "问界的车型介绍",
   "uniqueness": {
-    "artifactId": "wenjie-data",
+    "artifactId": "aito-data",
     "groupId": "modelengine.fit.jade.plugin"
   }
 }
