@@ -56,6 +56,7 @@
         <json-schema.version>1.14.5</json-schema.version>
         <influxdb.version>2.24</influxdb.version>
         <aws.version>1.12.468</aws.version>
+        <opencsv.version>5.7.1</opencsv.version>
 
         <!-- Test framework versions -->
         <assertj.version>3.22.0</assertj.version>
@@ -556,6 +557,11 @@
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-s3</artifactId>
                 <version>${aws.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.opencsv</groupId>
+                <artifactId>opencsv</artifactId>
+                <version>${opencsv.version}</version>
             </dependency>
 
             <!-- Not Necessary -->

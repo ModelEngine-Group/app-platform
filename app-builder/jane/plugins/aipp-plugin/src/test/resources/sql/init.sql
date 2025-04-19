@@ -146,3 +146,37 @@ create table if not exists app_template (
     update_at timestamp(6) not null default CURRENT_TIMESTAMP,
     is_deleted int2 not null default 0
 );
+
+create table if not exists app_builder_runtime_info
+(
+    id                 BIGSERIAL primary key,
+    trace_id           varchar(64) not null,
+    flow_definition_id varchar(64) not null,
+    instance_id        varchar(64) not null,
+    node_id            varchar(64) not null,
+    node_type          varchar(32) not null,
+    start_time         bigint not null,
+    end_time           bigint not null,
+    status             varchar(32),
+    published          smallint not null,
+    error_msg          text,
+    next_position_id   varchar(64),
+    parameters         json not null DEFAULT '[]',
+    create_by          varchar(64),
+    create_at          timestamp    not null default current_timestamp,
+    update_by          varchar(64),
+    update_at          timestamp    not null default current_timestamp
+);
+
+CREATE TABLE IF NOT EXISTS t_chat_session (
+    chat_id     VARCHAR(32)   NOT NULL DEFAULT NULL,
+    app_id      VARCHAR(32)   NULL     DEFAULT NULL,
+    app_version VARCHAR(32)   NULL     DEFAULT NULL,
+    name        VARCHAR(2000) NULL     DEFAULT NULL,
+    attributes  JSON          NULL     DEFAULT NULL,
+    create_at   TIMESTAMP(6)  NULL     DEFAULT NULL,
+    create_by   VARCHAR(32)   NULL     DEFAULT NULL,
+    update_at   TIMESTAMP(6)  NULL     DEFAULT NULL,
+    update_by   VARCHAR(32)   NULL     DEFAULT NULL,
+    status      INT4          NULL     DEFAULT NULL
+);

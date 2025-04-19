@@ -17,3 +17,7 @@ truncate table app_builder_form;
 truncate table app_builder_form_property;
 
 truncate table app_template;
+
+truncate table app_builder_runtime_info;
+
+truncate table t_chat_session;
