@@ -15,6 +15,7 @@ import modelengine.fit.http.client.HttpClientException;
 import modelengine.fit.http.entity.Entity;
 import modelengine.fit.http.protocol.HttpRequestMethod;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.exception.ClientException;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.LazyLoader;
@@ -76,7 +77,7 @@ public class EdmKnowledgeBaseManager {
             EdmResponse<EdmListRepoEntity> resp =
                     ObjectUtils.cast(Validation.notNull(object, "The response body is abnormal."));
             return Validation.notNull(resp.getData(), "The response data is abnormal.");
-        } catch (HttpClientException ex) {
+        } catch (HttpClientException | ClientException ex) {
             log.error(EDM_EXCHANGE_ERROR.getMsg(), ex);
             throw new ModelEngineException(EDM_EXCHANGE_ERROR, ex);
         }
