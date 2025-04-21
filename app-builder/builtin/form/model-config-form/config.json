@@ -1,0 +1,48 @@
+{
+  "schema": {
+    "name": "模型管理表单",
+    "parameters": {
+      "type": "object",
+      "required": ["models"],
+      "properties": {
+        "models": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "createdAt": { "type": "string" },
+              "modelName": { "type": "string" },
+              "modelId": { "type": "string" },
+              "baseUrl": { "type": "string" },
+              "isDefault": { "type": "integer" },
+              "userId": { "type": "string" }
+            },
+            "required": ["modelId", "isDefault", "userId"]
+          }
+        }
+      }
+    },
+    "return": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["add", "delete", "switch", "quit"]
+        },
+        "info": {
+          "type": "object",
+          "properties": {
+            "modelName": { "type": "string" },
+            "modelId": { "type": "string" },
+            "baseUrl": { "type": "string" },
+            "isDefault": { "type": "integer" },
+            "userId": { "type": "string" },
+            "apiKey": { "type": "string" }
+          },
+          "required": ["modelName", "modelId", "baseUrl", "isDefault", "userId", "apiKey"]
+        }
+      },
+      "required": ["action", "info"]
+    }
+  }
+}
