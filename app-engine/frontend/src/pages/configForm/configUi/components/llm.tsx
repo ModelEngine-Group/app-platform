@@ -49,7 +49,13 @@ const LLM = (props) => {
   const handleGetModels = (open) => {
     if (!open) return;
     getModels().then((res) => {
-      setModels(res.models);
+      const models = res.models.map((model) => {
+        return {
+          ...model,
+          id: model.serviceName + '***' + model.tag
+        }
+      })
+      setModels(models);
     })
   }
 
@@ -100,19 +106,20 @@ const LLM = (props) => {
 
   // 校验模型是否存在
   const checkExist = (rules, value) => {
-    if (!models.find(item => item.serviceName === value)) {
+    if (!models.find(item => item.id === value)) {
       return Promise.reject(new Error(`${t('LLM')}${value}${t('modelNotExistTip')}`));
     }
     return Promise.resolve();
   };
 
-  const handleUpdateModel = (value) => {
+  const handleUpdateModel = (models, value) => {
     if (appValidateInfo.length) {
       form.validateFields(['model']).then(() => {
         dispatch(setValidateInfo(appValidateInfo.filter(item => (item.configCheckId !== validateItem.configCheckId) && item.configName !== 'accessInfo')));
       })
     }
-    updateData({ model: value, accessInfo: { serviceName: value } });
+    const updateModelInfo = models.find(item => item.id === value);
+    updateData({ model: value, accessInfo: { serviceName: updateModelInfo.serviceName, tag: updateModelInfo.tag } });
   };
 
   const openGeneratePrompt = (isFormDrawer = false) => {
@@ -150,10 +157,10 @@ const LLM = (props) => {
                   placeholder={t('selectLlm')}
                   options={models}
                   onDropdownVisibleChange={(open) => handleGetModels(open)}
-                  onChange={(value) => handleUpdateModel(value)}
+                  onChange={(value) => handleUpdateModel(models, value)}
                   fieldNames={{
                     label: 'serviceName',
-                    value: 'serviceName'
+                    value: 'id'
                   }}
                 >
                 </Select>
