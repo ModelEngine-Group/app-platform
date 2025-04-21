@@ -1,0 +1,21 @@
+.form-wrap {
+  height: 100%;
+  overflow-y: auto;
+  padding: 24px;
+  box-sizing: border-box;
+
+  .ant-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+  }
+
+  .ant-table-thead > tr > th {
+    background: #fafafa;
+    font-weight: bold;
+  }
+
+  .ant-btn[shape='circle']:hover {
+    background-color: #ffecec !important;
+    border-radius: 50%;
+  }
+}
