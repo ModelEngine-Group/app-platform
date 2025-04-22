@@ -67,9 +67,6 @@ const FileList = (props) => {
   // 获取除图片外的文件图标
   const getOtherFileIcon = (type) => {
     switch (type) {
-      case FileType.DOCX:
-      case FileType.DOC:
-        return docxIcon;
       case FileType.HTM:
       case FileType.HTML:
         return htmlIcon;
@@ -79,11 +76,6 @@ const FileList = (props) => {
         return pdfIcon;
       case FileType.TXT:
         return txtIcon;
-      case FileType.WAV:
-        return mp3Icon;
-      case FileType.XLS:
-      case FileType.XLSX:
-        return excelIcon;
       case FileType.CSV:
         return csvIcon;
       default:
