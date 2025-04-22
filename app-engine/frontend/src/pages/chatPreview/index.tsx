@@ -105,7 +105,7 @@ const ChatPreview = (props) => {
   let feedRef = useRef<any>();
   let testRef = useRef<any>(false);
   let historyRender = useRef<any>(false);
-  let chatRender = useRef<any>(null);
+  let chatRender = useRef<any>(false);
   const listRef = useRef<any>([]);
   const inspirationRef = useRef<any>(null);
   const isAutoSend = useRef<boolean>(false);
@@ -350,7 +350,7 @@ const ChatPreview = (props) => {
       chatRunning && onStop(t('sseFailed'));
     }, 300000);
     const reader = response?.body?.pipeThrough(new TextDecoderStream()).pipeThrough(new EventSourceParserStream()).getReader();
-    chatRender.current = setInterval(async () => {
+    while (chatRender.current) {
       const sseResData = await reader?.read();
       const { done, value } = sseResData;
       clearTimeout(timeProcess.current);
@@ -360,23 +360,23 @@ const ChatPreview = (props) => {
           let msgStr = value.data;
           const receiveData = JSON.parse(msgStr);
           if (receiveData.code) {
-            closeConnected();
             onStop(value.msg || t('conversationFailed'));
-            clearInterval(chatRender.current)
+            clearInterval(chatRender.current);
           } else {
             sseReceiveProcess(receiveData);
           }
         } catch (e) {
-          console.info(e);
+          break;
         }
       } else {
         timeProcess.current && clearTimeout(timeProcess.current);
         clearInterval(chatRender.current);
         if (chatFileList.length) {
           setChatFileList([]);
-        }
+        };
+        break;
       };
-    }, 5)
+    };
   }
   // sse接收消息回调
   const sseReceiveProcess = (messageData) => {
@@ -489,7 +489,7 @@ const ChatPreview = (props) => {
         idx = listRef.current.length;
       } else {
         if (!extensions.isEnableLog && !listRef.current[idx].step) {
-          initObj.content = listRef.current[idx].content;
+          initObj.content ? null :  initObj.content = listRef.current[idx].content;
         }
       }
     }
@@ -566,7 +566,7 @@ const ChatPreview = (props) => {
     item.loading = false;
     item.messageType = 'form';
     item.status = 'TERMINATED';
-    clearInterval(chatRender.current);
+    chatRender.current = false;
     dispatch(setChatList(deepClone(listRef.current)));
     dispatch(setChatRunning(false));
     setShowStop(false);
@@ -635,7 +635,7 @@ const ChatPreview = (props) => {
   }
   // 关闭链接
   const closeConnected = () => {
-    clearInterval(chatRender.current);
+    chatRender.current = false;
     dispatch(setChatRunning(false));
     setShowStop(false);
   }

@@ -14,7 +14,7 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 import Pagination from '@/components/pagination/index';
-import { clearChatHistory, getChatList } from '@/shared/http/chat';
+import { clearChatHistory, getChatList, queryFeedback } from '@/shared/http/chat';
 import { getChatRecentLog } from '@/shared/http/aipp';
 import { formatLocalDate } from '@/common/dataUtil';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
@@ -139,7 +139,14 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({ openHistorySignal, setL
     setLoading(true);
     try {
       const chatListRes = await getChatRecentLog(tenantId, chat_id, appId);
-      let chatArr = historyChatProcess(chatListRes);
+      let chatItem = historyChatProcess(chatListRes);
+      let chatArr = await Promise.all(chatItem.map(async (item) => {
+        if (item.type === 'receive' && item?.instanceId) {
+          const res = await queryFeedback(item.instanceId);
+          item.feedbackStatus = res?.usrFeedback ?? -1
+        }
+        return item;
+      }));
       setListCurrentList(chatArr);
       await dispatch(setChatList(chatArr));
       dispatch(setChatId(chat_id));
