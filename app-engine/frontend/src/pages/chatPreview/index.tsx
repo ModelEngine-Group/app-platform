@@ -361,7 +361,6 @@ const ChatPreview = (props) => {
           const receiveData = JSON.parse(msgStr);
           if (receiveData.code) {
             onStop(value.msg || t('conversationFailed'));
-            clearInterval(chatRender.current);
           } else {
             sseReceiveProcess(receiveData);
           }

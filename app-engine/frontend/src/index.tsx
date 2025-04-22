@@ -43,15 +43,12 @@ const reactLifecycles = singleSpaReact({
     },
 });
 export const bootstrap = async (props) => {
-    console.log('bootstrap');
     Promise.resolve(reactLifecycles.bootstrap(props));
 }
 export const mount = async (props) => {
-    console.log('mount');
     Promise.resolve(reactLifecycles.mount(props))
 };
 
 export const unmount = async (props) => {
-    console.log('unmount');
     Promise.resolve(reactLifecycles.unmount(props))
 };
