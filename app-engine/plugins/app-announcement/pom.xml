@@ -153,7 +153,7 @@
                         <configuration>
                             <target>
                                 <copy file="${project.build.directory}/${project.build.finalName}.jar"
-                                      todir="../../../plugins"/>
+                                      todir="../../../target/plugins"/>
                             </target>
                         </configuration>
                         <goals>
