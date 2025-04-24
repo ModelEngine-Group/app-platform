@@ -15,7 +15,6 @@ import modelengine.fitframework.broker.client.BrokerClient;
 import modelengine.fitframework.broker.client.filter.route.FitableIdFilter;
 import modelengine.fitframework.validation.Validated;
 import modelengine.jade.authentication.context.UserContextHolder;
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
 import modelengine.jade.carver.tool.service.ToolGroupService;
 import modelengine.jade.common.vo.PageVo;
 import modelengine.jade.knowledge.KnowledgeI18nInfo;
@@ -25,15 +24,13 @@ import modelengine.jade.knowledge.KnowledgeRepo;
 import modelengine.jade.knowledge.KnowledgeRepoService;
 import modelengine.jade.knowledge.ListRepoQueryParam;
 import modelengine.jade.knowledge.SchemaItem;
-import modelengine.jade.knowledge.controller.entity.KnowledgeRepoInfo;
+import modelengine.jade.knowledge.config.KnowledgeConfig;
 import modelengine.jade.knowledge.controller.vo.KnowledgePropertyVo;
+import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.knowledge.enums.IndexType;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,20 +43,6 @@ import java.util.stream.Collectors;
 @Component
 @RequestMapping(path = {"/knowledge-manager"})
 public class KnowledgeController {
-    /**
-     * 默认知识库
-     */
-    private static final String DEFAULT_KNOWLEDGE = "default";
-
-    /**
-     * 默认知识库名称
-     */
-    private static final String DEFAULT_KNOWLEDGE_NAME = "EDM内置知识库";
-
-    /**
-     * 默认知识库描述
-     */
-    private static final String DEFAULT_KNOWLEDGE_DESC = "支持语检索EDM知识库";
 
     private final KnowledgeI18nService knowledgeI18nService;
 
@@ -67,7 +50,7 @@ public class KnowledgeController {
 
     private final BrokerClient brokerClient;
 
-    private final Map<String, KnowledgeRepoInfo> repoInfoMap = new HashMap<String, KnowledgeRepoInfo>();
+    private final KnowledgeConfig knowledgeConfig;
 
     /**
      * 表示 {@link KnowledgeController} 的构造器。
@@ -75,17 +58,14 @@ public class KnowledgeController {
      * @param knowledgeI18nService 表示获取知识库国际化服务的 {@link KnowledgeI18nService}。
      * @param toolGroupService 工具组服务
      * @param brokerClient fit的调度器
+     * @param knowledgeConfig 表示知识库集配的 {@link KnowledgeConfig}。
      */
     public KnowledgeController(KnowledgeI18nService knowledgeI18nService, ToolGroupService toolGroupService,
-            BrokerClient brokerClient) {
+                               BrokerClient brokerClient, KnowledgeConfig knowledgeConfig) {
         this.knowledgeI18nService = knowledgeI18nService;
         this.toolGroupService = toolGroupService;
         this.brokerClient = brokerClient;
-        this.repoInfoMap.put(DEFAULT_KNOWLEDGE,
-                new KnowledgeRepoInfo(DEFAULT_KNOWLEDGE, DEFAULT_KNOWLEDGE_NAME, DEFAULT_KNOWLEDGE_DESC));
-        // 暂时保留用于演示，待store提供group的name和desc后删除
-        this.repoInfoMap.put("food", new KnowledgeRepoInfo("food", "美食知识库", "支持检索美食相关的知识"));
-        this.repoInfoMap.put("cat", new KnowledgeRepoInfo("cat", "猫的知识库", "支持检索猫相关的知识"));
+        this.knowledgeConfig = knowledgeConfig;
     }
 
     /**
@@ -109,16 +89,8 @@ public class KnowledgeController {
      * @return 表示知识库组标识列表的 {@link List}{@code <}{@link String}{@code >}。
      */
     @GetMapping("/list/groups")
-    public List<KnowledgeRepoInfo> getRepoInfo() {
-        List<ToolGroupData> defGroupKnowledgeList = this.toolGroupService.get(
-                KnowledgeRepoService.STORE_DEF_GROUP_KNOWLEDGE);
-        List<KnowledgeRepoInfo> result = new ArrayList<>();
-        result.add(this.repoInfoMap.get(DEFAULT_KNOWLEDGE));
-        defGroupKnowledgeList.stream()
-                .filter(knowledge -> !DEFAULT_KNOWLEDGE.equals(knowledge.getName()))
-                .map(knowledge -> this.repoInfoMap.get(knowledge.getName()))
-                .forEach(result::add);
-        return result;
+    public List<KnowledgeDto> getRepoInfo() {
+        return this.knowledgeConfig.getSupport();
     }
 
     /**
