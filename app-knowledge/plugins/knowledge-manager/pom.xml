@@ -83,6 +83,26 @@
             <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fitframework.integration</groupId>
+            <artifactId>fit-mybatis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fitframework.integration</groupId>
+            <artifactId>fit-druid</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -103,6 +123,19 @@
                         <id>package-plugin</id>
                         <goals>
                             <goal>package-plugin</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>modelengine.fit.jade.maven.plugin</groupId>
+                <artifactId>tool-maven-plugin</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>build-tool</id>
+                        <goals>
+                            <goal>build-tool</goal>
                         </goals>
                     </execution>
                 </executions>

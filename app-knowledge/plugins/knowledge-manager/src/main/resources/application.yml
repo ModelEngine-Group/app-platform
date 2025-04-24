@@ -1,4 +1,29 @@
 fit:
   beans:
     packages:
+      - 'modelengine.fit.jade'
+      - 'modelengine.fitframework'
+      - 'modelengine.fit.integration'
       - 'modelengine.jade.knowledge'
+  datasource:
+    primary: 'app-engine'
+    instances:
+      app-engine:
+        mode: 'shared'
+        url: jdbc:postgresql://jade-db/app_builder?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=true&allowPublicKeyRetrieval=true&useAffectedRows=true&connectTimeout=60000&socketTimeout=60000
+        username: postgres
+        password: ModelEngine@123
+        druid:
+          driver-class-name: 'org.postgresql.Driver'
+          initialSize: 5
+          minIdle: 5
+          maxActive: 32
+          maxWait: 60000
+          timeBetweenEvictionRunsMillis: 60000
+          minEvictableIdleTimeMillis: 300000
+          validationQuery: 'SELECT 1'
+          testWhileIdle: true
+          testOnBorrow: false
+          testOnReturn: false
+mybatis:
+  mapper-locations: mapper/*Mapper.xml
