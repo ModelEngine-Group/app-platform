@@ -36,10 +36,22 @@
         delete from t_app_engine_user_knowledge where id = #{id}
     </delete>
 
-    <select id="listByUserId" resultMap="BaseResultMap">
+    <select id="listByCondition" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_app_engine_user_knowledge
-        where user_id = #{userId}
+        <if test="cond.userId != null">
+            where user_id = #{cond.userId}
+        </if>
+        <if test="cond.id != null">
+            and id = #{cond.id}
+        </if>
+        <if test="cond.groupId != null">
+            and group_id = #{cond.groupId}
+        </if>
+        <if test="cond.isDefault != null">
+            and is_default = #{cond.isDefault}
+        </if>
+        ORDER BY updated_at DESC, created_at DESC
     </select>
 </mapper>

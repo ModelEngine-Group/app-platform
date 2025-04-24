@@ -7,6 +7,7 @@
 package modelengine.jade.knowledge.repository.impl;
 
 import modelengine.fitframework.annotation.Component;
+import modelengine.jade.knowledge.condition.KnowledgeConfigQueryCondition;
 import modelengine.jade.knowledge.mapper.KnowledgeConfigMapper;
 import modelengine.jade.knowledge.po.KnowledgeConfigPo;
 import modelengine.jade.knowledge.repository.KnowledgeCenterRepo;
@@ -43,7 +44,7 @@ public class KnowledgeCenterRepoImpl implements KnowledgeCenterRepo {
     }
 
     @Override
-    public List<KnowledgeConfigPo> listKnowledgeConfigByUserId(String userId) {
-        return this.knowledgeConfigMapper.listByUserId(userId);
+    public List<KnowledgeConfigPo> listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition cond) {
+        return this.knowledgeConfigMapper.listByCondition(cond);
     }
 }

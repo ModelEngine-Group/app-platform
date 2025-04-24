@@ -6,7 +6,9 @@
 
 package modelengine.jade.knowledge.mapper;
 
+import modelengine.jade.knowledge.condition.KnowledgeConfigQueryCondition;
 import modelengine.jade.knowledge.po.KnowledgeConfigPo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -37,9 +39,9 @@ public interface KnowledgeConfigMapper {
     void deleteById(int id);
 
     /**
-     * 根据用户id查询用户的知识库配置列表。
-     * @param userId 表示用户id的 {@link String}。
+     * 根据条件查询用户的知识库配置列表。
+     * @param cond 表示用户id的 {@link KnowledgeConfigQueryCondition}。
      * @return 该用户可用的知识库配置列表 {@link List}{@code <}{@link KnowledgeConfigPo}{@code >}。
      */
-    List<KnowledgeConfigPo> listByUserId(String userId);
+    List<KnowledgeConfigPo> listByCondition(@Param("cond") KnowledgeConfigQueryCondition cond);
 }

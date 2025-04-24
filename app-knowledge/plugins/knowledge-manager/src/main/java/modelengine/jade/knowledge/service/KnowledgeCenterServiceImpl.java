@@ -6,6 +6,8 @@
 
 package modelengine.jade.knowledge.service;
 
+import modelengine.fit.security.Decryptor;
+import modelengine.fit.security.Encryptor;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.annotation.Property;
@@ -14,9 +16,12 @@ import modelengine.jade.carver.tool.annotation.Attribute;
 import modelengine.jade.carver.tool.annotation.Group;
 import modelengine.jade.carver.tool.annotation.ToolMethod;
 import modelengine.jade.knowledge.KnowledgeCenterService;
+import modelengine.jade.knowledge.code.KnowledgeManagerRetCode;
+import modelengine.jade.knowledge.condition.KnowledgeConfigQueryCondition;
 import modelengine.jade.knowledge.config.KnowledgeConfig;
 import modelengine.jade.knowledge.dto.KnowledgeConfigDto;
 import modelengine.jade.knowledge.dto.KnowledgeDto;
+import modelengine.jade.knowledge.exception.KnowledgeException;
 import modelengine.jade.knowledge.po.KnowledgeConfigPo;
 import modelengine.jade.knowledge.repository.KnowledgeCenterRepo;
 
@@ -36,6 +41,8 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     private static final String FITABLE_ID = "knowledge.config.service.impl";
     private final KnowledgeConfig knowledgeConfig;
     private final KnowledgeCenterRepo knowledgeCenterRepo;
+    private final Encryptor encryptor;
+    private final Decryptor decryptor;
 
     /**
      * 构造方法。
@@ -44,9 +51,11 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
      * @param knowledgeCenterRepo 表示用于访问用户知识库配置数据的仓储接口的 {@link KnowledgeCenterRepo}。
      */
     public KnowledgeCenterServiceImpl(KnowledgeConfig knowledgeConfig,
-                                      KnowledgeCenterRepo knowledgeCenterRepo) {
+                                      KnowledgeCenterRepo knowledgeCenterRepo, Encryptor encryptor, Decryptor decryptor) {
         this.knowledgeConfig = knowledgeConfig;
         this.knowledgeCenterRepo = knowledgeCenterRepo;
+        this.encryptor = encryptor;
+        this.decryptor = decryptor;
     }
 
     @Override
@@ -57,7 +66,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     @Property(description = "增加用户的知识库配置信息")
     public void add(KnowledgeConfigDto knowledgeConfigDto) {
         log.info("start add user knowledge config for {}.", knowledgeConfigDto.getUserId());
-        // todo 校验是否有不符合唯一性index的 有就抛异常
+        this.isConfigUnique(knowledgeConfigDto);
         this.knowledgeCenterRepo.insertKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
     }
 
@@ -69,6 +78,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     @Property(description = "修改用户的知识库配置信息")
     public void edit(KnowledgeConfigDto knowledgeConfigDto) {
         log.info("start edit user knowledge config for {}.", knowledgeConfigDto.getUserId());
+        this.isConfigUnique(knowledgeConfigDto);
         this.knowledgeCenterRepo.updateKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
     }
 
@@ -91,7 +101,8 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     @Property(description = "查询用户的知识库配置信息")
     public List<KnowledgeConfigDto> list(String userId) {
         log.info("start get user knowledge configs for {}.", userId);
-        return this.knowledgeCenterRepo.listKnowledgeConfigByUserId(userId)
+        return this.knowledgeCenterRepo.listKnowledgeConfigByCondition(
+                KnowledgeConfigQueryCondition.builder().userId(userId).build())
                 .stream()
                 .map(this::getKnowledgeConfigDto)
                 .toList();
@@ -107,13 +118,43 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
         return this.knowledgeConfig.getSupport();
     }
 
+    @Override
+    public String getApiKey(String userId, String groupId) {
+        KnowledgeConfigQueryCondition cond = KnowledgeConfigQueryCondition
+                .builder()
+                .userId(userId)
+                .groupId(groupId)
+                .isDefault(1)
+                .build();
+        List<KnowledgeConfigPo> result = this.knowledgeCenterRepo.listKnowledgeConfigByCondition(cond);
+        this.validateConfigNum(result);
+        return result.get(0).getApiKey();
+    }
+
+    private void validateConfigNum(List<KnowledgeConfigPo> result) {
+        if (result.size() > 1) {
+            throw new KnowledgeException(KnowledgeManagerRetCode.QUERY_CONFIG_LENGTH_MORE_THAN_ONE,
+                    result.get(0).getName());
+        }
+    }
+
+    private void isConfigUnique(KnowledgeConfigDto knowledgeConfigDto) {
+        List<KnowledgeConfigPo> result = this.knowledgeCenterRepo.listKnowledgeConfigByCondition(
+                KnowledgeConfigQueryCondition.builder()
+                        .userId(knowledgeConfigDto.getUserId())
+                        .groupId(knowledgeConfigDto.getGroupId())
+                        .apiKey(knowledgeConfigDto.getApiKey())
+                        .build());
+        this.validateConfigNum(result);
+    }
+
     private KnowledgeConfigPo getKnowledgeConfigPo(KnowledgeConfigDto knowledgeConfigDto) {
         return KnowledgeConfigPo.builder()
                 .id(knowledgeConfigDto.getId())
                 .name(knowledgeConfigDto.getName())
                 .userId(knowledgeConfigDto.getUserId())
                 .groupId(knowledgeConfigDto.getGroupId())
-                .apiKey(knowledgeConfigDto.getApiKey())
+                .apiKey(this.decryptor.decrypt(knowledgeConfigDto.getApiKey()))
                 .isDefault(Boolean.compare(knowledgeConfigDto.getIsDefault(), false))
                 .createdBy(knowledgeConfigDto.getUserId())
                 .createdAt(LocalDateTime.now())
@@ -128,7 +169,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
                 .name(knowledgeConfigPo.getName())
                 .groupId(knowledgeConfigPo.getGroupId())
                 .userId(knowledgeConfigPo.getUserId())
-                .apiKey(knowledgeConfigPo.getApiKey())
+                .apiKey(this.encryptor.encrypt(knowledgeConfigPo.getApiKey()))
                 .isDefault(knowledgeConfigPo.getIsDefault() == 1)
                 .build();
     }

@@ -68,4 +68,12 @@ public interface KnowledgeCenterService {
     @ToolMethod(name = "list_support_knowledges", description = "获取支持使用的知识库集列表")
     @Genericable(id = "knowledge.center.service.listSupportKnowledges")
     List<KnowledgeDto> getSupportKnowledges(@Property(description = "用户id", required = false) String userId);
+
+    /**
+     * 基于用户名，知识库平台获取api Key
+     * @param userId 表示用户id的 {@link String}。
+     * @param groupId 表示知识库平台groupId的 {@link String}。
+     * @return 表示api key的 {@link String}。
+     */
+    String getApiKey(String userId, String groupId);
 }

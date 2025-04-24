@@ -6,6 +6,7 @@
 
 package modelengine.jade.knowledge.repository;
 
+import modelengine.jade.knowledge.condition.KnowledgeConfigQueryCondition;
 import modelengine.jade.knowledge.po.KnowledgeConfigPo;
 
 import java.util.List;
@@ -38,8 +39,8 @@ public interface KnowledgeCenterRepo {
 
     /**
      * 根据用户id查询用户的知识库配置列表。
-     * @param userId 表示用户id的 {@link String}。
+     * @param cond 表示查询条件的 {@link KnowledgeConfigQueryCondition}。
      * @return 该用户可用的知识库配置列表 {@link List}{@code <}{@link KnowledgeConfigPo}{@code >}。
      */
-    List<KnowledgeConfigPo> listKnowledgeConfigByUserId(String userId);
+    List<KnowledgeConfigPo> listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition cond);
 }
