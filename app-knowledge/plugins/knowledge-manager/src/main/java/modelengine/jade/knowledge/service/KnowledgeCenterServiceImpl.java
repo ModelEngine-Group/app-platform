@@ -14,7 +14,9 @@ import modelengine.jade.carver.tool.annotation.Attribute;
 import modelengine.jade.carver.tool.annotation.Group;
 import modelengine.jade.carver.tool.annotation.ToolMethod;
 import modelengine.jade.knowledge.KnowledgeCenterService;
+import modelengine.jade.knowledge.config.KnowledgeConfig;
 import modelengine.jade.knowledge.dto.KnowledgeConfigDto;
+import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.knowledge.po.KnowledgeConfigPo;
 import modelengine.jade.knowledge.repository.KnowledgeCenterRepo;
 
@@ -32,14 +34,18 @@ import java.util.List;
 public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     private static final Logger log = Logger.get(KnowledgeCenterServiceImpl.class);
     private static final String FITABLE_ID = "knowledge.config.service.impl";
+    private final KnowledgeConfig knowledgeConfig;
     private final KnowledgeCenterRepo knowledgeCenterRepo;
 
     /**
      * 构造方法。
      *
+     * @param knowledgeConfig  表示知识库集参数的 {@link KnowledgeConfig}。
      * @param knowledgeCenterRepo 表示用于访问用户知识库配置数据的仓储接口的 {@link KnowledgeCenterRepo}。
      */
-    public KnowledgeCenterServiceImpl(KnowledgeCenterRepo knowledgeCenterRepo) {
+    public KnowledgeCenterServiceImpl(KnowledgeConfig knowledgeConfig,
+                                      KnowledgeCenterRepo knowledgeCenterRepo) {
+        this.knowledgeConfig = knowledgeConfig;
         this.knowledgeCenterRepo = knowledgeCenterRepo;
     }
 
@@ -89,6 +95,16 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
                 .stream()
                 .map(this::getKnowledgeConfigDto)
                 .toList();
+    }
+
+    @Override
+    @Fitable(id = FITABLE_ID)
+    @ToolMethod(name = "查询知识库集列表", description = "获取支持使用的知识库集列表", extensions = {
+            @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")
+    })
+    @Property(description = "获取支持使用的知识库集列表")
+    public List<KnowledgeDto> getSupportKnowledges(String userId) {
+        return this.knowledgeConfig.getSupport();
     }
 
     private KnowledgeConfigPo getKnowledgeConfigPo(KnowledgeConfigDto knowledgeConfigDto) {
