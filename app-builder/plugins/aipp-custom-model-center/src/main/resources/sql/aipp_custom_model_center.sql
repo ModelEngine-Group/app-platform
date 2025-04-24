@@ -35,7 +35,7 @@ create table if not exists t_app_engine_user_model
     "api_key" varchar(255)                               not null,
     "is_default" smallint default 0                      not null
     );
-create unique index if not exists user_model_id_index on t_app_engine_user_model("model_id");
+create unique index if not exists user_model_id_index on t_app_engine_user_model("user_id", "model_id");
 comment on table t_app_engine_user_model is '用户模型关系表';
 comment on column t_app_engine_user_model.id is '主键';
 comment on column t_app_engine_user_model.created_at is '用户模型关系创建时间';
