@@ -6,8 +6,10 @@
 
 package modelengine.fit.jade.aipp.tool.loop.impls;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,6 +22,9 @@ import modelengine.fit.jade.aipp.tool.loop.LoopToolService;
 import modelengine.fit.jade.aipp.tool.loop.dependencies.ToolCallService;
 import modelengine.fit.jade.aipp.tool.loop.entities.Config;
 import modelengine.fit.jade.aipp.tool.loop.entities.ToolInfo;
+import modelengine.fit.jober.aipp.constants.AippConst;
+import modelengine.fit.jober.aipp.genericable.AippRunTimeService;
+import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 
 import org.assertj.core.util.Lists;
@@ -41,12 +46,16 @@ import java.util.stream.IntStream;
 class LoopToolServiceImplTest {
     private ToolCallService toolCallService;
 
+    private AippRunTimeService aippRunTimeService;
+
     private LoopToolService loopToolService;
+
 
     @BeforeEach
     void setUp() {
         this.toolCallService = mock(ToolCallService.class);
-        this.loopToolService = new LoopToolServiceImpl(this.toolCallService);
+        this.aippRunTimeService = mock(AippRunTimeService.class);
+        this.loopToolService = new LoopToolServiceImpl(this.toolCallService, this.aippRunTimeService, 1);
     }
 
     @Test
@@ -69,10 +78,38 @@ class LoopToolServiceImplTest {
         this.doTest(new JsonDataBaseTestCase2());
     }
 
+    @Test
+    void shouldThrowExceptionWhenCallLoopToolGivenTerminatedAippInstance() {
+        when(this.toolCallService.call(anyString(), anyMap())).thenReturn("1");
+        String aippInstanceId = "1";
+        HashMap<String, Object> args = new HashMap<>();
+        String loopArgName = "arg1";
+        args.put(loopArgName, List.of(1, 2, 3));
+        Config config = new Config();
+        config.setLoopKeys(List.of(loopArgName));
+        ToolInfo toolInfo = new ToolInfo();
+        toolInfo.setUniqueName("id");
+        ToolInfo.ParamInfo paramInfo = new ToolInfo.ParamInfo();
+        paramInfo.setName(loopArgName);
+        toolInfo.setParams(List.of(paramInfo));
+        when(this.aippRunTimeService.isInstanceRunning(eq(aippInstanceId), any())).thenReturn(false);
+
+        IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class,
+                () -> this.loopToolService.loopTool(args,
+                        config,
+                        toolInfo,
+                        MapBuilder.<String, Object>get().put(AippConst.CONTEXT_INSTANCE_ID, aippInstanceId).build()));
+
+        Assertions.assertEquals("Already terminated. [aippInstanceId=1]", exception.getMessage());
+        verify(this.toolCallService, times(1)).call(anyString(), anyMap());
+    }
+
     private void doTest(LoopToolTestCase testCase) {
         when(this.toolCallService.call(anyString(), anyMap())).then(testCase.getAnswer());
+        String aippInstanceId = "1";
+        when(this.aippRunTimeService.isInstanceRunning(eq(aippInstanceId), any())).thenReturn(true);
         List<Object> loopArgs = this.loopToolService.loopTool(testCase.getArgs(), testCase.getConfig(),
-                testCase.getToolInfo());
+                testCase.getToolInfo(), MapBuilder.<String, Object>get().put("instanceId", aippInstanceId).build());
         List<Object> expectResult = testCase.getExpectResult();
         verify(this.toolCallService, times(expectResult.size())).call(anyString(), anyMap());
         for (int i = 0; i < expectResult.size(); i++) {

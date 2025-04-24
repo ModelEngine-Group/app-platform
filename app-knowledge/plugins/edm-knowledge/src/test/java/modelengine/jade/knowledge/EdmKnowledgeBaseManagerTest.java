@@ -87,7 +87,8 @@ public class EdmKnowledgeBaseManagerTest {
         param.setName("error");
         assertThatThrownBy(() -> manager.listRepos(param)).isInstanceOf(ModelEngineException.class)
                 .extracting("message")
-                .isEqualTo("Unable to exchange with edm knowledge base.");
+                .isEqualTo("The feature of linking to external knowledge base will be launched on 2025-04-30, "
+                        + "so stay tuned.");
         ;
     }
 
@@ -98,6 +99,7 @@ public class EdmKnowledgeBaseManagerTest {
         param.setContext("error");
         assertThatThrownBy(() -> manager.retrieve(param)).isInstanceOf(ModelEngineException.class)
                 .extracting("message")
-                .isEqualTo("Unable to exchange with edm knowledge base.");
+                .isEqualTo("The feature of linking to external knowledge base will be launched on 2025-04-30, "
+                        + "so stay tuned.");
     }
 }

@@ -65,7 +65,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>../../../framework/fit/java/target/shared/</outputDirectory>
+                            <outputDirectory>../../../target/shared/</outputDirectory>
                             <includeGroupIds>io.opentelemetry,io.opentelemetry.instrumentation</includeGroupIds>
                         </configuration>
                     </execution>

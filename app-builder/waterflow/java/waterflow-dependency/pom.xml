@@ -17,7 +17,7 @@
         <fit.version>3.5.0-SNAPSHOT</fit.version>
         <fel.version>1.0.0-SNAPSHOT</fel.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
-        <ohscript.version>0.0.3.6-SNAPSHOT</ohscript.version>
+        <ohscript.version>3.5.0-SNAPSHOT</ohscript.version>
 
         <!-- Third-party versions -->
         <druid.version>1.2.20</druid.version>

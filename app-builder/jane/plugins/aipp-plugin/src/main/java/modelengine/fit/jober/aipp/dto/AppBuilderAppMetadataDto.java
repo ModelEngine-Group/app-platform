@@ -51,4 +51,6 @@ public class AppBuilderAppMetadataDto {
     private String appType;
 
     private String appCategory;
+
+    private String appBuiltType;
 }

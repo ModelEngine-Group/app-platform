@@ -42,4 +42,14 @@ public interface AippRunTimeService {
     @Genericable(id = "modelengine.fit.jober.aipp.service.start.aipp")
     String createLatestAippInstanceByAppId(String appId, boolean isDebug, Map<String, Object> initContext,
             OperationContext context);
+
+    /**
+     * 查询对话实例是否在运行中。
+     *
+     * @param instanceId 表示对话实例唯一标识的 {@link String}.
+     * @param context 表示操作上下文的 {@link OperationContext}。
+     * @return 表示对话实例是否在运行中的 {@link Boolean}。
+     */
+    @Genericable(id = "modelengine.fit.aipp.service.runtime.getInstanceStatus")
+    Boolean isInstanceRunning(String instanceId, OperationContext context);
 }

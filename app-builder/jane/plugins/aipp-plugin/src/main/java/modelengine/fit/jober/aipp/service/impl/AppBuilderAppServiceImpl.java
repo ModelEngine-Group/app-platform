@@ -555,6 +555,7 @@ public class AppBuilderAppServiceImpl
                 .updateAt(app.getUpdateAt())
                 .appCategory(app.getAppCategory())
                 .tags(tags)
+                .appBuiltType(app.getAppBuiltType())
                 .build();
     }
 
@@ -577,11 +578,11 @@ public class AppBuilderAppServiceImpl
                 .replace(APP_BUILDER_DEFAULT_MODEL_NAME, firstModelInfo[MODEL_LIST_SERVICE_NAME])
                 .replace(APP_BUILDER_DEFAULT_SERVICE_NAME, firstModelInfo[MODEL_LIST_SERVICE_NAME])
                 .replace(APP_BUILDER_DEFAULT_TAG, firstModelInfo[MODEL_LIST_TAG]));
-        return this.createAppWithTemplate(dto, templateApp, context, isUpgrade, AppTypeEnum.APP.name());
+        return this.createAppWithTemplate(dto, templateApp, context, isUpgrade, AppTypeEnum.APP.name(), false);
     }
 
     private AppBuilderAppDto createAppWithTemplate(AppBuilderAppCreateDto dto, AppBuilderApp templateApp,
-            OperationContext context, boolean isUpgrade, String appType) {
+            OperationContext context, boolean isUpgrade, String appType, boolean isImport) {
         // 根据模板app复制app，仅需修改所有id
         // 优先copy下层内容，因为上层改变Id后，会影响下层对象的查询
         AppBuilderFlowGraph flowGraph = templateApp.getFlowGraph();
@@ -606,7 +607,7 @@ public class AppBuilderAppServiceImpl
         templateApp.setFlowGraphId(flowGraph.getId());
         templateApp.setType(appType);
         templateApp.setTenantId(context.getTenantId());
-        if (isUpgrade) {
+        if (!isImport) {
             templateApp.setState(AppState.INACTIVE.getName());
         }
         String preVersion = templateApp.getVersion();
@@ -1130,7 +1131,7 @@ public class AppBuilderAppServiceImpl
             AppBuilderApp templateApp = AppImExportUtil.convertToAppBuilderApp(appExportDto, context);
             this.appFactory.setRepositories(templateApp);
             AppBuilderAppDto appDto =
-                    this.createAppWithTemplate(null, templateApp, context, false, templateApp.getType());
+                    this.createAppWithTemplate(null, templateApp, context, false, templateApp.getType(), true);
             String iconContent =
                     iconAttr instanceof Map ? ObjectUtils.cast(ObjectUtils.<Map<String, Object>>cast(iconAttr)
                             .get("content")) : StringUtils.EMPTY;
@@ -1259,7 +1260,7 @@ public class AppBuilderAppServiceImpl
         } else {
             dto.setIcon(createDto.getIcon());
         }
-        return this.createAppWithTemplate(dto, appTemplate, context, false, AppTypeEnum.APP.code());
+        return this.createAppWithTemplate(dto, appTemplate, context, false, AppTypeEnum.APP.code(), false);
     }
 
     @Override

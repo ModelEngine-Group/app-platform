@@ -105,7 +105,8 @@
   align-items: center;
   position: relative;
   .text {
-    max-width: 80%;
+    display: inline-block;
+    max-width: calc(100% - 420px);
     font-weight: 700;
     font-size: 20px;
     overflow: hidden;

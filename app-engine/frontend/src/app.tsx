@@ -28,10 +28,10 @@ const locale = getCookie('language').toLocaleLowerCase();
 if (!locale) {
   setCookie('locale', 'zh-cn');
 } else {
-  if (locale === 'zh') {
+  if (locale === 'zh_cn') {
     setCookie('locale', 'zh-cn');
   }
-  if (locale === 'en') {
+  if (locale === 'en_us') {
     setCookie('locale', 'en-us');
   }
 }

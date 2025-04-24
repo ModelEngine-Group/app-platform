@@ -8,6 +8,7 @@ package modelengine.fit.jober.aipp.fitable;
 
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.meta.multiversion.MetaInstanceService;
+import modelengine.fit.jane.meta.multiversion.instance.Instance;
 import modelengine.fit.jane.meta.multiversion.instance.InstanceDeclarationInfo;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.constants.AippConst;
@@ -17,6 +18,7 @@ import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppChatSessionService;
 import modelengine.fit.jober.aipp.util.DataUtils;
+import modelengine.fit.jober.aipp.util.MetaInstanceUtils;
 import modelengine.fit.waterflow.entity.FlowErrorInfo;
 import modelengine.fit.waterflow.spi.FlowExceptionService;
 import modelengine.fitframework.annotation.Component;
@@ -75,7 +77,13 @@ public class AippFlowExceptionHandle implements FlowExceptionService {
 
     private void addErrorLog(String aippInstId, List<Map<String, Object>> contexts, boolean enableErrorDetails,
             Locale locale, String errorMessage) {
-        List<AippInstLog> instLogs = aippLogService.queryInstanceLogSince(aippInstId, null);
+        Instance instance = MetaInstanceUtils.getInstanceDetailByInstanceId(aippInstId, null, this.metaInstanceService);
+        String instanceStatus = instance.getInfo().get(AippConst.INST_STATUS_KEY);
+        if (MetaInstStatusEnum.TERMINATED.name().equals(instanceStatus)) {
+            log.debug("Aipp instance is already terminated. [aippInstId={}]", aippInstId);
+            return;
+        }
+        List<AippInstLog> instLogs = this.aippLogService.queryInstanceLogSince(aippInstId, null);
         if (!instLogs.isEmpty()) {
             if (AippInstLogType.ERROR.name().equals(instLogs.get(instLogs.size() - 1).getLogType())) {
                 log.warn("already add error log, aippInstId {}", aippInstId);

@@ -13,6 +13,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import modelengine.fit.jane.meta.multiversion.instance.Instance;
+import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
 import modelengine.fit.waterflow.entity.FlowErrorInfo;
 import modelengine.fit.waterflow.spi.FlowExceptionService;
 import modelengine.jade.common.globalization.LocaleService;
@@ -42,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -110,6 +113,12 @@ public class AippFlowExceptionHandleTest {
         Mockito.when(this.localeService.localize(any(Locale.class), eq(UI_WORD_KEY_HINT))).thenReturn("test");
         Mockito.when(this.appChatSessionService.getSession(anyString())).thenReturn(Optional.of(chatSession));
         Mockito.when(this.toolExceptionHandle.getFixErrorMsg(any(), any(), any())).thenReturn("errorMessage");
+        Instance instance = new Instance("id",
+                MapBuilder.<String, String>get()
+                        .put(AippConst.INST_STATUS_KEY, MetaInstStatusEnum.RUNNING.name())
+                        .build(),
+                new ArrayList<>());
+        Mockito.when(this.metaInstanceService.retrieveById(any(), any())).thenReturn(instance);
         FlowErrorInfo flowErrorInfo = new FlowErrorInfo();
         flowErrorInfo.setErrorCode(10000);
         flowErrorInfo.setErrorMessage("errorMessage");

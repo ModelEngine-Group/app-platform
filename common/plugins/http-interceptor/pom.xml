@@ -134,7 +134,7 @@
                         <configuration>
                             <target>
                                 <copy file="${project.build.directory}/${project.build.finalName}.jar"
-                                      todir="../../../framework/fit/java/target/plugins"/>
+                                      todir="../../../target/plugins"/>
                             </target>
                         </configuration>
                         <goals>

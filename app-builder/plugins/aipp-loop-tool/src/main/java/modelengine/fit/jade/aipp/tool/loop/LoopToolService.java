@@ -36,5 +36,6 @@ public interface LoopToolService {
     @Genericable("modelengine.jober.aipp.tool.loop")
     List<Object> loopTool(@Property(description = "循环调用工具时的入参", required = true) Map<String, Object> args,
             @Property(description = "循环调用的配置，指定循环的字段", required = true) Config config,
-            @Property(description = "循环调用的工具信息", required = true) ToolInfo toolInfo);
+            @Property(description = "循环调用的工具信息", required = true) ToolInfo toolInfo,
+            @Property(description = "循环调用工具时的上下文信息") Map<String, Object> context);
 }
