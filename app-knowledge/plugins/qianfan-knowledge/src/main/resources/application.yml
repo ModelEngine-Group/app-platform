@@ -1,0 +1,8 @@
+fit:
+  beans:
+    packages:
+      - 'modelengine.jade.knowledge'
+qianfan:
+  url:
+    knowledge-list: 'https://qianfan.baidubce.com/v2/knowledgeBase?Action=DescribeKnowledgeBases'
+    knowledge-retrieve: 'https://qianfan.baidubce.com/v2/knowledgebases/query'

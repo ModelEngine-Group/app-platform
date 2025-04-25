@@ -6,6 +6,7 @@
 
 package modelengine.jade.knowledge;
 
+import lombok.Data;
 import modelengine.jade.knowledge.enums.ReferenceType;
 
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import modelengine.fitframework.inspection.Validation;
  * @author 刘信宏
  * @since 2024-10-08
  */
+@Data
 @NoArgsConstructor
 public class ReferenceLimit {
     private String type;

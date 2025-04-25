@@ -22,8 +22,10 @@ import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.TypeUtils;
 import modelengine.jade.knowledge.dto.QianfanKnowledgeListQueryParam;
+import modelengine.jade.knowledge.dto.QianfanRetrievalParam;
 import modelengine.jade.knowledge.entity.QianfanKnowledgeListEntity;
 import modelengine.jade.knowledge.entity.QianfanResponse;
+import modelengine.jade.knowledge.entity.QianfanRetrievalResult;
 import modelengine.jade.knowledge.exception.KnowledgeException;
 
 import java.lang.reflect.Type;
@@ -74,6 +76,32 @@ public class QianfanKnowledgeBaseManager {
                     .exchangeForEntity(request,
                             TypeUtils.parameterized(QianfanResponse.class, new Type[] {QianfanKnowledgeListEntity.class}));
             QianfanResponse<QianfanKnowledgeListEntity> response =
+                    ObjectUtils.cast(Validation.notNull(object, "The response body is abnormal."));
+            return Validation.notNull(response.getData(), "The response body is abnormal.");
+        } catch (HttpClientException | ClientException ex) {
+            log.error(QUERY_KNOWLEDGE_LIST_ERROR.getMsg(), ex);
+            throw new KnowledgeException(QUERY_KNOWLEDGE_LIST_ERROR, ex);
+        }
+    }
+
+    /**
+     * qianfan 知识库检索。
+     *
+     * @param apiKey 表示知识库接口鉴权api key的 {@link String}。
+     * @param param 表示知识库检索查询参数的 {@link QianfanRetrievalParam}。
+     * @return 表示知识库检索结果的 {@link QianfanRetrievalResult}。
+     */
+    public QianfanRetrievalResult retrieve(String apiKey, QianfanRetrievalParam param) {
+        HttpClassicClientRequest request =
+                this.httpClient.get().createRequest(HttpRequestMethod.POST, this.qianfanUrls.get("knowledge-retrieve"));
+        request.entity(Entity.createObject(request, param));
+        request.headers().set(AUTHORIZATION, BEARER + apiKey);
+        request.headers().set(CONTENT_TYPE, CONTENT_TYPE_JSON);
+        try {
+            Object object = this.httpClient.get()
+                    .exchangeForEntity(request,
+                            TypeUtils.parameterized(QianfanResponse.class, new Type[] {QianfanRetrievalResult.class}));
+            QianfanResponse<QianfanRetrievalResult> response =
                     ObjectUtils.cast(Validation.notNull(object, "The response body is abnormal."));
             return Validation.notNull(response.getData(), "The response body is abnormal.");
         } catch (HttpClientException | ClientException ex) {

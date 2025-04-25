@@ -15,9 +15,11 @@ import modelengine.jade.knowledge.*;
 import modelengine.jade.knowledge.convertor.ParamConvertor;
 import modelengine.jade.knowledge.document.KnowledgeDocument;
 import modelengine.jade.knowledge.dto.QianfanKnowledgeListQueryParam;
+import modelengine.jade.knowledge.dto.QianfanRetrievalParam;
 import modelengine.jade.knowledge.entity.PageVoKnowledgeList;
 import modelengine.jade.knowledge.entity.QianfanKnowledgeEntity;
 import modelengine.jade.knowledge.entity.QianfanKnowledgeListEntity;
+import modelengine.jade.knowledge.entity.QianfanRetrievalResult;
 import modelengine.jade.knowledge.enums.FilterType;
 import modelengine.jade.knowledge.enums.IndexType;
 import modelengine.jade.knowledge.external.QianfanKnowledgeBaseManager;
@@ -114,8 +116,12 @@ public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
     @Override
     @Fitable(FITABLE_ID_DEFAULT)
     public List<KnowledgeDocument> retrieve(String apiKey, FlatKnowledgeOption option) {
-
-        return List.of();
+        Validation.notNull(option, "The knowledge option cannot be null.");
+        QianfanRetrievalParam param = ParamConvertor.INSTANCE.convertToRetrievalParam(option);
+        QianfanRetrievalResult result = this.knowledgeBaseManager.retrieve(apiKey, param);
+        return result.getChunks().stream()
+                .map(ParamConvertor.INSTANCE::convertToKnowledgeDocument)
+                .toList();
     }
 
     private PageVoKnowledgeList queryKnowledgeList(String apiKey, ListRepoQueryParam param, int times, int maxKeys) {
