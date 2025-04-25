@@ -18,7 +18,11 @@ public enum KnowledgeManagerRetCode implements RetCode {
     /**
      * 查询到默认使用的config数量超过一个。
      */
-    QUERY_CONFIG_LENGTH_MORE_THAN_ONE(130703002, "在{0}知识库平台有超过1个配置为默认使用，请检查知识库配置。");
+    QUERY_CONFIG_LENGTH_MORE_THAN_ONE(130703002, "在{0}知识库平台有超过1个配置为默认使用，请检查知识库配置。"),
+    /**
+     * 查询知识库列表接口失败。
+     */
+    QUERY_KNOWLEDGE_LIST_ERROR(130703003, "获取知识库列表失败，请检查api key配置。");
     private final int code;
     private final String msg;
 
