@@ -11,20 +11,22 @@ import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.common.vo.PageVo;
-import modelengine.jade.knowledge.KnowledgeProperty;
-import modelengine.jade.knowledge.KnowledgeRepo;
-import modelengine.jade.knowledge.KnowledgeRepoService;
-import modelengine.jade.knowledge.ListRepoQueryParam;
+import modelengine.jade.knowledge.*;
 import modelengine.jade.knowledge.convertor.ParamConvertor;
 import modelengine.jade.knowledge.document.KnowledgeDocument;
 import modelengine.jade.knowledge.dto.QianfanKnowledgeListQueryParam;
 import modelengine.jade.knowledge.entity.PageVoKnowledgeList;
 import modelengine.jade.knowledge.entity.QianfanKnowledgeEntity;
 import modelengine.jade.knowledge.entity.QianfanKnowledgeListEntity;
+import modelengine.jade.knowledge.enums.FilterType;
+import modelengine.jade.knowledge.enums.IndexType;
 import modelengine.jade.knowledge.external.QianfanKnowledgeBaseManager;
+import modelengine.jade.knowledge.support.FlatFilterConfig;
 import modelengine.jade.knowledge.support.FlatKnowledgeOption;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -38,10 +40,17 @@ import java.util.stream.IntStream;
 public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
     public static final String FITABLE_ID_DEFAULT = "qianfanKnowledge";
     private static final int querySize = 100;
-    private final QianfanKnowledgeBaseManager knowledgeBaseManager;
+    private static final int DEFAULT_TOP_K = 3;
+    private static final int MAX_TOP_K = 10;
+    private static final float DEFAULT_THRESHOLD = 0.1f;
 
-    public QianfanKnowledgeRepoServiceImpl(QianfanKnowledgeBaseManager knowledgeBaseManager) {
+    private final QianfanKnowledgeBaseManager knowledgeBaseManager;
+    private final KnowledgeI18nService knowledgeI18nService;
+
+    public QianfanKnowledgeRepoServiceImpl(QianfanKnowledgeBaseManager knowledgeBaseManager,
+                                           KnowledgeI18nService knowledgeI18nService) {
         this.knowledgeBaseManager = knowledgeBaseManager;
+        this.knowledgeI18nService = knowledgeI18nService;
     }
 
     @Override
@@ -63,12 +72,49 @@ public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
     @Override
     @Fitable(FITABLE_ID_DEFAULT)
     public KnowledgeProperty getProperty(String apiKey) {
-        return null;
+        KnowledgeI18nInfo semanticInfo = this.knowledgeI18nService.localizeText(IndexType.SEMANTIC);
+        KnowledgeProperty.IndexInfo semanticIndex = new KnowledgeProperty.IndexInfo(IndexType.SEMANTIC,
+                semanticInfo.getName(),
+                semanticInfo.getDescription());
+        KnowledgeI18nInfo fullTextInfo = this.knowledgeI18nService.localizeText(IndexType.FULL_TEXT);
+        KnowledgeProperty.IndexInfo fullTextIndex = new KnowledgeProperty.IndexInfo(IndexType.FULL_TEXT,
+                fullTextInfo.getName(),
+                fullTextInfo.getDescription());
+        KnowledgeI18nInfo hybridInfo = this.knowledgeI18nService.localizeText(IndexType.HYBRID);
+        KnowledgeProperty.IndexInfo hybridIndex = new KnowledgeProperty.IndexInfo(IndexType.HYBRID,
+                hybridInfo.getName(),
+                hybridInfo.getDescription());
+        KnowledgeI18nInfo referenceInfo = this.knowledgeI18nService.localizeText(FilterType.REFERENCE_TOP_K);
+        FlatFilterConfig topKFilter = new FlatFilterConfig(FilterConfig.custom()
+                .name(referenceInfo.getName())
+                .description(referenceInfo.getDescription())
+                .type(FilterType.REFERENCE_TOP_K)
+                .minimum(1)
+                .maximum(MAX_TOP_K)
+                .defaultValue(DEFAULT_TOP_K)
+                .build());
+        KnowledgeI18nInfo relevancyInfo = this.knowledgeI18nService.localizeText(FilterType.SIMILARITY_THRESHOLD);
+        FlatFilterConfig similarityFilter = new FlatFilterConfig(FilterConfig.custom()
+                .name(relevancyInfo.getName())
+                .description(relevancyInfo.getDescription())
+                .type(FilterType.SIMILARITY_THRESHOLD)
+                .minimum(0)
+                .maximum(1)
+                .defaultValue(DEFAULT_THRESHOLD)
+                .build());
+        KnowledgeI18nInfo rerankInfo = new KnowledgeI18nInfo(this.knowledgeI18nService.localizeText("rerankParam"),
+                this.knowledgeI18nService.localizeText("rerankParam.description"));
+        KnowledgeProperty.RerankConfig rerankConfig =
+                new KnowledgeProperty.RerankConfig("boolean", rerankInfo.getName(), rerankInfo.getDescription(), false);
+        return new KnowledgeProperty(Arrays.asList(semanticIndex, fullTextIndex, hybridIndex),
+                Arrays.asList(topKFilter, similarityFilter),
+                Collections.singletonList(rerankConfig));
     }
 
     @Override
     @Fitable(FITABLE_ID_DEFAULT)
     public List<KnowledgeDocument> retrieve(String apiKey, FlatKnowledgeOption option) {
+
         return List.of();
     }
 
