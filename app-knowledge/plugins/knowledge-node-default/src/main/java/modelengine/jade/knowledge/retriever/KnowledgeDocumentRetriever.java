@@ -11,12 +11,11 @@ import modelengine.jade.knowledge.KnowledgeRepoService;
 import modelengine.jade.knowledge.document.KnowledgeDocument;
 import modelengine.jade.knowledge.entity.RetrieverOption;
 import modelengine.jade.knowledge.enums.IndexType;
+import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
 import modelengine.jade.knowledge.support.FlatKnowledgeOption;
 
 import modelengine.fel.core.document.MeasurableDocument;
 import modelengine.fel.core.pattern.Retriever;
-import modelengine.fitframework.broker.client.BrokerClient;
-import modelengine.fitframework.broker.client.filter.route.FitableIdFilter;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.util.UuidUtils;
 
@@ -30,25 +29,25 @@ import java.util.stream.Collectors;
  * @since 2024-09-27
  */
 public class KnowledgeDocumentRetriever implements Retriever<String, MeasurableDocument> {
-    private final BrokerClient brokerClient;
+    private final KnowledgeServiceRouter knowledgeServiceRouter;
 
     private final RetrieverOption option;
 
     /**
      * 使用知识库服务和检索配置初始化 {@link KnowledgeDocumentRetriever} 对象。
      *
-     * @param brokerClient brokerClient
      * @param option 表示检索配置的 {@link RetrieverOption}。
+     * @param knowledgeServiceRouter 表示知识库服务路由处理类的 {@link KnowledgeServiceRouter}。
      */
-    public KnowledgeDocumentRetriever(BrokerClient brokerClient, RetrieverOption option) {
-        this.brokerClient = brokerClient;
+    public KnowledgeDocumentRetriever(RetrieverOption option,
+                                      KnowledgeServiceRouter knowledgeServiceRouter) {
         this.option = Validation.notNull(option, "The retriever option cannot be null.");
+        this.knowledgeServiceRouter = knowledgeServiceRouter;
     }
 
     @Override
     public List<MeasurableDocument> retrieve(String query) {
         Validation.notNull(query, "The query cannot be null.");
-
         KnowledgeOption knowledgeOption = KnowledgeOption.custom()
                 .query(query)
                 .similarityThreshold(this.option.getSimilarityThreshold())
@@ -56,9 +55,9 @@ public class KnowledgeDocumentRetriever implements Retriever<String, MeasurableD
                 .referenceLimit(this.option.getReferenceLimit())
                 .indexType(IndexType.from(this.option.getIndexType().type()))
                 .build();
-        List<KnowledgeDocument> documents = brokerClient.getRouter(KnowledgeRepoService.class,
-                        KnowledgeRepoService.GENERICABLE_RETRIEVE)
-                .route(new FitableIdFilter(this.option.getGroupId()))
+
+        List<KnowledgeDocument> documents = this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class,
+                        KnowledgeRepoService.GENERICABLE_RETRIEVE, this.option.getGroupId())
                 .invoke(this.option.getApiKey(), new FlatKnowledgeOption(knowledgeOption));
         String groupId = UuidUtils.randomUuidString();
         return documents.stream()

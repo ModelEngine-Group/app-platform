@@ -12,8 +12,8 @@ import modelengine.jade.knowledge.retriever.RetrieverHandler;
 
 import modelengine.fel.core.document.MeasurableDocument;
 import modelengine.fitframework.annotation.Component;
-import modelengine.fitframework.broker.client.BrokerClient;
 import modelengine.fitframework.inspection.Nonnull;
+import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,20 +26,20 @@ import java.util.stream.Collectors;
  */
 @Component
 public class DefaultRetrieverHandler implements RetrieverHandler {
-    private final BrokerClient brokerClient;
+    private final KnowledgeServiceRouter knowledgeServiceRouter;
 
     /**
      * 使用知识库服务初始化 {@link DefaultRetrieverHandler} 对象。
      *
-     * @param brokerClient brokerClient
+     * @param knowledgeServiceRouter 表示知识库服务路由处理类的 {@link KnowledgeServiceRouter}。
      */
-    public DefaultRetrieverHandler(BrokerClient brokerClient) {
-        this.brokerClient = brokerClient;
+    public DefaultRetrieverHandler(KnowledgeServiceRouter knowledgeServiceRouter) {
+        this.knowledgeServiceRouter = knowledgeServiceRouter;
     }
 
     @Override
     public List<MeasurableDocument> handle(@Nonnull List<String> query, @Nonnull RetrieverOption option) {
-        KnowledgeDocumentRetriever retriever = new KnowledgeDocumentRetriever(brokerClient, option);
+        KnowledgeDocumentRetriever retriever = new KnowledgeDocumentRetriever(option, knowledgeServiceRouter);
         return query.stream()
                 .flatMap(input -> retriever.retrieve(input).stream())
                 .collect(Collectors.toList());

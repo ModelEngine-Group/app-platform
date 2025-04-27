@@ -15,12 +15,11 @@ import modelengine.jade.knowledge.document.KnowledgeDocument;
 import modelengine.jade.knowledge.entity.RetrieverOption;
 import modelengine.jade.knowledge.retriever.RetrieverHandler;
 import modelengine.jade.knowledge.retriever.support.DefaultRetrieverHandler;
+import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
 import modelengine.jade.knowledge.util.RetrieverServiceUtils;
 
 import modelengine.fel.core.document.MeasurableDocument;
-import modelengine.fitframework.broker.client.BrokerClient;
 import modelengine.fitframework.broker.client.Invoker;
-import modelengine.fitframework.broker.client.Router;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,21 +42,17 @@ public class RetrieverHandlerTest {
     private static final String DOCUMENT_TEXT_DUMMY = "test_text";
 
     @Mock
-    private BrokerClient brokerClient;
-
-    @Mock
-    private Router router;
-
-    @Mock
     private Invoker invoker;
 
     private RetrieverHandler handler;
 
+    @Mock
+    private KnowledgeServiceRouter knowledgeServiceRouter;
+
     @BeforeEach
     void setUp() {
-        handler = new DefaultRetrieverHandler(brokerClient);
-        when(brokerClient.getRouter(any(), anyString())).thenReturn(router);
-        when(router.route(any())).thenReturn(invoker);
+        handler = new DefaultRetrieverHandler(knowledgeServiceRouter);
+        when(knowledgeServiceRouter.getRouter(any(), anyString(), anyString())).thenReturn(invoker);
         when(invoker.invoke(anyString(), any()))
                 .thenReturn(Collections.singletonList(
                         new KnowledgeDocument("id", DOCUMENT_TEXT_DUMMY, 0.5, null)));

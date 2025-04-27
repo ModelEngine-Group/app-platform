@@ -11,8 +11,6 @@ import modelengine.fit.http.annotation.RequestBean;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.annotation.RequestParam;
 import modelengine.fitframework.annotation.Component;
-import modelengine.fitframework.broker.client.BrokerClient;
-import modelengine.fitframework.broker.client.filter.route.FitableIdFilter;
 import modelengine.fitframework.validation.Validated;
 import modelengine.jade.authentication.context.UserContextHolder;
 import modelengine.jade.carver.tool.service.ToolGroupService;
@@ -28,6 +26,7 @@ import modelengine.jade.knowledge.config.KnowledgeConfig;
 import modelengine.jade.knowledge.controller.vo.KnowledgePropertyVo;
 import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.knowledge.enums.IndexType;
+import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,24 +47,24 @@ public class KnowledgeController {
 
     private final ToolGroupService toolGroupService;
 
-    private final BrokerClient brokerClient;
-
     private final KnowledgeConfig knowledgeConfig;
+
+    private final KnowledgeServiceRouter knowledgeServiceRouter;
 
     /**
      * 表示 {@link KnowledgeController} 的构造器。
      *
      * @param knowledgeI18nService 表示获取知识库国际化服务的 {@link KnowledgeI18nService}。
      * @param toolGroupService 工具组服务
-     * @param brokerClient fit的调度器
      * @param knowledgeConfig 表示知识库集配的 {@link KnowledgeConfig}。
+     * @param knowledgeServiceRouter 表示知识库服务路由处理类的 {@link KnowledgeServiceRouter}。
      */
     public KnowledgeController(KnowledgeI18nService knowledgeI18nService, ToolGroupService toolGroupService,
-                               BrokerClient brokerClient, KnowledgeConfig knowledgeConfig) {
+                               KnowledgeConfig knowledgeConfig, KnowledgeServiceRouter knowledgeServiceRouter) {
         this.knowledgeI18nService = knowledgeI18nService;
         this.toolGroupService = toolGroupService;
-        this.brokerClient = brokerClient;
         this.knowledgeConfig = knowledgeConfig;
+        this.knowledgeServiceRouter = knowledgeServiceRouter;
     }
 
     /**
@@ -78,8 +77,7 @@ public class KnowledgeController {
     @GetMapping("/list/repos")
     public PageVo<KnowledgeRepo> getRepoList(@RequestParam(value = "groupId", required = false) String groupId,
             @RequestBean @Validated ListRepoQueryParam param) {
-        return this.brokerClient.getRouter(KnowledgeRepoService.class, KnowledgeRepoService.GENERICABLE_LIST_REPOS)
-                .route(new FitableIdFilter(groupId))
+        return this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class, KnowledgeRepoService.GENERICABLE_LIST_REPOS, groupId)
                 .invoke(UserContextHolder.get().getName(), param);
     }
 
@@ -101,9 +99,7 @@ public class KnowledgeController {
      */
     @GetMapping("/properties")
     public KnowledgePropertyVo getProperty(@RequestParam(value = "groupId", required = false) String groupId) {
-        KnowledgeProperty property = this.brokerClient.getRouter(KnowledgeRepoService.class,
-                        KnowledgeRepoService.GENERICABLE_GET_PROPERTY)
-                .route(new FitableIdFilter(groupId))
+        KnowledgeProperty property =  this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class, KnowledgeRepoService.GENERICABLE_GET_PROPERTY, groupId)
                 .invoke(UserContextHolder.get().getName());
         Set<String> enableIndexType = property.indexType().stream().map(SchemaItem::type).collect(Collectors.toSet());
         List<KnowledgeProperty.IndexInfo> disableIndexType = Arrays.stream(IndexType.values())
