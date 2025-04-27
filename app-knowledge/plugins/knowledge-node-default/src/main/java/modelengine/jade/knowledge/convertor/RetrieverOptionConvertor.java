@@ -29,7 +29,8 @@ public interface RetrieverOptionConvertor {
      * 将检索节点服务的配置实体转换为 {@link RetrieverOption}。
      *
      * @param option 表示检索节点服务的配置实体的 {@link RetrieverServiceOption}。
+     * @param apiKey 表示用户api key的 {@link String}。
      * @return 表示检索配置实体的 {@link RetrieverOption}。
      */
-    RetrieverOption fromRetrieverServiceOption(RetrieverServiceOption option);
+    RetrieverOption fromRetrieverServiceOption(RetrieverServiceOption option, String apiKey);
 }

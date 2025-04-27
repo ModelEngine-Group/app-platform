@@ -152,7 +152,8 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     }
 
     @Override
-    public String getApiKey(String userId, String groupId) {
+    @Fitable(id = FITABLE_ID)
+    public String getApiKey(String userId, String groupId, String defaultValue) {
         KnowledgeConfigQueryCondition cond = KnowledgeConfigQueryCondition
                 .builder()
                 .userId(userId)
@@ -160,6 +161,9 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
                 .isDefault(1)
                 .build();
         List<KnowledgeConfigPo> result = this.knowledgeCenterRepo.listKnowledgeConfigByCondition(cond);
+        if (result.isEmpty()) {
+            return defaultValue;
+        }
         this.validateConfigNum(result);
         return result.get(0).getApiKey();
     }

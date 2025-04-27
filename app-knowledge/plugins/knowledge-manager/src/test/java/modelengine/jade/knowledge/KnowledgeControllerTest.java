@@ -6,26 +6,10 @@
 
 package modelengine.jade.knowledge;
 
-import static modelengine.jade.knowledge.enums.FilterType.REFERENCE_TOP_K;
-import static modelengine.jade.knowledge.enums.FilterType.SIMILARITY_THRESHOLD;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import modelengine.jade.authentication.AuthenticationService;
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
-import modelengine.jade.carver.tool.service.ToolGroupService;
-import modelengine.jade.common.filter.support.LoginFilter;
-import modelengine.jade.common.vo.PageVo;
-import modelengine.jade.knowledge.controller.KnowledgeController;
-import modelengine.jade.knowledge.controller.entity.KnowledgeRepoInfo;
-import modelengine.jade.knowledge.controller.vo.KnowledgePropertyVo;
-import modelengine.jade.knowledge.enums.IndexType;
-import modelengine.jade.knowledge.support.FlatFilterConfig;
-
 import modelengine.fit.http.client.HttpClassicClientResponse;
+import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fitframework.annotation.Fit;
+import modelengine.fitframework.broker.client.Invoker;
 import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.MvcTest;
 import modelengine.fitframework.test.domain.mvc.MockMvc;
@@ -33,7 +17,17 @@ import modelengine.fitframework.test.domain.mvc.request.MockMvcRequestBuilders;
 import modelengine.fitframework.test.domain.mvc.request.MockRequestBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.TypeUtils;
-
+import modelengine.jade.authentication.AuthenticationService;
+import modelengine.jade.carver.tool.service.ToolGroupService;
+import modelengine.jade.common.filter.support.LoginFilter;
+import modelengine.jade.common.vo.PageVo;
+import modelengine.jade.knowledge.config.KnowledgeConfig;
+import modelengine.jade.knowledge.controller.KnowledgeController;
+import modelengine.jade.knowledge.controller.vo.KnowledgePropertyVo;
+import modelengine.jade.knowledge.dto.KnowledgeDto;
+import modelengine.jade.knowledge.enums.IndexType;
+import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
+import modelengine.jade.knowledge.support.FlatFilterConfig;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.AfterEach;
@@ -49,6 +43,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static modelengine.jade.knowledge.enums.FilterType.REFERENCE_TOP_K;
+import static modelengine.jade.knowledge.enums.FilterType.SIMILARITY_THRESHOLD;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 /**
  * 表示 {@link KnowledgeController} 的测试用例。
  *
@@ -60,6 +61,9 @@ import java.util.List;
 public class KnowledgeControllerTest {
     @Fit
     private MockMvc mockMvc;
+
+    @Fit
+    private KnowledgeController knowledgeController;
 
     @Mock
     private KnowledgeRepoService service;
@@ -75,10 +79,26 @@ public class KnowledgeControllerTest {
 
     private HttpClassicClientResponse<?> response;
 
+    @Mock
+    private KnowledgeServiceRouter knowledgeServiceRouter;
+
+    @Mock
+    private KnowledgeCenterService knowledgeCenterService;
+
+    @Mock
+    private KnowledgeConfig knowledgeConfig;
+
+    @Mock
+    private Authenticator authenticator;
+
+    @Mock
+    private Invoker invoker;
+
     @BeforeEach
     void setUp() {
         // 切换线程后，UserContextHolder Mock 失败。
         when(this.authenticationServiceMock.getUserName(any())).thenReturn("Jane");
+        when(this.knowledgeCenterService.getApiKey(anyString(), anyString(), anyString())).thenReturn("");
     }
 
     @AfterEach
@@ -92,20 +112,17 @@ public class KnowledgeControllerTest {
     @DisplayName("查询知识库列表成功")
     void shouldOKWhenGetRepoInfo() {
         String defaultGroup = "default";
-        List<ToolGroupData> groupDataList = new ArrayList<>();
-        ToolGroupData toolGroupData = new ToolGroupData();
-        toolGroupData.setDefGroupName(KnowledgeRepoService.STORE_DEF_GROUP_KNOWLEDGE);
-        toolGroupData.setName(defaultGroup);
-        groupDataList.add(toolGroupData);
-        when(this.toolGroupService.get(anyString())).thenReturn(groupDataList);
+        List<KnowledgeDto> groupDataList = new ArrayList<>();
+        groupDataList.add(KnowledgeDto.builder().groupId(defaultGroup).build());
+        when(this.knowledgeConfig.getSupport()).thenReturn(groupDataList);
 
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/knowledge-manager/list/groups")
-                .responseType(TypeUtils.parameterized(List.class, new Type[] {KnowledgeRepoInfo.class}));
+                .responseType(TypeUtils.parameterized(List.class, new Type[] {KnowledgeDto.class}));
         this.response = this.mockMvc.perform(requestBuilder);
         Assertions.assertThat(this.response.statusCode()).isEqualTo(200);
-        List<KnowledgeRepoInfo> target = ObjectUtils.cast(this.response.objectEntity().get().object());
+        List<KnowledgeDto> target = ObjectUtils.cast(this.response.objectEntity().get().object());
         Assertions.assertThat(target.size()).isEqualTo(1);
-        Assertions.assertThat(target.get(0).getId()).isEqualTo(defaultGroup);
+        Assertions.assertThat(target.get(0).getGroupId()).isEqualTo(defaultGroup);
     }
 
     @Test
@@ -142,7 +159,12 @@ public class KnowledgeControllerTest {
                 "desc",
                 "type",
                 LocalDateTime.of(2024, 9, 29, 14, 0, 0)));
-        when(this.service.listRepos(anyString(), any())).thenReturn(PageVo.of(1, repos));
+        when(this.knowledgeServiceRouter.getRouter(any(),
+                anyString(),
+                anyString()))
+                .thenReturn(this.invoker);
+        when(this.invoker.invoke(any(), any(ListRepoQueryParam.class)))
+                .thenReturn(PageVo.of(1, repos));
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/knowledge-manager/list/repos")
                 .param("groupId", this.buildMockGroupId())
                 .param("repoName", "name")
@@ -166,7 +188,12 @@ public class KnowledgeControllerTest {
         when(this.knowledgeI18nService.localizeText(any(IndexType.class))).thenReturn(
                 new KnowledgeI18nInfo("测试检索方式",
                         "description"));
-        when(this.service.getProperty(anyString())).thenReturn(this.getExpectProperty());
+        when(this.knowledgeServiceRouter.getRouter(any(),
+                anyString(),
+                anyString()))
+                .thenReturn(this.invoker);
+        when(this.invoker.invoke(any()))
+                .thenReturn(this.getExpectProperty());
 
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/knowledge-manager/properties")
                 .param("groupId", this.buildMockGroupId())

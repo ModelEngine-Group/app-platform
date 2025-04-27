@@ -37,11 +37,6 @@ public class RetrieverServiceOption {
     private float similarityThreshold;
 
     /**
-     * 用户标识。
-     */
-    private String apiKey;
-
-    /**
      * 重排模型参数。
      */
     private RetrieverOption.RerankParam rerankParam;
@@ -50,6 +45,11 @@ public class RetrieverServiceOption {
      * 知识库组标识。
      */
     private String groupId;
+
+    /**
+     * 用户id。
+     */
+    private String userId;
 
     /**
      * 重排模型参数实体。

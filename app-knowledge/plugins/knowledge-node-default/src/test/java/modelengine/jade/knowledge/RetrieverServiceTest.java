@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import modelengine.fel.core.document.MeasurableDocument;
 import modelengine.fitframework.annotation.Fit;
+import modelengine.fitframework.broker.client.Invoker;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 import modelengine.fitframework.test.annotation.Mock;
 import modelengine.jade.common.exception.ModelEngineException;
@@ -26,6 +27,7 @@ import modelengine.jade.knowledge.enums.ReferenceType;
 import modelengine.jade.knowledge.postprocessor.FactoryOption;
 import modelengine.jade.knowledge.postprocessor.PostProcessorFactory;
 import modelengine.jade.knowledge.retriever.RetrieverHandler;
+import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
 import modelengine.jade.knowledge.service.KnowledgeRepoInfo;
 import modelengine.jade.knowledge.service.RetrieverService;
 import modelengine.jade.knowledge.service.impl.RetrieverServiceImpl;
@@ -55,6 +57,12 @@ public class RetrieverServiceTest {
     private RetrieverHandler retrieverHandler;
     @Mock
     private PostProcessorFactory postProcessorFactory;
+    @Mock
+    private KnowledgeCenterService knowledgeCenterService;
+    @Mock
+    private KnowledgeServiceRouter knowledgeServiceRouter;
+    @Mock
+    private Invoker invoker;
 
     @BeforeEach
     void setUp() {
@@ -64,6 +72,7 @@ public class RetrieverServiceTest {
 
         when(this.postProcessorFactory.create(any(FactoryOption.class)))
                 .thenReturn(Collections.singletonList(docs -> docs));
+        when(this.knowledgeCenterService.getApiKey(any(), any(), any())).thenReturn("");
     }
 
     @AfterEach
@@ -77,7 +86,7 @@ public class RetrieverServiceTest {
         retrieverOption.setReferenceLimit(new ReferenceLimit(ReferenceType.TOP_K, 3));
         List<KnowledgeDocument> documents = this.retrieverService.invoke("query",
                 Collections.singletonList(new KnowledgeRepoInfo("repoId")),
-                retrieverOption);
+                retrieverOption, "");
 
         assertThat(documents).hasSize(1).extracting(KnowledgeDocument::text).containsExactly(DOCUMENT_TEXT_DUMMY);
     }
@@ -89,7 +98,7 @@ public class RetrieverServiceTest {
         retrieverOption.setRerankParam(new RetrieverOption.RerankParam(true, "model", "baseUri", 2));
         List<KnowledgeDocument> documents = this.retrieverService.invoke("query",
                 Collections.singletonList(new KnowledgeRepoInfo("repoId")),
-                retrieverOption);
+                retrieverOption, "");
 
         assertThat(documents).hasSize(1).extracting(KnowledgeDocument::text).containsExactly(DOCUMENT_TEXT_DUMMY);
         verify(this.postProcessorFactory).create(argThat(FactoryOption::isEnableRerank));
@@ -103,7 +112,7 @@ public class RetrieverServiceTest {
         retrieverOption.setReferenceLimit(new ReferenceLimit(ReferenceType.TOP_K, 3));
         List<KnowledgeDocument> documents = this.retrieverService.invoke("query",
                 Collections.singletonList(new KnowledgeRepoInfo("repoId")),
-                retrieverOption);
+                retrieverOption, "");
         assertThat(documents).hasSize(0);
     }
 
@@ -116,7 +125,7 @@ public class RetrieverServiceTest {
         retrieverOption.setReferenceLimit(new ReferenceLimit(ReferenceType.TOP_K, 3));
         List<KnowledgeDocument> documents = this.retrieverService.invoke("query",
                 Collections.singletonList(new KnowledgeRepoInfo("repoId")),
-                retrieverOption);
+                retrieverOption, "");
         assertThat(documents).hasSize(0);
     }
 
@@ -125,11 +134,11 @@ public class RetrieverServiceTest {
         RetrieverOption retrieverOption = RetrieverServiceUtils.buildRetrieverOption();
         retrieverOption.setReferenceLimit(new ReferenceLimit(ReferenceType.TOP_K, 3));
         assertThatThrownBy(() -> this.retrieverService.invoke(Arrays.asList("query", 0.6F),
-                Collections.singletonList(new KnowledgeRepoInfo("repoId")), retrieverOption)).isInstanceOf(
+                Collections.singletonList(new KnowledgeRepoInfo("repoId")), retrieverOption, "")).isInstanceOf(
                 ModelEngineException.class);
 
         assertThatThrownBy(() -> this.retrieverService.invoke(0.5F,
-                Collections.singletonList(new KnowledgeRepoInfo("repoId")), retrieverOption)).isInstanceOf(
+                Collections.singletonList(new KnowledgeRepoInfo("repoId")), retrieverOption, "")).isInstanceOf(
                 ModelEngineException.class);
     }
 
@@ -138,8 +147,8 @@ public class RetrieverServiceTest {
         RetrieverOption retrieverOption = RetrieverServiceUtils.buildRetrieverOption();
         retrieverOption.setReferenceLimit(new ReferenceLimit(ReferenceType.TOP_K, 3));
         List<KnowledgeDocument> documents =
-                this.retrieverService.invoke("query", Collections.emptyList(), retrieverOption);
-        List<KnowledgeDocument> documents2 = this.retrieverService.invoke("query", null, retrieverOption);
+                this.retrieverService.invoke("query", Collections.emptyList(), retrieverOption, "");
+        List<KnowledgeDocument> documents2 = this.retrieverService.invoke("query", null, retrieverOption, "");
         assertThat(documents).hasSize(0);
         assertThat(documents2).hasSize(0);
     }

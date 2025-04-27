@@ -24,4 +24,9 @@ public class RetrieverOption extends RetrieverServiceOption {
      * 知识库标识列表。
      */
     private List<String> repoIds;
+
+    /**
+     * 用户标识。
+     */
+    private String apiKey;
 }

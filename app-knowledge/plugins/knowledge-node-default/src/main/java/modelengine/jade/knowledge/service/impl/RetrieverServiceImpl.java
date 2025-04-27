@@ -17,7 +17,9 @@ import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.ObjectUtils;
+import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.common.exception.ModelEngineException;
+import modelengine.jade.knowledge.KnowledgeCenterService;
 import modelengine.jade.knowledge.convertor.RetrieverOptionConvertor;
 import modelengine.jade.knowledge.document.KnowledgeDocument;
 import modelengine.jade.knowledge.entity.RetrieverOption;
@@ -43,6 +45,7 @@ public class RetrieverServiceImpl implements RetrieverService {
     private final RetrieverHandler retrieverHandler;
     private final PostProcessorFactory postProcessorFactory;
     private final String baseRerankUri;
+    private final KnowledgeCenterService knowledgeCenterService;
 
     /**
      * 使用检索处理器和文档后处理器初始化 {@link RetrieverServiceImpl} 对象。
@@ -50,18 +53,20 @@ public class RetrieverServiceImpl implements RetrieverService {
      * @param retrieverHandler 表示检索处理器的 {@link RetrieverHandler}。
      * @param postProcessorFactory 表示文档后处理器工厂的 {@link PostProcessorFactory}。
      * @param baseRerankUri 表示文档重排服务的资源标识符的 {@link String}。
+     * @param knowledgeCenterService 表示知识库配置服务的 {@link KnowledgeCenterService}。
      */
     public RetrieverServiceImpl(RetrieverHandler retrieverHandler, PostProcessorFactory postProcessorFactory,
-            @Value("${openai-urls.internal}") String baseRerankUri) {
+                                @Value("${openai-urls.internal}") String baseRerankUri, KnowledgeCenterService knowledgeCenterService) {
         this.retrieverHandler = Validation.notNull(retrieverHandler, "The retriever handler cannot be null.");
         this.postProcessorFactory = Validation.notNull(postProcessorFactory, "The factory cannot be null.");
         this.baseRerankUri = Validation.notBlank(baseRerankUri, "The rerank uri cannot be blank.");
+        this.knowledgeCenterService = knowledgeCenterService;
     }
 
     @Fitable("knowledge.service.invoke")
     @Override
     public List<KnowledgeDocument> invoke(Object query, List<KnowledgeRepoInfo> knowledgeRepos,
-            RetrieverServiceOption option) {
+            RetrieverServiceOption option, String userId) {
         if (CollectionUtils.isEmpty(knowledgeRepos)) {
             return Collections.emptyList();
         }
@@ -69,8 +74,7 @@ public class RetrieverServiceImpl implements RetrieverService {
         Validation.lessThanOrEquals(knowledgeRepos.size(), 5, "The knowledge repository cannot greater than 5.");
         this.retrieverServiceOptionValidation(option);
         List<String> normalizeQuery = this.normalizeQuery(query);
-        RetrieverOption retrieverOption = RetrieverOptionConvertor.INSTANCE.fromRetrieverServiceOption(option);
-        retrieverOption.setRepoIds(knowledgeRepos.stream().map(KnowledgeRepoInfo::id).collect(Collectors.toList()));
+        RetrieverOption retrieverOption = this.getRetrieverOption(knowledgeRepos, option);
         List<MeasurableDocument> documents = this.retrieverHandler.handle(normalizeQuery, retrieverOption);
         FactoryOption factoryOption = this.buildFactoryOption(normalizeQuery, option.getRerankParam());
         List<DocumentPostProcessor> postProcessors = this.postProcessorFactory.create(factoryOption);
@@ -84,6 +88,13 @@ public class RetrieverServiceImpl implements RetrieverService {
                 .map(doc -> new KnowledgeDocument(doc, doc.score()))
                 .limit(option.getReferenceLimit().value())
                 .collect(Collectors.toList());
+    }
+
+    private RetrieverOption getRetrieverOption(List<KnowledgeRepoInfo> knowledgeRepos, RetrieverServiceOption option) {
+        String apiKey = this.knowledgeCenterService.getApiKey(option.getUserId(), option.getGroupId(), StringUtils.EMPTY);
+        RetrieverOption retrieverOption = RetrieverOptionConvertor.INSTANCE.fromRetrieverServiceOption(option, apiKey);
+        retrieverOption.setRepoIds(knowledgeRepos.stream().map(KnowledgeRepoInfo::id).collect(Collectors.toList()));
+        return retrieverOption;
     }
 
     private void retrieverServiceOptionValidation(RetrieverServiceOption option) {
