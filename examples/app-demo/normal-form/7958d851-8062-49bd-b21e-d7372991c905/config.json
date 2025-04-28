@@ -1,0 +1,37 @@
+{
+  "schema": {
+    "parameters": {
+      "type": "object",
+      "required": [
+        "questions"
+      ],
+      "properties": {
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "return": {
+      "type": "object",
+      "properties": {
+        "qeMap": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties" : {
+              "question" : {
+                "type": "string"
+              },
+              "evaluate": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
