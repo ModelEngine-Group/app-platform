@@ -33,9 +33,9 @@ public interface KnowledgeCenterRepo {
 
     /**
      * 删除一条知识库配置信息。
-     * @param id 表示知识库配置id的 {@link int}。
+     * @param id 表示知识库配置id的 {@link Long}。
      */
-    void deleteKnowledgeConfigById(int id);
+    void deleteKnowledgeConfigById(Long id);
 
     /**
      * 根据用户id查询用户的知识库配置列表。
@@ -43,4 +43,18 @@ public interface KnowledgeCenterRepo {
      * @return 该用户可用的知识库配置列表 {@link List}{@code <}{@link KnowledgeConfigPo}{@code >}。
      */
     List<KnowledgeConfigPo> listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition cond);
+
+    /**
+     * 将同一组的其他配置设置成非默认。
+     *
+     * @param cond 表示查询条件的 {@link KnowledgeConfigQueryCondition}。
+     */
+    void updateOthersIsDefaultFalse(KnowledgeConfigQueryCondition cond);
+
+    /**
+     * 将同一组最新的配置设置成默认。
+     *
+     * @param cond 表示查询条件的 {@link KnowledgeConfigQueryCondition}。
+     */
+    void updateNewestIsDefaultTrue(KnowledgeConfigQueryCondition cond);
 }

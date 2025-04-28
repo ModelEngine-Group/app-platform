@@ -48,7 +48,7 @@ public interface KnowledgeCenterService {
      */
     @ToolMethod(name = "delete_user_knowledge_config", description = "删除用户的知识库配置信息")
     @Genericable(id = "knowledge.center.service.deleteUserKnowledgeConfig")
-    void delete(@Property(description = "知识库配置id", required = true) int id);
+    void delete(@Property(description = "知识库配置id", required = true) Long id);
 
     /**
      * 查询用户的知识库配置信息

@@ -39,12 +39,22 @@ public class KnowledgeCenterRepoImpl implements KnowledgeCenterRepo {
     }
 
     @Override
-    public void deleteKnowledgeConfigById(int id) {
+    public void deleteKnowledgeConfigById(Long id) {
         this.knowledgeConfigMapper.deleteById(id);
     }
 
     @Override
     public List<KnowledgeConfigPo> listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition cond) {
         return this.knowledgeConfigMapper.listByCondition(cond);
+    }
+
+    @Override
+    public void updateOthersIsDefaultFalse(KnowledgeConfigQueryCondition cond) {
+        this.knowledgeConfigMapper.updateOthersIsDefaultFalse(cond);
+    }
+
+    @Override
+    public void updateNewestIsDefaultTrue(KnowledgeConfigQueryCondition cond) {
+        this.knowledgeConfigMapper.updateNewestIsDefaultTrue(cond);
     }
 }

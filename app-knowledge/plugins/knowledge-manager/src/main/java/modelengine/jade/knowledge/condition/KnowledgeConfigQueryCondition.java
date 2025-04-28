@@ -6,11 +6,8 @@
 
 package modelengine.jade.knowledge.condition;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import modelengine.fit.http.annotation.RequestQuery;
 
 /**
  * 知识库配置查询条件集。
@@ -21,7 +18,7 @@ import modelengine.fit.http.annotation.RequestQuery;
 @Builder
 @Data
 public class KnowledgeConfigQueryCondition {
-    private String id;
+    private Long id;
 
     private String groupId;
 

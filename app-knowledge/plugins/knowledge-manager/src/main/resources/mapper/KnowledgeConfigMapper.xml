@@ -39,9 +39,9 @@
     <select id="listByCondition" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_app_engine_user_knowledge
+        from t_app_engine_user_knowledge where 1 = 1
         <if test="cond.userId != null">
-            where user_id = #{cond.userId}
+            and user_id = #{cond.userId}
         </if>
         <if test="cond.id != null">
             and id = #{cond.id}
@@ -52,6 +52,31 @@
         <if test="cond.isDefault != null">
             and is_default = #{cond.isDefault}
         </if>
+        <if test="cond.apiKey != null">
+            and api_key = #{cond.apiKey}
+        </if>
         ORDER BY updated_at DESC, created_at DESC
     </select>
+
+    <update id="updateOthersIsDefaultFalse" parameterType="modelengine.jade.knowledge.condition.KnowledgeConfigQueryCondition">
+        update t_app_engine_user_knowledge
+        <set>
+            is_default = 0
+        </set>
+        where id != #{id} and group_id = #{groupId} and user_id = #{userId}
+    </update>
+
+    <update id="updateNewestIsDefaultTrue" parameterType="modelengine.jade.knowledge.condition.KnowledgeConfigQueryCondition">
+        update t_app_engine_user_knowledge
+        <set>
+            is_default = 1
+        </set>
+        where id = (
+            select id
+            from t_app_engine_user_knowledge
+            where group_id = #{groupId} and user_id = #{userId}
+            order by updated_at desc
+            limit 1
+        )
+    </update>
 </mapper>

@@ -12,6 +12,9 @@ import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.annotation.Property;
 import modelengine.fitframework.log.Logger;
+import modelengine.fitframework.util.CollectionUtils;
+import modelengine.fitframework.util.LongUtils;
+import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.carver.tool.annotation.Attribute;
 import modelengine.jade.carver.tool.annotation.Group;
 import modelengine.jade.carver.tool.annotation.ToolMethod;
@@ -80,6 +83,20 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
         log.info("start edit user knowledge config for {}.", knowledgeConfigDto.getUserId());
         this.isConfigUnique(knowledgeConfigDto);
         this.knowledgeCenterRepo.updateKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
+        if (this.isUpdateOthersDefault(knowledgeConfigDto)) {
+            KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
+                    .id(knowledgeConfigDto.getId())
+                    .userId(knowledgeConfigDto.getUserId())
+                    .groupId(knowledgeConfigDto.getGroupId())
+                    .build();
+            this.knowledgeCenterRepo.updateOthersIsDefaultFalse(condition);
+        }
+    }
+
+    private boolean isUpdateOthersDefault(KnowledgeConfigDto knowledgeConfigDto) {
+        return knowledgeConfigDto.getIsDefault() && LongUtils.between(knowledgeConfigDto.getId(), 1, Long.MAX_VALUE)
+                && StringUtils.isNotBlank(knowledgeConfigDto.getUserId())
+                && StringUtils.isNotBlank(knowledgeConfigDto.getGroupId());
     }
 
     @Override
@@ -88,9 +105,25 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
             @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")
     })
     @Property(description = "删除用户的知识库配置信息")
-    public void delete(int id) {
+    public void delete(Long id) {
         log.info("start delete user knowledge config, id: {}.", id);
+        List<KnowledgeConfigPo> configPoList =
+                this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
+                        .id(id)
+                        .build());
         this.knowledgeCenterRepo.deleteKnowledgeConfigById(id);
+        if (CollectionUtils.isEmpty(configPoList)) {
+            return;
+        }
+        KnowledgeConfigPo configPo = configPoList.get(0);
+        KnowledgeConfigDto knowledgeConfigDto = this.getKnowledgeConfigDto(configPo);
+        if (this.isUpdateOthersDefault(knowledgeConfigDto)) {
+            KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
+                    .userId(knowledgeConfigDto.getUserId())
+                    .groupId(knowledgeConfigDto.getGroupId())
+                    .build();
+            this.knowledgeCenterRepo.updateNewestIsDefaultTrue(condition);
+        }
     }
 
     @Override
