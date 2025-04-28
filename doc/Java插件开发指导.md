@@ -44,15 +44,15 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.fitframework</groupId>
             <artifactId>fit-api</artifactId>
-            <version>3.6.0-SNAPSHOT</version>
+            <version>3.5.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>modelengine.fit.jade.service</groupId>
+            <groupId>org.fitframework.fel</groupId>
             <artifactId>tool-service</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
@@ -63,7 +63,7 @@
             <plugin>
                 <groupId>org.fitframework</groupId>
                 <artifactId>fit-build-maven-plugin</artifactId>
-                <version>3.6.0-SNAPSHOT</version>
+                <version>3.5.0-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>build-plugin</id>
@@ -74,7 +74,7 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>modelengine.fit.jade.maven.plugin</groupId>
+                <groupId>org.fitframework.fel</groupId>
                 <artifactId>tool-maven-plugin</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
                 <executions>
@@ -105,20 +105,20 @@
 ```java
 package modelengine.fit.java.weather;
 
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
 import modelengine.fitframework.annotation.Genericable;
 import modelengine.fitframework.annotation.Property;
-import modelengine.jade.carver.tool.annotation.Group;
-import modelengine.jade.carver.tool.annotation.ToolMethod;
 
 import java.util.List;
 
 @Group(name = "Rainy_Weather_In_City")
 public interface Rain {
-    @ToolMethod(name = "rain_today", description = "该方法获取今天的下雨信息")
+    @ToolMethod(namespace = "rain", name = "rain_today", description = "该方法获取今天的下雨信息")
     @Genericable("genericable_weather_rain_today")
     String today(@Property(description = "查询地点", required = true) String location);
 
-    @ToolMethod(name = "rain_tomorrow", description = "该方法获取明天的下雨信息")
+    @ToolMethod(namespace = "rain", name = "rain_tomorrow", description = "该方法获取明天的下雨信息")
     @Genericable("genericable_weather_rain_tomorrow")
     List<String> tomorrow(@Property(description = "查询地点列表", required = true) List<String> location);
 }
@@ -129,37 +129,35 @@ public interface Rain {
 ```java
 package modelengine.fit.java.weather.impl;
 
+import modelengine.fel.tool.annotation.Attribute;
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
 import modelengine.fit.java.weather.Rain;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.annotation.Property;
-import modelengine.jade.carver.tool.annotation.Attribute;
-import modelengine.jade.carver.tool.annotation.Group;
-import modelengine.jade.carver.tool.annotation.ToolMethod;
 
 import java.util.List;
 
 @Component
 @Group(name = "implGroup_weather_rain_city_a")
 public class CityARainImpl implements Rain {
-    private static final String FITABLE_ID = "weather_rain_city_a";
-
-    @Fitable(FITABLE_ID)
+    @Override
     @ToolMethod(name = "city_a_rain_today", description = "城市A今日下雨信息", extensions = {
             @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "TEST")
     })
+    @Fitable("weather_rain_city_a")
     @Property(description = "获取今日下雨信息的结果")
-    @Override
     public String today(String location) {
         return location;
     }
 
-    @Fitable(FITABLE_ID)
+    @Override
     @ToolMethod(name = "city_a_rain_tomorrow", description = "城市A明日下雨信息", extensions = {
             @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "TEST")
     })
+    @Fitable("weather_rain_city_a")
     @Property(description = "获取明日下雨信息的结果")
-    @Override
     public List<String> tomorrow(List<String> location) {
         return location;
     }
@@ -171,34 +169,35 @@ public class CityARainImpl implements Rain {
 ```java
 package modelengine.fit.java.weather.impl;
 
+import modelengine.fel.tool.annotation.Attribute;
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
 import modelengine.fit.java.weather.Rain;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
-import modelengine.jade.carver.tool.annotation.Attribute;
-import modelengine.jade.carver.tool.annotation.Group;
-import modelengine.jade.carver.tool.annotation.ToolMethod;
+import modelengine.fitframework.annotation.Property;
 
 import java.util.List;
 
 @Component
 @Group(name = "implGroup_weather_rain_city_b")
 public class CityBRainImpl implements Rain {
-    private static final String FITABLE_ID = "weather_rain_city_b";
-
-    @Fitable(FITABLE_ID)
+    @Override
+    @Fitable("weather_rain_city_b")
     @ToolMethod(name = "city_b_rain_today", description = "城市B今日下雨信息", extensions = {
             @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "TEST")
     })
-    @Override
+    @Property(description = "获取今日下雨信息的结果")
     public String today(String location) {
         return null;
     }
 
-    @Fitable(FITABLE_ID)
+    @Override
+    @Fitable("weather_rain_city_b")
     @ToolMethod(name = "city_b_rain_tomorrow", description = "城市B明日下雨信息", extensions = {
             @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "TEST")
     })
-    @Override
+    @Property(description = "获取明日下雨信息的结果")
     public List<String> tomorrow(List<String> location) {
         return null;
     }
@@ -300,6 +299,7 @@ fit:
     "extensions" : { },
     "definitionGroupName" : "Rainy_Weather_In_City",
     "tools" : [ {
+      "namespace" : "rain",
       "schema" : {
         "name" : "city_a_rain_today",
         "description" : "城市A今日下雨信息",
@@ -334,6 +334,7 @@ fit:
       },
       "definitionName" : "rain_today"
     }, {
+      "namespace" : "rain",
       "schema" : {
         "name" : "city_a_rain_tomorrow",
         "description" : "城市A明日下雨信息",
@@ -381,6 +382,7 @@ fit:
     "extensions" : { },
     "definitionGroupName" : "Rainy_Weather_In_City",
     "tools" : [ {
+      "namespace" : "rain",
       "schema" : {
         "name" : "city_b_rain_today",
         "description" : "城市B今日下雨信息",
@@ -397,8 +399,11 @@ fit:
         },
         "order" : [ "arg0" ],
         "return" : {
+          "name" : "",
+          "description" : "获取今日下雨信息的结果",
           "type" : "string",
-          "convertor" : ""
+          "convertor" : "",
+          "examples" : ""
         }
       },
       "runnables" : {
@@ -412,6 +417,7 @@ fit:
       },
       "definitionName" : "rain_today"
     }, {
+      "namespace" : "rain",
       "schema" : {
         "name" : "city_b_rain_tomorrow",
         "description" : "城市B明日下雨信息",
@@ -431,11 +437,14 @@ fit:
         },
         "order" : [ "arg0" ],
         "return" : {
+          "name" : "",
+          "description" : "获取明日下雨信息的结果",
           "type" : "array",
           "items" : {
             "type" : "string"
           },
-          "convertor" : ""
+          "convertor" : "",
+          "examples" : ""
         }
       },
       "runnables" : {
@@ -479,6 +488,7 @@ fit:
         * schema：方法结构，字段与定义组 schema 一致。
         * runnables：表示对运行规范的描述，包含 FIT 框架信息，来自 `@Genericable` 和 `@Fitable` 注解
         * extensions：扩展信息，需要添加标签信息，来自 `@ToolMethod` 注解。
+        * namespace：表示方法的命名空间，来自 `@ToolMethod` 注解。
 
 > 约束情况：
 > 

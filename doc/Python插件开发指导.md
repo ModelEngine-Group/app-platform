@@ -84,6 +84,7 @@ def multiplier(a: int, b: int) -> int:
     "extensions" : { },
     "definitionGroupName" : "Python-Plugin",
     "tools" : [ {
+      "namespace" : "multiplier",
       "schema" : {
         "name" : "乘法器",
         "description" : "Python示例插件工具",
@@ -143,10 +144,10 @@ def multiplier(a: int, b: int) -> int:
 >         <dependency>
 >             <groupId>org.fitframework</groupId>
 >             <artifactId>fit-api</artifactId>
->             <version>3.6.0-SNAPSHOT</version>
+>             <version>3.5.0-SNAPSHOT</version>
 >         </dependency>
 >         <dependency>
->             <groupId>modelengine.fit.jade.service</groupId>
+>             <groupId>org.fitframework.fel</groupId>
 >             <artifactId>tool-service</artifactId>
 >             <version>1.0.0-SNAPSHOT</version>
 >         </dependency>
@@ -157,7 +158,7 @@ def multiplier(a: int, b: int) -> int:
 >             <plugin>
 >                 <groupId>org.fitframework</groupId>
 >                 <artifactId>fit-build-maven-plugin</artifactId>
->                 <version>3.6.0-SNAPSHOT</version>
+>                 <version>3.5.0-SNAPSHOT</version>
 >                 <executions>
 >                     <execution>
 >                         <id>build-plugin</id>
@@ -168,7 +169,7 @@ def multiplier(a: int, b: int) -> int:
 >                 </executions>
 >             </plugin>
 >             <plugin>
->                 <groupId>modelengine.fit.jade.maven.plugin</groupId>
+>                 <groupId>org.fitframework.fel</groupId>
 >                 <artifactId>tool-maven-plugin</artifactId>
 >                 <version>1.0.0-SNAPSHOT</version>
 >                 <executions>
@@ -190,7 +191,7 @@ def multiplier(a: int, b: int) -> int:
 > ```java
 > @Group(name = "Python-Plugin")
 > public interface LoopToolService {
->  @ToolMethod(name = "PythonTool", description = "用于示例的python工具")
+>  @ToolMethod(namespace = "multiplier", name = "PythonTool", description = "用于示例的python工具")
 >  @Genericable("genericable_id_multiplier")
 >  int Multi(@Property(description = "乘数1", required = true) int a,
 >          @Property(description = "乘数2", required = true) int b);
@@ -207,10 +208,10 @@ def multiplier(a: int, b: int) -> int:
 >  @ToolMethod(name = "乘法器", description = "Python示例插件工具", extensions = {
 >          @Attribute(key = "tags", value = "FIT")
 >  })
->     @Property(description = "Python乘法器的结果")
->     public int Multi(int a, int b) {
->         return a * b;
->     }
+>  @Property(description = "Python乘法器的结果")
+>  public int Multi(int a, int b) {
+>      return a * b;
+>  }
 > }
 > ```
 > 
@@ -240,6 +241,7 @@ def multiplier(a: int, b: int) -> int:
         * schema：方法结构，字段与定义组 schema 一致。
         * runnables：表示对运行规范的描述，包含 FIT 框架信息，来自 `@fitable` 注解。
         * extensions：扩展信息，需要添加标签信息。
+        * namespace：表示方法的命名空间。
 
 > 约束情况：
 > 
