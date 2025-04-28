@@ -128,6 +128,8 @@ import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.app.engine.base.service.UsrAppCollectionService;
+import modelengine.jade.knowledge.KnowledgeCenterService;
+import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.store.entity.transfer.PluginToolData;
 import modelengine.jade.store.service.AppService;
 import modelengine.jade.store.service.PluginService;
@@ -178,6 +180,8 @@ public class AppBuilderAppServiceImpl
     private static final String APP_BUILDER_DEFAULT_SERVICE_NAME = "#app_builder_default_service_name#";
 
     private static final String APP_BUILDER_DEFAULT_TAG = "#app_builder_default_tag#";
+
+    private static final String APP_BUILDER_DEFAULT_KNOWLEDGE_SET = "#app_builder_default_knowledge_set#";
 
     private static final String DEFAULT_APP_VERSION = "1.0.0";
 
@@ -253,6 +257,8 @@ public class AppBuilderAppServiceImpl
 
     private final String contextRoot;
 
+    private final KnowledgeCenterService knowledgeCenterService;
+
     public AppBuilderAppServiceImpl(AppBuilderAppFactory appFactory, AippFlowService aippFlowService,
             AppBuilderAppRepository appRepository, AppTemplateFactory templateFactory,
             @Value("${validation.task.name.length.maximum:64}") int nameLengthMaximum, MetaService metaService,
@@ -263,7 +269,7 @@ public class AppBuilderAppServiceImpl
             @Value("${export-meta}") Map<String, String> exportMeta, AppTypeService appTypeService,
             PluginToolService pluginToolService, PluginService pluginService,
             FlowDefinitionService flowDefinitionService, AippFlowDefinitionService aippFlowDefinitionService,
-            @Value("${app-engine.contextRoot}") String contextRoot) {
+            @Value("${app-engine.contextRoot}") String contextRoot, KnowledgeCenterService knowledgeCenterService) {
         this.nameLengthMaximum = nameLengthMaximum;
         this.appFactory = appFactory;
         this.templateFactory = templateFactory;
@@ -286,6 +292,7 @@ public class AppBuilderAppServiceImpl
         this.flowDefinitionService = flowDefinitionService;
         this.aippFlowDefinitionService = aippFlowDefinitionService;
         this.contextRoot = contextRoot;
+        this.knowledgeCenterService = knowledgeCenterService;
     }
 
     @Override
@@ -573,11 +580,13 @@ public class AppBuilderAppServiceImpl
             templateApp.setAppCategory(dto.getAppCategory());
             templateApp.setAppBuiltType(dto.getAppBuiltType());
         }
+        KnowledgeDto firstKnowledge = this.knowledgeCenterService.getSupportKnowledges(context.getOperator()).get(0);
         AppBuilderFlowGraph flowGraph = templateApp.getFlowGraph();
         flowGraph.setAppearance(flowGraph.getAppearance()
                 .replace(APP_BUILDER_DEFAULT_MODEL_NAME, firstModelInfo[MODEL_LIST_SERVICE_NAME])
                 .replace(APP_BUILDER_DEFAULT_SERVICE_NAME, firstModelInfo[MODEL_LIST_SERVICE_NAME])
-                .replace(APP_BUILDER_DEFAULT_TAG, firstModelInfo[MODEL_LIST_TAG]));
+                .replace(APP_BUILDER_DEFAULT_TAG, firstModelInfo[MODEL_LIST_TAG])
+                .replace(APP_BUILDER_DEFAULT_KNOWLEDGE_SET, firstKnowledge.getGroupId()));
         return this.createAppWithTemplate(dto, templateApp, context, isUpgrade, AppTypeEnum.APP.name(), false);
     }
 

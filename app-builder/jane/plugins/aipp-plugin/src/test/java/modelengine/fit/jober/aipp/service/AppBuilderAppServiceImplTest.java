@@ -99,6 +99,8 @@ import modelengine.fit.jober.common.RangedResultSet;
 import modelengine.fitframework.util.IoUtils;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.jade.app.engine.base.service.UsrAppCollectionService;
+import modelengine.jade.knowledge.KnowledgeCenterService;
+import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.store.service.AppService;
 
 import org.junit.jupiter.api.Assertions;
@@ -177,6 +179,9 @@ public class AppBuilderAppServiceImplTest {
 
     private AppBuilderAppServiceImpl appBuilderAppService;
 
+    @Mock
+    private KnowledgeCenterService knowledgeCenterService;
+
     private static final LocalDateTime TIME = LocalDateTime.of(2024, 5, 6, 15, 15, 15);
 
     private static final String IMPORT_CONFIG = "component/import_config.json";
@@ -191,7 +196,7 @@ public class AppBuilderAppServiceImplTest {
                 .put("version", "1.0.1")
                 .put("hash-template", "123")
                 .put("digest", "MD5")
-                .build(), appTypeService, null, null, flowDefinitionService, aippFlowDefinitionService, "");
+                .build(), appTypeService, null, null, flowDefinitionService, aippFlowDefinitionService, "", knowledgeCenterService);
     }
 
     private AppBuilderApp mockApp() {
@@ -436,9 +441,12 @@ public class AppBuilderAppServiceImplTest {
             AppBuilderApp appTemplate = mockApp();
             AippCreateDto aippCreateDto = new AippCreateDto();
             aippCreateDto.setAippId("aippId1");
+            List<KnowledgeDto> knowledgeDtos = new ArrayList<>();
+            knowledgeDtos.add(KnowledgeDto.builder().groupId("default").build());
             when(appRepository.selectWithId(appId)).thenReturn(appTemplate);
             when(aippFlowService.previewAipp(anyString(), any(), any())).thenReturn(aippCreateDto);
             when(aippModelCenter.fetchModelList(any(), any(), any())).thenReturn(null);
+            when(knowledgeCenterService.getSupportKnowledges(any())).thenReturn(knowledgeDtos);
             AppBuilderAppDto appBuilderAppDto = appBuilderAppService.create(appId, appCreateDto, context, false);
             assertThat(appBuilderAppDto.getName()).isEqualTo(appName);
             assertThat(appBuilderAppDto.getAppCategory()).isEqualTo("chatbot");
@@ -538,6 +546,8 @@ public class AppBuilderAppServiceImplTest {
 
         private final AppUpdateValidator appUpdateValidator = mock(AppUpdateValidator.class);
 
+        private final KnowledgeCenterService knowledgeCenterService = mock(KnowledgeCenterService.class);
+
         private final AppBuilderAppFactory factory = new AppBuilderAppFactory(this.flowGraphRepository,
                 this.configRepository, this.formRepository, this.configPropertyRepository, this.formPropertyRepository,
                 this.appRepository);
@@ -546,7 +556,8 @@ public class AppBuilderAppServiceImplTest {
                 this.aippFlowService, this.appRepository, null, 64, this.metaService, this.usrAppCollectionService,
                 this.appUpdateValidator, this.metaInstanceService, this.uploadedFileManageService, this.aippLogMapper,
                 this.flowsService, this.appService, this.aippChatService, this.aippModelCenter, this.aippChatMapper,
-                null, null, null, null, null, null, "");
+                null, null, null, null, null, null,
+                "", knowledgeCenterService);
 
         @Test
         @DisplayName("更新 config")
@@ -753,7 +764,8 @@ public class AppBuilderAppServiceImplTest {
                     null,
                     null,
                     null,
-                    ""));
+                    "",
+                    null));
             doNothing().when(service).validateUpdateApp(any(), any(), any());
             doNothing().when(appUpdateValidator).validate(anyString());
             when(appFactory.create(anyString())).thenReturn(mockApp());

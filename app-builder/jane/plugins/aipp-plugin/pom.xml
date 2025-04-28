@@ -258,6 +258,10 @@
             <artifactId>caffeine</artifactId>
             <version>2.9.3</version>
         </dependency>
+        <dependency>
+            <groupId>modelengine.fit.jade.service</groupId>
+            <artifactId>knowledge-service</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
