@@ -43,7 +43,7 @@ public interface ParamConvertor {
      * @return 转换完成的 {@link KnowledgeRepo}。
      */
     @Mapping(target = "type", source = "entity", qualifiedByName = "mapIndexTypeToType")
-    @Mapping(target = "createdAt", source = "createAt", qualifiedByName = "stringToLocalDateTime")
+    @Mapping(target = "createdAt", source = "entity", qualifiedByName = "stringToLocalDateTime")
     KnowledgeRepo convertToKnowledgeRepo(QianfanKnowledgeEntity entity);
 
     @Named("mapIndexTypeToType")
@@ -55,7 +55,8 @@ public interface ParamConvertor {
     }
 
     @Named("stringToLocalDateTime")
-    default LocalDateTime stringToLocalDateTime(String dateStr) {
+    default LocalDateTime stringToLocalDateTime(QianfanKnowledgeEntity entity) {
+        String dateStr = entity.getCreateAt();
         if (dateStr == null || dateStr.isEmpty()) {
             return null;
         }
@@ -74,7 +75,7 @@ public interface ParamConvertor {
     @Mapping(target = "pipelineConfig", source = "similarityThreshold", qualifiedByName = "mapSimilarityToPipeline")
     QianfanRetrievalParam convertToRetrievalParam(FlatKnowledgeOption option);
 
-    @Named("mapreferenceLimitToTop")
+    @Named("mapReferenceLimitToTop")
     default int mapReferenceLimitToTop(ReferenceLimit limit) {
         return limit.getValue();
     }
@@ -97,9 +98,9 @@ public interface ParamConvertor {
      * @param entity 表示待转换的 {@link QianfanRetrievalChunksEntity}。
      * @return 转换完成的 {@link KnowledgeDocument}。
      */
-    @Mapping(target = "id", source = "documentId")
-    @Mapping(target = "text", source = "content")
-    @Mapping(target = "score", source = "retrievalScore")
+    @Mapping(target = "id", expression = "java(entity.documentId())")
+    @Mapping(target = "text", expression = "java(entity.content())")
+    @Mapping(target = "score", expression = "java(entity.retrievalScore())")
     @Mapping(target = "metadata", source = "entity", qualifiedByName = "mapChunksEntityToMetadata")
     KnowledgeDocument convertToKnowledgeDocument(QianfanRetrievalChunksEntity entity);
 

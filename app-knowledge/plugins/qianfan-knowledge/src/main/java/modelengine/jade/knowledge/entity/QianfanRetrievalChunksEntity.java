@@ -7,6 +7,8 @@
 package modelengine.jade.knowledge.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import modelengine.fitframework.annotation.Property;
 
 /**
@@ -16,6 +18,8 @@ import modelengine.fitframework.annotation.Property;
  * @since 2025-04-25
  */
 @Data
+@Getter
+@Setter
 public class QianfanRetrievalChunksEntity {
     /**
      * chunk id。
@@ -56,4 +60,16 @@ public class QianfanRetrievalChunksEntity {
      */
     @Property(description = "rank_score", name = "rank_score")
     private float rankScore;
+
+    public String documentId() {
+        return this.documentId;
+    }
+
+    public String content() {
+        return this.content;
+    }
+
+    public float retrievalScore() {
+        return this.retrievalScore;
+    }
 }
