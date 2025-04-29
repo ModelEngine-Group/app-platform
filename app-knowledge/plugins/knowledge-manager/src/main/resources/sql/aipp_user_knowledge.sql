@@ -1,6 +1,6 @@
 create table if not exists t_app_engine_user_knowledge
 (
-	"id" bigserial primary key                           not null,
+    "id" bigserial primary key                           not null,
     "created_at" timestamp(9) default current_timestamp  not null,
     "updated_at" timestamp(9) default current_timestamp  not null,
     "created_by" varchar(64) default 'system'            not null,

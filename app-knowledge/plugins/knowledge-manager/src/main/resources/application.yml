@@ -10,9 +10,9 @@ fit:
     instances:
       app-engine:
         mode: 'shared'
-        url: jdbc:postgresql://jade-db/app_builder?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=true&allowPublicKeyRetrieval=true&useAffectedRows=true&connectTimeout=60000&socketTimeout=60000
-        username: postgres
-        password: ModelEngine@123
+        url: ''
+        username: ''
+        password: ''
         druid:
           driver-class-name: 'org.postgresql.Driver'
           initialSize: 5
