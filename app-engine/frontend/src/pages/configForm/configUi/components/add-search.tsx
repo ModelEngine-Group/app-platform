@@ -154,19 +154,6 @@ const AddSearch = (props: any) => {
           </div>
         );
       })}
-      {/*{rerankData.length > 0 && (*/}
-      {/*  <div>*/}
-      {/*    {rerankData.map((item: any) => (*/}
-      {/*      <div className='rerank-box'>*/}
-      {/*        <div className='searth-title'>*/}
-      {/*          {item.name}*/}
-      {/*          <Switch checked={switchChecked} onChange={onChangeSwitch} />*/}
-      {/*        </div>*/}
-      {/*        <div>{item.description}</div>*/}
-      {/*      </div>*/}
-      {/*    ))}*/}
-      {/*  </div>*/}
-      {/*)}*/}
     </Spin>
   );
   // 搜索过滤界面
