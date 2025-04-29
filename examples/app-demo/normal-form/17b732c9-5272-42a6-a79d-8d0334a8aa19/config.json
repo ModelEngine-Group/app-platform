@@ -1,0 +1,102 @@
+{
+  "schema": {
+    "name": "知识库管理表单",
+    "parameters": {
+      "type": "object",
+      "required": [
+        "knowledgeList",
+        "knowledgeOptions"
+      ],
+      "properties": {
+        "knowledgeList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "groupId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "apiKey": {
+                "type": "string"
+              },
+              "isDefault": {
+                "type": "integer"
+              },
+              "userId": {
+                "type": "String"
+              }
+            },
+            "required": [
+              "groupId",
+              "name",
+              "apiKey",
+              "isDefault"
+            ]
+          }
+        },
+        "knowledgeOptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "groupId": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "groupId",
+              "description"
+            ]
+          }
+        }
+      }
+    },
+    "return": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "add",
+              "delete",
+              "switch",
+              "quit"
+            ]
+          },
+          "info": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "groupId": {
+                "type": "string"
+              },
+              "apiKey": {
+                "type": "string"
+              },
+              "isDefault": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+  }
+}
