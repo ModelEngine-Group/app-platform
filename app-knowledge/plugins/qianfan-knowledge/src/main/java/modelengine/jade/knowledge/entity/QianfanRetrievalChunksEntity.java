@@ -6,10 +6,11 @@
 
 package modelengine.jade.knowledge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import modelengine.fitframework.annotation.Property;
 
 /**
  * qianfan 知识库检索chunk结果。
@@ -20,11 +21,12 @@ import modelengine.fitframework.annotation.Property;
 @Data
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QianfanRetrievalChunksEntity {
     /**
      * chunk id。
      */
-    @Property(description = "chunk_id", name = "chunk_id")
+    @JsonProperty("chunk_id")
     private String chunkId;
     /**
      * chunk内容。
@@ -33,32 +35,32 @@ public class QianfanRetrievalChunksEntity {
     /**
      * chunk类型。
      */
-    @Property(description = "chunk_type", name = "chunk_type")
+    @JsonProperty("chunk_type")
     private String chunkType;
     /**
      * 知识库id。
      */
-    @Property(description = "knowledgebase_id", name = "knowledgebase_id")
+    @JsonProperty("knowledgebase_id")
     private String knowledgebaseId;
     /**
      * 文档id。
      */
-    @Property(description = "document_id", name = "document_id")
+    @JsonProperty("document_id")
     private String documentId;
     /**
      * 文档名。
      */
-    @Property(description = "document_name", name = "document_name")
+    @JsonProperty("document_name")
     private String documentName;
     /**
      * 粗检索分值。
      */
-    @Property(description = "retrieval_score", name = "retrieval_score")
+    @JsonProperty("retrieval_score")
     private float retrievalScore;
     /**
      * rerank分值。
      */
-    @Property(description = "rank_score", name = "rank_score")
+    @JsonProperty("rank_score")
     private float rankScore;
 
     public String documentId() {
@@ -71,5 +73,9 @@ public class QianfanRetrievalChunksEntity {
 
     public float retrievalScore() {
         return this.retrievalScore;
+    }
+
+    public String chunkId() {
+        return this.chunkId;
     }
 }

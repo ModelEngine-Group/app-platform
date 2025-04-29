@@ -47,11 +47,6 @@ public class RetrieverServiceOption {
     private String groupId;
 
     /**
-     * 用户id。
-     */
-    private String userId;
-
-    /**
      * 重排模型参数实体。
      */
     @Data

@@ -6,8 +6,9 @@
 
 package modelengine.jade.knowledge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import modelengine.fitframework.annotation.Property;
 
 import java.util.List;
 
@@ -18,11 +19,12 @@ import java.util.List;
  * @since 2025-04-25
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QianfanRetrievalResult {
     /**
      * chunk数量。
      */
-    @Property(description = "total_count", name = "total_count")
+    @JsonProperty("total_count")
     private Integer totalCount;
     /**
      * 切片信息。
