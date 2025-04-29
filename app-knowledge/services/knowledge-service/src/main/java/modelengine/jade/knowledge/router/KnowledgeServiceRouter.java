@@ -6,9 +6,6 @@
 
 package modelengine.jade.knowledge.router;
 
-import modelengine.fitframework.annotation.Component;
-import modelengine.fitframework.broker.client.BrokerClient;
-import modelengine.fitframework.broker.client.filter.route.FitableIdFilter;
 import modelengine.fitframework.broker.client.Invoker;
 
 /**
@@ -17,18 +14,7 @@ import modelengine.fitframework.broker.client.Invoker;
  * @author 陈潇文
  * @since 2025-04-27
  */
-@Component
-public class KnowledgeServiceRouter {
-    private final BrokerClient brokerClient;
-
-    /**
-     * 表示 {@link KnowledgeServiceRouter} 的构造器。
-     *
-     * @param brokerClient 表示fit调度器的 {@link BrokerClient}。
-     */
-    public KnowledgeServiceRouter(BrokerClient brokerClient) {
-        this.brokerClient = brokerClient;
-    }
+public interface KnowledgeServiceRouter {
 
     /**
      * 获取知识库服务路由。
@@ -37,8 +23,5 @@ public class KnowledgeServiceRouter {
      * @param groupId 组ID
      * @return 路由实例
      */
-    public Invoker getRouter(Class<?> genericableClass, String genericableId, String groupId) {
-        return brokerClient.getRouter(genericableClass, genericableId)
-                .route(new FitableIdFilter(groupId));
-    }
+    Invoker getRouter(Class<?> genericableClass, String genericableId, String groupId);
 } 

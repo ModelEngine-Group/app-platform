@@ -31,7 +31,6 @@ import modelengine.jade.knowledge.controller.vo.KnowledgePropertyVo;
 import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.knowledge.enums.IndexType;
 import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
-import modelengine.jade.knowledge.exception.KnowledgeException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,11 +55,7 @@ public class KnowledgeController extends AbstractController {
 
     private final KnowledgeServiceRouter knowledgeServiceRouter;
 
-    private KnowledgeCenterService knowledgeCenterService;
-
-//    public void setKnowledgeCenterService(KnowledgeCenterService knowledgeCenterService) {
-//        this.knowledgeCenterService = knowledgeCenterService;
-//    }
+    private final KnowledgeCenterService knowledgeCenterService;
 
     /**
      * 表示 {@link KnowledgeController} 的构造器。
@@ -74,7 +69,7 @@ public class KnowledgeController extends AbstractController {
      */
     public KnowledgeController(Authenticator authenticator, KnowledgeI18nService knowledgeI18nService,
             ToolGroupService toolGroupService, KnowledgeConfig knowledgeConfig,
-            KnowledgeServiceRouter knowledgeServiceRouter, KnowledgeCenterService knowledgeCenterService) {
+             KnowledgeServiceRouter knowledgeServiceRouter, KnowledgeCenterService knowledgeCenterService) {
         super(authenticator);
         this.knowledgeI18nService = knowledgeI18nService;
         this.toolGroupService = toolGroupService;
