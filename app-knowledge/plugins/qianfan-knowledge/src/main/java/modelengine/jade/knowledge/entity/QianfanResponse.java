@@ -25,6 +25,13 @@ public class QianfanResponse<T> {
     private String code;
     private String message;
 
+    /**
+     * 表示百度千帆知识库请求结构体。
+     * @param context 表示http响应数据内容的 {@link Map}{@code <}{@link String}{@code ,}{@link Object}{@code >}。
+     * @param type 表示响应数据期望解析类型的 {@link Class}{@code <}{@link T}{@code >}。
+     * @return 表示百度千帆知识库请求的 {@link QianfanResponse}。
+     * @param <T> 表示泛型的 {@code <}{@link T}{@code >}。
+     */
     public static <T> QianfanResponse<T> from(Map<String, Object> context, Class<T> type) {
         QianfanResponse<T> qianfanResponse = new QianfanResponse<>();
         ObjectMapper objectMapper = new ObjectMapper();

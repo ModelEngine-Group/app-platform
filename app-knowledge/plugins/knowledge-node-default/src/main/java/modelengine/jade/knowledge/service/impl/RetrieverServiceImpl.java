@@ -56,7 +56,7 @@ public class RetrieverServiceImpl implements RetrieverService {
      * @param knowledgeCenterService 表示知识库配置服务的 {@link KnowledgeCenterService}。
      */
     public RetrieverServiceImpl(RetrieverHandler retrieverHandler, PostProcessorFactory postProcessorFactory,
-                                @Value("${openai-urls.internal}") String baseRerankUri, KnowledgeCenterService knowledgeCenterService) {
+            @Value("${openai-urls.internal}") String baseRerankUri, KnowledgeCenterService knowledgeCenterService) {
         this.retrieverHandler = Validation.notNull(retrieverHandler, "The retriever handler cannot be null.");
         this.postProcessorFactory = Validation.notNull(postProcessorFactory, "The factory cannot be null.");
         this.baseRerankUri = Validation.notBlank(baseRerankUri, "The rerank uri cannot be blank.");
@@ -90,8 +90,8 @@ public class RetrieverServiceImpl implements RetrieverService {
                 .collect(Collectors.toList());
     }
 
-    private RetrieverOption getRetrieverOption(List<KnowledgeRepoInfo> knowledgeRepos,
-            RetrieverServiceOption option, String userId) {
+    private RetrieverOption getRetrieverOption(List<KnowledgeRepoInfo> knowledgeRepos, RetrieverServiceOption option,
+            String userId) {
         String apiKey = this.knowledgeCenterService.getApiKey(userId, option.getGroupId(), StringUtils.EMPTY);
         RetrieverOption retrieverOption = RetrieverOptionConvertor.INSTANCE.fromRetrieverServiceOption(option, apiKey);
         retrieverOption.setRepoIds(knowledgeRepos.stream().map(KnowledgeRepoInfo::id).collect(Collectors.toList()));

@@ -6,6 +6,7 @@
 
 package modelengine.jade.knowledge.convertor;
 
+import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.knowledge.KnowledgeRepo;
 import modelengine.jade.knowledge.ReferenceLimit;
 import modelengine.jade.knowledge.document.KnowledgeDocument;
@@ -59,7 +60,7 @@ public interface ParamConvertor {
     @Named("stringToLocalDateTime")
     default LocalDateTime stringToLocalDateTime(QianfanKnowledgeEntity entity) {
         String dateStr = entity.getCreatedAt();
-        if (dateStr == null || dateStr.isEmpty()) {
+        if (dateStr == null || StringUtils.isEmpty(dateStr)) {
             return null;
         }
         return LocalDateTime.parse(dateStr, DateTimeFormatter.ISO_DATE_TIME);

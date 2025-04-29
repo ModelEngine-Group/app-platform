@@ -24,10 +24,12 @@ public class QianfanKnowledgeListQueryParam {
      * 知识库查询的起始id。
      */
     private String marker;
+
     /**
      * 知识库查询的关键字。
      */
     private String keyword;
+
     /**
      * 查询的知识库数量上限。
      */
