@@ -25,18 +25,22 @@ public class KnowledgeConfigPo extends BasePo {
      * 知识库平台名称。
      */
     private String name;
+
     /**
      * 用户id。
      */
     private String userId;
+
     /**
      * 知识库api key。
      */
     private String apiKey;
+
     /**
      * 知识库平台groupId。
      */
     private String groupId;
+
     /**
      * 是否为默认使用。
      */
@@ -95,7 +99,7 @@ public class KnowledgeConfigPo extends BasePo {
         /**
          * 设置是否为默认使用。
          *
-         * @param isDefault 表示是否为默认使用的 {@link int} (1 表示默认，0 表示非默认）。
+         * @param isDefault 表示是否为默认使用的 {@code int} (1 表示默认，0 表示非默认）。
          * @return {@link Builder} 构建器本身。
          */
         public Builder isDefault(int isDefault) {

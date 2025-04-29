@@ -65,10 +65,11 @@ public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
         int times = max / querySize;
         int maxKeys = max % querySize;
         PageVoKnowledgeList pageVoKnowledgeList = this.queryKnowledgeList(apiKey, param, times, maxKeys);
-        List<KnowledgeRepo> repos = IntStream.range(min, Math.min(max, pageVoKnowledgeList.getKnowledgeEntityList().size()))
-                .mapToObj(pageVoKnowledgeList.getKnowledgeEntityList()::get)
-                .map(ParamConvertor.INSTANCE::convertToKnowledgeRepo)
-                .toList();
+        List<KnowledgeRepo> repos =
+                IntStream.range(min, Math.min(max, pageVoKnowledgeList.getKnowledgeEntityList().size()))
+                        .mapToObj(pageVoKnowledgeList.getKnowledgeEntityList()::get)
+                        .map(ParamConvertor.INSTANCE::convertToKnowledgeRepo)
+                        .toList();
         return PageVo.of(pageVoKnowledgeList.getTotal(), repos);
     }
 
@@ -84,9 +85,8 @@ public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
                 fullTextInfo.getName(),
                 fullTextInfo.getDescription());
         KnowledgeI18nInfo hybridInfo = this.knowledgeI18nService.localizeText(IndexType.HYBRID);
-        KnowledgeProperty.IndexInfo hybridIndex = new KnowledgeProperty.IndexInfo(IndexType.HYBRID,
-                hybridInfo.getName(),
-                hybridInfo.getDescription());
+        KnowledgeProperty.IndexInfo hybridIndex =
+                new KnowledgeProperty.IndexInfo(IndexType.HYBRID, hybridInfo.getName(), hybridInfo.getDescription());
         KnowledgeI18nInfo referenceInfo = this.knowledgeI18nService.localizeText(FilterType.REFERENCE_TOP_K);
         FlatFilterConfig topKFilter = new FlatFilterConfig(FilterConfig.custom()
                 .name(referenceInfo.getName())
@@ -120,7 +120,8 @@ public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
         Validation.notNull(option, "The knowledge option cannot be null.");
         QianfanRetrievalParam param = ParamConvertor.INSTANCE.convertToRetrievalParam(option);
         QianfanRetrievalResult result = this.knowledgeBaseManager.retrieve(apiKey, param);
-        return result.getChunks().stream()
+        return result.getChunks()
+                .stream()
                 .map(ParamConvertor.INSTANCE::convertToKnowledgeDocument)
                 .collect(Collectors.toList());
     }
@@ -140,19 +141,12 @@ public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
             listEntity = this.executeQuery(apiKey, param.getRepoName(), maxKeys, currentMarker);
             resultList.addAll(listEntity.getData());
         }
-        return PageVoKnowledgeList
-                .builder()
-                .knowledgeEntityList(resultList)
-                .total(listEntity.getTotal())
-                .build();
+        return PageVoKnowledgeList.builder().knowledgeEntityList(resultList).total(listEntity.getTotal()).build();
     }
 
     private QianfanKnowledgeListEntity executeQuery(String apiKey, String repoName, int maxKeys, String marker) {
-        QianfanKnowledgeListQueryParam queryParam = QianfanKnowledgeListQueryParam.builder()
-                .keyword(repoName)
-                .maxKeys(maxKeys)
-                .marker(marker)
-                .build();
+        QianfanKnowledgeListQueryParam queryParam =
+                QianfanKnowledgeListQueryParam.builder().keyword(repoName).maxKeys(maxKeys).marker(marker).build();
         return this.knowledgeBaseManager.listRepos(apiKey, queryParam);
     }
 }

@@ -23,6 +23,7 @@ public class PageVoKnowledgeList {
      * 知识库列表查询数据。
      */
     private List<QianfanKnowledgeEntity> knowledgeEntityList;
+
     /**
      * 知识库总数。
      */

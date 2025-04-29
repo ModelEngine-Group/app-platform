@@ -65,12 +65,12 @@ public enum KnowledgeManagerRetCode implements RetCode {
 
     @Override
     public int getCode() {
-     return this.code;
+        return this.code;
     }
 
     @Override
     public String getMsg() {
-     return this.msg;
+        return this.msg;
     }
 
 }

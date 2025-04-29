@@ -53,7 +53,7 @@ public class QianfanKnowledgeBaseManager {
     private final Map<Integer, KnowledgeManagerRetCode> exceptionMap = new HashMap<>();
 
     public QianfanKnowledgeBaseManager(@Value("${qianfan.url}") Map<String, String> qianfanUrls,
-                                       HttpClassicClientFactory httpClientFactory) {
+            HttpClassicClientFactory httpClientFactory) {
         this.qianfanUrls = qianfanUrls;
         this.httpClientFactory = httpClientFactory;
         this.httpClient = new LazyLoader<>(this::getHttpClient);
@@ -76,12 +76,11 @@ public class QianfanKnowledgeBaseManager {
         request.entity(Entity.createObject(request, param));
         request.headers().set(AUTHORIZATION, BEARER + apiKey);
         try {
-            Object object = this.httpClient.get()
-                    .exchangeForEntity(request, Object.class);
+            Object object = this.httpClient.get().exchangeForEntity(request, Object.class);
             Map<String, Object> response =
                     ObjectUtils.toCustomObject(Validation.notNull(object, "The response body is abnormal."), Map.class);
-            QianfanResponse<QianfanKnowledgeListEntity> resp = QianfanResponse.from(response,
-                    QianfanKnowledgeListEntity.class);
+            QianfanResponse<QianfanKnowledgeListEntity> resp =
+                    QianfanResponse.from(response, QianfanKnowledgeListEntity.class);
             return Validation.notNull(resp.getData(), "The response body is abnormal.");
         } catch (ClientException ex) {
             log.error(QUERY_KNOWLEDGE_LIST_ERROR.getMsg(), ex.getMessage());

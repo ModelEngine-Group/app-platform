@@ -15,6 +15,7 @@ import modelengine.jade.knowledge.dto.QianfanRetrievalParam;
 import modelengine.jade.knowledge.entity.QianfanKnowledgeEntity;
 import modelengine.jade.knowledge.entity.QianfanRetrievalChunksEntity;
 import modelengine.jade.knowledge.support.FlatKnowledgeOption;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -35,6 +36,7 @@ import java.util.Map;
 @Mapper
 public interface ParamConvertor {
     ParamConvertor INSTANCE = Mappers.getMapper(ParamConvertor.class);
+    int TOP = 400;
 
     /**
      * 将 {@link QianfanKnowledgeEntity} 转换为 {@link KnowledgeRepo}。
@@ -82,11 +84,10 @@ public interface ParamConvertor {
 
     @Named("mapSimilarityToPipeline")
     default QianfanPipelineConfigQueryParam mapSimilarityToPipeline(Float threshold) {
-        QianfanPipelineQueryParam param = QianfanPipelineQueryParam
-                .builder()
+        QianfanPipelineQueryParam param = QianfanPipelineQueryParam.builder()
                 .name("step1")
                 .threshold(threshold)
-                .top(400)
+                .top(TOP)
                 .type("elastic_search")
                 .build();
         return QianfanPipelineConfigQueryParam.builder().pipeline(Collections.singletonList(param)).build();

@@ -42,6 +42,7 @@ import java.util.List;
 public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     private static final Logger log = Logger.get(KnowledgeCenterServiceImpl.class);
     private static final String FITABLE_ID = "knowledge.config.service.impl";
+
     private final KnowledgeConfig knowledgeConfig;
     private final KnowledgeCenterRepo knowledgeCenterRepo;
     private final Encryptor encryptor;
@@ -50,11 +51,11 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     /**
      * 构造方法。
      *
-     * @param knowledgeConfig  表示知识库集参数的 {@link KnowledgeConfig}。
+     * @param knowledgeConfig 表示知识库集参数的 {@link KnowledgeConfig}。
      * @param knowledgeCenterRepo 表示用于访问用户知识库配置数据的仓储接口的 {@link KnowledgeCenterRepo}。
      */
-    public KnowledgeCenterServiceImpl(KnowledgeConfig knowledgeConfig,
-                                      KnowledgeCenterRepo knowledgeCenterRepo, Encryptor encryptor, Decryptor decryptor) {
+    public KnowledgeCenterServiceImpl(KnowledgeConfig knowledgeConfig, KnowledgeCenterRepo knowledgeCenterRepo,
+            Encryptor encryptor, Decryptor decryptor) {
         this.knowledgeConfig = knowledgeConfig;
         this.knowledgeCenterRepo = knowledgeCenterRepo;
         this.encryptor = encryptor;
@@ -63,34 +64,33 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
 
     @Override
     @Fitable(id = FITABLE_ID)
-    @ToolMethod(name = "添加知识库配置", description = "增加用户的知识库配置信息", extensions = {
-            @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")
-    })
+    @ToolMethod(name = "添加知识库配置", description = "增加用户的知识库配置信息",
+            extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "增加用户的知识库配置信息")
     public void add(KnowledgeConfigDto knowledgeConfigDto) {
-        log.info("start add user knowledge config for {}.", knowledgeConfigDto.getUserId());
+        log.info("Start add user knowledge config.[userId={}]", knowledgeConfigDto.getUserId());
         this.isConfigUnique(knowledgeConfigDto);
         this.knowledgeCenterRepo.insertKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
     }
 
     @Override
     @Fitable(id = FITABLE_ID)
-    @ToolMethod(name = "修改知识库配置", description = "修改用户的知识库配置信息", extensions = {
-            @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")
-    })
+    @ToolMethod(name = "修改知识库配置", description = "修改用户的知识库配置信息",
+            extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "修改用户的知识库配置信息")
     public void edit(KnowledgeConfigDto knowledgeConfigDto) {
-        log.info("start edit user knowledge config for {}.", knowledgeConfigDto.getUserId());
+        log.info("Start edit user knowledge config.[userId={}]", knowledgeConfigDto.getUserId());
         this.isConfigUnique(knowledgeConfigDto);
         this.knowledgeCenterRepo.updateKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
-        if (this.isUpdateOthersDefault(knowledgeConfigDto)) {
-            KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
-                    .id(knowledgeConfigDto.getId())
-                    .userId(knowledgeConfigDto.getUserId())
-                    .groupId(knowledgeConfigDto.getGroupId())
-                    .build();
-            this.knowledgeCenterRepo.updateOthersIsDefaultFalse(condition);
+        if (!this.isUpdateOthersDefault(knowledgeConfigDto)) {
+            return;
         }
+        KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
+                .id(knowledgeConfigDto.getId())
+                .userId(knowledgeConfigDto.getUserId())
+                .groupId(knowledgeConfigDto.getGroupId())
+                .build();
+        this.knowledgeCenterRepo.updateOthersIsDefaultFalse(condition);
     }
 
     private boolean isUpdateOthersDefault(KnowledgeConfigDto knowledgeConfigDto) {
@@ -101,12 +101,11 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
 
     @Override
     @Fitable(id = FITABLE_ID)
-    @ToolMethod(name = "删除知识库配置", description = "删除用户的知识库配置信息", extensions = {
-            @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")
-    })
+    @ToolMethod(name = "删除知识库配置", description = "删除用户的知识库配置信息",
+            extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "删除用户的知识库配置信息")
     public void delete(Long id) {
-        log.info("start delete user knowledge config, id: {}.", id);
+        log.info("Start delete user knowledge config.[id={}]", id);
         List<KnowledgeConfigPo> configPoList =
                 this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
                         .id(id)
@@ -128,41 +127,33 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
 
     @Override
     @Fitable(id = FITABLE_ID)
-    @ToolMethod(name = "查询知识库配置", description = "查询用户的知识库配置信息", extensions = {
-            @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")
-    })
+    @ToolMethod(name = "查询知识库配置", description = "查询用户的知识库配置信息",
+            extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "查询用户的知识库配置信息")
     public List<KnowledgeConfigDto> list(String userId) {
-        log.info("start get user knowledge configs for {}.", userId);
-        return this.knowledgeCenterRepo.listKnowledgeConfigByCondition(
-                KnowledgeConfigQueryCondition.builder().userId(userId).build())
-                .stream()
-                .map(this::getKnowledgeConfigDto)
-                .toList();
+        log.info("Start get user knowledge configs.[userId={}]", userId);
+        return this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
+                .userId(userId)
+                .build()).stream().map(this::getKnowledgeConfigDto).toList();
     }
 
     @Override
     @Fitable(id = FITABLE_ID)
-    @ToolMethod(name = "查询知识库集列表", description = "获取支持使用的知识库集列表", extensions = {
-            @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")
-    })
+    @ToolMethod(name = "查询知识库集列表", description = "获取支持使用的知识库集列表",
+            extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "获取支持使用的知识库集列表")
     public List<KnowledgeDto> getSupportKnowledges(String userId) {
-        return this.knowledgeConfig.getSupport();
+        return this.knowledgeConfig.getSupportList();
     }
 
     @Override
     @Fitable(id = FITABLE_ID)
     public String getApiKey(String userId, String groupId, String defaultValue) {
-        KnowledgeConfigQueryCondition cond = KnowledgeConfigQueryCondition
-                .builder()
-                .userId(userId)
-                .groupId(groupId)
-                .isDefault(1)
-                .build();
+        KnowledgeConfigQueryCondition cond =
+                KnowledgeConfigQueryCondition.builder().userId(userId).groupId(groupId).isDefault(1).build();
         List<KnowledgeConfigPo> result = this.knowledgeCenterRepo.listKnowledgeConfigByCondition(cond);
         if (result.isEmpty()) {
-            log.info("no available api key for knowledge groupId: {}, userId: {}", groupId, userId);
+            log.info("No available api key.[knowledge groupId={}, userId={}]", groupId, userId);
             return defaultValue;
         }
         this.validateConfigNum(result);
@@ -177,8 +168,8 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     }
 
     private void isConfigUnique(KnowledgeConfigDto knowledgeConfigDto) {
-        List<KnowledgeConfigPo> result = this.knowledgeCenterRepo.listKnowledgeConfigByCondition(
-                KnowledgeConfigQueryCondition.builder()
+        List<KnowledgeConfigPo> result =
+                this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
                         .userId(knowledgeConfigDto.getUserId())
                         .groupId(knowledgeConfigDto.getGroupId())
                         .apiKey(knowledgeConfigDto.getApiKey())

@@ -21,21 +21,23 @@ import java.util.List;
 @Component
 @AcceptConfigValues("knowledge")
 public class KnowledgeConfig {
-    private List<KnowledgeDto> support;
+    private List<KnowledgeDto> supportList;
 
     /**
      * 获取支持使用的知识库集列表。
+     *
      * @return 表示支持使用的知识库集列表的 {@link List}{@code <}{@link KnowledgeDto}{@code >}。
      */
-    public List<KnowledgeDto> getSupport() {
-        return support;
+    public List<KnowledgeDto> getSupportList() {
+        return supportList;
     }
 
     /**
-    * 设置支持使用的知识库集列表。
-    * @param support 表示支持使用的知识库集列表的 {@link List}{@code <}{@link KnowledgeDto}{@code >}。
-    */
-    public void setSupport(List<KnowledgeDto> support) {
-        this.support = support;
+     * 设置支持使用的知识库集列表。
+     *
+     * @param supportList 表示支持使用的知识库集列表的 {@link List}{@code <}{@link KnowledgeDto}{@code >}。
+     */
+    public void setSupportList(List<KnowledgeDto> supportList) {
+        this.supportList = supportList;
     }
 }

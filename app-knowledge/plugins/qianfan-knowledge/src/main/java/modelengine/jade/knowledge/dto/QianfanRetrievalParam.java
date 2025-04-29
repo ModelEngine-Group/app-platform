@@ -22,8 +22,6 @@ import java.util.List;
  */
 @Data
 @Builder
-@Setter
-@Getter
 public class QianfanRetrievalParam {
     /**
      * 返回前多少的条目。
@@ -48,7 +46,8 @@ public class QianfanRetrievalParam {
     @Property(description = "pipeline_config", name = "pipeline_config")
     private QianfanPipelineConfigQueryParam pipelineConfig;
 
-    public QianfanRetrievalParam(int top, String type, String query, List<String> knowledgebaseIds, QianfanPipelineConfigQueryParam pipelineConfig) {
+    public QianfanRetrievalParam(int top, String type, String query, List<String> knowledgebaseIds,
+            QianfanPipelineConfigQueryParam pipelineConfig) {
         this.top = top;
         this.knowledgebaseIds = knowledgebaseIds;
         this.pipelineConfig = pipelineConfig;

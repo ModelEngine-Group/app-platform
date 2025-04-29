@@ -39,8 +39,7 @@ public class KnowledgeDocumentRetriever implements Retriever<String, MeasurableD
      * @param option 表示检索配置的 {@link RetrieverOption}。
      * @param knowledgeServiceRouter 表示知识库服务路由处理类的 {@link KnowledgeServiceRouter}。
      */
-    public KnowledgeDocumentRetriever(RetrieverOption option,
-                                      KnowledgeServiceRouter knowledgeServiceRouter) {
+    public KnowledgeDocumentRetriever(RetrieverOption option, KnowledgeServiceRouter knowledgeServiceRouter) {
         this.option = Validation.notNull(option, "The retriever option cannot be null.");
         this.knowledgeServiceRouter = knowledgeServiceRouter;
     }
@@ -57,10 +56,11 @@ public class KnowledgeDocumentRetriever implements Retriever<String, MeasurableD
                 .build();
 
         List<KnowledgeDocument> documents = this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class,
-                        KnowledgeRepoService.GENERICABLE_RETRIEVE, this.option.getGroupId())
-                .invoke(this.option.getApiKey(), new FlatKnowledgeOption(knowledgeOption));
+                KnowledgeRepoService.GENERICABLE_RETRIEVE,
+                this.option.getGroupId()).invoke(this.option.getApiKey(), new FlatKnowledgeOption(knowledgeOption));
         String groupId = UuidUtils.randomUuidString();
         return documents.stream()
-                .map(doc -> new MeasurableDocument(doc, doc.score(), groupId)).collect(Collectors.toList());
+                .map(doc -> new MeasurableDocument(doc, doc.score(), groupId))
+                .collect(Collectors.toList());
     }
 }

@@ -6,7 +6,7 @@
     <parent>
         <groupId>modelengine.fit.jade</groupId>
         <artifactId>app-knowledge-plugins-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>3.5.0-M2</version>
     </parent>
 
     <groupId>modelengine.jade.plugin</groupId>

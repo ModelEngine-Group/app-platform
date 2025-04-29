@@ -28,6 +28,7 @@ import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.knowledge.enums.IndexType;
 import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
 import modelengine.jade.knowledge.support.FlatFilterConfig;
+
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.AfterEach;
@@ -114,7 +115,7 @@ public class KnowledgeControllerTest {
         String defaultGroup = "default";
         List<KnowledgeDto> groupDataList = new ArrayList<>();
         groupDataList.add(KnowledgeDto.builder().groupId(defaultGroup).build());
-        when(this.knowledgeConfig.getSupport()).thenReturn(groupDataList);
+        when(this.knowledgeConfig.getSupportList()).thenReturn(groupDataList);
 
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/knowledge-manager/list/groups")
                 .responseType(TypeUtils.parameterized(List.class, new Type[] {KnowledgeDto.class}));
@@ -159,12 +160,8 @@ public class KnowledgeControllerTest {
                 "desc",
                 "type",
                 LocalDateTime.of(2024, 9, 29, 14, 0, 0)));
-        when(this.knowledgeServiceRouter.getRouter(any(),
-                anyString(),
-                anyString()))
-                .thenReturn(this.invoker);
-        when(this.invoker.invoke(any(), any(ListRepoQueryParam.class)))
-                .thenReturn(PageVo.of(1, repos));
+        when(this.knowledgeServiceRouter.getRouter(any(), anyString(), anyString())).thenReturn(this.invoker);
+        when(this.invoker.invoke(any(), any(ListRepoQueryParam.class))).thenReturn(PageVo.of(1, repos));
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/knowledge-manager/list/repos")
                 .param("groupId", this.buildMockGroupId())
                 .param("repoName", "name")
@@ -185,15 +182,10 @@ public class KnowledgeControllerTest {
     @Test
     @DisplayName("知识库获取配置成功")
     void shouldOkWhenGetProperty() {
-        when(this.knowledgeI18nService.localizeText(any(IndexType.class))).thenReturn(
-                new KnowledgeI18nInfo("测试检索方式",
-                        "description"));
-        when(this.knowledgeServiceRouter.getRouter(any(),
-                anyString(),
-                anyString()))
-                .thenReturn(this.invoker);
-        when(this.invoker.invoke(any()))
-                .thenReturn(this.getExpectProperty());
+        when(this.knowledgeI18nService.localizeText(any(IndexType.class))).thenReturn(new KnowledgeI18nInfo("测试检索方式",
+                "description"));
+        when(this.knowledgeServiceRouter.getRouter(any(), anyString(), anyString())).thenReturn(this.invoker);
+        when(this.invoker.invoke(any())).thenReturn(this.getExpectProperty());
 
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/knowledge-manager/properties")
                 .param("groupId", this.buildMockGroupId())

@@ -27,18 +27,21 @@ public interface KnowledgeCenterRepo {
 
     /**
      * 更新一条知识库配置信息。
+     *
      * @param knowledgeConfigPo 表示知识库配置数据的 {@link KnowledgeConfigPo}。
      */
     void updateKnowledgeConfig(KnowledgeConfigPo knowledgeConfigPo);
 
     /**
      * 删除一条知识库配置信息。
+     *
      * @param id 表示知识库配置id的 {@link Long}。
      */
     void deleteKnowledgeConfigById(Long id);
 
     /**
      * 根据用户id查询用户的知识库配置列表。
+     *
      * @param cond 表示查询条件的 {@link KnowledgeConfigQueryCondition}。
      * @return 该用户可用的知识库配置列表 {@link List}{@code <}{@link KnowledgeConfigPo}{@code >}。
      */

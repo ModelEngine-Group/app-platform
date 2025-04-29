@@ -69,7 +69,7 @@ public class KnowledgeController extends AbstractController {
      */
     public KnowledgeController(Authenticator authenticator, KnowledgeI18nService knowledgeI18nService,
             ToolGroupService toolGroupService, KnowledgeConfig knowledgeConfig,
-             KnowledgeServiceRouter knowledgeServiceRouter, KnowledgeCenterService knowledgeCenterService) {
+            KnowledgeServiceRouter knowledgeServiceRouter, KnowledgeCenterService knowledgeCenterService) {
         super(authenticator);
         this.knowledgeI18nService = knowledgeI18nService;
         this.toolGroupService = toolGroupService;
@@ -81,7 +81,7 @@ public class KnowledgeController extends AbstractController {
     /**
      * 查询知识库列表。
      *
-     * @param httpRequest 请求参数。
+     * @param httpRequest 表示请求参数的 {@link HttpClassicServerRequest}。
      * @param groupId 表示调用的知识库服务的唯一标识的 {@link String}。
      * @param param 表示查询参数的 {@link ListRepoQueryParam}。
      * @return 表示知识库分页结果的 {@link PageVo}{@code <}{@link KnowledgeRepo}{@code >}。
@@ -91,9 +91,12 @@ public class KnowledgeController extends AbstractController {
             @RequestParam(value = "groupId", required = false) String groupId,
             @RequestBean @Validated ListRepoQueryParam param) {
         OperationContext operationContext = this.contextOf(httpRequest, "");
-        String apiKey = this.knowledgeCenterService.getApiKey(operationContext.getOperator(), groupId, operationContext.getOperator());
-        return this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class, KnowledgeRepoService.GENERICABLE_LIST_REPOS, groupId)
-                .invoke(apiKey, param);
+        String apiKey = this.knowledgeCenterService.getApiKey(operationContext.getOperator(),
+                groupId,
+                operationContext.getOperator());
+        return this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class,
+                KnowledgeRepoService.GENERICABLE_LIST_REPOS,
+                groupId).invoke(apiKey, param);
     }
 
     /**
@@ -103,7 +106,7 @@ public class KnowledgeController extends AbstractController {
      */
     @GetMapping("/list/groups")
     public List<KnowledgeDto> getRepoInfo() {
-        return this.knowledgeConfig.getSupport();
+        return this.knowledgeConfig.getSupportList();
     }
 
     /**
@@ -117,18 +120,18 @@ public class KnowledgeController extends AbstractController {
     public KnowledgePropertyVo getProperty(HttpClassicServerRequest httpRequest,
             @RequestParam(value = "groupId", required = false) String groupId) {
         OperationContext operationContext = this.contextOf(httpRequest, "");
-        KnowledgeProperty property =  this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class,
-                        KnowledgeRepoService.GENERICABLE_GET_PROPERTY, groupId)
-                .invoke(operationContext.getOperator());
+        KnowledgeProperty property = this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class,
+                KnowledgeRepoService.GENERICABLE_GET_PROPERTY,
+                groupId).invoke(operationContext.getOperator());
         Set<String> enableIndexType = property.indexType().stream().map(SchemaItem::type).collect(Collectors.toSet());
-        List<KnowledgeProperty.IndexInfo> disableIndexType = Arrays.stream(IndexType.values())
-                .filter(type -> !enableIndexType.contains(type.value()))
-                .map(type -> {
+        List<KnowledgeProperty.IndexInfo> disableIndexType =
+                Arrays.stream(IndexType.values()).filter(type -> !enableIndexType.contains(type.value())).map(type -> {
                     KnowledgeI18nInfo i18nInfo = this.knowledgeI18nService.localizeText(type);
                     return new KnowledgeProperty.IndexInfo(type, i18nInfo.getName(), i18nInfo.getDescription());
-                })
-                .collect(Collectors.toList());
-        return new KnowledgePropertyVo(disableIndexType, property.indexType(), property.filterConfig(),
+                }).collect(Collectors.toList());
+        return new KnowledgePropertyVo(disableIndexType,
+                property.indexType(),
+                property.filterConfig(),
                 property.rerankConfig());
     }
 }

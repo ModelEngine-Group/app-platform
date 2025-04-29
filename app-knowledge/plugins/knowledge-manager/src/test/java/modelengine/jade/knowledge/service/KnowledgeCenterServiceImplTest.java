@@ -55,7 +55,8 @@ public class KnowledgeCenterServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        this.knowledgeCenterService = new KnowledgeCenterServiceImpl(knowledgeConfig, knowledgeCenterRepo, encryptor, decryptor);
+        this.knowledgeCenterService =
+                new KnowledgeCenterServiceImpl(knowledgeConfig, knowledgeCenterRepo, encryptor, decryptor);
     }
 
     @Test
@@ -113,12 +114,8 @@ public class KnowledgeCenterServiceImplTest {
         String userId = "user1";
         String groupId = "group1";
 
-        KnowledgeConfigPo configPo = KnowledgeConfigPo.builder()
-                .id(id)
-                .userId(userId)
-                .groupId(groupId)
-                .isDefault(1)
-                .build();
+        KnowledgeConfigPo configPo =
+                KnowledgeConfigPo.builder().id(id).userId(userId).groupId(groupId).isDefault(1).build();
 
         Mockito.when(knowledgeCenterRepo.listKnowledgeConfigByCondition(ArgumentMatchers.any()))
                 .thenReturn(Collections.singletonList(configPo));
@@ -157,7 +154,7 @@ public class KnowledgeCenterServiceImplTest {
     void shouldGetSupportKnowledgesSuccessfully() {
         String userId = "user1";
         List<KnowledgeDto> supportList = Collections.singletonList(new KnowledgeDto());
-        Mockito.when(knowledgeConfig.getSupport()).thenReturn(supportList);
+        Mockito.when(knowledgeConfig.getSupportList()).thenReturn(supportList);
 
         List<KnowledgeDto> result = knowledgeCenterService.getSupportKnowledges(userId);
         assertEquals(supportList, result);
@@ -171,12 +168,8 @@ public class KnowledgeCenterServiceImplTest {
         String apiKey = "key";
         String defaultValue = "default";
 
-        KnowledgeConfigPo configPo = KnowledgeConfigPo.builder()
-                .userId(userId)
-                .groupId(groupId)
-                .apiKey(apiKey)
-                .isDefault(1)
-                .build();
+        KnowledgeConfigPo configPo =
+                KnowledgeConfigPo.builder().userId(userId).groupId(groupId).apiKey(apiKey).isDefault(1).build();
 
         Mockito.when(knowledgeCenterRepo.listKnowledgeConfigByCondition(ArgumentMatchers.any()))
                 .thenReturn(Collections.singletonList(configPo));

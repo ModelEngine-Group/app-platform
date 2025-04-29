@@ -7,6 +7,7 @@
 package modelengine.jade.knowledge.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Data;
 import modelengine.fitframework.util.ObjectUtils;
 
