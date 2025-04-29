@@ -25,6 +25,12 @@
             <artifactId>knowledge-service</artifactId>
         </dependency>
 
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
         <!-- Mapstruct -->
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -35,8 +41,8 @@
             <artifactId>mapstruct-processor</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
     </dependencies>
 
@@ -97,7 +103,7 @@
                         <configuration>
                             <target>
                                 <copy file="${project.build.directory}/${project.build.finalName}.jar"
-                                      todir="../../../target/plugins"/>
+                                      todir="../../../build/plugins"/>
                             </target>
                         </configuration>
                         <goals>
