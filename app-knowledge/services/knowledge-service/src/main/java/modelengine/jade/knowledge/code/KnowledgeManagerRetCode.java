@@ -48,7 +48,12 @@ public enum KnowledgeManagerRetCode implements RetCode {
     /**
      * 知识库检索失败
      */
-    QUERY_KNOWLEDGE_ERROR(130703008, "知识库检索失败，原因：{}。");
+    QUERY_KNOWLEDGE_ERROR(130703008, "知识库检索失败，原因：{}。"),
+
+    /**
+     * 相同的知识库配置已存在，请修改配置重试。
+     */
+    CONFIG_IS_EXISTED(130703009, "相同的知识库配置已存在，请修改配置重试。");
 
     private final int code;
     private final String msg;

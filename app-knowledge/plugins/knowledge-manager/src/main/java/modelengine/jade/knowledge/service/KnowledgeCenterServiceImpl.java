@@ -162,6 +162,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
                 .build();
         List<KnowledgeConfigPo> result = this.knowledgeCenterRepo.listKnowledgeConfigByCondition(cond);
         if (result.isEmpty()) {
+            log.info("no available api key for knowledge groupId: {}, userId: {}", groupId, userId);
             return defaultValue;
         }
         this.validateConfigNum(result);
@@ -182,7 +183,9 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
                         .groupId(knowledgeConfigDto.getGroupId())
                         .apiKey(knowledgeConfigDto.getApiKey())
                         .build());
-        this.validateConfigNum(result);
+        if (!result.isEmpty()) {
+            throw new KnowledgeException(KnowledgeManagerRetCode.CONFIG_IS_EXISTED);
+        }
     }
 
     private KnowledgeConfigPo getKnowledgeConfigPo(KnowledgeConfigDto knowledgeConfigDto) {
