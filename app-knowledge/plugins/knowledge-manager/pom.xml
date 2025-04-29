@@ -111,6 +111,10 @@
             <groupId>modelengine.fit.jane</groupId>
             <artifactId>jane-common-component</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
