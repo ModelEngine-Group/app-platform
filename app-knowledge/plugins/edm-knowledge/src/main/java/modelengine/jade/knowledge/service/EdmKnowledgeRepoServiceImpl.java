@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 @Component
 public class EdmKnowledgeRepoServiceImpl implements KnowledgeRepoService {
     /**
-     * edm知识库 fitable Id
+     * EDM 知识库的服务唯一标识。
      */
     public static final String FITABLE_ID_DEFAULT = "edmKnowledge";
 

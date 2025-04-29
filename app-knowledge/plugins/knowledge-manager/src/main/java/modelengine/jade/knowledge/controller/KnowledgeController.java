@@ -62,7 +62,7 @@ public class KnowledgeController extends AbstractController {
      *
      * @param authenticator 表示认证器的 {@link Authenticator}。
      * @param knowledgeI18nService 表示获取知识库国际化服务的 {@link KnowledgeI18nService}。
-     * @param toolGroupService 工具组服务
+     * @param toolGroupService 表示工具组服务的 {@link ToolGroupService}。
      * @param knowledgeConfig 表示知识库集配的 {@link KnowledgeConfig}。
      * @param knowledgeServiceRouter 表示知识库服务路由处理类的 {@link KnowledgeServiceRouter}。
      * @param knowledgeCenterService 表示知识库用户配置服务类的 {@link KnowledgeCenterService}。
@@ -81,7 +81,7 @@ public class KnowledgeController extends AbstractController {
     /**
      * 查询知识库列表。
      *
-     * @param httpRequest 表示请求参数的 {@link HttpClassicServerRequest}。
+     * @param httpRequest 表示 http 请求的 {@link HttpClassicServerRequest}。
      * @param groupId 表示调用的知识库服务的唯一标识的 {@link String}。
      * @param param 表示查询参数的 {@link ListRepoQueryParam}。
      * @return 表示知识库分页结果的 {@link PageVo}{@code <}{@link KnowledgeRepo}{@code >}。
@@ -112,7 +112,7 @@ public class KnowledgeController extends AbstractController {
     /**
      * 查询知识库支持的检索参数信息。
      *
-     * @param httpRequest 请求参数。
+     * @param httpRequest 表示 http 请求的 {@link HttpClassicServerRequest}。
      * @param groupId 表示调用的知识库服务的唯一标识的 {@link String}。
      * @return 表示检索参数信息的 {@link KnowledgeProperty}。
      */

@@ -42,7 +42,7 @@ import java.util.stream.IntStream;
 @Component
 public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
     /**
-     * 千帆知识库 fitable Id
+     * 千帆知识库知识库的服务唯一标识。
      */
     public static final String FITABLE_ID_DEFAULT = "qianfanKnowledge";
 

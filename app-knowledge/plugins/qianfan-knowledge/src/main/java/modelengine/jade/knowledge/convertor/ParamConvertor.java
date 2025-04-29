@@ -49,6 +49,11 @@ public interface ParamConvertor {
     @Mapping(target = "createdAt", source = "entity", qualifiedByName = "stringToLocalDateTime")
     KnowledgeRepo convertToKnowledgeRepo(QianfanKnowledgeEntity entity);
 
+    /**
+     * 将千帆知识库的检索 type 映射为 平台知识库元数据 type。
+     * @param entity 表示待转换的 {@link QianfanKnowledgeEntity}。
+     * @return 表示转换完成的 {@link String}。
+     */
     @Named("mapIndexTypeToType")
     default String mapIndexTypeToType(QianfanKnowledgeEntity entity) {
         if (entity == null || entity.getConfig() == null || entity.getConfig().getIndex() == null) {
@@ -57,6 +62,11 @@ public interface ParamConvertor {
         return entity.getConfig().getIndex().getType();
     }
 
+    /**
+     * 将千帆知识库的 createdAt 映射为 平台知识库元数据 createdAt。
+     * @param entity 表示待转换的 {@link QianfanKnowledgeEntity}。
+     * @return 表示转换完成的 {@link LocalDateTime}。
+     */
     @Named("stringToLocalDateTime")
     default LocalDateTime stringToLocalDateTime(QianfanKnowledgeEntity entity) {
         String dateStr = entity.getCreatedAt();
@@ -78,11 +88,21 @@ public interface ParamConvertor {
     @Mapping(target = "pipelineConfig", source = "similarityThreshold", qualifiedByName = "mapSimilarityToPipeline")
     QianfanRetrievalParam convertToRetrievalParam(FlatKnowledgeOption option);
 
+    /**
+     * 将平台检索请求 ReferenceLimit 映射为 千帆检索请求 top。
+     * @param limit 表示待转换的 {@link ReferenceLimit}。
+     * @return 转换完成的 {@link int}。
+     */
     @Named("mapReferenceLimitToTop")
     default int mapReferenceLimitToTop(ReferenceLimit limit) {
         return limit.getValue();
     }
 
+    /**
+     * 将平台检索请求 threshold 映射为 千帆检索请求 pipeline。
+     * @param threshold 表示待转换的 {@link Float}。
+     * @return 转换完成的 {@link QianfanPipelineConfigQueryParam}。
+     */
     @Named("mapSimilarityToPipeline")
     default QianfanPipelineConfigQueryParam mapSimilarityToPipeline(Float threshold) {
         QianfanPipelineQueryParam param = QianfanPipelineQueryParam.builder()
@@ -106,6 +126,11 @@ public interface ParamConvertor {
     @Mapping(target = "metadata", source = "entity", qualifiedByName = "mapChunksEntityToMetadata")
     KnowledgeDocument convertToKnowledgeDocument(QianfanRetrievalChunksEntity entity);
 
+    /**
+     * 将千帆检索结果 entity 映射为 平台检索结果 metadata。
+     * @param entity 表示待转换的 {@link QianfanRetrievalChunksEntity}。
+     * @return 转换完成的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
+     */
     @Named("mapChunksEntityToMetadata")
     default Map<String, Object> mapChunksEntityToMetadata(QianfanRetrievalChunksEntity entity) {
         Map<String, Object> metadata = new HashMap<>();
