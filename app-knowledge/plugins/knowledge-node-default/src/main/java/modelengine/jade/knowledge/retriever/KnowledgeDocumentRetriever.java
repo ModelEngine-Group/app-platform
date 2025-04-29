@@ -55,7 +55,7 @@ public class KnowledgeDocumentRetriever implements Retriever<String, MeasurableD
                 .indexType(IndexType.from(this.option.getIndexType().type()))
                 .build();
 
-        List<KnowledgeDocument> documents = this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class,
+        List<KnowledgeDocument> documents = this.knowledgeServiceRouter.getInvoker(KnowledgeRepoService.class,
                 KnowledgeRepoService.GENERICABLE_RETRIEVE,
                 this.option.getGroupId()).invoke(this.option.getApiKey(), new FlatKnowledgeOption(knowledgeOption));
         String groupId = UuidUtils.randomUuidString();

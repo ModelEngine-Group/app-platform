@@ -94,7 +94,7 @@ public class KnowledgeController extends AbstractController {
         String apiKey = this.knowledgeCenterService.getApiKey(operationContext.getOperator(),
                 groupId,
                 operationContext.getOperator());
-        return this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class,
+        return this.knowledgeServiceRouter.getInvoker(KnowledgeRepoService.class,
                 KnowledgeRepoService.GENERICABLE_LIST_REPOS,
                 groupId).invoke(apiKey, param);
     }
@@ -120,7 +120,7 @@ public class KnowledgeController extends AbstractController {
     public KnowledgePropertyVo getProperty(HttpClassicServerRequest httpRequest,
             @RequestParam(value = "groupId", required = false) String groupId) {
         OperationContext operationContext = this.contextOf(httpRequest, "");
-        KnowledgeProperty property = this.knowledgeServiceRouter.getRouter(KnowledgeRepoService.class,
+        KnowledgeProperty property = this.knowledgeServiceRouter.getInvoker(KnowledgeRepoService.class,
                 KnowledgeRepoService.GENERICABLE_GET_PROPERTY,
                 groupId).invoke(operationContext.getOperator());
         Set<String> enableIndexType = property.indexType().stream().map(SchemaItem::type).collect(Collectors.toSet());

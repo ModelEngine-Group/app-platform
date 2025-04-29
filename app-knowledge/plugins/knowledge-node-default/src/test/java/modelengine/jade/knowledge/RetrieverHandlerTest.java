@@ -52,7 +52,7 @@ public class RetrieverHandlerTest {
     @BeforeEach
     void setUp() {
         handler = new DefaultRetrieverHandler(knowledgeServiceRouter);
-        when(knowledgeServiceRouter.getRouter(any(), anyString(), anyString())).thenReturn(invoker);
+        when(knowledgeServiceRouter.getInvoker(any(), anyString(), anyString())).thenReturn(invoker);
         when(invoker.invoke(anyString(), any()))
                 .thenReturn(Collections.singletonList(
                         new KnowledgeDocument("id", DOCUMENT_TEXT_DUMMY, 0.5, null)));

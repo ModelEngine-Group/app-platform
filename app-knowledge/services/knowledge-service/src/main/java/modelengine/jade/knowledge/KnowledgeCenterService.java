@@ -24,7 +24,7 @@ import java.util.List;
 @Group(name = "Knowledge_Center_Service")
 public interface KnowledgeCenterService {
     /**
-     * 增加用户的知识库配置信息
+     * 增加用户的知识库配置信息。
      *
      * @param knowledgeConfigDto 表示用户知识库配置dto的 {@link KnowledgeConfigDto}。
      */
@@ -33,7 +33,7 @@ public interface KnowledgeCenterService {
     void add(@Property(description = "知识库配置dto", required = true) KnowledgeConfigDto knowledgeConfigDto);
 
     /**
-     * 修改用户的知识库配置信息
+     * 修改用户的知识库配置信息。
      *
      * @param knowledgeConfigDto 表示用户知识库配置dto的 {@link KnowledgeConfigDto}。
      */
@@ -42,7 +42,7 @@ public interface KnowledgeCenterService {
     void edit(@Property(description = "知识库配置dto", required = true) KnowledgeConfigDto knowledgeConfigDto);
 
     /**
-     * 删除用户的知识库配置信息
+     * 删除用户的知识库配置信息。
      *
      * @param id 表示知识库配置id的 {@link String}。
      */
@@ -51,7 +51,7 @@ public interface KnowledgeCenterService {
     void delete(@Property(description = "知识库配置id", required = true) Long id);
 
     /**
-     * 查询用户的知识库配置信息
+     * 查询用户的知识库配置信息。
      *
      * @param userId 表示用户id的 {@link String}。
      * @return 表示用户的知识库配置信息列表的 {@link List}{@code <}{@link KnowledgeConfigDto}{@code >}。
@@ -61,7 +61,7 @@ public interface KnowledgeCenterService {
     List<KnowledgeConfigDto> list(@Property(description = "用户id", required = true) String userId);
 
     /**
-     * 获取支持使用的知识库集列表
+     * 获取支持使用的知识库集列表。
      *
      * @return 表示支持使用的知识库集列表的 {@link List}{@code <}{@link KnowledgeDto}{@code >}。
      */
@@ -70,7 +70,7 @@ public interface KnowledgeCenterService {
     List<KnowledgeDto> getSupportKnowledges(@Property(description = "用户id", required = false) String userId);
 
     /**
-     * 基于用户名，知识库平台获取api Key
+     * 基于用户名，知识库平台获取api Key。
      *
      * @param userId 表示用户id的 {@link String}。
      * @param groupId 表示知识库平台groupId的 {@link String}。

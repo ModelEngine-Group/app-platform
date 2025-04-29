@@ -41,7 +41,11 @@ import java.util.stream.IntStream;
  */
 @Component
 public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
+    /**
+     * 千帆知识库 fitable Id
+     */
     public static final String FITABLE_ID_DEFAULT = "qianfanKnowledge";
+
     private static final int querySize = 100;
     private static final int DEFAULT_TOP_K = 3;
     private static final int MAX_TOP_K = 10;

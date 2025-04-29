@@ -19,9 +19,10 @@ public interface KnowledgeServiceRouter {
     /**
      * 获取知识库服务路由。
      *
-     * @param genericableId 通用ID
-     * @param groupId 组ID
-     * @return 路由实例
+     * @param genericableClass 表示泛服务的类型的 {@link Class}{@code <?>}。
+     * @param genericableId 表示泛服务的唯一标识的 {@link String}。
+     * @param groupId 表示分组的 {@link String}。
+     * @return 表示调用器的 {@link Invoker}。
      */
-    Invoker getRouter(Class<?> genericableClass, String genericableId, String groupId);
+    Invoker getInvoker(Class<?> genericableClass, String genericableId, String groupId);
 } 

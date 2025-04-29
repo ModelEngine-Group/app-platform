@@ -21,7 +21,7 @@ public class KnowledgeException extends ModelEngineException {
      * Knowledge 异常构造函数。
      *
      * @param code 表示返回码 {@link RetCode}。
-     * @param args 表示异常信息参数的 {@code Object[]}。
+     * @param args 表示异常信息参数的 {@link Object}{@code []}。
      */
     public KnowledgeException(RetCode code, Object... args) {
         super(code, args);

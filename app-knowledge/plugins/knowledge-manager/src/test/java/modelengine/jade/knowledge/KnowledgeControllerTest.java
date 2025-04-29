@@ -160,7 +160,7 @@ public class KnowledgeControllerTest {
                 "desc",
                 "type",
                 LocalDateTime.of(2024, 9, 29, 14, 0, 0)));
-        when(this.knowledgeServiceRouter.getRouter(any(), anyString(), anyString())).thenReturn(this.invoker);
+        when(this.knowledgeServiceRouter.getInvoker(any(), anyString(), anyString())).thenReturn(this.invoker);
         when(this.invoker.invoke(any(), any(ListRepoQueryParam.class))).thenReturn(PageVo.of(1, repos));
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/knowledge-manager/list/repos")
                 .param("groupId", this.buildMockGroupId())
@@ -184,7 +184,7 @@ public class KnowledgeControllerTest {
     void shouldOkWhenGetProperty() {
         when(this.knowledgeI18nService.localizeText(any(IndexType.class))).thenReturn(new KnowledgeI18nInfo("测试检索方式",
                 "description"));
-        when(this.knowledgeServiceRouter.getRouter(any(), anyString(), anyString())).thenReturn(this.invoker);
+        when(this.knowledgeServiceRouter.getInvoker(any(), anyString(), anyString())).thenReturn(this.invoker);
         when(this.invoker.invoke(any())).thenReturn(this.getExpectProperty());
 
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/knowledge-manager/properties")

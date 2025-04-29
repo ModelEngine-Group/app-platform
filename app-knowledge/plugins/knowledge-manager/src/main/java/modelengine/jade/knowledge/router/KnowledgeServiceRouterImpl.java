@@ -32,7 +32,7 @@ public class KnowledgeServiceRouterImpl implements KnowledgeServiceRouter {
     }
 
     @Override
-    public Invoker getRouter(Class<?> genericableClass, String genericableId, String groupId) {
+    public Invoker getInvoker(Class<?> genericableClass, String genericableId, String groupId) {
         return this.brokerClient.getRouter(genericableClass, genericableId).route(new FitableIdFilter(groupId));
     }
 }

@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 表示知识库集Dto。
+ * 表示知识库集的传输对象。
  *
  * @author 陈潇文
  * @since 2025-04-24
@@ -26,10 +26,12 @@ public class KnowledgeDto {
      * 知识库集groupId。
      */
     private String groupId;
+
     /**
      * 知识库集名称。
      */
     private String name;
+
     /**
      * 知识库集描述。
      */
