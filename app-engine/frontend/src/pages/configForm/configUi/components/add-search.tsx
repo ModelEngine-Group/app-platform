@@ -154,19 +154,19 @@ const AddSearch = (props: any) => {
           </div>
         );
       })}
-      {rerankData.length > 0 && (
-        <div>
-          {rerankData.map((item: any) => (
-            <div className='rerank-box'>
-              <div className='searth-title'>
-                {item.name}
-                <Switch checked={switchChecked} onChange={onChangeSwitch} />
-              </div>
-              <div>{item.description}</div>
-            </div>
-          ))}
-        </div>
-      )}
+      {/*{rerankData.length > 0 && (*/}
+      {/*  <div>*/}
+      {/*    {rerankData.map((item: any) => (*/}
+      {/*      <div className='rerank-box'>*/}
+      {/*        <div className='searth-title'>*/}
+      {/*          {item.name}*/}
+      {/*          <Switch checked={switchChecked} onChange={onChangeSwitch} />*/}
+      {/*        </div>*/}
+      {/*        <div>{item.description}</div>*/}
+      {/*      </div>*/}
+      {/*    ))}*/}
+      {/*  </div>*/}
+      {/*)}*/}
     </Spin>
   );
   // 搜索过滤界面
@@ -225,18 +225,18 @@ const AddSearch = (props: any) => {
     },
   ];
 
-  const showOpenModal = (list = []) => {
+  const showOpenModal = (list = [], groupId:String) => {
     setIsShow(true);
     checkSearch.current = list;
     setSearchFilterData([checkSearch.current]);
     setCheckValue(checkSearch.current.indexType.name);
     setSwitchChecked(checkSearch.current.rerankParam.enableRerank);
-    handleGetKnowledgeOptions();
+    handleGetKnowledgeOptions(groupId);
   };
   // 搜索参数配置数据请求
-  const handleGetKnowledgeOptions = async () => {
+  const handleGetKnowledgeOptions = async (graphGroupId:String) => {
     setLoading(true);
-    const params = { groupId };
+    const params = { groupId: graphGroupId || groupId};
     try {
       const res: any = await getSearchParams(params);
       if (res.code === 0) {

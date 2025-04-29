@@ -168,9 +168,10 @@ const Stage = (props) => {
         setIsDrawper(true);
       });
       // 参数搜索配置模态框
-      agent.onKnowledgeSearchArgsSelect(({ callback, options }) => {
+      agent.onKnowledgeSearchArgsSelect(({ callback, options, groupId }) => {
+        setGroupId(groupId);
         searchCallback.current = callback;
-        openModalRef.current.showOpenModal(options);
+        openModalRef.current.showOpenModal(options,groupId);
       });
       // 插件模态框
       agent.onImportButtonClick(({ onSelect }) => {
