@@ -1,4 +1,0 @@
-fit:
-  beans:
-    packages:
-    - 'modelengine.jade.oms'

@@ -14,34 +14,9 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>appengine-oms-adapter</module>
         <module>authentication-default</module>
         <module>http-interceptor</module>
         <module>schema-generator</module>
         <module>schema-validator-everit-h1</module>
     </modules>
-
-    <!-- 新增 Profiles 配置 -->
-    <profiles>
-        <!-- 默认激活的 Profile: 编译 authentication-default -->
-        <profile>
-            <id>default-auth</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <skip.authentication.default>false</skip.authentication.default>
-                <skip.authentication.oms>true</skip.authentication.oms>
-            </properties>
-        </profile>
-
-        <!-- 特殊场景激活的 Profile: 编译 authentication-oms  编译的时候  执行mvn clean install 之后加上 -P oms-auth -->
-        <profile>
-            <id>oms-auth</id>
-            <properties>
-                <skip.authentication.default>true</skip.authentication.default>
-                <skip.authentication.oms>false</skip.authentication.oms>
-            </properties>
-        </profile>
-    </profiles>
 </project>

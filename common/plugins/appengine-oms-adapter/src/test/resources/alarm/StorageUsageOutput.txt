@@ -1,6 +1,0 @@
-Filesystem                                                  1K-blocks      Used Available Use% Mounted on
-test1                                                       153707984 141020416   4806864  97% /
-test2                                                           65536         0     65536   0% /test2
-test3                                                       263504652         0 263504652   0% /test3
-test4                                                       153707984  23773116 122054164  17% /test4
-pvc1                                                         20971520         0  20971520  15% /var/store/tools

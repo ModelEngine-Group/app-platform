@@ -10,10 +10,6 @@
 
     <artifactId>authentication-default</artifactId>
 
-    <properties>
-        <skip.build>${skip.authentication.default}</skip.build>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.fitframework</groupId>
