@@ -15,7 +15,7 @@ import modelengine.fitframework.annotation.Property;
 import java.util.List;
 
 /**
- * qianfan 知识库检索查询参数。
+ * 百度千帆 知识库检索查询参数。
  *
  * @author 陈潇文
  * @since 2025-04-25

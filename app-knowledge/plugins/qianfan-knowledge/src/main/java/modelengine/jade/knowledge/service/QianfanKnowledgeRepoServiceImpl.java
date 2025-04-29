@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * 表示知识库服务在 qianfan 中的实现。
+ * 表示知识库服务在 百度千帆 中的实现。
  *
  * @author 陈潇文
  * @since 2025-04-17

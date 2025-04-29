@@ -12,7 +12,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * qianfan 检索pipeline config参数。
+ * 百度千帆 检索pipeline config参数。
  *
  * @author 陈潇文
  * @since 2025-04-25

@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * qianfan 知识库检索chunk结果。
+ * 百度千帆 知识库检索chunk结果。
  *
  * @author 陈潇文
  * @since 2025-04-25

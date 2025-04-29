@@ -11,7 +11,7 @@ import lombok.Data;
 import modelengine.fitframework.serialization.annotation.SerializeStrategy;
 
 /**
- * qianfan 知识库列表查询参数。
+ * 百度千帆 知识库列表查询参数。
  *
  * @author 陈潇文
  * @since 2025-04-24

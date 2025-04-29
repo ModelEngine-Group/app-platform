@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * qianfan知识库列表Entity。
+ * 百度千帆知识库列表Entity。
  *
  * @author 陈潇文
  * @since 2025-04-25

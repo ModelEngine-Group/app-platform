@@ -14,7 +14,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * qianfan 知识库检索结果。
+ * 百度千帆 知识库检索结果。
  *
  * @author 陈潇文
  * @since 2025-04-25

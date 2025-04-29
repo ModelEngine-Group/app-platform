@@ -14,7 +14,7 @@ import modelengine.fitframework.util.ObjectUtils;
 import java.util.Map;
 
 /**
- * qianfan 接口返回值结构。
+ * 百度千帆 接口返回值结构。
  *
  * @author 陈潇文
  * @since 2025-04-25

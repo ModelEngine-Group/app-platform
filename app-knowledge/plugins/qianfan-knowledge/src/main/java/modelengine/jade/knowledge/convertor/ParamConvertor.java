@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * qianfan 内部数据的转换器接口。
+ * 百度千帆 内部数据的转换器接口。
  *
  * @author 陈潇文
  * @since 2025-04-24

@@ -36,7 +36,7 @@ import static modelengine.fit.http.protocol.MessageHeaderNames.CONTENT_TYPE;
 import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.*;
 
 /**
- * 表示 qianfan 知识库的调用工具。
+ * 表示 百度千帆 知识库的调用工具。
  *
  * @author 陈潇文
  * @since 2025-04-25

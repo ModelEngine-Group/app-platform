@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * qianfan知识库Entity。
+ * 百度千帆知识库Entity。
  *
  * @author 陈潇文
  * @since 2025-04-25
