@@ -29,7 +29,6 @@ import { configMap } from '../config';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../../locale/i18n';
 import { cloneDeep } from 'lodash';
-const DEFAULT_GROUP_ID = 'default';
 
 /**
  * elsa编排组件
@@ -66,7 +65,7 @@ const Stage = (props) => {
   const [skillList, setSkillList] = useState([]);
   const [promptValue, setPromptValue] = useState('');
   const [currentModelInfo, setCurrentModelInfo] = useState({});
-  const [groupId, setGroupId] = useState(DEFAULT_GROUP_ID);
+  const [groupId, setGroupId] = useState("");
   const { CONFIGS } = configMap[process.env.NODE_ENV];
   const { type, appInfo, setFlowInfo } = useContext(FlowContext);
   const testStatus = useAppSelector((state) => state.flowTestStore.testStatus);
@@ -152,9 +151,10 @@ const Stage = (props) => {
       });
       // 知识库模态框
       agent.onKnowledgeBaseSelect((args) => {
-        let { selectedKnowledgeBases, onSelect } = args;
+        let { selectedKnowledgeBases, onSelect, groupId } = args;
+        setGroupId(groupId);
         knowledgeCallback.current = onSelect;
-        modalRef.current.showModal(selectedKnowledgeBases);
+        modalRef.current.showModal(selectedKnowledgeBases, groupId);
       });
       // 插件模态框
       agent.onPluginSelect((args) => {
@@ -209,6 +209,7 @@ const Stage = (props) => {
         connectKnowledgeEvent.current = event;
         connectKnowledgeRef.current.openModal();
         event.onSelect(groupId);
+        setGroupId(event.selectedGroupId);
       });
       // 循环节点
       agent.onLoopSelect(({ onSelect }) => {

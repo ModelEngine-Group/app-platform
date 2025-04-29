@@ -15,7 +15,6 @@ import BookIcon from '@/assets/images/ai/connect-knowledge.png';
 import NotConnectIcon from '@/assets/images/ai/not-connect.png';
 import ConnectedIcon from '@/assets/images/ai/connected.svg';
 import '../styles/connect-knowledge.scss'
-const DEFAULT_GROUP_ID = 'default';
 
 /**
  * 连接知识库弹框
@@ -33,7 +32,7 @@ const ConnectKnowledge = ({ modelRef, groupId, updateGroupId }) => {
   const navigate = useHistory().push;
   const [open, setOpen] = useState(false);
   const [connectList, setConnectList] = useState([]);
-  const [choseId, setChoseId] = useState(DEFAULT_GROUP_ID);
+  const [choseId, setChoseId] = useState(groupId);
 
   useImperativeHandle(modelRef, () => {
     return { openModal: () => setOpen(true) };
@@ -88,14 +87,14 @@ const ConnectKnowledge = ({ modelRef, groupId, updateGroupId }) => {
       <div className='connect-list'>
         {
           connectList.map(item =>
-            <div className={`knowledge-item ${choseId === item.id ? 'chose' : ''}`} key={item.id} onClick={() => setChoseId(item.id)}>
+            <div className={`knowledge-item ${choseId === item.groupId ? 'chose' : ''}`} key={item.groupId} onClick={() => setChoseId(item.groupId)}>
               <div className='knowledge-title'>
                 <img src={BookIcon} alt="" style={{ marginRight: 8 }} />
                 {item.name}
               </div>
-              <div className='knowledge-desc' title={item.desc}>{item.desc}</div>
+              <div className='knowledge-desc' title={item.description}>{item.description}</div>
               <div className='connect-circle'>
-                <img src={choseId === item.id ? ConnectedIcon : NotConnectIcon} alt="" />
+                <img src={choseId === item.groupId ? ConnectedIcon : NotConnectIcon} alt="" />
               </div>
             </div>
           )
