@@ -6,7 +6,7 @@
     <parent>
         <groupId>modelengine.fit.jade</groupId>
         <artifactId>app-knowledge-plugins-parent</artifactId>
-        <version>3.5.0-M2</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>modelengine.jade.plugin</groupId>
@@ -142,7 +142,7 @@
             <plugin>
                 <groupId>org.fitframework.fel</groupId>
                 <artifactId>tool-maven-plugin</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${fit.version}</version>
                 <executions>
                     <execution>
                         <id>build-tool</id>
