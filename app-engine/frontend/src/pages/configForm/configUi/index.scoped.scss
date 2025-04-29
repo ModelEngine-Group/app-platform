@@ -245,6 +245,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    .panel-label-config {
+      display: flex;
+      align-items: center;
+      span {
+        margin-right: 6px;
+      }
+      img {
+        margin-top: 2px;
+      }
+    }
     .panel-add {
       width: 89px;
       display: flex;

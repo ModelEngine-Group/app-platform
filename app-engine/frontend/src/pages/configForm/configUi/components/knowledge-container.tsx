@@ -8,21 +8,27 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '@/store/hook';
 import { setConfigItem } from '@/store/appConfig/config';
+import ConnectKnowledge from '@/pages/addFlow/components/connect-knowledge';
 import Knowledge from './knowledge';
 import { Collapse } from 'antd';
 import { Message } from '@/shared/utils/message';
 import CloseImg from '@/assets/images/close_arrow.png';
 import OpenImg from '@/assets/images/open_arrow.png';
 import AddImg from '@/assets/images/add_btn.svg';
+import SettingImg from '@/assets/svg/icon-search-args-config.svg';
 const { Panel } = Collapse;
 
 const KnowledgeContainer = (props) => {
   const { t } = useTranslation();
   const { graphOperator, config, updateData, validateList } = props;
   const [knowledge, setKnowledge] = useState([]);
+  const [groupConfig, setGroupConfig] = useState({});
+  const [groupId, setGroupId] = useState('default');
   const [activePanelKey, setActivePanelKey] = useState(['']);
   const knowledgeRef: any = useRef(null);
   const curKnowledge = useRef(null);
+  const curGroupValue = useRef({});
+  const connectKnowledgeRef = useRef<any>(null);
   const dispatch = useAppDispatch();
   const appConfig = useAppSelector((state) => state.appConfigStore.inputConfigData);
 
@@ -43,6 +49,34 @@ const KnowledgeContainer = (props) => {
     knowledgeRef.current.addKnowledge();
     setActivePanelKey(['knowledge']);
   };
+
+  // 获取知识库ID
+  const getKnowledgeId = (config) => {
+    const groupConfig = [config[0], 'option'];
+    const groupValue = graphOperator.getConfig(groupConfig);
+    if (groupValue) {
+      const { groupId } = groupValue;
+      groupId && setGroupId(groupId);
+      setGroupConfig(groupConfig);
+      curGroupValue.current = groupValue;
+    }
+  }
+
+  // 设置知识库
+  const knowledgeModalOpen = (e) => {
+    e.stopPropagation();
+    connectKnowledgeRef.current.openModal();
+  }
+
+  // 更新groupId
+  const updateGroupId = (val) => {
+    setGroupId(val);
+    if (curGroupValue.current.groupId !== val) {
+      curGroupValue.current.groupId = val;
+      graphOperator.update(groupConfig, curGroupValue.current);
+      updateData();
+    }
+  }
 
   // 更新每一条是否存在
   const updateExistStatus = () => {
@@ -71,6 +105,7 @@ const KnowledgeContainer = (props) => {
     if (config.from === 'graph') {
       try {
         curKnowledge.current = graphOperator.getConfig(config.defaultValue);
+        getKnowledgeId(config.defaultValue);
       } catch {
         Message({ type: 'warning', content: t('dataError') });
       }
@@ -93,12 +128,26 @@ const KnowledgeContainer = (props) => {
       onChange={(keys) => setActivePanelKey(keys)}
     >
       <Panel header={<div className='panel-label'>
-        <span>{config.description}</span>
+        <div className='panel-label-config'>
+          <span>{config.description}</span>
+          <img src={SettingImg} onClick={(e) => knowledgeModalOpen(e)} />
+        </div>
         <img src={AddImg} style={{ width: 16, height: 16 }} alt="" onClick={addKnowledgeBase} />
       </div>} forceRender key='knowledge' className="site-collapse-custom-panel">
-        <Knowledge knowledgeRef={knowledgeRef} knowledge={knowledge} updateData={updateKnowledge} />
+        <Knowledge 
+          knowledgeRef={knowledgeRef} 
+          knowledge={knowledge}
+          groupId={groupId}
+          updateData={updateKnowledge} 
+        />
       </Panel>
     </Collapse>
+    {/* 知识库 */}
+    <ConnectKnowledge
+      modelRef={connectKnowledgeRef}
+      groupId={groupId}
+      updateGroupId={updateGroupId}
+    />
   </>
 };
 

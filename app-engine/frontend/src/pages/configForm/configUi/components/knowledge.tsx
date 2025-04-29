@@ -15,7 +15,7 @@ import closeImg from '@/assets/images/close_btn.svg';
 
 const Knowledge = (props) => {
   const { t } = useTranslation();
-  const { knowledge, updateData, knowledgeRef } = props;
+  const { knowledge, groupId, updateData, knowledgeRef } = props;
   const [knows, setKnows] = useState([]);
   const [showOperateIndex, setShowOperateIndex] = useState(-1);
   const { tenantId } = useParams();
@@ -92,7 +92,7 @@ const Knowledge = (props) => {
       <AddKnowledge
         modalRef={modalRef}
         tenantId={tenantId}
-        groupId='default'
+        groupId={groupId}
         handleDataChange={handleChange}
       />
     </>

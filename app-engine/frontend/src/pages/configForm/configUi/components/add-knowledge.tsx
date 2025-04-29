@@ -47,18 +47,18 @@ const AddKnowledge = (props) => {
   const cancel = () => {
     setOpen(false);
   };
-  const showModal = (list = []) => {
+  const showModal = (list = [], groupId: String) => {
     setTotal(0);
     checkData.current = deepClone(list);
     setOpen(true);
-    setCheck();
+    setCheck(groupId);
   };
   // 设置选中列表
-  const setCheck = () => {
+  const setCheck = (groupId: String) => {
     setListPage(1);
     setPageSize(12);
     setKnowledgeList(checkData.current);
-    handleGetKnowledgeOptions();
+    handleGetKnowledgeOptions(groupId);
   };
 
   // 过滤Id
@@ -67,13 +67,13 @@ const AddKnowledge = (props) => {
   };
 
   // 获取知识库列表
-  const handleGetKnowledgeOptions = async () => {
+  const handleGetKnowledgeOptions = async (grpahGroupId?:String) => {
     const params = {
       tenantId,
       pageIndex: listPage,
       pageSize: pageSize,
       repoName: encodeURIComponent(searchName.current.trim()),
-      groupId,
+      groupId: grpahGroupId || groupId,
     };
     try {
       const res: any = await getKnowledgesCard(params);
@@ -145,7 +145,7 @@ const AddKnowledge = (props) => {
   };
 
   useEffect(() => {
-    handleGetKnowledgeOptions();
+    open && handleGetKnowledgeOptions();
   }, [listPage, pageSize]);
 
   useImperativeHandle(modalRef, () => {
