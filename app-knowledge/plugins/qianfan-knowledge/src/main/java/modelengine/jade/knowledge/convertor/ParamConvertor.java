@@ -56,7 +56,7 @@ public interface ParamConvertor {
 
     @Named("stringToLocalDateTime")
     default LocalDateTime stringToLocalDateTime(QianfanKnowledgeEntity entity) {
-        String dateStr = entity.getCreateAt();
+        String dateStr = entity.getCreatedAt();
         if (dateStr == null || dateStr.isEmpty()) {
             return null;
         }
@@ -98,7 +98,7 @@ public interface ParamConvertor {
      * @param entity 表示待转换的 {@link QianfanRetrievalChunksEntity}。
      * @return 转换完成的 {@link KnowledgeDocument}。
      */
-    @Mapping(target = "id", expression = "java(entity.documentId())")
+    @Mapping(target = "id", expression = "java(entity.chunkId())")
     @Mapping(target = "text", expression = "java(entity.content())")
     @Mapping(target = "score", expression = "java(entity.retrievalScore())")
     @Mapping(target = "metadata", source = "entity", qualifiedByName = "mapChunksEntityToMetadata")

@@ -5,7 +5,10 @@
  *--------------------------------------------------------------------------------------------*/
 package modelengine.jade.knowledge.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * qianfan知识库Entity。
@@ -14,6 +17,9 @@ import lombok.Data;
  * @since 2025-04-25
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class QianfanKnowledgeEntity {
     /**
      * 知识库id。
@@ -30,7 +36,7 @@ public class QianfanKnowledgeEntity {
     /**
      * 知识库创建时间。
      */
-    private String createAt;
+    private String createdAt;
     /**
      * 知识库配置。
      */

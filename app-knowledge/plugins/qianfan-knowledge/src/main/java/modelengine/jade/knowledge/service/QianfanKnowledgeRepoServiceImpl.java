@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -50,7 +51,7 @@ public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
     private final KnowledgeI18nService knowledgeI18nService;
 
     public QianfanKnowledgeRepoServiceImpl(QianfanKnowledgeBaseManager knowledgeBaseManager,
-                                           KnowledgeI18nService knowledgeI18nService) {
+            KnowledgeI18nService knowledgeI18nService) {
         this.knowledgeBaseManager = knowledgeBaseManager;
         this.knowledgeI18nService = knowledgeI18nService;
     }
@@ -59,12 +60,12 @@ public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
     @Fitable(FITABLE_ID_DEFAULT)
     public PageVo<KnowledgeRepo> listRepos(String apiKey, ListRepoQueryParam param) {
         Validation.notNull(param, "The query param cannot be null.");
-        int min = param.getPageIndex() * param.getPageSize();
-        int max = min + param.getPageSize();
+        int max = param.getPageIndex() * param.getPageSize();
+        int min = max - param.getPageSize();
         int times = max / querySize;
-        int maxKeys = max % 100;
+        int maxKeys = max % querySize;
         PageVoKnowledgeList pageVoKnowledgeList = this.queryKnowledgeList(apiKey, param, times, maxKeys);
-        List<KnowledgeRepo> repos = IntStream.range(min, max + 1)
+        List<KnowledgeRepo> repos = IntStream.range(min, Math.min(max, pageVoKnowledgeList.getKnowledgeEntityList().size()))
                 .mapToObj(pageVoKnowledgeList.getKnowledgeEntityList()::get)
                 .map(ParamConvertor.INSTANCE::convertToKnowledgeRepo)
                 .toList();
@@ -121,7 +122,7 @@ public class QianfanKnowledgeRepoServiceImpl implements KnowledgeRepoService {
         QianfanRetrievalResult result = this.knowledgeBaseManager.retrieve(apiKey, param);
         return result.getChunks().stream()
                 .map(ParamConvertor.INSTANCE::convertToKnowledgeDocument)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     private PageVoKnowledgeList queryKnowledgeList(String apiKey, ListRepoQueryParam param, int times, int maxKeys) {

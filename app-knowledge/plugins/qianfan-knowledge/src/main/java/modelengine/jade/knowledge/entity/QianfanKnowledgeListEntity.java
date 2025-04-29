@@ -6,8 +6,11 @@
 
 package modelengine.jade.knowledge.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -19,6 +22,8 @@ import java.util.List;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class QianfanKnowledgeListEntity {
     /**
      * 知识库查询的起始id。
@@ -43,6 +48,7 @@ public class QianfanKnowledgeListEntity {
     /**
      * true表示后面还有数据，false表示已经是最后一页。
      */
+    @JsonProperty("isTruncated")
     private boolean isTruncated;
     /**
      * 知识库总数。

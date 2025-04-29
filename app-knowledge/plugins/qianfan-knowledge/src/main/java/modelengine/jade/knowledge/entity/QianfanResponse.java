@@ -6,10 +6,10 @@
 
 package modelengine.jade.knowledge.entity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import modelengine.fitframework.util.ObjectUtils;
 
-import java.lang.reflect.Type;
 import java.util.Map;
 
 /**
@@ -24,9 +24,10 @@ public class QianfanResponse<T> {
     private String code;
     private String message;
 
-    public static <T> QianfanResponse<T> from(Map<String, Object> context, Type type) {
+    public static <T> QianfanResponse<T> from(Map<String, Object> context, Class<T> type) {
         QianfanResponse<T> qianfanResponse = new QianfanResponse<>();
-        qianfanResponse.data = ObjectUtils.toCustomObject(context, type);
+        ObjectMapper objectMapper = new ObjectMapper();
+        qianfanResponse.data = objectMapper.convertValue(context, type);
         qianfanResponse.code = ObjectUtils.cast(context.get("code"));
         qianfanResponse.message = ObjectUtils.cast(context.get("message"));
         return qianfanResponse;
