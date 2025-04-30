@@ -23,32 +23,32 @@ public enum KnowledgeManagerRetCode implements RetCode {
     /**
      * 查询知识库列表接口失败。
      */
-    QUERY_KNOWLEDGE_LIST_ERROR(130703003, "获取知识库列表失败，原因：{}。"),
+    QUERY_KNOWLEDGE_LIST_ERROR(130703003, "获取知识库列表失败，原因：{0}。"),
 
     /**
      * 请求知识库平台鉴权失败
      */
-    AUTHENTICATION_ERROR(130703004, "知识库平台鉴权失败，原因：{}。"),
+    AUTHENTICATION_ERROR(130703004, "知识库平台鉴权失败，原因：{0}。"),
 
     /**
      * 请求知识库平台内部失败
      */
-    INTERNAL_SERVICE_ERROR(130703005, "知识库平台接口内部错误，原因：{}。"),
+    INTERNAL_SERVICE_ERROR(130703005, "知识库平台接口内部错误，原因：{0}。"),
 
     /**
      * 客户端请求错误
      */
-    CLIENT_REQUEST_ERROR(130703006, "知识库平台请求错误，原因：{}。"),
+    CLIENT_REQUEST_ERROR(130703006, "知识库平台请求错误，原因：{0}。"),
 
     /**
      * 资源不存在
      */
-    NOT_FOUND(130703007, "知识库平台接口不存在，原因：{}。"),
+    NOT_FOUND(130703007, "知识库平台接口不存在，原因：{0}。"),
 
     /**
      * 知识库检索失败
      */
-    QUERY_KNOWLEDGE_ERROR(130703008, "知识库检索失败，原因：{}。"),
+    QUERY_KNOWLEDGE_ERROR(130703008, "知识库检索失败，原因：{0}。"),
 
     /**
      * 相同的知识库配置已存在，请修改配置重试。
