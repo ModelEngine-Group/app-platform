@@ -8,7 +8,7 @@ create table if not exists t_app_engine_user_knowledge
     "user_id" varchar(64)                               not null,
     "name" varchar(64)                              not null,
     "group_id" varchar(64)                               not null,
-    "api_key" varchar(255)                               not null,
+    "api_key" varchar(512)                               not null,
     "is_default" smallint default 0                      not null
 );
 
