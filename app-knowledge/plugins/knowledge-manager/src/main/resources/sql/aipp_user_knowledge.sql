@@ -12,7 +12,7 @@ create table if not exists t_app_engine_user_knowledge
     "is_default" smallint default 0                      not null
 );
 
-create unique index user_knowledge_index on t_app_engine_user_knowledge ("user_id", "group_id", "api_key");
+create unique index if not exists user_knowledge_index on t_app_engine_user_knowledge ("user_id", "group_id", "api_key");
 comment on table  t_app_engine_user_knowledge is '用户知识库信息表';
 comment on column t_app_engine_user_knowledge.id is '主键';
 comment on column t_app_engine_user_knowledge.created_at is '用户知识库信息创建时间';
