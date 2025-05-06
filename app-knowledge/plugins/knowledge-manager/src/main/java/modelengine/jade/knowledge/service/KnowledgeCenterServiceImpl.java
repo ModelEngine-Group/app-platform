@@ -157,7 +157,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
             return defaultValue;
         }
         this.validateConfigNum(result);
-        return result.get(0).getApiKey();
+        return this.decryptor.decrypt(result.get(0).getApiKey());
     }
 
     private void validateConfigNum(List<KnowledgeConfigPo> result) {
@@ -185,7 +185,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
                 .name(knowledgeConfigDto.getName())
                 .userId(knowledgeConfigDto.getUserId())
                 .groupId(knowledgeConfigDto.getGroupId())
-                .apiKey(this.decryptor.decrypt(knowledgeConfigDto.getApiKey()))
+                .apiKey(this.encryptor.encrypt(knowledgeConfigDto.getApiKey()))
                 .isDefault(Boolean.compare(knowledgeConfigDto.getIsDefault(), false))
                 .createdBy(knowledgeConfigDto.getUserId())
                 .createdAt(LocalDateTime.now())
@@ -200,7 +200,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
                 .name(knowledgeConfigPo.getName())
                 .groupId(knowledgeConfigPo.getGroupId())
                 .userId(knowledgeConfigPo.getUserId())
-                .apiKey(this.encryptor.encrypt(knowledgeConfigPo.getApiKey()))
+                .apiKey(this.decryptor.decrypt(knowledgeConfigPo.getApiKey()))
                 .isDefault(knowledgeConfigPo.getIsDefault() == 1)
                 .build();
     }
