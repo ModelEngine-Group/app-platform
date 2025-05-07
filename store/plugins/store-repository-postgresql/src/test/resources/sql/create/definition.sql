@@ -3,8 +3,8 @@ drop table if exists store_definition;
 create table if not exists store_definition
 (
     "id"             bigserial   primary key               not null,
-    "created_time"   timestamp(9) default current_timestamp not null,
-    "updated_time"   timestamp(9) default current_timestamp not null,
+    "created_time"   timestamp default current_timestamp not null,
+    "updated_time"   timestamp default current_timestamp not null,
     "creator"        varchar(30) default 'system'          not null,
     "modifier"       varchar(30) default 'system'          not null,
     "name"           varchar(256)                          not null,
