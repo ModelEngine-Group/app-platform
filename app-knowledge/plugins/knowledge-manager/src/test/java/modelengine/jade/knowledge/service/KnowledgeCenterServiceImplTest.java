@@ -8,6 +8,7 @@ package modelengine.jade.knowledge.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import modelengine.fit.security.Decryptor;
 import modelengine.fit.security.Encryptor;
@@ -173,7 +174,7 @@ public class KnowledgeCenterServiceImplTest {
 
         Mockito.when(knowledgeCenterRepo.listKnowledgeConfigByCondition(ArgumentMatchers.any()))
                 .thenReturn(Collections.singletonList(configPo));
-        Mockito.when(decryptor.decrypt(ArgumentMatchers.anyString())).thenReturn(apiKey);
+        Mockito.when(decryptor.decrypt(anyString())).thenReturn(apiKey);
 
         String result = knowledgeCenterService.getApiKey(userId, groupId, defaultValue);
         assertEquals(apiKey, result);
