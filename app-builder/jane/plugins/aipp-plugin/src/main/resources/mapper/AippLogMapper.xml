@@ -263,4 +263,37 @@
             #{item}
         </foreach>
     </update>
+
+    <select id="getExpireInstanceLogIds" resultType="long">
+        SELECT
+        log_id
+        FROM
+        aipp_instance_log
+        WHERE
+        aipp_type = #{aippType}
+        AND
+        create_at &lt; #{expiredDays}
+        LIMIT #{limit};
+    </select>
+
+    <delete id="forceDeleteInstanceLogsByIds">
+        DELETE FROM
+        aipp_instance_log
+        where log_id in
+        <foreach collection="logIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="selectByLogIds" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.entity.AippInstLog">
+        select
+        <include refid="Base_Column_List"/>
+        from aipp_instance_log
+        where log_id in
+        <foreach collection="logIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and is_deleted = 0
+    </select>
 </mapper>

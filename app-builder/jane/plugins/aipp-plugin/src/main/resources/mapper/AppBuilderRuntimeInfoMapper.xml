@@ -88,4 +88,24 @@
         where trace_id = #{traceId}
         order by start_time asc
     </select>
+
+    <select id="getExpiredRuntimeInfos" resultType="long">
+        SELECT
+        id
+        from app_builder_runtime_info
+        where
+        status != 'RUNNING'
+        AND
+        update_at &lt; #{expiredDays}
+        LIMIT #{limit};
+    </select>
+
+    <delete id="deleteRuntimeInfos">
+        DELETE
+        FROM app_builder_runtime_info
+        where id in
+        <foreach collection="runtimeInfoIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>
