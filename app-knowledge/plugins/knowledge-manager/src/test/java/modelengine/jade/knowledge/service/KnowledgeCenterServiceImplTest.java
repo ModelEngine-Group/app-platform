@@ -142,7 +142,7 @@ public class KnowledgeCenterServiceImplTest {
 
         Mockito.when(knowledgeCenterRepo.listKnowledgeConfigByCondition(ArgumentMatchers.any()))
                 .thenReturn(Collections.singletonList(configPo));
-        Mockito.when(encryptor.encrypt(apiKey)).thenReturn("encrypted_key");
+        Mockito.when(decryptor.decrypt(apiKey)).thenReturn("encrypted_key");
 
         List<KnowledgeConfigDto> result = knowledgeCenterService.list(userId);
         assertEquals(1, result.size());
@@ -173,6 +173,7 @@ public class KnowledgeCenterServiceImplTest {
 
         Mockito.when(knowledgeCenterRepo.listKnowledgeConfigByCondition(ArgumentMatchers.any()))
                 .thenReturn(Collections.singletonList(configPo));
+        Mockito.when(decryptor.decrypt(ArgumentMatchers.anyString())).thenReturn(apiKey);
 
         String result = knowledgeCenterService.getApiKey(userId, groupId, defaultValue);
         assertEquals(apiKey, result);
