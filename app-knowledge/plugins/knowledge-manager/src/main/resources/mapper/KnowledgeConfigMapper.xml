@@ -63,7 +63,10 @@
         <set>
             is_default = 0
         </set>
-        where id != #{id} and group_id = #{groupId} and user_id = #{userId}
+        where group_id = #{groupId} and user_id = #{userId}
+        <if test="id != null">
+            and id != #{id}
+        </if>
     </update>
 
     <update id="updateNewestIsDefaultTrue" parameterType="modelengine.jade.knowledge.condition.KnowledgeConfigQueryCondition">
@@ -75,6 +78,9 @@
             select id
             from t_app_engine_user_knowledge
             where group_id = #{groupId} and user_id = #{userId}
+            <if test="id !=null">
+                and id != #{id}
+            </if>
             order by updated_at desc
             limit 1
         )

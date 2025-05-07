@@ -70,6 +70,21 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     public void add(KnowledgeConfigDto knowledgeConfigDto) {
         log.info("Start add user knowledge config.[userId={}]", knowledgeConfigDto.getUserId());
         this.isConfigUnique(knowledgeConfigDto);
+        List<KnowledgeConfigPo> result =
+                this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
+                        .userId(knowledgeConfigDto.getUserId())
+                        .groupId(knowledgeConfigDto.getGroupId())
+                        .build());
+        if (result.stream().noneMatch(config -> config.getIsDefault() == 1)) {
+            knowledgeConfigDto.setIsDefault(true);
+        } else if (knowledgeConfigDto.getIsDefault()) {
+            // 新增配置isDefault为true,需要将已有的isDefault为true置为false
+            KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
+                    .userId(knowledgeConfigDto.getUserId())
+                    .groupId(knowledgeConfigDto.getGroupId())
+                    .build();
+            this.knowledgeCenterRepo.updateOthersIsDefaultFalse(condition);
+        }
         this.knowledgeCenterRepo.insertKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
     }
 
@@ -80,23 +95,38 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
     @Property(description = "修改用户的知识库配置信息")
     public void edit(KnowledgeConfigDto knowledgeConfigDto) {
         log.info("Start edit user knowledge config.[userId={}]", knowledgeConfigDto.getUserId());
-        this.isConfigUnique(knowledgeConfigDto);
-        this.knowledgeCenterRepo.updateKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
-        if (!this.isUpdateOthersDefault(knowledgeConfigDto)) {
+        if (!this.isUpdateValidate(knowledgeConfigDto)) {
+            log.error("Edit user knowledge config failed.[id={}, groupId={}, userId={}]",
+                    knowledgeConfigDto.getId(),
+                    knowledgeConfigDto.getGroupId(),
+                    knowledgeConfigDto.getUserId());
             return;
         }
+        this.isConfigUnique(knowledgeConfigDto);
+        List<KnowledgeConfigPo> result =
+                this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
+                        .userId(knowledgeConfigDto.getUserId())
+                        .groupId(knowledgeConfigDto.getGroupId())
+                        .build());
+        if (result.size() == 1 && !knowledgeConfigDto.getIsDefault()) {
+            throw new KnowledgeException(KnowledgeManagerRetCode.SHOULD_HAS_AT_LEAST_ONE_DEFAULT);
+        }
+        this.knowledgeCenterRepo.updateKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
         KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
                 .id(knowledgeConfigDto.getId())
                 .userId(knowledgeConfigDto.getUserId())
                 .groupId(knowledgeConfigDto.getGroupId())
                 .build();
-        this.knowledgeCenterRepo.updateOthersIsDefaultFalse(condition);
+        if (knowledgeConfigDto.getIsDefault()) {
+            this.knowledgeCenterRepo.updateOthersIsDefaultFalse(condition);
+        } else {
+            this.knowledgeCenterRepo.updateNewestIsDefaultTrue(condition);
+        }
     }
 
-    private boolean isUpdateOthersDefault(KnowledgeConfigDto knowledgeConfigDto) {
-        return knowledgeConfigDto.getIsDefault() && LongUtils.between(knowledgeConfigDto.getId(), 1, Long.MAX_VALUE)
-                && StringUtils.isNotBlank(knowledgeConfigDto.getUserId())
-                && StringUtils.isNotBlank(knowledgeConfigDto.getGroupId());
+    private boolean isUpdateValidate(KnowledgeConfigDto knowledgeConfigDto) {
+        return LongUtils.between(knowledgeConfigDto.getId(), 1, Long.MAX_VALUE) && StringUtils.isNotBlank(
+                knowledgeConfigDto.getUserId()) && StringUtils.isNotBlank(knowledgeConfigDto.getGroupId());
     }
 
     @Override
@@ -116,7 +146,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
         }
         KnowledgeConfigPo configPo = configPoList.get(0);
         KnowledgeConfigDto knowledgeConfigDto = this.getKnowledgeConfigDto(configPo);
-        if (this.isUpdateOthersDefault(knowledgeConfigDto)) {
+        if (knowledgeConfigDto.getIsDefault()) {
             KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
                     .userId(knowledgeConfigDto.getUserId())
                     .groupId(knowledgeConfigDto.getGroupId())

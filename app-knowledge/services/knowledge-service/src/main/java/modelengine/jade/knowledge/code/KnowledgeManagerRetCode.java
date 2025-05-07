@@ -53,7 +53,12 @@ public enum KnowledgeManagerRetCode implements RetCode {
     /**
      * 相同的知识库配置已存在，请修改配置重试。
      */
-    CONFIG_IS_EXISTED(130703009, "相同的知识库配置已存在，请修改配置重试。");
+    CONFIG_IS_EXISTED(130703009, "相同的知识库配置已存在，请修改配置重试。"),
+
+    /**
+     * 一个知识库平台至少需要有一个default apiKey。
+     */
+    SHOULD_HAS_AT_LEAST_ONE_DEFAULT(130703010, "修改配置失败，一个知识库平台至少需要有一个default apiKey。");
 
     private final int code;
     private final String msg;
