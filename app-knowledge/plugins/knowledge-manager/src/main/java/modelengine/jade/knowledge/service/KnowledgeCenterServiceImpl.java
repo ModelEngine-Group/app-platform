@@ -68,7 +68,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
             extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "增加用户的知识库配置信息")
     public void add(KnowledgeConfigDto knowledgeConfigDto) {
-        log.info("Start add user knowledge config.[userId={}]", knowledgeConfigDto.getUserId());
+        log.info("Start add user knowledge config. [userId={}]", knowledgeConfigDto.getUserId());
         this.isConfigUnique(knowledgeConfigDto);
         List<KnowledgeConfigPo> result =
                 this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
@@ -78,7 +78,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
         if (result.stream().noneMatch(config -> config.getIsDefault() == 1)) {
             knowledgeConfigDto.setIsDefault(true);
         } else if (knowledgeConfigDto.getIsDefault()) {
-            // 新增配置isDefault为true,需要将已有的isDefault为true置为false
+            // 需要保证一个知识库平台只能有一个默认使用的API key
             KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
                     .userId(knowledgeConfigDto.getUserId())
                     .groupId(knowledgeConfigDto.getGroupId())
@@ -94,9 +94,9 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
             extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "修改用户的知识库配置信息")
     public void edit(KnowledgeConfigDto knowledgeConfigDto) {
-        log.info("Start edit user knowledge config.[userId={}]", knowledgeConfigDto.getUserId());
+        log.info("Start edit user knowledge config. [userId={}]", knowledgeConfigDto.getUserId());
         if (!this.isUpdateValidate(knowledgeConfigDto)) {
-            log.error("Edit user knowledge config failed.[id={}, groupId={}, userId={}]",
+            log.error("Edit user knowledge config failed. [id={}, groupId={}, userId={}]",
                     knowledgeConfigDto.getId(),
                     knowledgeConfigDto.getGroupId(),
                     knowledgeConfigDto.getUserId());
@@ -135,7 +135,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
             extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "删除用户的知识库配置信息")
     public void delete(Long id) {
-        log.info("Start delete user knowledge config.[id={}]", id);
+        log.info("Start delete user knowledge config. [id={}]", id);
         List<KnowledgeConfigPo> configPoList =
                 this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
                         .id(id)
@@ -161,7 +161,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
             extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "查询用户的知识库配置信息")
     public List<KnowledgeConfigDto> list(String userId) {
-        log.info("Start get user knowledge configs.[userId={}]", userId);
+        log.info("Start get user knowledge configs. [userId={}]", userId);
         return this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
                 .userId(userId)
                 .build()).stream().map(this::getKnowledgeConfigDto).toList();
@@ -183,7 +183,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
                 KnowledgeConfigQueryCondition.builder().userId(userId).groupId(groupId).isDefault(1).build();
         List<KnowledgeConfigPo> result = this.knowledgeCenterRepo.listKnowledgeConfigByCondition(cond);
         if (result.isEmpty()) {
-            log.info("No available api key.[knowledge groupId={}, userId={}]", groupId, userId);
+            log.info("No available api key. [knowledge groupId={}, userId={}]", groupId, userId);
             return defaultValue;
         }
         this.validateConfigNum(result);

@@ -58,7 +58,7 @@ public enum KnowledgeManagerRetCode implements RetCode {
     /**
      * 一个知识库平台至少需要有一个default apiKey。
      */
-    SHOULD_HAS_AT_LEAST_ONE_DEFAULT(130703010, "修改配置失败，一个知识库平台至少需要有一个default apiKey。");
+    SHOULD_HAS_AT_LEAST_ONE_DEFAULT(130703010, "修改配置失败，一个知识库平台至少需要有一个默认的API Key。");
 
     private final int code;
     private final String msg;
