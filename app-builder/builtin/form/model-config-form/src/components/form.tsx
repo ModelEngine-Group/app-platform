@@ -106,7 +106,7 @@ const SmartForm: React.FC = () => {
         confirm({
             title: '切换默认模型',
             icon: <ExclamationCircleOutlined />,
-            content: `是否将 “${record.modelName}” 设置为默认模型？`,
+            content: `是否将 "${record.modelName}" 设置为默认模型？`,
             okText: '确认',
             cancelText: '取消',
             onOk: () => {
@@ -220,7 +220,7 @@ const SmartForm: React.FC = () => {
     ];
 
     return (
-        <div className="form-wrap" style={{ padding: '24px', background: '#f5f5f5' }}>
+        <div className="form-wrap form-container">
             <Card bordered={false} style={{ maxWidth: 1200, margin: '0 auto' }}>
                 <Title level={3} style={{ textAlign: 'center' }}>模型管理</Title>
                 <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginBottom: 24 }}>
@@ -234,7 +234,7 @@ const SmartForm: React.FC = () => {
                     pagination={false}
                     bordered
                     size="middle"
-                    locale={{ emptyText: '暂无模型数据，请点击“添加模型”' }}></Table>
+                    locale={{ emptyText: '暂无模型数据，请点击"添加模型"' }}></Table>
 
                 <div style={{ marginTop: 32, textAlign: 'center' }}>
                     <Space size="large">
