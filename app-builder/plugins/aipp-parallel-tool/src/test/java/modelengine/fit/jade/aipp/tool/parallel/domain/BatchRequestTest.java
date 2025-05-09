@@ -25,6 +25,7 @@ import org.mockito.stubbing.Answer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,9 +48,9 @@ class BatchRequestTest {
 
     @Test
     void shouldCallExecutorByConcurrencyWhenPostGivenToolCall() {
-        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new ArrayList<>()).build(),
-                ToolCall.builder().uniqueName("u2").args(new ArrayList<>()).build(),
-                ToolCall.builder().uniqueName("u3").args(new ArrayList<>()).build());
+        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new HashMap<>()).build(),
+                ToolCall.builder().uniqueName("u2").args(new HashMap<>()).build(),
+                ToolCall.builder().uniqueName("u3").args(new HashMap<>()).build());
         Config config = Config.builder().concurrency(2).build();
         Mockito.doNothing().when(this.taskExecutor).post(Mockito.any());
 
@@ -67,10 +68,10 @@ class BatchRequestTest {
     @Test
     void shouldGetResultWhenAwaitGivenToolCallSuccessfully() {
         List<ToolCall> toolCalls =
-                Arrays.asList(ToolCall.builder().uniqueName("u1").args(new ArrayList<>()).outputName("1").build(),
+                Arrays.asList(ToolCall.builder().uniqueName("u1").args(new HashMap<>()).outputName("1").build(),
                         ToolCall.builder()
                                 .uniqueName("u2")
-                                .args(Collections.singletonList(Argument.builder().name("a").value(1).build()))
+                                .args(MapBuilder.<String, Object>get().put("a", 1).build())
                                 .outputName("2")
                                 .build());
         Config config = Config.builder().concurrency(1).build();
@@ -104,8 +105,8 @@ class BatchRequestTest {
 
     @Test
     void shouldThrowExceptionWhenAwaitGivenToolCallException() {
-        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new ArrayList<>()).build(),
-                ToolCall.builder().uniqueName("u2").args(new ArrayList<>()).build());
+        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new HashMap<>()).build(),
+                ToolCall.builder().uniqueName("u2").args(new HashMap<>()).build());
         Config config = Config.builder().concurrency(1).build();
         Mockito.doAnswer((Answer<Void>) invocation -> {
             Runnable runnable = invocation.getArgument(0);
@@ -130,8 +131,8 @@ class BatchRequestTest {
 
     @Test
     void shouldNotExecuteRemainToolWhenAwaitGivenInstanceNotRunning() {
-        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new ArrayList<>()).build(),
-                ToolCall.builder().uniqueName("u2").args(new ArrayList<>()).build());
+        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new HashMap<>()).build(),
+                ToolCall.builder().uniqueName("u2").args(new HashMap<>()).build());
         Config config = Config.builder().concurrency(1).build();
         Mockito.doAnswer((Answer<Void>) invocation -> {
             Runnable runnable = invocation.getArgument(0);

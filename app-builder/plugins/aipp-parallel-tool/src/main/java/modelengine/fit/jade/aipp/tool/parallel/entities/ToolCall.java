@@ -11,7 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * 并行工具调用信息。
@@ -25,6 +25,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ToolCall {
     private String uniqueName;
-    private List<Argument> args;
+    private Map<String, Object> args;
     private String outputName;
 }

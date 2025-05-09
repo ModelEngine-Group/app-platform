@@ -73,6 +73,7 @@ tool:
     TEXTTOIMAGENODESTATE: textToImageNodeState
     FILEEXTRACTNODESTATE: fileExtractionNodeState
     LOOPNODESTATE: loopNodeState
+    PARALLELNODESTATE: parallelNodeState
 export-meta:
   version: 1.0.1
 sensitive:

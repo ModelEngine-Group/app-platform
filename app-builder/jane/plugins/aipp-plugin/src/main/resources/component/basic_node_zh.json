@@ -70,6 +70,11 @@
     "uniqueName": ""
   },
   {
+    "type": "parallelNodeState",
+    "name": "并行",
+    "uniqueName": ""
+  },
+  {
     "type": "manualCheckNodeState",
     "name": "人工表单",
     "uniqueName": ""

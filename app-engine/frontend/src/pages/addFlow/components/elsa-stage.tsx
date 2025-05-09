@@ -218,6 +218,12 @@ const Stage = (props) => {
         setShowTools(true);
         setModalTypes('loop');
       });
+      // 并行节点
+      agent.onParallelSelect(({ onSelect }) => {
+        pluginCallback.current = onSelect;
+        setShowTools(true);
+        setModalTypes('parallel');
+      });
     }).catch(() => {
       setSpinning && setSpinning(false);
     });
@@ -263,13 +269,17 @@ const Stage = (props) => {
     let obj = {};
     let uniqueName = '';
     let loopObj = {};
+    let parallelObj = {};
     item.forEach((e) => {
       obj = e.schema;
       uniqueName = e.uniqueName;
       loopObj = e;
+      parallelObj = e;
     });
     if (modalTypes === 'loop') {
       pluginCallback.current(loopObj);
+    } else if (modalTypes === 'parallel') {
+      pluginCallback.current(parallelObj);
     } else if (modalTypes === 'llmTool') {
       pluginCallback.current(uniqueName);
     } else {
