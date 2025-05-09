@@ -2,3 +2,6 @@ fit:
   beans:
     packages:
       - 'modelengine.jade.knowledge'
+
+openai-urls:
+  internal: 'http://mock.com/'

@@ -4,7 +4,7 @@
     "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
-      "^/api/jober": "/api/jober",
+      "^/api/jober": "",
       "^/api": ""
     }
   },
@@ -18,14 +18,14 @@
   },
   "/aippApi": {
     "target": "http://{ip}:{port}",
-    "pathRewrite": { "^/aippApi": "/api/jober/v1/api" },
+    "pathRewrite": { "^/aippApi": "/v1/api" },
     "secure": false,
     "changeOrigin": true
   },
   "/modelApi": {
     "target": "http://{ip}:{port}",
     "pathRewrite": {
-      "^/modelApi": "/api"
+      "^/modelApi": "/"
     },
     "secure": false,
     "changeOrigin": true

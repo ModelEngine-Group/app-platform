@@ -27,3 +27,9 @@ fit:
           testOnReturn: false
 mybatis:
   mapper-locations: mapper/*Mapper.xml
+
+knowledge:
+  support-list:
+  - groupId: qianfanKnowledge
+    name: 百度千帆知识库
+    description: 百度千帆知识库

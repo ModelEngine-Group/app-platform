@@ -1,6 +1,6 @@
 # AppPlatform
 
-**AppPlatform 是一个前沿的大模型应用工程，旨在通过集成的声明式编程和低代码配置工具，简化和优化大模型的训练与推理应用的开发过程。本工程为软件工程师和产品经理提供一个强大的、可扩展的环境，以支持从概念到部署的全流程 AI 应用开发。**
+**AppPlatform 是一个前沿的大模型应用工程，旨在通过集成的声明式编程和低代码配置工具，简化 AI 应用的开发过程。本工程为软件工程师和产品经理提供一个强大的、可扩展的环境，以支持从概念到部署的全流程 AI 应用开发。**
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/license/MIT)
 [![JDK](https://img.shields.io/badge/JDK-17-green.svg)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 [![Node](https://img.shields.io/badge/node-20-red.svg)](https://nodejs.org/en/download)
@@ -24,6 +24,18 @@
 3. **共享与协作**： AppPlatform 的底层包含 Store 模版，用于将所有开发的 AI 应用统一存储，以此支持跨项目的复用和协作。开发者可以根据需要组合这些应用，打造更大的解决方案，或者利用社区提供的工具和模型。在 AppPlatform 中， AI 应用不仅限于传统意义上的 “应用”，它们可以是 “函数”、“RAG”、“智能体”等任何可解释和可执行的组件。这些组件在 Store 中以 “工具” 的形式展现，其元数据不仅提供了必要的解释，还为智能体自动调度这些工具提供了基础。
 
 ---------
+## 安装数据库
+- 下载并安装 [PostgresSQL](https://www.postgresql.org/download/)
+
+- 初始化数据。进入 shell 目录，执行 build_win.sh：
+
+```
+cd ./shell
+sh ./build_win.sh localhost 5433 postgres 123456
+```
+
+其中参数分别是数据库主机地址、数据库端口、数据用户名、数据库密码。该文件会初始化数据库内置数据，以及人工表单功能所需的数据。
+
 ## 后端环境配置
 
 开发环境配置
@@ -32,7 +44,7 @@
 - Java 17
 - 代码格式化文件：[CodeFormatterFromIdea.xml](CodeFormatterFromIdea.xml)
 - `Maven` 配置：推荐版本 Maven 3.8.8+
-- FIT 框架编译产物（链接待补充）
+- FIT 框架编译产物：参考 [FIT 框架](https://github.com/ModelEngine-Group/fit-framework) 的`环境配置`构建编译产物
 
 **构建命令**
 
@@ -52,6 +64,48 @@ build/
 
 > 后端模块基于 [FIT](https://ModelEngine-Group/fit-framework) 框架，启动方式采用了 [FIT 动态插件](https://github.com/ModelEngine-Group/fit-framework/blob/main/docs/framework/fit/java/quick-start-guide/03.%20%E4%BD%BF%E7%94%A8%E6%8F%92%E4%BB%B6%E7%9A%84%E7%83%AD%E6%8F%92%E6%8B%94%E8%83%BD%E5%8A%9B.md) 方式。
 
+打开框架输出目录的 `conf/fitframework.yml` 文件，找到如下配置项
+
+```yml
+fit:
+  beans:
+    packages:
+    - 'modelengine.fitframework'
+    - 'modelengine.fit'
+```
+
+加入数据库配置项，修改后的配置项如下所示：
+
+```yml
+fit:
+  beans:
+    packages:
+    - 'modelengine.fitframework'
+    - 'modelengine.fit'
+  datasource:
+    primary: 'app-engine'
+    instances:
+      app-engine:
+        mode: 'shared'
+        url: jdbc:postgresql://localhost:5432/app_builder?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8atoReconnect=true&useSSL=false&allowPublicKeyRetrieval&useAffectedRows=true&options=-c%20statement_timeout=600000
+        username: postgres
+        password: postgres
+        druid:
+          driver-class-name: 'org.postgresql.Driver'
+          initialSize: 5
+          minIdle: 5
+          maxActive: 32
+          maxWait: 60000
+          timeBetweenEvictionRunsMillis: 60000
+          minEvictableIdleTimeMillis: 300000
+          validationQuery: 'SELECT 1'
+          testWhileIdle: true
+          testOnBorrow: false
+          testOnReturn: false
+```
+
+其中 `url`、`username`、`password` 分别表示数据库连接串、数据库账号和连接密码。其他数据库配置项可以按需修改。
+
 **启动命令**
 
 ```
@@ -70,7 +124,22 @@ fit start -Dfit.profiles.active=prod
 
 - 环境要求：node.js  >= 20
 
+- ELSA 框架编译产物：参考 ELSA 的编译构建章节（待补充）
+
+**修改 ELSA 依赖地址**
+
+进入目录`app-engine\frontend` ，搜索 `package.json` 文件的 ELSA 依赖地址：
+
+```
+"dependencies": {
+    "@fit-elsa/elsa-core": "file:../../../framework-github/fit-framework/framework/elsa/fit-elsa",
+    "@fit-elsa/elsa-react": "file:../../../framework-github/fit-framework/framework/elsa/fit-elsa-react",
+```
+
+将其改为自定义的框架编译产物地址即可。
+
 **修改代理文件**
+
 修改 `AppPlatform/frontend` 目录下的 `proxy.config.json` 文件，可以修改需要访问的后端地址。如本地后端地址是 `http://127.0.0.1:8080` 。可以按照如下示例配置：
 
 ```json
@@ -89,13 +158,7 @@ fit start -Dfit.profiles.active=prod
 **依赖安装**
 
 ```
-cd framework/elsa/fit-elsa
-npm install
-npm run build:debug
-cd ../fit-elsa-react/
-npm install
-npm run build
-cd ../../../app-engine/frontend/
+cd app-engine/frontend/
 npm install
 ```
 
@@ -113,7 +176,24 @@ npm run start
 ---------
 ## 快速开始
 
-**待完善**
+**模型配置**
+
+在对话中使用大模型功能，需要对模型进行配置，包括大模型的地址和鉴权信息。
+
+首先在首页的`应用市场`一栏中找到 `模型配置应用`，并点击该应用。点击右上角`创意灵感` 的`开始配置`，如下图所示：
+![image-20250508203127410](doc\images\readme\model_config_inspiration.png)
+
+然后点击回答的 `添加模型` 按钮，输入模型名称、API Key 和模型地址，并点击确认。此时模型添加成功。
+
+**应用创建**
+
+在首页的`应用开发`一栏中点击`创建空白应用`。如下所示：
+
+![image-20250508204618312](doc\images\readme\app_create.png)
+
+输入所要创建的应用名称和简介，并点击 `创建`按钮，即可创建 AI 应用。接着在跳转后的应用配置页面上，在 `大模型` 一栏中选择自定义配置的模型。此时即可在对话框进行对话。如下所示：
+
+![image-20250508205124203](doc\images\readme\app_chat.png)
 
 ## 文档
 
