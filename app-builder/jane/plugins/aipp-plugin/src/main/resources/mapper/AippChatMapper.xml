@@ -249,7 +249,8 @@
         FROM
             t_chat_session
         WHERE
-            update_at &lt; #{expiredDays}
+            update_at <![CDATA[ < ]]>
+            NOW()::TIMESTAMP - '#{expiredDays} day'
         LIMIT #{limit};
     </select>
 

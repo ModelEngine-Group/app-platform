@@ -49,9 +49,7 @@ public class AppBuilderRuntimeInfoRepositoryImpl implements AppBuilderRuntimeInf
 
     @Override
     public List<Long> getExpiredRuntimeInfos(int expiredDays, int limit) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expired = now.minusDays(expiredDays);
-        return this.mapper.getExpiredRuntimeInfos(expired, limit);
+        return this.mapper.getExpiredRuntimeInfos(expiredDays, limit);
     }
 
     @Override

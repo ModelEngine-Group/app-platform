@@ -90,6 +90,7 @@ public class AippInstanceLogCleanerTest {
         List<Long> mockLogIds = List.of(1L, 2L);
         when(instanceLogRepo.getExpireInstanceLogIds(AippTypeEnum.NORMAL.type(), 30, 100)).thenReturn(mockLogIds)
                 .thenReturn(Collections.emptyList());
+        when(instanceLogRepo.selectByLogIds(anyList())).thenReturn(Collections.singletonList(new AippInstLog()));
 
         CSVWriter csvWriter = mock(CSVWriter.class);
         when(csvWriterHelper.createCsvWriter(any(), anyBoolean())).thenThrow(new IOException("error"));

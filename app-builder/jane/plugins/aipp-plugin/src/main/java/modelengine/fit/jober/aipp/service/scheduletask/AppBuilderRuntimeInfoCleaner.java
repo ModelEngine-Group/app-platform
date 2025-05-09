@@ -31,19 +31,18 @@ public class AppBuilderRuntimeInfoCleaner {
     /**
      * 清理对话运行时表数据，并备份。
      *
-     * @param ttl 表示数据最大保留时长的 {@code int}。
+     * @param expiredDays 表示数据最大保留时长的 {@code int}。
      * @param limit 表示批量处理数量的 {@code int}。
      */
-    public void appBuilderRuntimeInfoCleaner(int ttl, int limit) {
+    public void clean(int expiredDays, int limit) {
         log.info("Start cleaning app builder runtime infos");
         try {
             while (true) {
-                List<Long> expiredRuntimeInfoIds = runtimeInfoRepo.getExpiredRuntimeInfos(ttl, limit);
+                List<Long> expiredRuntimeInfoIds = runtimeInfoRepo.getExpiredRuntimeInfos(expiredDays, limit);
                 if (expiredRuntimeInfoIds.isEmpty()) {
                     break;
                 }
                 runtimeInfoRepo.deleteRuntimeInfos(expiredRuntimeInfoIds);
-
             }
         } catch (Exception e) {
             log.error("cleaning app builder runtime infos failed, exception:", e);

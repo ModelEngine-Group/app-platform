@@ -271,8 +271,8 @@
         aipp_instance_log
         WHERE
         aipp_type = #{aippType}
-        AND
-        create_at &lt; #{expiredDays}
+        AND create_at <![CDATA[ < ]]>
+        NOW()::TIMESTAMP - '#{expiredDays} day'
         LIMIT #{limit};
     </select>
 

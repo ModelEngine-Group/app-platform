@@ -32,9 +32,7 @@ public class AippChatRepositoryImpl implements AippChatRepository {
 
     @Override
     public List<String> getExpiredChatIds(int expiredDays, int limit) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expired = now.minusDays(expiredDays);
-        return aippChatMapper.getExpiredChatIds(expired, limit);
+        return aippChatMapper.getExpiredChatIds(expiredDays, limit);
     }
 
     @Override

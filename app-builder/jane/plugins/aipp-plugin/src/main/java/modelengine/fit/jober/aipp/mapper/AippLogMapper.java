@@ -200,11 +200,11 @@ public interface AippLogMapper {
     /**
      * 获取超期的调试对话记录id列表。
      *
-     * @param expiredDays 表示超期时间的 {@link LocalDateTime}。
+     * @param expiredDays 表示超期时间的 {@code int}。
      * @param limit 表示查询条数的 {@code int}。
      * @return 表示历史会话记录的id列表的 {@link List}{@code <}{@link Long}{@code >}。
      */
-    List<Long> getExpireInstanceLogIds(String aippType, LocalDateTime expiredDays, int limit);
+    List<Long> getExpireInstanceLogIds(String aippType, int expiredDays, int limit);
 
     /**
      * 根据实例id列表强制删除会话记录。

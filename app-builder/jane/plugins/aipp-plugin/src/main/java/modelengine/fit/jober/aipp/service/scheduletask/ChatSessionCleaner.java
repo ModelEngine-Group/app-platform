@@ -18,7 +18,6 @@ import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,7 +60,7 @@ public class ChatSessionCleaner {
      * @param ttl 表示数据最大保留时长的 {@code int}。
      * @param limit 表示批量处理数量的 {@code int}。
      */
-    public void chatSessionCleaner(int ttl, int limit) {
+    public void clean(int ttl, int limit) {
         try {
             while (true) {
                 List<String> expiredChatIds = chatRepo.getExpiredChatIds(ttl, limit);
@@ -80,13 +79,13 @@ public class ChatSessionCleaner {
     }
 
     private void backupChatSessionData(List<String> chatIds) {
+        List<ChatInfo> chatSessionPos = this.chatRepo.selectByChatIds(chatIds);
+        if (CollectionUtils.isEmpty(chatSessionPos)) {
+            return;
+        }
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
         Path backupPath = Paths.get(CHAT_SESSION_FILE_PATH, CHAT_SESSION_FILE_NAME + currentDate + ".csv");
         try (CSVWriter csvWriter = csvWriterHelper.createCsvWriter(backupPath, true)) {
-            List<ChatInfo> chatSessionPos = this.chatRepo.selectByChatIds(chatIds);
-            if (CollectionUtils.isEmpty(chatSessionPos)) {
-                return;
-            }
             List<String[]> backupData = chatSessionPos.stream().map(session -> new String[] {
                     session.getChatId(), session.getAppId(), session.getVersion(), session.getChatName(),
                     session.getAttributes(), String.valueOf(session.getCreateTime()), session.getCreator(),
@@ -100,13 +99,13 @@ public class ChatSessionCleaner {
     }
 
     private void backupInstanceRelationData(List<String> chatIds) {
+        List<ChatAndInstanceMap> relationPos = this.chatRepo.selectTaskInstanceRelationsByChatIds(chatIds);
+        if (CollectionUtils.isEmpty(relationPos)) {
+            return;
+        }
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
         Path backupPath = Paths.get(CHAT_SESSION_FILE_PATH, INSTANCE_RELATIONS_FILE_NAME + currentDate + ".csv");
         try (CSVWriter csvWriter = csvWriterHelper.createCsvWriter(backupPath, true)) {
-            List<ChatAndInstanceMap> relationPos = this.chatRepo.selectTaskInstanceRelationsByChatIds(chatIds);
-            if (CollectionUtils.isEmpty(relationPos)) {
-                return;
-            }
             List<String[]> backupData = relationPos.stream().map(relationPo -> new String[] {
                     relationPo.getMsgId(), relationPo.getChatId(), relationPo.getInstanceId(),
                     String.valueOf(relationPo.getCreateTime()), relationPo.getCreator(),

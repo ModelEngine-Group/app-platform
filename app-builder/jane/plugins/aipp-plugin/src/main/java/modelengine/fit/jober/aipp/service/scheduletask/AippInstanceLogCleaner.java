@@ -16,7 +16,6 @@ import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,14 +55,14 @@ public class AippInstanceLogCleaner {
     /**
      * 清理已发布的应用对话历史记录表数据，并备份。
      *
-     * @param ttl 表示数据最大保留时长的 {@code int}。
+     * @param expiredDays 表示数据最大保留时长的 {@code int}。
      * @param limit 表示批量处理数量的 {@code int}。
      */
-    public void cleanAippInstanceNormalLog(int ttl, int limit) {
+    public void cleanAippInstanceNormalLog(int expiredDays, int limit) {
         try {
             while (true) {
                 List<Long> instanceLogIds =
-                        instanceLogRepo.getExpireInstanceLogIds(AippTypeEnum.NORMAL.type(), ttl, limit);
+                        instanceLogRepo.getExpireInstanceLogIds(AippTypeEnum.NORMAL.type(), expiredDays, limit);
                 if (instanceLogIds.isEmpty()) {
                     break;
                 }
@@ -77,13 +76,13 @@ public class AippInstanceLogCleaner {
     }
 
     private void backupData(List<Long> logIds) {
+        List<AippInstLog> aippInstLogs = this.instanceLogRepo.selectByLogIds(logIds);
+        if (CollectionUtils.isEmpty(aippInstLogs)) {
+            return;
+        }
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
         Path backupPath = Paths.get(AIPP_INSTANCE_LOG_FILE_PATH, FILE_NAME + currentDate + ".csv");
         try (CSVWriter csvWriter = csvWriterHelper.createCsvWriter(backupPath, true)) {
-            List<AippInstLog> aippInstLogs = this.instanceLogRepo.selectByLogIds(logIds);
-            if (CollectionUtils.isEmpty(aippInstLogs)) {
-                return;
-            }
             List<String[]> backupData = aippInstLogs.stream().map(aippInstLog -> new String[] {
                     String.valueOf(aippInstLog.getLogId()), aippInstLog.getAippId(), aippInstLog.getVersion(),
                     aippInstLog.getInstanceId(), aippInstLog.getLogData(), aippInstLog.getLogType(),
@@ -112,15 +111,15 @@ public class AippInstanceLogCleaner {
     /**
      * 清理调试应用对话历史记录表数据。
      *
-     * @param ttl 表示数据最大保留时长的 {@code int}。
+     * @param expiredDays 表示数据最大保留时长的 {@code int}。
      * @param limit 表示批量处理数量的 {@code int}。
      */
-    public void cleanAippInstancePreviewLog(int ttl, int limit) {
+    public void cleanAippInstancePreviewLog(int expiredDays, int limit) {
         log.info("Start cleaning aipp preview instance logs");
         try {
             while (true) {
                 List<Long> instanceLogIds =
-                        instanceLogRepo.getExpireInstanceLogIds(AippTypeEnum.PREVIEW.type(), ttl, limit);
+                        instanceLogRepo.getExpireInstanceLogIds(AippTypeEnum.PREVIEW.type(), expiredDays, limit);
                 if (instanceLogIds.isEmpty()) {
                     break;
                 }

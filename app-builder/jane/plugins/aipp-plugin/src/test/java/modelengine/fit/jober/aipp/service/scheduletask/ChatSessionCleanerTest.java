@@ -57,10 +57,10 @@ public class ChatSessionCleanerTest {
 
     @Test
     @DisplayName("测试没有过期数据时直接返回，不会做备份和删除操作")
-    void chatSessionCleaner_NoExpiredData_ShouldDoNothing() throws IOException {
+    void clean_NoExpiredData_ShouldDoNothing() throws IOException {
         when(chatRepo.getExpiredChatIds(anyInt(), anyInt())).thenReturn(Collections.emptyList());
 
-        chatSessionCleaner.chatSessionCleaner(30, 100);
+        chatSessionCleaner.clean(30, 100);
 
         verify(chatRepo, never()).forceDeleteChat(anyList());
         verify(csvWriterHelper, never()).createCsvWriter(any(), anyBoolean());
@@ -68,7 +68,7 @@ public class ChatSessionCleanerTest {
 
     @Test
     @DisplayName("测试有过期数据时备份并成功删除")
-    void chatSessionCleaner_WithExpiredData_ShouldBackupAndDelete() throws Exception {
+    void clean_WithExpiredData_ShouldBackupAndDelete() throws Exception {
         List<String> expiredChatIds = List.of("chat1", "chat2");
         when(chatRepo.getExpiredChatIds(anyInt(), anyInt())).thenReturn(expiredChatIds)
                 .thenReturn(Collections.emptyList());
@@ -83,7 +83,7 @@ public class ChatSessionCleanerTest {
         when(csvWriterHelper.getFile(anyString())).thenReturn(file);
         when(file.listFiles(any(FilenameFilter.class))).thenReturn(new File[] {csvFile});
 
-        chatSessionCleaner.chatSessionCleaner(30, 100);
+        chatSessionCleaner.clean(30, 100);
 
         verify(chatRepo, times(1)).forceDeleteChat(expiredChatIds);
         verify(csvWriterHelper, atLeast(2)).createCsvWriter(any(), eq(true));
@@ -93,15 +93,16 @@ public class ChatSessionCleanerTest {
 
     @Test
     @DisplayName("测试数据备份失败时不会删除过期数据")
-    void chatSessionCleaner_ShouldNotDeleteWhenBackupFailed() throws Exception {
+    void clean_ShouldNotDeleteWhenBackupFailed() throws Exception {
         List<String> expiredChatIds = List.of("chat1", "chat2");
         when(chatRepo.getExpiredChatIds(anyInt(), anyInt())).thenReturn(expiredChatIds)
                 .thenReturn(Collections.emptyList());
+        when(chatRepo.selectByChatIds(anyList())).thenReturn(Collections.singletonList(new ChatInfo()));
 
         CSVWriter csvWriter = mock(CSVWriter.class);
         when(csvWriterHelper.createCsvWriter(any(), anyBoolean())).thenThrow(new IOException("error"));
 
-        chatSessionCleaner.chatSessionCleaner(30, 100);
+        chatSessionCleaner.clean(30, 100);
 
         verify(chatRepo, times(1)).getExpiredChatIds(anyInt(), anyInt());
         verify(chatRepo, times(0)).forceDeleteChat(anyList());

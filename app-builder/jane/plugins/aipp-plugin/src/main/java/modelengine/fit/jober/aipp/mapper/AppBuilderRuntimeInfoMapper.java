@@ -36,11 +36,11 @@ public interface AppBuilderRuntimeInfoMapper {
     /**
      * 获取超期的运行时信息唯一标识列表。
      *
-     * @param expiredDays 表示超期时间的 {@link LocalDateTime}。
+     * @param expiredDays 表示超期时间的 {@code int}。
      * @param limit 表示查询条数的 {@code int}。
      * @return 表示运行时信息唯一标识列表的 {@link List}{@code <}{@link Long}{@code >}。
      */
-    List<Long> getExpiredRuntimeInfos(LocalDateTime expiredDays, int limit);
+    List<Long> getExpiredRuntimeInfos(int expiredDays, int limit);
 
     /**
      * 根据运行时信息唯一标识列表强制删除会话记录。

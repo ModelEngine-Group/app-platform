@@ -183,11 +183,11 @@ public interface AippChatMapper {
     /**
      * 获取超期的对话唯一标识。
      *
-     * @param expiredDays 表示超期时长的 {@link LocalDateTime}。
+     * @param expiredDays 表示超期时长的 {@code int}。
      * @param limit 表示查询数量的 {@code int}。
      * @return 表示对话唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
      */
-    List<String> getExpiredChatIds(LocalDateTime expiredDays, int limit);
+    List<String> getExpiredChatIds(int expiredDays, int limit);
 
     /**
      * 根据对话标识列表强制删除对话。

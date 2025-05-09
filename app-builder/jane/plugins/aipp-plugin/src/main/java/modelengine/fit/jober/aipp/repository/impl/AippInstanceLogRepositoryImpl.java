@@ -29,9 +29,7 @@ public class AippInstanceLogRepositoryImpl implements AippInstanceLogRepository 
 
     @Override
     public List<Long> getExpireInstanceLogIds(String aippType, int expiredDays, int limit) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expired = now.minusDays(expiredDays);
-        return aippLogMapper.getExpireInstanceLogIds(aippType, expired, limit);
+        return aippLogMapper.getExpireInstanceLogIds(aippType, expiredDays, limit);
     }
 
     @Override

@@ -53,11 +53,11 @@ public class AppBuilderDbCleanSchedule {
         try {
             // 清理非业务数据
             aippInstanceLogCleaner.cleanAippInstancePreviewLog(nonBusinessDataTtl, LIMIT);
-            appBuilderRuntimeInfoCleaner.appBuilderRuntimeInfoCleaner(nonBusinessDataTtl, LIMIT);
+            appBuilderRuntimeInfoCleaner.clean(nonBusinessDataTtl, LIMIT);
 
             // 清理业务数据
             aippInstanceLogCleaner.cleanAippInstanceNormalLog(businessDataTtl, LIMIT);
-            chatSessionCleaner.chatSessionCleaner(businessDataTtl, LIMIT);
+            chatSessionCleaner.clean(businessDataTtl, LIMIT);
         } catch (Exception e) {
             log.error("App builder Db Clean Error, exception:", e);
         }

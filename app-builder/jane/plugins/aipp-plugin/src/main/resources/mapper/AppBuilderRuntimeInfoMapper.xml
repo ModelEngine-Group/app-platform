@@ -95,8 +95,8 @@
         from app_builder_runtime_info
         where
         status != 'RUNNING'
-        AND
-        update_at &lt; #{expiredDays}
+        AND update_at <![CDATA[ < ]]>
+        NOW()::TIMESTAMP - '#{expiredDays} day'
         LIMIT #{limit};
     </select>
 
