@@ -951,5 +951,6 @@
   "reorganizeNodes": "Organize nodes",
   "zoomOut": "Zoom Out",
   "zoomIn": "Zoom In",
-  "formItemFieldTypeCannotBeEmpty": "Field type is required"
+  "formItemFieldTypeCannotBeEmpty": "Field type is required",
+  "addParallelTask": "Add Parallel Tasks"
 }

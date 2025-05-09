@@ -123,13 +123,10 @@ public class BatchRequest {
                         task.getIndex());
 
                 this.doingToolCallTasks.put(task.getIndex(), task);
-                Map<String, Object> toolArgs = task.getToolCall()
-                        .getArgs()
-                        .stream()
-                        .collect(Collectors.toMap(Argument::getName, Argument::getValue));
+                String jsonArgs = JSONObject.toJSONString(task.getToolCall().getArgs(),
+                        SerializerFeature.WriteMapNullValue);
                 this.complete(task,
-                        JSONArray.parse(this.syncToolCall.call(task.getToolCall().getUniqueName(),
-                                JSONObject.toJSONString(toolArgs, SerializerFeature.WriteMapNullValue))));
+                        JSONArray.parse(this.syncToolCall.call(task.getToolCall().getUniqueName(), jsonArgs)));
             } catch (Throwable ex) {
                 this.setException(task, ex);
             } finally {

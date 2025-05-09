@@ -951,5 +951,6 @@
   "reorganizeNodes": "整理节点",
   "zoomOut": "缩小",
   "zoomIn": "放大",
-  "formItemFieldTypeCannotBeEmpty": "表单项类型不能为空"
+  "formItemFieldTypeCannotBeEmpty": "表单项类型不能为空",
+  "addParallelTask": "添加并行任务"
 }

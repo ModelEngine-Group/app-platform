@@ -94,11 +94,11 @@ public class ParallelToolServiceImpl implements ParallelToolService {
         Validation.isTrue(StringUtils.isNotEmpty(toolCall.getUniqueName()),
                 "The tool unique name should not be empty.");
         Validation.notNull(toolCall.getArgs(), "The tool args should not be null.");
-        toolCall.getArgs().forEach(arg -> {
+        toolCall.getArgs().entrySet().forEach(arg -> {
             Validation.notNull(arg,
                     StringUtils.format("The tool arg should not be null. [toolUniqueName={0}]",
                             toolCall.getUniqueName()));
-            Validation.isTrue(StringUtils.isNotEmpty(arg.getName()),
+            Validation.isTrue(StringUtils.isNotEmpty(arg.getKey()),
                     StringUtils.format("The tool arg name should not be empty. [toolUniqueName={0}]",
                             toolCall.getUniqueName()));
         });
