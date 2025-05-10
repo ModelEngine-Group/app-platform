@@ -6,8 +6,11 @@
   "scripts": {
     "start": "webpack serve --progress --profile --mode development --host localhost --port 3310 --config webpack.dev.js",
     "start:single": "webpack serve --config webpack.dev.single.js",
-    "build:prod": "webpack --mode production --config webpack.prod.js",
-    "build:single": "webpack --mode production  --config webpack.prod.single.js"
+    "start:plugin": "bash ./plugins/plugin.sh && npm run start",
+    "build:prod": "npm run build:plugin:prod && webpack --mode production --config webpack.prod.js",
+    "build:single": "npm run build:plugin:single  && webpack --mode production  --config webpack.prod.single.js",
+    "build:plugin:prod": "bash ./plugins/plugin.sh prod",
+    "build:plugin:single": "bash ./plugins/plugin.sh prod spa"
   },
   "license": "ISC",
   "devDependencies": {

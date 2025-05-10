@@ -78,6 +78,66 @@
     overflow: hidden;
   }
 }
+
+.splitter-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0px;
+}
+
+.splitter-collapse {
+  position: absolute;
+  left: 100%;
+  cursor: pointer;
+  border-radius: 0 4px 4px 0;
+  width: 12px;
+  height: 30px;
+  background: #d9d9d9;
+  z-index: 15;
+
+  &::before, &::after  {
+    display: block;
+    content: '';
+    width: 10px;
+    height: 2px;
+    background: #FFF;
+    position: absolute;
+
+  }
+
+  &::before {
+    top: 9px;
+    left: 1px;
+    transform: rotate(-70deg);
+  }
+
+  &::after {
+    top: 18px;
+    left: 1px;
+    transform: rotate(70deg);
+  }
+}
+
+.splitter-collapse.collapsed::before {
+  transform: rotate(70deg);
+}
+
+.splitter-collapse.collapsed::after {
+  transform: rotate(-70deg);
+}
+
+.splitter-bar:hover {
+  .splitter-collapse {
+    background: #1890ff;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
 @media only screen and (max-width: 2000px) {
   .config-form-wrap {
     width: 450px;
