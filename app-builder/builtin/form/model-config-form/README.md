@@ -38,7 +38,7 @@ const { data, terminateClick, resumingClick, restartClick } = useContext(DataCon
 
 ### 表单调用内置接口
 
-**1. 终止对话 terminateClick()**
+**1. 终止对话 `terminateClick()`**
 
 ```tsx
 <Button onClick={onTerminateClick}>终止对话</Button>
@@ -48,9 +48,9 @@ const onTerminateClick = () => {
 }
 ```
 
-**注意：结束节点不能调用 terminateClick**
+**注意：结束节点不能调用 `terminateClick`**
 
-**2. 继续对话 resumingClick()**
+**2. 继续对话 `resumingClick()`**
 
 ```tsx
 <Button onClick={onResumeClick}>继续对话</Button>
@@ -60,9 +60,9 @@ const onResumeClick = () => {
 }
 ```
 
-**注意：结束节点不能调用 resumingClick**
+**注意：结束节点不能调用 `resumingClick`**
 
-**3. 重新对话 restartClick()**
+**3. 重新对话 `restartClick()`**
 
 ```tsx
 <Button onClick={onRestartClick}>重新对话</Button>
@@ -72,7 +72,7 @@ const onRestartClick = () => {
 }
 ```
 
-**注意：如果在智能表单节点使用，需先调 terminateClick 再 restartClick**
+**注意：如果在智能表单节点使用，需先调 `terminateClick` 再 `restartClick`**
 
 ### 调用外部接口
 
@@ -99,7 +99,7 @@ npm install
 npm start
 ```
 
-* 模拟数据 app.tsx:
+* 模拟数据 `app.tsx`:
 
 ```ts
 receiveData: {
@@ -146,19 +146,19 @@ npm run build
 }
 ```
 
-* 最外层parameters字段是入参，入参第一层必须type为object。
+* 最外层 `parameters` 字段是入参，入参第一层必须 `type` 为 `object`。
 
-* 必须包含name，支持中文、英文、数字、空格、中划线、下划线组合。
+* 必须包含 `name`，支持中文、英文、数字、空格、中划线、下划线组合。
 
-* 可以包含description, 对参数进行描述。
+* 可以包含 `description`，对参数进行描述。
 
-* 必须包含parameters。
+* 必须包含 `parameters`。
 
-* 必须包含required, 内容不可以为properties下参数名之外的参数名。
+* 必须包含 `required`，内容不可以为 `properties` 下参数名之外的参数名。
 
-* 可以包含order, 若写必须为properties下所有参数名的列表；若不写，则默认按照properties下所有参数名的顺序。
+* 可以包含 `order`，若写必须为 `properties` 下所有参数名的列表；若不写，则默认按照 `properties` 下所有参数名的顺序。
 
-* 必须包含return，return字段是出参。
+* 必须包含 `return`，`return` 字段是出参。
 
 ## 表单预览图
 
