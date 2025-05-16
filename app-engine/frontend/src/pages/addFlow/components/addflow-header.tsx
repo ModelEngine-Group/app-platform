@@ -37,7 +37,7 @@ import timeImg from '@/assets/images/ai/time.png';
 const AddHeader = (props) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const { handleDebugClick, workFlow, types, saveTime } = props;
+  const { handleDebugClick, workFlow, types, saveTime, updateAippCallBack } = props;
   const { appInfo, setFlowInfo } = useContext(FlowContext);
   const [open, setOpen] = useState(false);
   const [imgPath, setImgPath] = useState('');
@@ -162,7 +162,12 @@ const AddHeader = (props) => {
         appInfo={appInfo}
       />
       {/* 工具流发布历史信息弹窗 */}
-      <TimeLineDrawer open={open} setOpen={setOpen} type='waterflow' />
+      <TimeLineDrawer
+        open={open}
+        setOpen={setOpen}
+        updateAippCallBack ={updateAippCallBack }
+        workflow={workFlow} type='waterflow'
+      />
     </div>
   )}</>
 };

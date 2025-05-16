@@ -199,7 +199,7 @@ public class AppBuilderAppServiceImplTest {
                 .build(), appTypeService, null, null, flowDefinitionService, aippFlowDefinitionService, "", knowledgeCenterService);
     }
 
-    private AppBuilderApp mockApp() {
+    private AppBuilderApp mockApp(String appId) {
         AppBuilderApp appBuilderApp = new AppBuilderApp(flowGraphRepository, configRepository, formRepository,
                 configPropertyRepository, formPropertyRepository);
         appBuilderApp.setType("template");
@@ -207,7 +207,7 @@ public class AppBuilderAppServiceImplTest {
         appBuilderApp.setAppCategory("chatbot");
         appBuilderApp.setName("Unit Test App");
         appBuilderApp.setTenantId("727d7157b3d24209aefd59eb7d1c49ff");
-        appBuilderApp.setId("45698235b3d24209aefd59eb7d1c3322");
+        appBuilderApp.setId(appId);
         appBuilderApp.setAttributes(new HashMap<>());
         appBuilderApp.getAttributes()
                 .put("icon", "/api/jober/v1/api/31f20efc7e0848deab6a6bc10fc3021e/file?filePath=/var/share/test_old"
@@ -222,20 +222,20 @@ public class AppBuilderAppServiceImplTest {
         appBuilderApp.setCreateAt(TIME);
         appBuilderApp.setVersion("1.0.0");
         appBuilderApp.setPath("YGHmQFJE5ZaFW4wl");
-        appBuilderApp.setConfig(this.mockConfig());
+        appBuilderApp.setConfig(this.mockConfig(appId));
         appBuilderApp.getConfig().setApp(appBuilderApp);
         appBuilderApp.setConfigId(appBuilderApp.getConfig().getId());
         appBuilderApp.setFlowGraph(this.mockGraph());
         appBuilderApp.setFlowGraphId(appBuilderApp.getFlowGraph().getId());
-        appBuilderApp.setFormProperties(mockFormProperties());
+        appBuilderApp.setFormProperties(mockFormProperties(appId));
         return appBuilderApp;
     }
 
-    private AppBuilderConfig mockConfig() {
+    private AppBuilderConfig mockConfig(String appId) {
         AppBuilderConfig config = new AppBuilderConfig(this.formRepository, this.formPropertyRepository,
                 this.configPropertyRepository, this.appRepository);
 
-        config.setAppId("45698235b3d24209aefd59eb7d1c3322");
+        config.setAppId(appId);
         config.setId("24581235b3d24209aefd59eb7d1c3322");
 
         config.setUpdateAt(TIME);
@@ -247,7 +247,7 @@ public class AppBuilderAppServiceImplTest {
         config.setForm(mockForm());
         config.setFormId(config.getForm().getId());
         config.setConfigProperties(mockConfigProperties());
-        List<AppBuilderFormProperty> formProperties = mockFormProperties();
+        List<AppBuilderFormProperty> formProperties = mockFormProperties(appId);
         for (int i = 0; i < 8; i++) {
             AppBuilderConfigProperty configProperty = config.getConfigProperties().get(i);
             configProperty.setConfig(config);
@@ -270,7 +270,7 @@ public class AppBuilderAppServiceImplTest {
         return form;
     }
 
-    private List<AppBuilderFormProperty> mockFormProperties() {
+    private List<AppBuilderFormProperty> mockFormProperties(String appId) {
         Object[] values = new Object[] {
                 "null", "null", Collections.singletonList("jadewdnjbq"),
                 Arrays.asList(Arrays.asList("jadewdnjbq", "tools"), Arrays.asList("jadewdnjbq", "workflows")),
@@ -313,6 +313,7 @@ public class AppBuilderAppServiceImplTest {
             formProperty.setGroup(group[i]);
             formProperty.setDescription(description[i]);
             formProperty.setFormRepository(this.formRepository);
+            formProperty.setAppId(appId);
             formProperties.add(formProperty);
         }
         return formProperties;
@@ -387,7 +388,7 @@ public class AppBuilderAppServiceImplTest {
                         + "\"container\": \"elsa-page:t1qrig\", \"dockAlign\": \"top\", \"fontColor\": \"#ECD0A7\", "
                         + "\"fontStyle\": \"normal\", \"itemSpace\": 5, \"namespace\": \"jadeFlow\", \"fontWeight\": "
                         + "\"bold\", \"itemScroll\": {\"x\": 0, \"y\": 0}, \"borderColor\": \"white\", "
-                        + "\"focusBackColor\": \"#f2f3f5\"}], \"title\": \"jadeFlow\", \"source\": \"elsa\", "
+                        + "\"focusBackColor\": \"#f2f3f5\"}], \"title\": \"69e9dec999384b1791e24a3032010e77\", \"source\": \"elsa\", "
                         + "\"tenant\": \"default\", \"setting\": {\"pad\": 10, \"tag\": {}, \"code\": \"\", "
                         + "\"pDock\": \"none\", \"hAlign\": \"center\", \"margin\": 25, \"shadow\": \"\", \"shared\":"
                         + " false, \"vAlign\": \"top\", \"itemPad\": [5, 5, 5, 5], \"visible\": true, \"autoText\": "
@@ -438,7 +439,7 @@ public class AppBuilderAppServiceImplTest {
             appCreateDto.setName(appName);
             appCreateDto.setAppCategory("chatbot");
             appCreateDto.setDescription("");
-            AppBuilderApp appTemplate = mockApp();
+            AppBuilderApp appTemplate = mockApp(appId);
             AippCreateDto aippCreateDto = new AippCreateDto();
             aippCreateDto.setAippId("aippId1");
             List<KnowledgeDto> knowledgeDtos = new ArrayList<>();
@@ -660,7 +661,7 @@ public class AppBuilderAppServiceImplTest {
         Method method = AppBuilderAppServiceImpl.class.getDeclaredMethod("buildVersion", AppBuilderApp.class,
                 boolean.class);
         method.setAccessible(true);
-        AppBuilderApp appBuilderApp = mockApp();
+        AppBuilderApp appBuilderApp = mockApp("id");
         appBuilderApp.setVersion("10.99.99");
         Object result = method.invoke(appBuilderAppService, appBuilderApp, true);
         assertThat(result).isInstanceOf(String.class);
@@ -677,7 +678,7 @@ public class AppBuilderAppServiceImplTest {
         LocalDateTime mockCreateAt = LocalDateTime.of(2024, 12, 21, 12, 0, 0);
         mockMeta.setCreationTime(mockCreateAt);
         List<Meta> mockMetas = Collections.singletonList(mockMeta);
-        when(appRepository.selectWithId(any())).thenReturn(mockApp());
+        when(appRepository.selectWithId(any())).thenReturn(mockApp("test-appid"));
         when(metaService.list(any(), anyBoolean(), anyLong(), anyInt(), any())).thenReturn(
                 RangedResultSet.create(mockMetas, 0, 1, 1));
         AppBuilderAppDto appBuilderAppDto = appBuilderAppService.query("test-appid", new OperationContext());
@@ -691,7 +692,7 @@ public class AppBuilderAppServiceImplTest {
     @DisplayName("测试查询最新编排流程图")
     void testQueryByPathValidPath() {
         String validPath = "YGHmQFJE5ZaFW4wl";
-        when(appRepository.selectWithPath(any())).thenReturn(mockApp());
+        when(appRepository.selectWithPath(any())).thenReturn(mockApp("45698235b3d24209aefd59eb7d1c3322"));
         AppBuilderAppDto result = appBuilderAppService.queryByPath(validPath);
         assertEquals("45698235b3d24209aefd59eb7d1c3322", result.getId());
         assertEquals("Unit Test App", result.getName());
@@ -768,7 +769,7 @@ public class AppBuilderAppServiceImplTest {
                     null));
             doNothing().when(service).validateUpdateApp(any(), any(), any());
             doNothing().when(appUpdateValidator).validate(anyString());
-            when(appFactory.create(anyString())).thenReturn(mockApp());
+            when(appFactory.create(anyString())).thenReturn(mockApp(appId));
             doNothing().when(appFactory).update(any());
             Assertions.assertDoesNotThrow(() -> service.updateApp(appId, mockAppDto(), new OperationContext()));
         }
@@ -828,8 +829,9 @@ public class AppBuilderAppServiceImplTest {
         Method saveNewAppBuilderApp = AppBuilderAppServiceImpl.class.getDeclaredMethod("saveNewAppBuilderApp",
                 AppBuilderApp.class);
         saveNewAppBuilderApp.setAccessible(true);
-        Assertions.assertDoesNotThrow(() -> saveNewAppBuilderApp.invoke(appBuilderAppService, mockApp()));
-        verify(uploadedFileService).updateRecord(eq("45698235b3d24209aefd59eb7d1c3322"), eq("/var/share/test_old.jpg"),
+        String appId = "45698235b3d24209aefd59eb7d1c3322";
+        Assertions.assertDoesNotThrow(() -> saveNewAppBuilderApp.invoke(appBuilderAppService, mockApp(appId)));
+        verify(uploadedFileService).updateRecord(eq(appId), eq("/var/share/test_old.jpg"),
                 eq(IRREMOVABLE));
     }
 
@@ -841,7 +843,7 @@ public class AppBuilderAppServiceImplTest {
                 .input(Collections.singletonList(AppBuilderConfigFormPropertyDto.builder().build()))
                 .graph("{\"graph\":\"abc\"}")
                 .build();
-        Mockito.when(this.appRepository.selectWithId(appId)).thenReturn(mockApp());
+        Mockito.when(this.appRepository.selectWithId(appId)).thenReturn(mockApp(appId));
         doNothing().when(this.formPropertyRepository).updateMany(any());
         doNothing().when(this.flowGraphRepository).updateOne(any());
         Rsp<AppBuilderAppDto> res = this.appBuilderAppService.saveConfig(appId, appBuilderSaveConfigDto,
@@ -952,7 +954,7 @@ public class AppBuilderAppServiceImplTest {
     @Test
     @DisplayName("测试根据应用种类获取应用列表")
     void testListApplication() {
-        AppBuilderApp app = this.mockApp();
+        AppBuilderApp app = this.mockApp("testId");
         when(this.appRepository.selectWithLatestApp(any(), any(), anyLong(), anyInt())).thenReturn(
                 Collections.singletonList(app));
         AppQueryCondition cond = new AppQueryCondition();
@@ -961,5 +963,31 @@ public class AppBuilderAppServiceImplTest {
                 10).getData();
         AppBuilderAppMetadataDto dto = metaData.getResults().get(0);
         assertThat(dto).extracting(AppBuilderAppMetadataDto::getAppCategory).isEqualTo("chatbot");
+    }
+
+    @Test
+    @DisplayName("测试恢复应用到指定版本")
+    void testResetApp() {
+        String currentAppId = "currentId";
+        String resetAppId = "resetId";
+        String resetTenantId = "default";
+
+        AppBuilderApp currentApp = this.mockApp(currentAppId);
+        String graphString = "{\"id\": \"graphId\", \"title\":\"graphId\"}, \"tenant\":\"tenantId\"";
+        String currentGraphId = "graphId";
+        AppBuilderFlowGraph currentGraph =
+                AppBuilderFlowGraph.builder().appearance(graphString).id(currentGraphId).name("LLM template").build();
+        currentApp.setFlowGraph(currentGraph);
+        currentApp.setFlowGraphId(currentGraphId);
+
+        when(this.appRepository.selectWithId(eq(currentAppId))).thenReturn(currentApp);
+        when(this.appRepository.selectWithId(eq(resetAppId))).thenReturn(this.mockApp(resetAppId));
+        AppBuilderAppDto dto = this.appBuilderAppService.resetApp(currentAppId, resetAppId, new OperationContext());
+
+        assertThat(dto).extracting(dto1 -> dto1.getFlowGraph().getId(),
+                        dto1 -> dto1.getFlowGraph().getAppearance().get("id"),
+                        dto1 -> dto1.getFlowGraph().getAppearance().get("title"),
+                        dto1 -> dto1.getFlowGraph().getAppearance().get("tenant"))
+                .containsExactly(currentGraphId, currentGraphId, currentGraphId, resetTenantId);
     }
 }

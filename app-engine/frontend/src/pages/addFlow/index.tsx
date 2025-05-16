@@ -36,8 +36,16 @@ import './styles/index.scss';
 const AddFlow = (props) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { type, appInfo, addFlowRef,
-    showFlowChangeWarning, setShowFlowChangeWarning, saveTime, setSaveTime } = props;
+  const {
+    type,
+    appInfo,
+    addFlowRef,
+    showFlowChangeWarning,
+    setShowFlowChangeWarning,
+    saveTime,
+    setSaveTime,
+    updateAippCallBack,
+  } = props;
   const [dragData, setDragData] = useState([]);
   const [evaluateData, setEvaluateData] = useState([]);
   const [flowInfo, setFlowInfo] = useState({});
@@ -134,7 +142,7 @@ const AddFlow = (props) => {
     <div className='add-flow-container'>
       <FlowContext.Provider value={flowContext}>
         {/* 工具流header */}
-        {!type &&
+        {(!type || workFlow) &&
           <FlowHeader
             debugTypes={debugTypes}
             handleDebugClick={handleDebugClick}
@@ -143,6 +151,7 @@ const AddFlow = (props) => {
             setShowDebug={setShowDebug}
             workFlow={workFlow}
             types={evaluateType}
+            updateAippCallBack={updateAippCallBack}
           />}
         {/* 调试抽屉弹窗 */}
         <FlowTest

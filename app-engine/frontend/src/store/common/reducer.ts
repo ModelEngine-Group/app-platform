@@ -1,4 +1,4 @@
-import { SET_HISTORY_SWITCH, SET_DIMENSION, SET_USE_MEMORY, SET_IS_DEBUG, SET_ALL_FIELDS, SET_IS_AUTO_OPEN } from './action-types';
+import { SET_HISTORY_SWITCH, SET_DIMENSION, SET_USE_MEMORY, SET_IS_DEBUG, SET_ALL_FIELDS, SET_IS_AUTO_OPEN, SET_IS_READ_ONLY } from './action-types';
 
 const initialState = {
   historySwitch: false,
@@ -11,6 +11,7 @@ const initialState = {
   isDebug: false,
   allFields: [],
   isAutoOpen: false,
+  isReadOnly: false
 }
 
 const commonReducers = (state = initialState, action) => {
@@ -27,6 +28,8 @@ const commonReducers = (state = initialState, action) => {
       return { ...state, allFields: action.payload };
     case SET_IS_AUTO_OPEN:
       return { ...state, isAutoOpen: action.payload };
+    case SET_IS_READ_ONLY:
+      return { ...state, isReadOnly: action.payload };
     default:
       return state;
   }

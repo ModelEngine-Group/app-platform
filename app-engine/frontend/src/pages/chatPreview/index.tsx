@@ -113,6 +113,7 @@ const ChatPreview = (props) => {
   const storageId = detailPage ? aippId : appId;
   const chatStatus = ['ARCHIVED', 'ERROR', 'TERMINATED'];
   const messageType = ['MSG', 'ERROR', 'META_MSG'];
+  const readOnly = useAppSelector((state) => state.commonStore.isReadOnly);
 
   useEffect(() => {
     currentInfo.current = appInfo;
@@ -698,7 +699,7 @@ const ChatPreview = (props) => {
               checkedChat={checkedList}
               deleteChat={deleteChat} />
             <SendEditor
-              display={!showCheck}
+              display={!showCheck && !readOnly}
               onSend={onSend}
               onStop={chatRunningStop}
               filterRef={editorRef}
@@ -714,7 +715,7 @@ const ChatPreview = (props) => {
             />
             {previewVisible && <PreviewPicture {...previewProps} closePreview={() => setPreviewVisible(false)} />}
           </div>
-          {showInspiration && <div className={`chat-inner-right ${inspirationOpen ? 'chat-right-close' : ''}`}>
+          {showInspiration && <div className={`chat-inner-right ${inspirationOpen && !readOnly ? 'chat-right-close' : ''}`}>
             {appInfo.id &&
               <Inspiration
                 reload={inspirationRef}

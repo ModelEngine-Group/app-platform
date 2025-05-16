@@ -20,7 +20,7 @@ const { Panel } = Collapse;
 
 const KnowledgeContainer = (props) => {
   const { t } = useTranslation();
-  const { graphOperator, config, updateData, validateList } = props;
+  const { graphOperator, config, updateData, validateList, readOnly } = props;
   const [knowledge, setKnowledge] = useState([]);
   const [groupConfig, setGroupConfig] = useState({});
   const [groupId, setGroupId] = useState('default');
@@ -130,15 +130,16 @@ const KnowledgeContainer = (props) => {
       <Panel header={<div className='panel-label'>
         <div className='panel-label-config'>
           <span>{config.description}</span>
-          <img src={SettingImg} onClick={(e) => knowledgeModalOpen(e)} />
+          <img src={SettingImg} onClick={(e) => knowledgeModalOpen(e)} className={!readOnly ? '' : 'version-preview'}/>
         </div>
-        <img src={AddImg} style={{ width: 16, height: 16 }} alt="" onClick={addKnowledgeBase} />
+        <img src={AddImg} style={{ width: 16, height: 16 }} alt="" onClick={addKnowledgeBase} className={!readOnly ? '' : 'version-preview'} />
       </div>} forceRender key='knowledge' className="site-collapse-custom-panel">
         <Knowledge 
           knowledgeRef={knowledgeRef} 
           knowledge={knowledge}
           groupId={groupId}
-          updateData={updateKnowledge} 
+          updateData={updateKnowledge}
+          readOnly={readOnly}
         />
       </Panel>
     </Collapse>

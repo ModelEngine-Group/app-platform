@@ -15,7 +15,7 @@ import OpenImg from '@/assets/images/open_arrow.png';
 const { Panel } = Collapse;
 
 const MultiConversationContainer = (props) => {
-  const { graphOperator, config, updateData } = props;
+  const { graphOperator, config, updateData, readOnly } = props;
   const [memoryValues, setMemoryValues] = useState(null);
   const [memorySwitch, setMemorySwitch] = useState(false);
   const haveSetMemory = useRef(false);
@@ -90,11 +90,12 @@ const MultiConversationContainer = (props) => {
           <Switch
             onChange={(checked, event) => historySwitchChange(checked, event)}
             checked={memorySwitch}
+            disabled={readOnly}
           />
         </div>} forceRender key='memory' className="site-collapse-custom-panel">
         {
           memoryValues?.type &&
-          <Form form={form} layout='vertical'>
+          <Form form={form} layout='vertical' disabled={readOnly}>
             <MultiConversationContent
               disabled={!historySwitch}
               onTypeChange={onTypeChange}

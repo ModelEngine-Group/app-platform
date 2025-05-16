@@ -16,7 +16,7 @@ const { TextArea } = Input;
 
 const OpeningContainer = (props) => {
   const { t } = useTranslation();
-  const { graphOperator, config, updateData } = props;
+  const { graphOperator, config, updateData, readOnly } = props;
   const isOpengingChange = useRef(false);
   const [activePanelKey, setActivePanelKey] = useState(['']);
   const dispatch = useAppDispatch();
@@ -65,7 +65,7 @@ const OpeningContainer = (props) => {
             label={t('openingRemarks')}
             name='opening'
           >
-            <TextArea rows={3} showCount maxLength={300} onChange={handleChangeOpening} onBlur={handleOpeningBlur} />
+            <TextArea rows={3} showCount maxLength={300} onChange={handleChangeOpening} onBlur={handleOpeningBlur} disabled={readOnly} />
           </Form.Item>
         </Form>
       </Panel>

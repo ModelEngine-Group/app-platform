@@ -12,7 +12,7 @@ import '../styles/recommends.scss';
 
 const Recommend = (props) => {
   const { t } = useTranslation();
-  const { updateData, recommendValues, recommendRef, updateRecommendNum } = props;
+  const { updateData, recommendValues, recommendRef, updateRecommendNum, readOnly } = props;
   const [list, setList] = useState([]);
   const listCrrent = useRef([]);
   const recommendRender = useRef(false);
@@ -98,12 +98,12 @@ const Recommend = (props) => {
                       {t('question')} {index + 1}
                     </span>
                     <span className='right'>
-                      <img src={DeleteImg} alt="" onClick={() => handleDeleteIns(index)} className={recommendValues.showRecommend ? '' : 'not-allowed'} />
+                      <img src={DeleteImg} alt="" onClick={() => handleDeleteIns(index)} className={[recommendValues.showRecommend ? '' : 'not-allowed', readOnly ? 'version-preview' : ''].join(' ')} />
                     </span>
                   </div>
                   <div className='card-prompt'>
                     <Input placeholder={t('plsEnter')}
-                      disabled={!recommendValues.showRecommend}
+                      disabled={!recommendValues.showRecommend || readOnly}
                       value={item.value}
                       showCount
                       maxLength={300}

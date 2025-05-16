@@ -10,7 +10,7 @@ import EditImg from '@/assets/images/edit_btn.svg';
 import DeleteImg from '@/assets/images/delete_btn.svg';
 
 const InspirationList = (props) => {
-  const { inspirationValues, clickInspiration, handleDeleteIns } = props;
+  const { inspirationValues, clickInspiration, handleDeleteIns, readOnly } = props;
   const [showOperateIndex, setShowOperateIndex] = useState(-1);
   const [showInspControl, setShowInspControl] = useState(true);
   // hover显示操作按钮
@@ -24,6 +24,9 @@ const InspirationList = (props) => {
 
   // 获取编辑删除按钮
   const showOperate = (item) => {
+    if (readOnly) {
+      return;
+    }
     return (<span className='right'>
       <img src={EditImg} alt="" onClick={() => clickInspiration(item)} className={inspirationValues?.showInspiration ? '' : 'not-allowed'} />
       <img src={DeleteImg} alt="" onClick={() => handleDelete(item.id)} className={inspirationValues?.showInspiration ? '' : 'not-allowed'} />

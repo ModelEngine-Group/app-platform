@@ -19,6 +19,9 @@
       height: 32px;
       border-radius: 4px;
       cursor: pointer;
+      &.not-allowed {
+        cursor: not-allowed;
+      }
     }
     .status-tag {
       display: flex;

@@ -15,7 +15,7 @@ import OpenImg from '@/assets/images/open_arrow.png';
 const { Panel } = Collapse;
 
 const LLMContainer = (props) => {
-  const { graphOperator, config, updateData, validateList } = props;
+  const { graphOperator, config, updateData, validateList, readOnly } = props;
   const [validateItem, setValidateItem] = useState({});
   const dispatch = useAppDispatch();
   const appConfig = useAppSelector((state) => state.appConfigStore.inputConfigData);
@@ -58,8 +58,8 @@ const LLMContainer = (props) => {
       defaultActiveKey={['model']}
     >
       <Panel header={config.description} forceRender key='model' className="site-collapse-custom-panel">
-        <Form form={form} layout='vertical'>
-          <LLM llmRef={llmRef} form={form} validateItem={validateItem} updateData={updateModel} />
+        <Form form={form} layout='vertical' disabled={readOnly}>
+          <LLM llmRef={llmRef} form={form} validateItem={validateItem} updateData={updateModel} readOnly={readOnly} />
         </Form>
       </Panel>
     </Collapse>

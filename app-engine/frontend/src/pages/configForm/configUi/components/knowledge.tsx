@@ -15,7 +15,7 @@ import closeImg from '@/assets/images/close_btn.svg';
 
 const Knowledge = (props) => {
   const { t } = useTranslation();
-  const { knowledge, groupId, updateData, knowledgeRef } = props;
+  const { knowledge, groupId, updateData, knowledgeRef, readOnly } = props;
   const [knows, setKnows] = useState([]);
   const [showOperateIndex, setShowOperateIndex] = useState(-1);
   const { tenantId } = useParams();
@@ -71,7 +71,7 @@ const Knowledge = (props) => {
               knows.length ? knows.map((item, index) => {
                 return (
                   <div className='item-container' key={index}>
-                    <div className='item' onMouseEnter={() => handleHoverItem(index, 'enter')} onMouseLeave={() => handleHoverItem(index, 'leave')}>
+                    <div className='item' onMouseEnter={!readOnly ? () => handleHoverItem(index, 'enter') : undefined} onMouseLeave={!readOnly ? () => handleHoverItem(index, 'leave') : undefined}>
                       <span className='text'>{item.name}</span>
                       {
                         index === showOperateIndex && (<span>

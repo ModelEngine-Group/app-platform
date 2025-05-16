@@ -180,8 +180,10 @@ export function reTestInstance(tenantId, aippId, instanceId, version) {
   );
 }
 // 获取版本历史记录
-export function getVersion(tenantId, appId, type) {
-  return get(`${AIPP_URL}/${tenantId}/app/${appId}/recentPublished${type ? '?type=waterFlow' : ''}`);
+export function getVersion(tenantId, appId, type, offset, limit) {
+  return get(
+    `${AIPP_URL}/${tenantId}/app/${appId}/recentPublished?offset=${offset}&limit=${limit}${type ? '&type=waterFlow' : ''}`
+  );
 }
 // 获取插件接口
 export function getToolList(params) {
@@ -219,4 +221,8 @@ export function templateCreateAipp(tenantId, params) {
 // 获取api文档
 export function getApiDocument() {
   return get(`${AIPP_URL}/document`);
+}
+// reset应用到某个发布版本
+export function resetApp(tenantId, appId, params, headers) {
+  return post(`${AIPP_URL}/${tenantId}/app/reset/${appId}`, params, headers);
 }

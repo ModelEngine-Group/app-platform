@@ -600,15 +600,7 @@ public class AppBuilderAppServiceImpl
         AppBuilderFlowGraph flowGraph = templateApp.getFlowGraph();
         flowGraph.setId(Entities.generateId());
         Map<String, Object> appearance;
-        try {
-            appearance = JSONObject.parseObject(flowGraph.getAppearance(), new TypeReference<Map<String, Object>>() {});
-        } catch (JSONException e) {
-            log.error("Import config failed, cause: {}", e);
-            throw new AippException(AippErrCode.IMPORT_CONFIG_FIELD_ERROR, "flowGraph.appearance");
-        }
-        appearance.computeIfPresent("id", (key, value) -> flowGraph.getId());
-        // 这里在创建应用时需要保证graph中的title+version唯一，否则在发布flow时会报错
-        appearance.put("title", flowGraph.getId());
+        appearance = this.resetGraphId(flowGraph);
         // 动态修改graph中的model为可选model的第一个
         flowGraph.setAppearance(JSONObject.toJSONString(appearance));
         String version = this.buildVersion(templateApp, isUpgrade);
@@ -1282,24 +1274,25 @@ public class AppBuilderAppServiceImpl
     }
 
     @Override
-    public List<PublishedAppResDto> recentPublished(AppQueryCondition cond, long offset, int limit, String appId,
-            OperationContext context) {
+    public RangedResultSet<AppBuilderAppDto> recentPublished(AppQueryCondition cond, long offset, int limit,
+            String appId, OperationContext context) {
         this.validateApp(appId);
         try {
             String aippId = MetaUtils.getAippIdByAppId(this.metaService, appId, context);
-            List<Meta> allPublishedMeta = MetaUtils.getAllPublishedMeta(this.metaService, aippId, context)
-                    .stream()
-                    .filter(meta -> !this.isAppBelong(appId, meta))
-                    .collect(Collectors.toList());
+            RangedResultSet<Meta> metaRangedResultSet =
+                    MetaUtils.getPublishedMetaByPage(this.metaService, aippId, offset, limit, context);
+            List<Meta> allPublishedMeta = metaRangedResultSet.getResults();
             List<String> appIds = allPublishedMeta.stream()
                     .map(meta -> String.valueOf(meta.getAttributes().get(AippConst.ATTR_APP_ID_KEY)))
                     .collect(Collectors.toList());
             cond.setIds(appIds);
             cond.setTenantId(context.getTenantId());
             List<AppBuilderApp> allPublishedApp = this.appRepository.selectWithCondition(cond);
-            Map<String, AppBuilderApp> appIdKeyAppValueMap =
-                    allPublishedApp.stream().collect(Collectors.toMap(AppBuilderApp::getId, Function.identity()));
-            return this.buildPublishedAppResDtos(allPublishedMeta, appIdKeyAppValueMap);
+            Map<String, AppBuilderApp> appIdKeyAppValueMap = allPublishedApp.stream()
+                    .map(app -> appFactory.create(app.getId()))
+                    .collect(Collectors.toMap(AppBuilderApp::getId, Function.identity()));
+            return RangedResultSet.create(this.buildPublishedAppResDtos(allPublishedMeta, appIdKeyAppValueMap),
+                    metaRangedResultSet.getRange());
         } catch (AippTaskNotFoundException exception) {
             throw new AippException(QUERY_PUBLICATION_HISTORY_FAILED);
         }
@@ -1315,30 +1308,58 @@ public class AppBuilderAppServiceImpl
         return results.stream().filter(result -> !result.isValid()).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public AppBuilderAppDto resetApp(String appId, String resetId, OperationContext context) {
+        AppBuilderApp resetApp = this.appFactory.create(resetId);
+        AppBuilderApp currentApp = this.appFactory.create(appId);
+        // 更新graph和form property，需更新form property的app id以及graph的id、title
+        List<AppBuilderFormProperty> resetFormProperties = resetApp.getFormProperties();
+        List<AppBuilderFormProperty> currentFormProperties = currentApp.getFormProperties();
+        Map<String, AppBuilderFormProperty> currentPropMap = currentFormProperties.stream()
+                .collect(Collectors.toMap(AppBuilderFormProperty::getName, Function.identity()));
+        resetFormProperties.forEach(resetProp -> {
+            AppBuilderFormProperty currentProp = currentPropMap.get(resetProp.getName());
+            if (currentProp != null) {
+                currentProp.setDefaultValue(resetProp.getDefaultValue());
+            }
+        });
+        currentApp.getFormPropertyRepository().updateMany(currentFormProperties);
+
+        AppBuilderFlowGraph resetGraph = resetApp.getFlowGraph();
+        AppBuilderFlowGraph currentGraph = currentApp.getFlowGraph();
+        String currentGraphId = currentApp.getFlowGraphId();
+        resetGraph.setId(currentGraphId);
+
+        Map<String, Object> appearance;
+        appearance = this.resetGraphId(resetGraph);
+        currentGraph.setAppearance(JSONObject.toJSONString(appearance));
+        currentApp.getFlowGraphRepository().updateOne(currentGraph);
+
+        this.appFactory.update(currentApp);
+        return this.buildFullAppDto(currentApp);
+    }
+
     private boolean isAppBelong(String appId, Meta meta) {
         return Objects.equals(String.valueOf(meta.getAttributes().get(AippConst.ATTR_APP_ID_KEY)), appId);
     }
 
-    private List<PublishedAppResDto> buildPublishedAppResDtos(List<Meta> metas,
+    private List<AppBuilderAppDto> buildPublishedAppResDtos(List<Meta> metas,
             Map<String, AppBuilderApp> appIdKeyAppValueMap) {
         return metas.stream()
                 .map(meta -> this.buildPublishedAppResDto(meta, appIdKeyAppValueMap))
                 .collect(Collectors.toList());
     }
 
-    private PublishedAppResDto buildPublishedAppResDto(Meta meta, Map<String, AppBuilderApp> appIdKeyAppValueMap) {
+    private AppBuilderAppDto buildPublishedAppResDto(Meta meta, Map<String, AppBuilderApp> appIdKeyAppValueMap) {
         String appId = String.valueOf(meta.getAttributes().get(AippConst.ATTR_APP_ID_KEY));
         String publishedDescription = String.valueOf(meta.getAttributes().get(AippConst.ATTR_PUBLISH_DESCRIPTION));
         String publishedUpdateLog = String.valueOf(meta.getAttributes().get(AippConst.ATTR_PUBLISH_UPDATE_LOG));
         AppBuilderApp app = appIdKeyAppValueMap.get(appId);
-        return PublishedAppResDto.builder()
-                .appId(appId)
-                .appVersion(app.getVersion())
-                .publishedAt(meta.getCreationTime())
-                .publishedBy(meta.getCreator())
-                .publishedDescription(publishedDescription)
-                .publishedUpdateLog(publishedUpdateLog)
-                .build();
+        AppBuilderAppDto dto = this.buildFullAppDto(app);
+        dto.setPublishedDescription(publishedDescription);
+        dto.setPublishedUpdateLog(publishedUpdateLog);
+        return dto;
     }
 
     private static AppBuilderConfig resetConfig(List<AppBuilderFormProperty> formProperties, AppBuilderConfig config) {
@@ -2035,5 +2056,19 @@ public class AppBuilderAppServiceImpl
         // 增加保护，之前创建的应用部分前端传入了null, 如果再新建版本则导致新版本出现字符串"null"
         Object value = attributes.get(name);
         return value == null ? StringUtils.EMPTY : String.valueOf(value);
+    }
+
+    private Map<String, Object> resetGraphId(AppBuilderFlowGraph flowGraph) {
+        Map<String, Object> appearance;
+        try {
+            appearance = JSONObject.parseObject(flowGraph.getAppearance(), new TypeReference<Map<String, Object>>() {});
+        } catch (JSONException e) {
+            log.error("Import config failed, cause: {}", e);
+            throw new AippException(AippErrCode.IMPORT_CONFIG_FIELD_ERROR, "flowGraph.appearance");
+        }
+        appearance.computeIfPresent("id", (key, value) -> flowGraph.getId());
+        // 这里在创建应用时需要保证graph中的title+version唯一，否则在发布flow时会报错
+        appearance.put("title", flowGraph.getId());
+        return appearance;
     }
 }

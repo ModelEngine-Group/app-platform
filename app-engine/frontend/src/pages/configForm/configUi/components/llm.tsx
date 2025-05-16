@@ -17,7 +17,7 @@ import FullScreenIcon from '@/assets/images/ai/full_screen_icon.png';
 
 const LLM = (props) => {
   const { t } = useTranslation();
-  const { updateData, llmRef, form, validateItem } = props;
+  const { updateData, llmRef, form, validateItem, readOnly } = props;
   const [showControl, setShowControl] = useState(true);
   const [models, setModels] = useState([]);
   const [promptValue, setPromptValue] = useState('');
@@ -198,7 +198,7 @@ const LLM = (props) => {
                 />
               </Form.Item>
               <div className='generate-btn'>
-                <img src={GenerateIcon} alt="" style={{ marginRight: 5 }} onClick={() => openGeneratePrompt()} />
+                <img src={GenerateIcon} alt="" style={{ marginRight: 5 }} onClick={() => openGeneratePrompt()} className={readOnly ? 'version-preview' : ''} />
                 <img src={FullScreenIcon} alt="" onClick={openPromptDrawer} />
               </div>
             </div>
@@ -214,6 +214,7 @@ const LLM = (props) => {
           promptValue={promptValue}
           openGeneratePrompt={openGeneratePrompt}
           updatePromptValue={updatePromptValue}
+          readOnly={readOnly}
         ></PromptTemplate>
       </div>
     </>

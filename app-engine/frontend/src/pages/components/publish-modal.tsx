@@ -48,7 +48,7 @@ const PublishModal = (props) => {
       app_type: publishType !== 'app' ? 'waterflow' : appInfo.attributes?.app_type
     });
     setIsModalOpen(true);
-    getVersion(tenantId, appId).then(res => {
+    getVersion(tenantId, appId, null, 0, 1).then(res => {
       if (res.code === 0) {
         form.setFieldsValue({
           description: res.data[0]?.publishedDescription || ''

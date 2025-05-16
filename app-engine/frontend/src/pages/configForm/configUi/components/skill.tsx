@@ -13,7 +13,7 @@ import AddSkill from '../../../addFlow/components/tool-modal';
 import SkillList from './skill-list';
 
 const Skill = (props) => {
-  const { pluginData, updateData, toolsRef, validateList } = props;
+  const { pluginData, updateData, toolsRef, validateList, readOnly } = props;
   const [skillList, setSkillList] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const pluginMap = useRef([]);
@@ -105,7 +105,7 @@ const Skill = (props) => {
       <div className='control-container'>
         <div className='control'>
           <div className='control-inner inner-list'>
-            <SkillList skillList={skillList} deleteItem={deleteItem}></SkillList>
+            <SkillList skillList={skillList} deleteItem={deleteItem} readOnly={readOnly}></SkillList>
           </div>
           <AddSkill
             type='addSkill'

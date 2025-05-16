@@ -15,7 +15,7 @@ import AddImg from '@/assets/images/add_btn.svg';
 const { Panel } = Collapse;
 
 const ToolsContainer = (props) => {
-  const { graphOperator, config, updateData, validateList } = props;
+  const { graphOperator, config, updateData, validateList, readOnly } = props;
   const [pluginData, setPluginData] = useState([]);
   const [activePanelKey, setActivePanelKey] = useState(['']);
   const toolsRef = useRef<any>(null);
@@ -35,6 +35,9 @@ const ToolsContainer = (props) => {
 
   // 新增插件
   const addPlugin = (event) => {
+    if (readOnly) {
+      return;
+    }
     event.stopPropagation();
     toolsRef.current.addPlugin();
     setActivePanelKey(['tools']);
@@ -66,9 +69,9 @@ const ToolsContainer = (props) => {
     >
       <Panel header={<div className='panel-label'>
         <span>{config.description}</span>
-        <img src={AddImg} style={{ width: 16, height: 16 }} alt="" onClick={addPlugin} />
+        <img src={AddImg} style={{ width: 16, height: 16 }} alt="" onClick={addPlugin} className={!readOnly ? '' : 'version-preview'} />
       </div>} forceRender key='tools' className="site-collapse-custom-panel">
-        <Skill toolsRef={toolsRef} pluginData={pluginData} updateData={updateTools} validateList={validateList} />
+        <Skill toolsRef={toolsRef} pluginData={pluginData} updateData={updateTools} validateList={validateList} readOnly={readOnly} />
       </Panel>
     </Collapse>
   </>

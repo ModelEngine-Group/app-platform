@@ -16,7 +16,7 @@ import LineImg from '@/assets/images/line.svg';
 const { Panel } = Collapse;
 
 const InspirationContainer = (props) => {
-  const { graphOperator, config, updateData, eventConfigs } = props;
+  const { graphOperator, config, updateData, eventConfigs, readOnly } = props;
   const inspirationChange = eventConfigs?.inspiration?.change;
   const [activePanelKey, setActivePanelKey] = useState(['']);
   const [inspirationValues, setInspiration] = useState(null);
@@ -84,12 +84,12 @@ const InspirationContainer = (props) => {
       <Panel header={<div className='panel-label'>
         <span>{config.description}</span>
         <div className='panel-add'>
-          <img src={AddImg} style={{ width: 16, height: 16 }} alt="" onClick={addInspiration} className={showInspiration ? '' : 'not-allowed'} />
+          <img src={AddImg} style={{ width: 16, height: 16 }} alt="" onClick={addInspiration} className={[showInspiration ? '' : 'not-allowed', readOnly ? 'version-preview' : ''].join(' ')} />
           <img src={LineImg} alt="" />
-          <Switch onChange={(checked, event) => inspirationSwitchChange(checked, event)} checked={showInspiration} />
+          <Switch onChange={(checked, event) => inspirationSwitchChange(checked, event)} checked={showInspiration} disabled={readOnly}/>
         </div>
       </div>} forceRender key='inspiration' className="site-collapse-custom-panel">
-        <Inspiration inspirationRef={inspirationRef} inspirationValues={inspirationValues} updateData={updateInspiration} />
+        <Inspiration inspirationRef={inspirationRef} inspirationValues={inspirationValues} updateData={updateInspiration} readOnly={readOnly} />
       </Panel>
     </Collapse>
   </>

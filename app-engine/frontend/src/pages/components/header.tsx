@@ -63,6 +63,7 @@ const ChoreographyHead = (props) => {
   const testStatus = useAppSelector((state) => state.flowTestStore.testStatus);
   const appValidateInfo = useAppSelector((state) => state.appStore.validateInfo);
   const readOnly = useAppSelector((state) => state.chatCommonStore.readOnly);
+  const preview = useAppSelector((state) => state.commonStore.isReadOnly);
   const [debugVisible, setDebugVisible] = useState(true);
   const [open, setOpen] = useState(false);
   const [isFormPrompt, setIsFormPrompt] = useState(true);
@@ -134,7 +135,7 @@ const ChoreographyHead = (props) => {
 
   // 编辑名称
   const handleEditClick = () => {
-    editRef.current.showModal();
+    !preview && editRef.current.showModal();
   };
 
   // 未解决可用性问题点击发布按钮的提示
@@ -274,7 +275,11 @@ const ChoreographyHead = (props) => {
           <img src={knowledgeImg} onClick={backClick} />
         }
         <span className='header-text' title={appInfo?.name}>{appInfo?.name}</span>
-        <img className='edit-icon' src={EditImg} onClick={handleEditClick} />
+        <img
+          className={['edit-icon', preview ? 'not-allowed' : ''].join(' ')}
+          src={EditImg}
+          onClick={handleEditClick}
+        />
         {
           (appInfo.attributes?.latest_version || appInfo.state === 'active') ?
             (
@@ -296,7 +301,7 @@ const ChoreographyHead = (props) => {
       <div className='header-grid'>
         <div className='header-grid-btn'>
           <div className='more'>
-            <Dropdown menu={{ items: getMoreItems(), onClick: handleMenuClick }}>
+            <Dropdown menu={{ items: getMoreItems(), onClick: handleMenuClick }} disabled={preview}>
               <img src={moreBtnImg} alt="" />
             </Dropdown>
             {
@@ -321,14 +326,14 @@ const ChoreographyHead = (props) => {
         </div>
         {showElsa && <Button
           className='header-btn test-btn'
-          disabled={testStatus === 'Running'}
+          disabled={testStatus === 'Running' || preview}
           onClick={handleOpenDebug}>
           {t('debug')}
         </Button>}
         <Button
           type='primary'
           className='header-btn publish-btn'
-          disabled={testStatus === 'Running'}
+          disabled={testStatus === 'Running' || preview}
           onClick={handleUploadApp}>
           <UploadIcon />{t('publish')}
         </Button>
@@ -338,7 +343,12 @@ const ChoreographyHead = (props) => {
       {/* 编辑应用基本信息弹窗 */}
       <EditModal modalRef={editRef} appInfo={appInfo} updateAippCallBack={updateAippCallBack} />
       {/* 发布历史记录抽屉 */}
-      <TimeLineDrawer open={open} setOpen={setOpen} />
+      <TimeLineDrawer
+        open={open}
+        setOpen={setOpen}
+        appInfo={appInfo}
+        updateAippCallBack={updateAippCallBack}
+      />
       {/* 发布未调试提示弹窗 */}
       <TestModal testRef={testRef} handleDebugClick={openDebug} type='edit' />
       {/* 应用导入错误清单提示抽屉 */}

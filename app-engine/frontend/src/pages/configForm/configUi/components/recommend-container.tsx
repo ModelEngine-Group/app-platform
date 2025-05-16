@@ -16,7 +16,7 @@ import LineImg from '@/assets/images/line.svg';
 const { Panel } = Collapse;
 
 const RecommendContainer = (props) => {
-  const { graphOperator, config, updateData } = props;
+  const { graphOperator, config, updateData, readOnly } = props;
   const recommendRef: any = useRef(null);
   const [activePanelKey, setActivePanelKey] = useState(['']);
   const [recommendValues, setRecommendValues] = useState({});
@@ -82,12 +82,12 @@ const RecommendContainer = (props) => {
       <Panel header={<div className='panel-label'>
         <span>{config.description}</span>
         <div className='panel-add'>
-          <img src={AddImg} style={{ width: 16, height: 16 }} alt="" onClick={addRecommend} className={recommendNum < 3 && showRecommend ? '' : 'not-allowed'} />
+          <img src={AddImg} style={{ width: 16, height: 16 }} alt="" onClick={addRecommend} className={[recommendNum < 3 && showRecommend ? '' : 'not-allowed', readOnly ? 'version-preview' : ''].join(' ')} />
           <img src={LineImg} alt="" />
-          <Switch onChange={(checked, event) => showRecommendChange(checked, event)} checked={showRecommend} />
+          <Switch onChange={(checked, event) => showRecommendChange(checked, event)} checked={showRecommend} disabled={readOnly} />
         </div>
       </div>} forceRender key='recommend' className="site-collapse-custom-panel">
-        <Recommend recommendRef={recommendRef} updateData={updateRecommend} updateRecommendNum={updateRecommendNum} recommendValues={recommendValues} />
+        <Recommend recommendRef={recommendRef} updateData={updateRecommend} updateRecommendNum={updateRecommendNum} recommendValues={recommendValues} readOnly={readOnly}/>
       </Panel>
     </Collapse>
   </>

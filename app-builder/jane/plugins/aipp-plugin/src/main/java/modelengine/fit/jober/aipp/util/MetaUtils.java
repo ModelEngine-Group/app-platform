@@ -129,6 +129,24 @@ public class MetaUtils {
     }
 
     /**
+     * 分页查询指定应用的已发布meta列表，按更新时间倒序。
+     *
+     * @param metaService 表示使用的 {@link MetaService}。
+     * @param metaId 表示指定应用id的 {@link String}。
+     * @param offset 表示偏移量的 {@code long}。
+     * @param limit 表示单页最大数量的 {@code int}。
+     * @param context 表示操作人上下文的 {@link OperationContext}。
+     * @return 表示查询到的结果集的 {@link RangedResultSet}{@code <}{@link Meta}{@code >}。
+     */
+    public static RangedResultSet<Meta> getPublishedMetaByPage(MetaService metaService, String metaId, long offset,
+            int limit, OperationContext context) {
+        MetaFilter metaFilter = getNormalMetaFilter(metaId, NormalFilterEnum.PUBLISHED);
+        metaFilter.setOrderBys(Collections.singletonList(formatSorter(AippSortKeyEnum.UPDATE_AT.name(),
+                DirectionEnum.DESCEND.name())));
+        return metaService.list(metaFilter, false, offset, limit, context);
+    }
+
+    /**
      * 查询指定aippId所有预览{@link Meta}, 按更新时间倒序
      *
      * @param metaService 使用的{@link MetaService}

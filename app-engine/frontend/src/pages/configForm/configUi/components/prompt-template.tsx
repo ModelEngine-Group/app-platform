@@ -22,7 +22,7 @@ import '../styles/prompt-template.scss';
  * @constructor
  */
 
-const PromptTemplate = ({ promptTemplateRef, promptValue, openGeneratePrompt, updatePromptValue }) => {
+const PromptTemplate = ({ promptTemplateRef, promptValue, openGeneratePrompt, updatePromptValue, readOnly }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
@@ -78,7 +78,7 @@ const PromptTemplate = ({ promptTemplateRef, promptValue, openGeneratePrompt, up
           name='promptName'
           rules={[{ required: true }]}
         >
-          <div className='generate-btn' onClick={() => openGeneratePrompt(true)}>
+          <div className={['generate-btn', readOnly ? 'version-preview' : ''].join(' ')} onClick={() => openGeneratePrompt(true)}>
             <img src={GenerateIcon} alt="" style={{ marginRight: 5 }} />
             <span>{'AI' + t('generate')}</span>
           </div>

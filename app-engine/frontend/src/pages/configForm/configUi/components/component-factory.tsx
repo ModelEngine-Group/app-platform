@@ -7,15 +7,26 @@ import OpeningContainer from './opening-container';
 import MultiConversationContainer from './multiConversation-container';
 import RecommendContainer from './recommend-container';
 import InspirationContainer from './inspiration-container';
+import { useAppSelector } from '@/store/hook';
 
 const ComponentFactory = (props) => {
   const { configStructure, graphOperator, updateData, eventConfigs, categoryType } = props;
   const [validateList, setValidateList] = useState([]);
   const curValidateList = useRef([]);
+  const readOnly = useAppSelector((state) => state.commonStore.isReadOnly);
 
   // 获取各项配置组件
   const createComponent = (config) => {
-    const commonProps = { graphOperator, config, updateData, key: config.name, eventConfigs, validateList, categoryType };
+    const commonProps = {
+      graphOperator,
+      config,
+      updateData,
+      key: config.name,
+      eventConfigs,
+      validateList,
+      categoryType,
+      readOnly
+    };
     switch (config.name) {
       case 'enterWorkflow':
         return <EnterWorkflow {...commonProps}></EnterWorkflow>;
@@ -37,7 +48,7 @@ const ComponentFactory = (props) => {
       case 'chat':
         return <ComponentContainer config={config} createComponent={createComponent} />;
       default:
-        return ''
+        return '';
     }
   };
 

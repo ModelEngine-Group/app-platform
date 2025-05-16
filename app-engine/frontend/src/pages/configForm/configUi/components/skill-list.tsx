@@ -14,7 +14,7 @@ import WorkflowImg from '@/assets/images/ai/workflow.png';
 
 const SkillList = (props) => {
   const { t } = useTranslation();
-  const { skillList, deleteItem } = props;
+  const { skillList, deleteItem, readOnly } = props;
   const [showOperateIndex, setShowOperateIndex] = useState(-1);
   const { tenantId } = useParams();
   // hover显示操作按钮
@@ -61,7 +61,7 @@ const SkillList = (props) => {
       skillList.length ? skillList.map((item, index) => {
         return (
           <div className='item-container' key={index}>
-            <div className='item' onMouseEnter={() => handleHoverItem(index, 'enter')} onMouseLeave={() => handleHoverItem(index, 'leave')}>
+            <div className='item' onMouseEnter={!readOnly ? () => handleHoverItem(index, 'enter') : undefined} onMouseLeave={!readOnly ? () => handleHoverItem(index, 'leave') : undefined}>
               <span className='item-left'>
                 {item.type === 'tool' ?
                   <img src={ToolImg} alt='' /> :

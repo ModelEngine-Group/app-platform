@@ -72,7 +72,7 @@ export const routeList: MenuItem[] = [
         key: '/app-develop/:tenantId/add-flow/:appId',
         icon: Icons.app({}),
         label: i18n.t('addWorkflow'),
-        component: AddFlow,
+        component: AippIndex,
         hidden: true,
       },
       {

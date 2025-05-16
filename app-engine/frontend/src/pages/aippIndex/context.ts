@@ -38,3 +38,8 @@ export const FlowContext = createContext({
   setModalInfo: (params:any) => {},
   setFlowInfo: (params:any) => {}
 });
+
+export const RenderContext = createContext({
+  renderRef: { current: false } as React.MutableRefObject<boolean>,
+  elsaReadOnlyRef: { current: false } as React.MutableRefObject<boolean>
+})

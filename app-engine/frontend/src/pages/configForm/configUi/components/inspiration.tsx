@@ -33,7 +33,7 @@ import '../styles/inspiration.scss';
 
 const Inspiration = (props) => {
   const { t } = useTranslation();
-  const { updateData, inspirationRef } = props;
+  const { updateData, inspirationRef, readOnly } = props;
   const [inspirationValues, setInspirationValues] = useState(null);
   const [treeData, setTreeData] = useState(null);
   const [cacheTreeData, setCacheTreeData] = useState(null);
@@ -379,7 +379,7 @@ const Inspiration = (props) => {
               <span>{t('inspirationFunctionDescription')}</span>
             </div>
           </div>
-          <InspirationList inspirationValues={inspirationValues} clickInspiration={clickInspiration} handleDeleteIns={handleDeleteIns}></InspirationList>
+          <InspirationList inspirationValues={inspirationValues} clickInspiration={clickInspiration} handleDeleteIns={handleDeleteIns} readOnly={readOnly}></InspirationList>
         </div>
         <Drawer
           title={type !== 'edit' ? t('createInspiration') : t('editInspiration')}
