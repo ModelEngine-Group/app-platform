@@ -18,13 +18,13 @@ import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.fel.tool.model.transfer.ToolData;
-import modelengine.fel.tool.service.DefinitionGroupService;
-import modelengine.fel.tool.service.ToolGroupService;
-import modelengine.fel.tool.service.ToolService;
 import modelengine.jade.store.entity.query.PluginQuery;
 import modelengine.jade.store.entity.transfer.PluginData;
 import modelengine.jade.store.entity.transfer.PluginToolData;
+import modelengine.jade.store.service.DefinitionGroupService;
 import modelengine.jade.store.service.PluginService;
+import modelengine.jade.store.service.ToolGroupService;
+import modelengine.jade.store.service.ToolService;
 import modelengine.jade.store.service.support.DeployStatus;
 
 import org.junit.jupiter.api.DisplayName;

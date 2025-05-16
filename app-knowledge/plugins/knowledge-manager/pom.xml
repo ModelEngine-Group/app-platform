@@ -38,6 +38,10 @@
             <groupId>modelengine.fit.jade.service</groupId>
             <artifactId>knowledge-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>modelengine.fit.jade.service</groupId>
+            <artifactId>store-service</artifactId>
+        </dependency>
 
         <!-- Lombok -->
         <dependency>

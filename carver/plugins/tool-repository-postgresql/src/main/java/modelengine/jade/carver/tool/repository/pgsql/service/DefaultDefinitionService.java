@@ -10,11 +10,11 @@ import static modelengine.fitframework.inspection.Validation.notNull;
 
 import modelengine.fel.tool.Tool;
 import modelengine.fel.tool.model.transfer.DefinitionData;
-import modelengine.fel.tool.service.DefinitionService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.transaction.Transactional;
 import modelengine.jade.carver.tool.repository.pgsql.repository.DefinitionRepository;
+import modelengine.jade.store.service.DefinitionService;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -9,7 +9,6 @@ package modelengine.jade.carver.tool.repository.pgsql.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import modelengine.fel.tool.model.transfer.DefinitionData;
-import modelengine.fel.tool.service.DefinitionService;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
 import modelengine.fitframework.test.annotation.Spy;
@@ -17,6 +16,7 @@ import modelengine.fitframework.test.annotation.Sql;
 import modelengine.jade.carver.tool.repository.pgsql.ToolDataBuilder;
 import modelengine.jade.carver.tool.repository.pgsql.mapper.DefinitionMapper;
 import modelengine.jade.carver.tool.repository.pgsql.model.entity.DefinitionDo;
+import modelengine.jade.store.service.DefinitionService;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

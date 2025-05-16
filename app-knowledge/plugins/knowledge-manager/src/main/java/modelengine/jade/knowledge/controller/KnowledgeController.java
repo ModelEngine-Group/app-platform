@@ -16,7 +16,6 @@ import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.validation.Validated;
-import modelengine.fel.tool.service.ToolGroupService;
 import modelengine.jade.common.vo.PageVo;
 import modelengine.jade.knowledge.KnowledgeCenterService;
 import modelengine.jade.knowledge.KnowledgeI18nInfo;
@@ -31,6 +30,7 @@ import modelengine.jade.knowledge.controller.vo.KnowledgePropertyVo;
 import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.knowledge.enums.IndexType;
 import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
+import modelengine.jade.store.service.ToolGroupService;
 
 import java.util.Arrays;
 import java.util.List;

@@ -15,7 +15,7 @@ import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.jade.carver.tool.repository.pgsql.model.entity.ToolDo;
-import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepository;
+import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepositoryInner;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +46,7 @@ public class DefaultToolServiceTest {
     private DefaultToolService toolService;
 
     @Mock
-    private ToolRepository toolRepository;
+    private ToolRepositoryInner toolRepositoryInner;
 
     @BeforeEach
     void setUp() {
@@ -89,7 +89,7 @@ public class DefaultToolServiceTest {
     void shouldSuccessWhenAddTool() {
         ToolData toolData = mockToolData();
         this.toolService.addTools(Collections.singletonList(toolData));
-        verify(toolRepository).addTools(Mockito.anyList());
+        verify(toolRepositoryInner).addTools(Mockito.anyList());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class DefaultToolServiceTest {
     void shouldSuccessWhenDeleteTool() {
         List<String> uniqueNames = new ArrayList<>();
         this.toolService.deleteTools(uniqueNames);
-        verify(toolRepository).deleteTools(uniqueNames);
+        verify(toolRepositoryInner).deleteTools(uniqueNames);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class DefaultToolServiceTest {
     void shouldSuccessWhenGetTool() {
         String uniqueName = "testUniqueName";
         ToolDo toolDo = mockToolDo();
-        Mockito.when(this.toolRepository.getTool(uniqueName))
+        Mockito.when(this.toolRepositoryInner.getTool(uniqueName))
                 .thenReturn(Optional.of(ToolDo.do2Info(toolDo, this.serializer)));
         ToolData toolData = this.toolService.getTool(uniqueName);
         assertThat(toolData.getUniqueName()).isEqualTo(uniqueName);
@@ -117,7 +117,7 @@ public class DefaultToolServiceTest {
         String uniqueName = "testUniqueName";
         String version = "version";
         ToolDo toolDo = mockToolDo();
-        Mockito.when(this.toolRepository.getToolByVersion(uniqueName, version))
+        Mockito.when(this.toolRepositoryInner.getToolByVersion(uniqueName, version))
                 .thenReturn(Optional.of(ToolDo.do2Info(toolDo, this.serializer)));
         assertThat(this.toolService.getToolByVersion(uniqueName, version).getVersion()).isEqualTo(version);
     }
@@ -129,12 +129,12 @@ public class DefaultToolServiceTest {
         String version = "version";
         ToolDo toolDo = mockToolDo();
         ToolData toolData = this.mockToolData();
-        Mockito.when(this.toolRepository.getTool(toolData.getUniqueName()))
+        Mockito.when(this.toolRepositoryInner.getTool(toolData.getUniqueName()))
                 .thenReturn(Optional.of(ToolDo.do2Info(toolDo, this.serializer)));
-        doNothing().when(this.toolRepository).setNotLatest(toolData.getUniqueName());
-        Mockito.when(this.toolRepository.getToolByVersion(toolData.getUniqueName(), toolData.getVersion()))
+        doNothing().when(this.toolRepositoryInner).setNotLatest(toolData.getUniqueName());
+        Mockito.when(this.toolRepositoryInner.getToolByVersion(toolData.getUniqueName(), toolData.getVersion()))
                 .thenReturn(Optional.of(ToolDo.do2Info(toolDo, this.serializer)));
-        doNothing().when(this.toolRepository).addTool(any());
+        doNothing().when(this.toolRepositoryInner).addTool(any());
         assertThat(this.toolService.upgradeTool(toolData)).isEqualTo(toolData.getUniqueName());
     }
 }

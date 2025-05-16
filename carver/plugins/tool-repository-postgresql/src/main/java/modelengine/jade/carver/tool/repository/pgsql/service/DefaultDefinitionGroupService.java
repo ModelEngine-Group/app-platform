@@ -10,13 +10,13 @@ import static modelengine.fitframework.inspection.Validation.notNull;
 
 import modelengine.fel.tool.model.transfer.DefinitionData;
 import modelengine.fel.tool.model.transfer.DefinitionGroupData;
-import modelengine.fel.tool.service.DefinitionGroupService;
-import modelengine.fel.tool.service.DefinitionService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.transaction.Transactional;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.carver.tool.repository.pgsql.repository.DefinitionGroupRepository;
+import modelengine.jade.store.service.DefinitionGroupService;
+import modelengine.jade.store.service.DefinitionService;
 
 import java.util.List;
 import java.util.Optional;

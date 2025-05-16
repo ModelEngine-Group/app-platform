@@ -12,9 +12,9 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 
 import modelengine.fel.tool.model.transfer.DefinitionGroupData;
-import modelengine.fel.tool.service.DefinitionService;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.carver.tool.repository.pgsql.repository.DefinitionGroupRepository;
+import modelengine.jade.store.service.DefinitionService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

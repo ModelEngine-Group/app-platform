@@ -15,15 +15,15 @@ import static org.mockito.Mockito.when;
 import modelengine.fel.tool.model.ListResult;
 import modelengine.fel.tool.model.transfer.DefinitionGroupData;
 import modelengine.fel.tool.model.transfer.ToolData;
-import modelengine.fel.tool.service.DefinitionGroupService;
-import modelengine.fel.tool.service.ToolService;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
 import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.jade.store.entity.query.ToolQuery;
 import modelengine.jade.store.entity.transfer.StoreToolData;
+import modelengine.jade.store.service.DefinitionGroupService;
 import modelengine.jade.store.service.StoreToolService;
+import modelengine.jade.store.service.ToolService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

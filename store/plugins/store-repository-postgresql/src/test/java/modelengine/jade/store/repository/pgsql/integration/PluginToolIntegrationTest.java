@@ -17,12 +17,12 @@ import modelengine.fitframework.test.annotation.IntegrationTest;
 import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.fitframework.util.StringUtils;
-import modelengine.fel.tool.service.DefinitionGroupService;
-import modelengine.fel.tool.service.ToolGroupService;
-import modelengine.fel.tool.service.ToolService;
 import modelengine.jade.store.entity.query.PluginToolQuery;
 import modelengine.jade.store.entity.transfer.PluginToolData;
+import modelengine.jade.store.service.DefinitionGroupService;
 import modelengine.jade.store.service.PluginToolService;
+import modelengine.jade.store.service.ToolGroupService;
+import modelengine.jade.store.service.ToolService;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

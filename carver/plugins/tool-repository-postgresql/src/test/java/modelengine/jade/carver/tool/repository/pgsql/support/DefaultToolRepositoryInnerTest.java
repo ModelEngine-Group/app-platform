@@ -9,7 +9,7 @@ package modelengine.jade.carver.tool.repository.pgsql.support;
 import static org.mockito.Mockito.verify;
 
 import modelengine.fel.tool.Tool;
-import modelengine.jade.carver.tool.repository.pgsql.repository.support.DefaultToolRepository;
+import modelengine.jade.carver.tool.repository.pgsql.repository.support.DefaultToolRepositoryInner;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,15 +22,15 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * 表示 {@link DefaultToolRepository} 的单元测试。
+ * 表示 {@link DefaultToolRepositoryInner} 的单元测试。
  *
  * @author 鲁为
  * @since 2024-08-08
  */
 @DisplayName("测试 DefaultToolRepository")
-public class DefaultToolRepositoryTest {
+public class DefaultToolRepositoryInnerTest {
     @Mock
-    private DefaultToolRepository toolRepository;
+    private DefaultToolRepositoryInner toolRepository;
 
     @BeforeEach
     void setUp() {

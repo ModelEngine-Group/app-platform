@@ -45,9 +45,8 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.fitframework.fel</groupId>
-            <artifactId>tool-service</artifactId>
-            <version>3.5.0-M2.1</version>
+            <groupId>modelengine.fit.jade.service</groupId>
+            <artifactId>store-service</artifactId>
         </dependency>
 
         <!-- MyBatis -->
@@ -110,7 +109,7 @@
                 <version>${fit.version}</version>
                 <configuration>
                     <category>user</category>
-                    <level>3</level>
+                    <level>1</level>
                 </configuration>
                 <executions>
                     <execution>

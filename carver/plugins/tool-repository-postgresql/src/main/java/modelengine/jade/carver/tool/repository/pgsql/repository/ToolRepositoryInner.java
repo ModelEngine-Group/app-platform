@@ -18,7 +18,7 @@ import java.util.Optional;
  * @author 王攀博
  * @since 2024-04-27
  */
-public interface ToolRepository {
+public interface ToolRepositoryInner {
     /**
      * 添加工具。
      *

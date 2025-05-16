@@ -10,14 +10,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import modelengine.fel.tool.model.transfer.ToolData;
-import modelengine.fel.tool.service.DefinitionGroupService;
-import modelengine.fel.tool.service.ToolGroupService;
-import modelengine.fel.tool.service.ToolService;
 import modelengine.jade.store.entity.query.PluginToolQuery;
 import modelengine.jade.store.entity.transfer.PluginToolData;
 import modelengine.jade.store.repository.pgsql.entity.PluginToolDo;
 import modelengine.jade.store.repository.pgsql.repository.PluginToolRepository;
+import modelengine.jade.store.service.DefinitionGroupService;
 import modelengine.jade.store.service.TagService;
+import modelengine.jade.store.service.ToolGroupService;
+import modelengine.jade.store.service.ToolService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

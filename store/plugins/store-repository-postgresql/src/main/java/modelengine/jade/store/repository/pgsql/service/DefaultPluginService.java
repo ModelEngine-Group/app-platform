@@ -10,8 +10,6 @@ import static modelengine.fitframework.inspection.Validation.notNull;
 import static modelengine.jade.store.repository.pgsql.entity.PluginDo.convertToPluginData;
 
 import modelengine.fel.tool.model.transfer.DefinitionGroupData;
-import modelengine.fel.tool.service.DefinitionGroupService;
-import modelengine.fel.tool.service.ToolGroupService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
@@ -27,8 +25,10 @@ import modelengine.jade.store.entity.transfer.PluginData;
 import modelengine.jade.store.entity.transfer.PluginToolData;
 import modelengine.jade.store.repository.pgsql.entity.PluginDo;
 import modelengine.jade.store.repository.pgsql.repository.PluginRepository;
+import modelengine.jade.store.service.DefinitionGroupService;
 import modelengine.jade.store.service.PluginService;
 import modelengine.jade.store.service.PluginToolService;
+import modelengine.jade.store.service.ToolGroupService;
 import modelengine.jade.store.service.support.DeployStatus;
 
 import java.util.List;

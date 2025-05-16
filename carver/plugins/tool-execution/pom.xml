@@ -29,9 +29,8 @@
             <version>${fit.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.fitframework.fel</groupId>
-            <artifactId>tool-service</artifactId>
-            <version>3.5.0-M2.1</version>
+            <groupId>modelengine.fit.jade.service</groupId>
+            <artifactId>store-service</artifactId>
         </dependency>
 
         <!-- Test -->

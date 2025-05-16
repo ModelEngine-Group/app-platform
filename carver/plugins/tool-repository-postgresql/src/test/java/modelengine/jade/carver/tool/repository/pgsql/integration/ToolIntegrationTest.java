@@ -15,8 +15,6 @@ import modelengine.fel.tool.model.ListResult;
 import modelengine.fel.tool.model.entity.ToolIdentifier;
 import modelengine.fel.tool.model.transfer.DefinitionData;
 import modelengine.fel.tool.model.transfer.ToolData;
-import modelengine.fel.tool.service.DefinitionService;
-import modelengine.fel.tool.service.ToolService;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.test.annotation.IntegrationTest;
@@ -27,6 +25,8 @@ import modelengine.jade.carver.tool.repository.pgsql.mapper.DefinitionMapper;
 import modelengine.jade.carver.tool.repository.pgsql.mapper.ToolMapper;
 import modelengine.jade.carver.tool.repository.pgsql.model.entity.DefinitionDo;
 import modelengine.jade.carver.tool.repository.pgsql.model.entity.ToolDo;
+import modelengine.jade.store.service.DefinitionService;
+import modelengine.jade.store.service.ToolService;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

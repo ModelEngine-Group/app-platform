@@ -12,14 +12,14 @@ import modelengine.fel.tool.Tool;
 import modelengine.fel.tool.model.ListResult;
 import modelengine.fel.tool.model.entity.ToolIdentifier;
 import modelengine.fel.tool.model.transfer.ToolData;
-import modelengine.fel.tool.service.DefinitionService;
-import modelengine.fel.tool.service.ToolService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.exception.FitException;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.transaction.Transactional;
-import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepository;
+import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepositoryInner;
+import modelengine.jade.store.service.DefinitionService;
+import modelengine.jade.store.service.ToolService;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,16 +36,16 @@ public class DefaultToolService implements ToolService {
     private static final Logger log = Logger.get(DefaultToolService.class);
     private static final String FITABLE_ID = "tool-repository-pgsql";
 
-    private final ToolRepository toolRepo;
+    private final ToolRepositoryInner toolRepo;
     private final DefinitionService definitionService;
 
     /**
      * 通过持久层接口来初始化 {@link DefaultToolService} 的实例。
      *
-     * @param toolRepo 表示持久层实例的 {@link ToolRepository}。
+     * @param toolRepo 表示持久层实例的 {@link ToolRepositoryInner}。
      * @param definitionService 表示定义服务的 {@link DefinitionService}。
      */
-    public DefaultToolService(ToolRepository toolRepo, DefinitionService definitionService) {
+    public DefaultToolService(ToolRepositoryInner toolRepo, DefinitionService definitionService) {
         this.toolRepo = toolRepo;
         this.definitionService = definitionService;
     }

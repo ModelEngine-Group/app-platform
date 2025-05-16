@@ -12,14 +12,14 @@ import static org.mockito.Mockito.verify;
 
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.serialization.ObjectSerializer;
-import modelengine.fel.tool.service.DefinitionGroupService;
-import modelengine.fel.tool.service.ToolGroupService;
 import modelengine.jade.store.entity.query.PluginQuery;
 import modelengine.jade.store.entity.transfer.PluginData;
 import modelengine.jade.store.entity.transfer.PluginToolData;
 import modelengine.jade.store.repository.pgsql.entity.PluginDo;
 import modelengine.jade.store.repository.pgsql.repository.PluginRepository;
+import modelengine.jade.store.service.DefinitionGroupService;
 import modelengine.jade.store.service.PluginToolService;
+import modelengine.jade.store.service.ToolGroupService;
 import modelengine.jade.store.service.support.DeployStatus;
 
 import org.junit.jupiter.api.BeforeEach;

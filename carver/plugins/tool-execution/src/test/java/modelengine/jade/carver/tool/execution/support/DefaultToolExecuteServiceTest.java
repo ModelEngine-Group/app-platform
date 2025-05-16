@@ -17,10 +17,10 @@ import modelengine.fel.tool.ToolFactory;
 import modelengine.fel.tool.ToolFactoryRepository;
 import modelengine.fel.tool.model.transfer.DefinitionData;
 import modelengine.fel.tool.model.transfer.ToolData;
-import modelengine.fel.tool.service.DefinitionService;
-import modelengine.fel.tool.service.ToolService;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.util.MapBuilder;
+import modelengine.jade.store.service.DefinitionService;
+import modelengine.jade.store.service.ToolService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

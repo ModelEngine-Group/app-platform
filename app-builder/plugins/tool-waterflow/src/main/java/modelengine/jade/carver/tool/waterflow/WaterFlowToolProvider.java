@@ -12,7 +12,6 @@ import modelengine.fel.core.tool.ToolCall;
 import modelengine.fel.core.tool.ToolInfo;
 import modelengine.fel.core.tool.ToolProvider;
 import modelengine.fel.tool.model.transfer.ToolData;
-import modelengine.fel.tool.service.ToolService;
 import modelengine.fit.jade.tool.SyncToolCall;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fitframework.annotation.Component;
@@ -23,6 +22,7 @@ import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.fitframework.util.UuidUtils;
 import modelengine.jade.carver.tool.waterflow.invoker.ToolInvoker;
+import modelengine.jade.store.service.ToolService;
 
 import java.util.List;
 import java.util.Map;

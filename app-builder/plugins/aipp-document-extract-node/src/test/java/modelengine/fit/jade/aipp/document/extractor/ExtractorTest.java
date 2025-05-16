@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fel.tool.service.ToolExecuteService;
-import modelengine.fel.tool.service.ToolService;
+import modelengine.jade.store.service.ToolService;
 import modelengine.jade.voice.service.VoiceService;
 
 import modelengine.fel.core.chat.ChatMessage;

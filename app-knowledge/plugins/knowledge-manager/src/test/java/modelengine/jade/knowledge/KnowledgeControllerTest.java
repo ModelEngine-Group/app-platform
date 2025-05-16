@@ -18,7 +18,6 @@ import modelengine.fitframework.test.domain.mvc.request.MockRequestBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.TypeUtils;
 import modelengine.jade.authentication.AuthenticationService;
-import modelengine.fel.tool.service.ToolGroupService;
 import modelengine.jade.common.filter.support.LoginFilter;
 import modelengine.jade.common.vo.PageVo;
 import modelengine.jade.knowledge.config.KnowledgeConfig;
@@ -28,6 +27,7 @@ import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.knowledge.enums.IndexType;
 import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
 import modelengine.jade.knowledge.support.FlatFilterConfig;
+import modelengine.jade.store.service.ToolGroupService;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;

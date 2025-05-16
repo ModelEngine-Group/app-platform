@@ -9,9 +9,6 @@ package modelengine.jade.store.repository.pgsql.service;
 import static modelengine.fitframework.inspection.Validation.notNull;
 
 import modelengine.fel.tool.model.transfer.ToolData;
-import modelengine.fel.tool.service.DefinitionGroupService;
-import modelengine.fel.tool.service.ToolGroupService;
-import modelengine.fel.tool.service.ToolService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.exception.FitException;
@@ -24,8 +21,11 @@ import modelengine.jade.store.entity.query.QueryUtils;
 import modelengine.jade.store.entity.transfer.PluginToolData;
 import modelengine.jade.store.repository.pgsql.entity.PluginToolDo;
 import modelengine.jade.store.repository.pgsql.repository.PluginToolRepository;
+import modelengine.jade.store.service.DefinitionGroupService;
 import modelengine.jade.store.service.PluginToolService;
 import modelengine.jade.store.service.TagService;
+import modelengine.jade.store.service.ToolGroupService;
+import modelengine.jade.store.service.ToolService;
 
 import java.util.ArrayList;
 import java.util.Collections;
