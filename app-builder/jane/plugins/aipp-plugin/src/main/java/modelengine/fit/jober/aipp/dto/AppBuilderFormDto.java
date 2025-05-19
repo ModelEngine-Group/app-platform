@@ -26,22 +26,13 @@ import java.util.Map;
 @NoArgsConstructor
 public class AppBuilderFormDto {
     private String id;
-
     private String name;
-
     private Map<String, Object> appearance;
-
     private String type;
-
     private String createBy;
-
     private LocalDateTime createAt;
-
     private String updateBy;
-
     private LocalDateTime updateAt;
-
     private String version;
-
     private String formSuiteId;
 }

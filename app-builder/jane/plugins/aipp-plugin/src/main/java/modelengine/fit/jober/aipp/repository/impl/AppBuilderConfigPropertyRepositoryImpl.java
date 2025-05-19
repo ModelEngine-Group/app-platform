@@ -11,6 +11,7 @@ import modelengine.fit.jober.aipp.mapper.AppBuilderConfigPropertyMapper;
 import modelengine.fit.jober.aipp.po.AppBuilderConfigPropertyPo;
 import modelengine.fit.jober.aipp.repository.AppBuilderConfigPropertyRepository;
 import modelengine.fit.jober.aipp.serializer.impl.AppBuilderConfigPropertySerializer;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.util.CollectionUtils;
 

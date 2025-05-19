@@ -11,6 +11,7 @@ import modelengine.fit.jober.aipp.dto.aipplog.AippLogCreateDto;
 import modelengine.fit.jober.aipp.entity.AippInstLog;
 import modelengine.fit.jober.aipp.entity.AippLogData;
 import modelengine.fit.jober.aipp.enums.AippInstLogType;
+
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AopAippLogService;
 import modelengine.fitframework.util.ObjectUtils;
@@ -54,8 +55,8 @@ public class AippLogUtils {
     }
 
     private static boolean isFormVersionValid(String formVersion) {
-        return !(StringUtils.isBlank(formVersion) || StringUtils.equals(AippConst.INVALID_FORM_VERSION_ID,
-                formVersion));
+        return !(StringUtils.isBlank(formVersion)
+                || StringUtils.equals(AippConst.INVALID_FORM_VERSION_ID, formVersion));
     }
 
     /**

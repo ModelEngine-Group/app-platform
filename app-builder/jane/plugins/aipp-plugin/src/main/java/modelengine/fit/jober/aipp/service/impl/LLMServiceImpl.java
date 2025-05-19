@@ -6,27 +6,20 @@
 
 package modelengine.fit.jober.aipp.service.impl;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import modelengine.fel.core.chat.ChatMessage;
 import modelengine.fel.core.chat.ChatModel;
 import modelengine.fel.core.chat.ChatOption;
 import modelengine.fel.core.chat.Prompt;
 import modelengine.fel.core.chat.support.ChatMessages;
 import modelengine.fel.core.chat.support.HumanMessage;
-import modelengine.fit.http.client.HttpClassicClientFactory;
 import modelengine.fit.jober.aipp.enums.LlmModelNameEnum;
 import modelengine.fit.jober.aipp.service.LLMService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
-import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
-import modelengine.jade.voice.service.VoiceService;
 
 import java.util.List;
 
@@ -42,22 +35,8 @@ public class LLMServiceImpl implements LLMService {
 
     private final ChatModel chatModel;
 
-    private final String appengineEndPoint;
-
-    private final String pathPrefix;
-
-    private final VoiceService voiceService;
-
-    private final HttpClassicClientFactory httpClientFactory;
-
-    public LLMServiceImpl(@Value("${app-engine.endpoint}") String endpoint,
-            @Value("${app-engine.pathPrefix}") String pathPrefix,
-            @Fit ChatModel chatModel, @Fit VoiceService voiceService, @Fit HttpClassicClientFactory httpClientFactory) {
+    public LLMServiceImpl(@Fit ChatModel chatModel) {
         this.chatModel = chatModel;
-        this.appengineEndPoint = endpoint;
-        this.pathPrefix = pathPrefix;
-        this.voiceService = voiceService;
-        this.httpClientFactory = httpClientFactory;
     }
 
     @Override

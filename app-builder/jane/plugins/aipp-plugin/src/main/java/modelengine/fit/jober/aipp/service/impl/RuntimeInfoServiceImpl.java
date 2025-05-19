@@ -11,24 +11,29 @@ import static modelengine.fit.jober.aipp.constants.AippConst.NODE_START_TIME_KEY
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
 import modelengine.fit.jane.common.entity.OperationContext;
-import modelengine.fit.jane.meta.multiversion.MetaInstanceService;
-import modelengine.fit.jane.meta.multiversion.MetaService;
-import modelengine.fit.jane.meta.multiversion.definition.Meta;
-import modelengine.fit.jane.meta.multiversion.instance.Instance;
+import modelengine.fit.jober.aipp.common.exception.AippErrCode;
+import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.constants.AippConst;
-import modelengine.fit.jober.aipp.domain.AppBuilderApp;
 import modelengine.fit.jober.aipp.domain.AppBuilderRuntimeInfo;
+import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
+import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
+import modelengine.fit.jober.aipp.domains.task.AppTask;
+import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
+import modelengine.fit.jober.aipp.domains.taskinstance.AppTaskInstance;
+import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
-import modelengine.fit.jober.aipp.factory.AppBuilderAppFactory;
 import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
 import modelengine.fit.jober.aipp.service.RuntimeInfoService;
 import modelengine.fit.jober.aipp.util.ConvertUtils;
 import modelengine.fit.jober.aipp.util.DataUtils;
 import modelengine.fit.jober.aipp.util.JsonUtils;
-import modelengine.fit.jober.aipp.util.MetaInstanceUtils;
-import modelengine.fit.jober.aipp.util.MetaUtils;
+import modelengine.fit.jober.common.ErrorCodes;
+import modelengine.fit.jober.common.exceptions.JobberException;
 import modelengine.fit.jober.entity.consts.NodeTypes;
+import modelengine.fit.jober.util.FlowDataUtils;
 import modelengine.fit.runtime.entity.Parameter;
+
+import lombok.AllArgsConstructor;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
@@ -38,7 +43,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,57 +53,30 @@ import java.util.stream.Collectors;
  * @since 2024-12-17
  */
 @Component
+@AllArgsConstructor
 public class RuntimeInfoServiceImpl implements RuntimeInfoService {
-    private final MetaService metaService;
-
-    private final AppBuilderAppFactory appFactory;
-
-    private final MetaInstanceService metaInstanceService;
-
     private final AppBuilderRuntimeInfoRepository runtimeInfoRepository;
+    private final AppTaskService appTaskService;
+    private final AppTaskInstanceService appTaskInstanceService;
+    private final AppVersionService appVersionService;
 
-    /**
-     * 构造函数.
-     *
-     * @param metaService {@link MetaService} 对象.
-     * @param appFactory {@link AppBuilderAppFactory} app工厂对象.
-     * @param metaInstanceService {@link MetaInstanceService} 对象。
-     * @param runtimeInfoRepository {@link AppBuilderRuntimeInfoRepository} 对象。
-     */
-    public RuntimeInfoServiceImpl(MetaService metaService, AppBuilderAppFactory appFactory,
-            MetaInstanceService metaInstanceService, AppBuilderRuntimeInfoRepository runtimeInfoRepository) {
-        this.metaService = metaService;
-        this.appFactory = appFactory;
-        this.metaInstanceService = metaInstanceService;
-        this.runtimeInfoRepository = runtimeInfoRepository;
-    }
-
-    /**
-     * 根据业务数据判断应用是否已发布。
-     *
-     * @param businessData 业务数据。
-     * @return 是否已发布。
-     */
+    @Override
     public boolean isPublished(Map<String, Object> businessData) {
-        String aippId = cast(businessData.get(AippConst.BS_AIPP_ID_KEY));
-        String version = cast(businessData.get(AippConst.BS_AIPP_VERSION_KEY));
-        Meta meta = MetaUtils.getAnyMeta(this.metaService, aippId, version, DataUtils.getOpContext(businessData));
-        String appId = cast(meta.getAttributes().get(AippConst.ATTR_APP_ID_KEY));
-        AppBuilderApp app = this.appFactory.create(appId);
-        return app.isPublished();
+        String aippId = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_ID_KEY));
+        String version = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_VERSION_KEY));
+        AppTask task = this.appTaskService.getLatest(aippId, version, DataUtils.getOpContext(businessData))
+                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
+                        StringUtils.format("App task not found, appSuiteId:{0}, version: {1}.", aippId, version)));
+        String appId = task.getEntity().getAppId();
+        AppVersion appVersion = this.appVersionService.retrieval(appId);
+        return appVersion.isPublished();
     }
 
-    /**
-     * 构建参数集合
-     *
-     * @param map 业务数据。
-     * @param nodeId 节点id。
-     * @return 构建的参数集合
-     */
+    @Override
     public List<Parameter> buildParameters(Map<String, Object> map, String nodeId) {
         // 如果根据nodeId找不到，则说明节点没有出入参.
         List<Map<String, Object>> executeInfos = cast(
-                this.getValueByKeys(map, Arrays.asList("_internal", "executeInfo", nodeId), List.class)
+                FlowDataUtils.getValueByKeyPath(map, Arrays.asList("_internal", "executeInfo", nodeId), List.class)
                         .orElseGet(Collections::emptyList));
         if (executeInfos.isEmpty()) {
             return Collections.emptyList();
@@ -115,24 +92,24 @@ public class RuntimeInfoServiceImpl implements RuntimeInfoService {
     @Override
     public void insertRuntimeInfo(String instanceId, Map<String, Object> map, MetaInstStatusEnum status,
             String errorMsg, OperationContext context) {
-        String versionId = this.metaInstanceService.getMetaVersionId(instanceId);
-        Instance instDetail = MetaInstanceUtils.getInstanceDetail(versionId, instanceId, context,
-                this.metaInstanceService);
-        String flowTraceId = instDetail.getInfo().get(AippConst.INST_FLOW_INST_ID_KEY);
-        Meta meta = this.metaService.retrieve(versionId, context);
-        String appId = cast(meta.getAttributes().get(AippConst.ATTR_APP_ID_KEY));
-        AppBuilderApp app = this.appFactory.create(appId);
+        AppTaskInstance instance = this.appTaskInstanceService.getInstanceById(instanceId, context)
+                .orElseThrow(() -> new JobberException(ErrorCodes.UN_EXCEPTED_ERROR,
+                        StringUtils.format("App task instance[{0}] not found.", instanceId)));
+        String flowTraceId = instance.getEntity().getFlowTranceId();
+        AppTask appTask = this.appTaskService.getTaskById(instance.getTaskId(), context)
+                .orElseThrow(() -> new AippException(AippErrCode.TASK_NOT_FOUND));
+        String appId = appTask.getEntity().getAppId();
+        AppVersion appVersion = this.appVersionService.retrieval(appId);
         String nodeId = cast(map.getOrDefault(BS_NODE_ID_KEY, StringUtils.EMPTY));
         AppBuilderRuntimeInfo runtimeInfo = AppBuilderRuntimeInfo.builder()
                 .traceId(flowTraceId)
-                .flowDefinitionId(
-                        cast(meta.getAttributes().getOrDefault(AippConst.ATTR_FLOW_DEF_ID_KEY, StringUtils.EMPTY)))
+                .flowDefinitionId(appTask.getEntity().getFlowDefinitionId())
                 .instanceId(instanceId)
                 .nodeId(nodeId)
                 .nodeType(NodeTypes.STATE.getType())
                 .startTime(cast(map.getOrDefault(NODE_START_TIME_KEY, ConvertUtils.toLong(LocalDateTime.now()))))
                 .endTime(ConvertUtils.toLong(LocalDateTime.now()))
-                .published(app.isPublished())
+                .published(appVersion.isPublished())
                 .parameters(this.buildParameters(map, nodeId))
                 .errorMsg(errorMsg)
                 .status(status.name())
@@ -142,20 +119,5 @@ public class RuntimeInfoServiceImpl implements RuntimeInfoService {
                 .updateAt(LocalDateTime.now())
                 .build();
         this.runtimeInfoRepository.insertOne(runtimeInfo);
-    }
-
-    private <T> Optional<T> getValueByKeys(Map<String, Object> map, List<String> keys, Class<T> clz) {
-        Map<String, Object> tmp = map;
-        for (int i = 0; i < keys.size() - 1; i++) {
-            if (tmp.get(keys.get(i)) instanceof Map) {
-                tmp = cast(tmp.get(keys.get(i)));
-            } else {
-                tmp = null;
-            }
-            if (Objects.isNull(tmp)) {
-                return Optional.empty();
-            }
-        }
-        return Optional.ofNullable(ObjectUtils.as(tmp.get(keys.get(keys.size() - 1)), clz));
     }
 }

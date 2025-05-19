@@ -96,23 +96,17 @@ public class OperatorServiceImpl implements OperatorService {
     };
 
     private final LLMService llmService;
-
     private final BrokerClient client;
-
     private final Function<String, String> pdfExtractor = this::extractPdfFile;
-
     private final Function<String, String> excelExtractor = this::extractExcelFile;
-
     private final Function<String, String> wordExtractor = this::extractWordFile;
-
     private final Function<String, String> textExtractor = this::extractTextFile;
-
-    private final EnumMap<FileType, Function<File, String>> outlineOperatorMap
-            = new EnumMap<FileType, Function<File, String>>(FileType.class) {
-        {
-            put(FileType.WORD, docOutlineExtractor);
-        }
-    };
+    private final EnumMap<FileType, Function<File, String>> outlineOperatorMap =
+            new EnumMap<FileType, Function<File, String>>(FileType.class) {
+                {
+                    put(FileType.WORD, docOutlineExtractor);
+                }
+            };
 
     private final EnumMap<FileType, Function<String, String>> fileOperatorMap
             = new EnumMap<FileType, Function<String, String>>(FileType.class) {
@@ -155,7 +149,7 @@ public class OperatorServiceImpl implements OperatorService {
 
     private static String extractDocHandle(InputStream fis, String fileName) throws IOException {
         try (XWPFDocument doc = new XWPFDocument(fis);
-                XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(doc)) {
+             XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(doc)) {
             // 去页眉页脚
             doc.getHeaderList().forEach(h -> h.setHeaderFooter(newCTHdrFtrInstance()));
             doc.getFooterList().forEach(h -> h.setHeaderFooter(newCTHdrFtrInstance()));

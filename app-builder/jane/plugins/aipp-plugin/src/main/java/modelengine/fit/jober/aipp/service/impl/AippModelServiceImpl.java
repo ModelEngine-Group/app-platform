@@ -26,9 +26,9 @@ import modelengine.fit.jober.aipp.service.AippModelService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.exception.ClientException;
 import modelengine.fitframework.flowable.Choir;
+import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.StringUtils;
-import modelengine.fitframework.log.Logger;
 
 import java.util.Map;
 
@@ -43,15 +43,11 @@ public class AippModelServiceImpl implements AippModelService {
     private static final Logger log = Logger.get(AippModelServiceImpl.class);
 
     private static final String INPUT = "input";
-
     private static final String TEMPLATE_GROUP = "template";
-
     private static final String TEMPLATE_ATTRIBUTE = "template";
 
     private final ChatModel modelService;
-
     private final AippModelCenter aippModelCenter;
-
     private final AippSystemConfigRepository aippSystemConfigRepository;
 
     public AippModelServiceImpl(ChatModel modelService, AippModelCenter aippModelCenter,

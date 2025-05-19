@@ -27,30 +27,17 @@ import java.util.Map;
 @NoArgsConstructor
 public class AppBuilderAppMetadataDto {
     private String name;
-
     private String type;
-
     private String createBy;
-
     private String updateBy;
-
     private String version;
-
     private LocalDateTime createAt;
-
     private LocalDateTime updateAt;
-
     private String id;
-
     private Map<String, Object> attributes;
-
     private String state;
-
     private List<String> tags;
-
     private String appType;
-
     private String appCategory;
-
     private String appBuiltType;
 }

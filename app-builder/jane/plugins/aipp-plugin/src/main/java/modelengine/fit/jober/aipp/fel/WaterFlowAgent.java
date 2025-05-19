@@ -6,8 +6,6 @@
 
 package modelengine.fit.jober.aipp.fel;
 
-import com.alibaba.fastjson.JSONObject;
-
 import modelengine.fel.core.chat.ChatMessage;
 import modelengine.fel.core.chat.ChatModel;
 import modelengine.fel.core.chat.ChatOption;
@@ -41,13 +39,10 @@ import java.util.stream.Collectors;
  */
 public class WaterFlowAgent extends AbstractAgent<Prompt, Prompt> {
     private static final String AGENT_MSG_KEY = "water_flow_agent_request";
-
     private static final String GOTO_NODE_ID = "ahead_llm_node";
 
     private final ToolProvider toolProvider;
-
     private final ChatStreamModel model;
-
     private final String agentMsgKey;
 
     public WaterFlowAgent(ToolProvider toolProvider, ChatModel chatStreamModel, ChatOption option) {
@@ -73,8 +68,8 @@ public class WaterFlowAgent extends AbstractAgent<Prompt, Prompt> {
     private ChatMessage handleTool(ChatMessage input, StateContext ctx) {
         Validation.notNull(ctx, "The state context cannot be null.");
 
-        Map<String, Object> toolContext = ObjectUtils.getIfNull(ctx.getState(AippConst.TOOL_CONTEXT_KEY),
-                Collections::emptyMap);
+        Map<String, Object> toolContext =
+                ObjectUtils.getIfNull(ctx.getState(AippConst.TOOL_CONTEXT_KEY), Collections::emptyMap);
         ChatMessages lastRequest = ctx.getState(this.agentMsgKey);
         lastRequest.add(Validation.notNull(input, "The input message cannot be null."));
         lastRequest.addAll(AbstractAgent.toolCallHandle(this.toolProvider, input, toolContext).messages());

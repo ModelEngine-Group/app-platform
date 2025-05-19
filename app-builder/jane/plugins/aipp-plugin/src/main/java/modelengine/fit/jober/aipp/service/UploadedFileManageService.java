@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.service;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -56,4 +57,15 @@ public interface UploadedFileManageService {
      * @param status 文件是否可以清理的标识
      */
     void updateRecord(String appId, String fileName, Integer status);
+
+    /**
+     * 拷贝图标文件.
+     *
+     * @param icon 图标.
+     * @param aippId 应用id.
+     * @param operator 操作人.
+     * @return {@link String} 拷贝后的图标.
+     * @throws IOException io异常.
+     */
+    String copyIconFiles(String icon, String aippId, String operator) throws IOException;
 }

@@ -33,7 +33,8 @@ class AippLogUtilsTest {
     void testMSGType() {
         AippLogData test = AippLogData.builder().msg("This is a MSG log").build();
         try {
-            Method validFormMsg = AippLogUtils.class.getDeclaredMethod("validFormMsg", AippLogData.class, String.class);
+            Method validFormMsg = AippLogUtils.class.getDeclaredMethod(
+                    "validFormMsg", AippLogData.class, String.class);
             validFormMsg.setAccessible(true);
             assertTrue((boolean) validFormMsg.invoke(null, test, "MSG"));
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
@@ -47,7 +48,8 @@ class AippLogUtilsTest {
         AippLogData testEmpty = AippLogData.builder().formId("").formVersion("1.1").formArgs("test").build();
         AippLogData testWhitespace = AippLogData.builder().formId("   ").formVersion("1.1").formArgs("test").build();
         try {
-            Method validFormMsg = AippLogUtils.class.getDeclaredMethod("validFormMsg", AippLogData.class, String.class);
+            Method validFormMsg = AippLogUtils.class.getDeclaredMethod(
+                    "validFormMsg", AippLogData.class, String.class);
             validFormMsg.setAccessible(true);
             assertFalse((boolean) validFormMsg.invoke(null, testNull, "FORM"));
             assertFalse((boolean) validFormMsg.invoke(null, testEmpty, "FORM"));
@@ -59,13 +61,15 @@ class AippLogUtilsTest {
 
     @Test
     void testInvalidFormId() {
-        AippLogData testInvalidFormId = AippLogData.builder()
+        AippLogData testInvalidFormId = AippLogData
+                .builder()
                 .formId("undefined")
                 .formVersion("1.1")
                 .formArgs("test")
                 .build();
         try {
-            Method validFormMsg = AippLogUtils.class.getDeclaredMethod("validFormMsg", AippLogData.class, String.class);
+            Method validFormMsg = AippLogUtils.class.getDeclaredMethod(
+                    "validFormMsg", AippLogData.class, String.class);
             validFormMsg.setAccessible(true);
             assertFalse((boolean) validFormMsg.invoke(null, testInvalidFormId, "FORM"));
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
@@ -79,7 +83,8 @@ class AippLogUtilsTest {
         AippLogData testEmpty = AippLogData.builder().formId("123456").formVersion("").formArgs("test").build();
         AippLogData testWhitespace = AippLogData.builder().formId("123456").formVersion("  ").formArgs("test").build();
         try {
-            Method validFormMsg = AippLogUtils.class.getDeclaredMethod("validFormMsg", AippLogData.class, String.class);
+            Method validFormMsg = AippLogUtils.class.getDeclaredMethod(
+                    "validFormMsg", AippLogData.class, String.class);
             validFormMsg.setAccessible(true);
             assertFalse((boolean) validFormMsg.invoke(null, testNull, "FORM"));
             assertFalse((boolean) validFormMsg.invoke(null, testEmpty, "FORM"));
@@ -91,13 +96,14 @@ class AippLogUtilsTest {
 
     @Test
     void testInvalidFormVersion() {
-        AippLogData testInvalidVersionId = AippLogData.builder()
+        AippLogData testInvalidVersionId = AippLogData
+                .builder()
                 .formId("123456")
                 .formVersion("undefined")
-                .formArgs("test")
-                .build();
+                .formArgs("test").build();
         try {
-            Method validFormMsg = AippLogUtils.class.getDeclaredMethod("validFormMsg", AippLogData.class, String.class);
+            Method validFormMsg = AippLogUtils.class.getDeclaredMethod(
+                    "validFormMsg", AippLogData.class, String.class);
             validFormMsg.setAccessible(true);
             assertFalse((boolean) validFormMsg.invoke(null, testInvalidVersionId, "FORM"));
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
@@ -107,13 +113,15 @@ class AippLogUtilsTest {
 
     @Test
     void testNormal() {
-        AippLogData testInvalidVersionId = AippLogData.builder()
+        AippLogData testInvalidVersionId = AippLogData
+                .builder()
                 .formId("123456")
                 .formVersion("1.1")
                 .formArgs("test")
                 .build();
         try {
-            Method validFormMsg = AippLogUtils.class.getDeclaredMethod("validFormMsg", AippLogData.class, String.class);
+            Method validFormMsg = AippLogUtils.class.getDeclaredMethod(
+                    "validFormMsg", AippLogData.class, String.class);
             validFormMsg.setAccessible(true);
             assertTrue((boolean) validFormMsg.invoke(null, testInvalidVersionId, "FORM"));
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {

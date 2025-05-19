@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import modelengine.fitframework.annotation.Property;
+import modelengine.fitframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -74,4 +75,41 @@ public class AppBuilderAppDto {
 
     @Property(description = "aipp 发布更新日志")
     private String publishedUpdateLog;
+
+
+    /**
+     * 获取描述.
+     *
+     * @return {@link String} 描述信息.
+     */
+    public String getDescription() {
+        return String.valueOf(this.attributes.getOrDefault("description", StringUtils.EMPTY));
+    }
+
+    /**
+     * 获取图标.
+     *
+     * @return {@link String} 图标信息.
+     */
+    public String getIcon() {
+        return String.valueOf(this.attributes.getOrDefault("icon", StringUtils.EMPTY));
+    }
+
+    /**
+     * 设置图标.
+     *
+     * @param icon 图标.
+     */
+    public void setIcon(String icon) {
+        this.attributes.put("icon", icon);
+    }
+
+    /**
+     * 设置描述.
+     *
+     * @param description 描述信息.
+     */
+    public void setDescription(String description) {
+        this.attributes.put("description", description);
+    }
 }

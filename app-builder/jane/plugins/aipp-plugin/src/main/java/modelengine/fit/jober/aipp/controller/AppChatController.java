@@ -6,22 +6,22 @@
 
 package modelengine.fit.jober.aipp.controller;
 
-import modelengine.fit.jane.task.gateway.Authenticator;
-
-import modelengine.jade.service.annotations.CarverSpan;
-import modelengine.jade.service.annotations.SpanAttr;
-import modelengine.fit.http.annotation.PathVariable;
-import modelengine.fit.http.annotation.PostMapping;
-import modelengine.fit.http.annotation.RequestBody;
-import modelengine.fit.http.annotation.RequestMapping;
-import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.jane.common.controller.AbstractController;
+import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
 import modelengine.fit.jober.aipp.common.exception.AippTaskNotFoundException;
 import modelengine.fit.jober.aipp.dto.chat.CreateAppChatRequest;
 import modelengine.fit.jober.aipp.service.AppChatService;
 import modelengine.fit.jober.aipp.service.impl.AppChatServiceImpl;
+import modelengine.jade.service.annotations.CarverSpan;
+import modelengine.jade.service.annotations.SpanAttr;
+
+import modelengine.fit.http.annotation.PathVariable;
+import modelengine.fit.http.annotation.PostMapping;
+import modelengine.fit.http.annotation.RequestBody;
+import modelengine.fit.http.annotation.RequestMapping;
+import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.flowable.Choir;
 import modelengine.fitframework.log.Logger;
@@ -40,7 +40,6 @@ import java.util.Objects;
 @RequestMapping(path = "/v1/api/{tenant_id}", group = "app对话管理接口")
 public class AppChatController extends AbstractController {
     private static final Logger LOGGER = Logger.get(AppChatServiceImpl.class);
-
     private final AppChatService appChatService;
 
     /**
@@ -99,8 +98,8 @@ public class AppChatController extends AbstractController {
      */
     @CarverSpan(value = "operation.appChat.waterflow.chat")
     @PostMapping(value = "/water_flow_chat", description = "会话接口，传递会话信息")
-    public Choir<Object> waterFlowChat(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
-            @RequestBody CreateAppChatRequest body) {
+    public Choir<Object> waterFlowChat(HttpClassicServerRequest httpRequest,
+            @PathVariable("tenant_id") String tenantId, @RequestBody CreateAppChatRequest body) {
         this.validateChatBody(body);
         return this.appChatService.chat(body, this.contextOf(httpRequest, tenantId), false);
     }
@@ -132,7 +131,8 @@ public class AppChatController extends AbstractController {
      */
     @CarverSpan(value = "operation.appChat.restartChat")
     @PostMapping(path = "/instances/{current_instance_id}", description = "重新发起会话接口")
-    public Choir<Object> restartChat(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
+    public Choir<Object> restartChat(HttpClassicServerRequest httpRequest,
+            @PathVariable("tenant_id") String tenantId,
             @PathVariable("current_instance_id") @SpanAttr("current_instance_id") String currentInstanceId,
             @RequestBody Map<String, Object> additionalContext) {
         return this.appChatService.restartChat(currentInstanceId, additionalContext,

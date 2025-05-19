@@ -8,6 +8,7 @@ package modelengine.fit.jober.aipp.enums;
 
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
+
 import modelengine.fitframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -32,7 +33,6 @@ public enum FormPropertyTypeEnum {
     LIST("List", java.util.List.class);
 
     private final String code;
-
     private final Class<?> clazz;
 
     FormPropertyTypeEnum(String code, Class<?> clazz) {

@@ -6,20 +6,18 @@
 
 package modelengine.fit.jober.aipp.northbound;
 
-import static modelengine.fitframework.inspection.Validation.notNull;
-
+import lombok.AllArgsConstructor;
 import modelengine.fit.http.entity.FileEntity;
 import modelengine.fit.http.entity.PartitionedEntity;
 import modelengine.fit.jane.common.entity.OperationContext;
-import modelengine.fit.jane.meta.multiversion.MetaService;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
-import modelengine.fit.jober.aipp.common.exception.AippTaskNotFoundException;
+import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
+import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
 import modelengine.fit.jober.aipp.dto.chat.FileUploadInfo;
 import modelengine.fit.jober.aipp.genericable.adapter.FileServiceAdapter;
 import modelengine.fit.jober.aipp.service.FileService;
 import modelengine.fit.jober.aipp.util.AippFileUtils;
-import modelengine.fit.jober.aipp.util.MetaUtils;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.beans.BeanUtils;
 
@@ -33,30 +31,21 @@ import java.util.List;
  * @since 2024-12-20
  */
 @Component
+@AllArgsConstructor
 public class FileServiceAdapterImpl implements FileServiceAdapter {
     private final FileService fileService;
-
-    private final MetaService metaService;
-
-    public FileServiceAdapterImpl(FileService fileService, MetaService metaService) {
-        this.fileService = notNull(fileService, "The file service cannot be null.");
-        this.metaService = notNull(metaService, "The meta service cannot be null.");
-    }
+    private final AppVersionService appVersionService;
 
     @Override
     public FileUploadInfo uploadFile(OperationContext context, String tenantId, String fileName, String appId,
             PartitionedEntity receivedFile) throws IOException {
-        String aippId;
-        try {
-            aippId = MetaUtils.getAippIdByAppId(this.metaService, appId, context);
-        } catch (AippTaskNotFoundException e) {
-            throw new AippException(AippErrCode.APP_NOT_FOUND);
-        }
+        AppVersion appVersion = this.appVersionService.retrieval(appId);
         List<FileEntity> files = AippFileUtils.getFileEntity(receivedFile);
         if (files.isEmpty()) {
             throw new AippException(AippErrCode.UPLOAD_FAILED);
         }
-        return BeanUtils.copyProperties(this.fileService.uploadFile(context, tenantId, fileName, aippId, files.get(0)),
-                FileUploadInfo.class);
+        return BeanUtils.copyProperties(
+                this.fileService.uploadFile(context, tenantId, fileName, appVersion.getData().getAppSuiteId(),
+                        files.get(0)), FileUploadInfo.class);
     }
 }

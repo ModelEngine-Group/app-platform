@@ -83,11 +83,8 @@ public class ConvertUtilsTest {
     @Test
     @DisplayName("toAippCreate")
     void testToAippCreate() {
-        AippCreateDto dto = AippCreateDto.builder()
-                .aippId("aippId")
-                .toolUniqueName("uniqueName")
-                .version("1.0.0")
-                .build();
+        AippCreateDto dto =
+                AippCreateDto.builder().aippId("aippId").toolUniqueName("uniqueName").version("1.0.0").build();
 
         AippCreate aippCreate = Assertions.assertDoesNotThrow(() -> ConvertUtils.toAippCreate(dto));
 

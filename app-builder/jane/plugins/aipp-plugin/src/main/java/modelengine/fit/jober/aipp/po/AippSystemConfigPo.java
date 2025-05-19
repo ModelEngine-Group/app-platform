@@ -23,12 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AippSystemConfigPo {
     private Long id;
-
     private String configKey;
-
     private String configValue;
-
     private String configGroup;
-
     private String configParent;
 }

@@ -6,8 +6,8 @@
 
 package modelengine.fit.jober.aipp.service;
 
-import modelengine.fit.jober.aipp.dto.FitableInfoDto;
 import modelengine.fit.jane.common.entity.OperationContext;
+import modelengine.fit.jober.aipp.dto.FitableInfoDto;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +38,6 @@ public interface GenericableManageService {
      * @param operationContext 操作上下文
      * @return 执行结果
      */
-    List<Map<String, Object>> executeInspirationFitable(String fitableId, String appId, String appType,
-            OperationContext operationContext);
+    List<Map<String, Object>> executeInspirationFitable(String fitableId,
+            String appId, String appType, OperationContext operationContext);
 }

@@ -6,15 +6,16 @@
 
 package modelengine.fit.jober.aipp.controller;
 
-import modelengine.fit.http.annotation.GetMapping;
-import modelengine.fit.http.annotation.PathVariable;
-import modelengine.fit.http.annotation.RequestMapping;
-import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppDto;
 import modelengine.fit.jober.aipp.genericable.AppBuilderAppService;
+
+import modelengine.fit.http.annotation.GetMapping;
+import modelengine.fit.http.annotation.PathVariable;
+import modelengine.fit.http.annotation.RequestMapping;
+import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fitframework.annotation.Component;
 
 /**

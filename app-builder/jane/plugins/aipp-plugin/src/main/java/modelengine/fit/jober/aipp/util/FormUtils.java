@@ -16,6 +16,7 @@ import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.domain.AppBuilderForm;
 import modelengine.fit.jober.aipp.domain.AppBuilderFormProperty;
 import modelengine.fit.jober.aipp.entity.AippLogData;
+
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
@@ -36,11 +37,8 @@ import java.util.stream.Collectors;
  */
 public class FormUtils {
     private static final Logger log = Logger.get(FormUtils.class);
-
     private static final String SCHEMA_KEY = "schema";
-
     private static final String PARAMETERS_KEY = "parameters";
-
     private static final String PROPERTIES_KEY = "properties";
 
     /**
@@ -61,7 +59,8 @@ public class FormUtils {
         return form;
     }
 
-    private static Map<String, Object> buildFormData(Map<String, Object> businessData, Map<String, Object> appearance) {
+    private static Map<String, Object> buildFormData(Map<String, Object> businessData,
+            Map<String, Object> appearance) {
         Map<String, Object> formDataMap = new HashMap<>();
         if (appearance == null) {
             return formDataMap;
@@ -100,8 +99,8 @@ public class FormUtils {
      */
     public static AippLogData buildLogDataWithFormData(List<AppBuilderFormProperty> formProperties, String formId,
             String formVersion, Map<String, Object> businessData) {
-        List<FormMetaQueryParameter> parameter = Collections.singletonList(
-                new FormMetaQueryParameter(formId, formVersion));
+        List<FormMetaQueryParameter> parameter =
+                Collections.singletonList(new FormMetaQueryParameter(formId, formVersion));
 
         Map<String, Object> formArgs = buildFormMetaInfos(parameter, formProperties).stream()
                 .flatMap(item -> item.getFormMetaItems().stream().map(FormMetaItem::getKey))

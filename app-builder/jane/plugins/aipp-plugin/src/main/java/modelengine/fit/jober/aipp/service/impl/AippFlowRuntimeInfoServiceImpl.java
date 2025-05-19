@@ -7,18 +7,17 @@
 package modelengine.fit.jober.aipp.service.impl;
 
 import modelengine.fit.jane.common.entity.OperationContext;
-import modelengine.fit.jane.meta.multiversion.MetaInstanceService;
-import modelengine.fit.jane.meta.multiversion.MetaService;
-import modelengine.fit.jane.meta.multiversion.definition.Meta;
-import modelengine.fit.jane.meta.multiversion.instance.Instance;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
-import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.domain.AppBuilderRuntimeInfo;
+import modelengine.fit.jober.aipp.domains.task.AppTask;
+import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
+import modelengine.fit.jober.aipp.domains.taskinstance.AppTaskInstance;
+import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
 import modelengine.fit.jober.aipp.service.AippFlowRuntimeInfoService;
-import modelengine.fit.jober.aipp.util.MetaInstanceUtils;
-import modelengine.fit.jober.aipp.util.MetaUtils;
+import modelengine.fit.jober.common.ErrorCodes;
+import modelengine.fit.jober.common.exceptions.JobberException;
 import modelengine.fit.jober.entity.consts.NodeTypes;
 import modelengine.fit.runtime.entity.NodeInfo;
 import modelengine.fit.runtime.entity.RuntimeData;
@@ -39,31 +38,28 @@ import java.util.stream.Collectors;
  */
 @Component
 public class AippFlowRuntimeInfoServiceImpl implements AippFlowRuntimeInfoService {
-    private final MetaService metaService;
-
-    private final MetaInstanceService metaInstanceService;
-
     private final AppBuilderRuntimeInfoRepository runtimeInfoRepository;
+    private final AppTaskInstanceService appTaskInstanceService;
+    private final AppTaskService appTaskService;
 
-    public AippFlowRuntimeInfoServiceImpl(MetaService metaService, MetaInstanceService metaInstanceService,
-            AppBuilderRuntimeInfoRepository runtimeInfoRepository) {
-        this.metaService = metaService;
-        this.metaInstanceService = metaInstanceService;
+    public AippFlowRuntimeInfoServiceImpl(AppBuilderRuntimeInfoRepository runtimeInfoRepository,
+            AppTaskInstanceService appTaskInstanceService, AppTaskService appTaskService) {
         this.runtimeInfoRepository = runtimeInfoRepository;
+        this.appTaskInstanceService = appTaskInstanceService;
+        this.appTaskService = appTaskService;
     }
 
     @Override
     public Optional<RuntimeData> getRuntimeData(String aippId, String version, String instanceId,
             OperationContext context) {
-        Meta meta = MetaUtils.getAnyMeta(this.metaService, aippId, version, context);
-        if (meta == null) {
-            throw new AippException(AippErrCode.APP_NOT_FOUND_WHEN_DEBUG);
-        }
-        String versionId = meta.getVersionId();
-        Instance instDetail = MetaInstanceUtils.getInstanceDetail(versionId, instanceId, context,
-                this.metaInstanceService);
-        String traceId = instDetail.getInfo().get(AippConst.INST_FLOW_INST_ID_KEY);
-
+        AppTask task = this.appTaskService.getLatest(aippId, version, context)
+                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND_WHEN_DEBUG,
+                        StringUtils.format("App task not found, appSuiteId:{0}, version: {1}.", aippId, version)));
+        String versionId = task.getEntity().getTaskId();
+        AppTaskInstance instance = this.appTaskInstanceService.getInstance(versionId, instanceId, context)
+                .orElseThrow(() -> new JobberException(ErrorCodes.UN_EXCEPTED_ERROR,
+                        StringUtils.format("App task instance[{0}] not found.", instanceId)));
+        String traceId = instance.getEntity().getFlowTranceId();
         List<AppBuilderRuntimeInfo> runtimeInfoList = this.runtimeInfoRepository.selectByTraceId(traceId);
         if (CollectionUtils.isEmpty(runtimeInfoList)) {
             return Optional.empty();
@@ -72,8 +68,8 @@ public class AippFlowRuntimeInfoServiceImpl implements AippFlowRuntimeInfoServic
         AppBuilderRuntimeInfo start = runtimeInfoList.stream()
                 .filter(r -> r.getNodeType().equals(NodeTypes.START.getType()))
                 .findFirst()
-                .orElseThrow(
-                        () -> new IllegalStateException(StringUtils.format("No START node info in runtime info.")));
+                .orElseThrow(() ->
+                        new IllegalStateException(StringUtils.format("No START node info in runtime info.")));
         AppBuilderRuntimeInfo end = runtimeInfoList.get(runtimeInfoList.size() - 1);
         RuntimeData runtimeData = new RuntimeData();
         runtimeData.setStartTime(start.getStartTime());

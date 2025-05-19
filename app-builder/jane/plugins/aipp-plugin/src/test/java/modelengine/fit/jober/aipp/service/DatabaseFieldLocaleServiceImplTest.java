@@ -33,7 +33,6 @@ import java.util.Locale;
 @DisplayName("DatabaseFieldLocaleService")
 public class DatabaseFieldLocaleServiceImplTest {
     private I18nMapper i18nMapper;
-
     private DatabaseFieldLocaleServiceImplTestExt databaseFieldLocaleServiceImplTestExt;
 
     @BeforeEach
@@ -51,10 +50,10 @@ public class DatabaseFieldLocaleServiceImplTest {
         i18nPoList.add(new I18nPo("123", "name", "en", "ZhangSan"));
         Mockito.when(this.i18nMapper.selectResource()).thenReturn(i18nPoList);
         this.databaseFieldLocaleServiceImplTestExt.loadResource();
-        assertThat(this.databaseFieldLocaleServiceImplTestExt.getLocaleMessage("name", Locale.ENGLISH)).isEqualTo(
-                "ZhangSan");
-        assertThat(this.databaseFieldLocaleServiceImplTestExt.getLocaleMessage("name", Locale.CHINESE)).isEqualTo(
-                "张三");
+        assertThat(this.databaseFieldLocaleServiceImplTestExt.getLocaleMessage("name", Locale.ENGLISH))
+                .isEqualTo("ZhangSan");
+        assertThat(this.databaseFieldLocaleServiceImplTestExt.getLocaleMessage("name", Locale.CHINESE))
+                .isEqualTo("张三");
     }
 
     private static class DatabaseFieldLocaleServiceImplTestExt extends DatabaseFieldLocaleServiceImpl {

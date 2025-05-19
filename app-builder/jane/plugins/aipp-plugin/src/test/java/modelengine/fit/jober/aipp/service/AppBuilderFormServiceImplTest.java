@@ -127,7 +127,8 @@ public class AppBuilderFormServiceImplTest {
         appearance.put("fileName", "form.zip");
         appearance.put("schema", new HashMap<>());
         AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder().name("test").appearance(appearance).build();
-        AippException exception = Assertions.assertThrows(AippException.class, () -> {
+        AippException exception = Assertions.assertThrows(AippException.class,
+                () -> {
             this.appBuilderFormService.create(appBuilderFormDto, new OperationContext());
         });
         Assertions.assertEquals(90002131, exception.getCode());
@@ -143,7 +144,8 @@ public class AppBuilderFormServiceImplTest {
         appearance.put("fileUuid", "456");
         appearance.put("fileName", "form.zip");
         AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder().name("test").appearance(appearance).build();
-        AippException exception = Assertions.assertThrows(AippException.class, () -> {
+        AippException exception = Assertions.assertThrows(AippException.class,
+                () -> {
             this.appBuilderFormService.create(appBuilderFormDto, new OperationContext());
         });
         Assertions.assertEquals(90002131, exception.getCode());
@@ -159,7 +161,8 @@ public class AppBuilderFormServiceImplTest {
         appearance.put("schema", new HashMap<>());
         appearance.put("fileName", "form.zip");
         AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder().name("test").appearance(appearance).build();
-        AippException exception = Assertions.assertThrows(AippException.class, () -> {
+        AippException exception = Assertions.assertThrows(AippException.class,
+                () -> {
             this.appBuilderFormService.create(appBuilderFormDto, new OperationContext());
         });
         Assertions.assertEquals(90002131, exception.getCode());
@@ -175,7 +178,8 @@ public class AppBuilderFormServiceImplTest {
         appearance.put("schema", new HashMap<>());
         appearance.put("fileUuid", "456");
         AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder().name("test").appearance(appearance).build();
-        AippException exception = Assertions.assertThrows(AippException.class, () -> {
+        AippException exception = Assertions.assertThrows(AippException.class,
+                () -> {
             this.appBuilderFormService.create(appBuilderFormDto, new OperationContext());
         });
         Assertions.assertEquals(90002131, exception.getCode());
@@ -184,13 +188,11 @@ public class AppBuilderFormServiceImplTest {
     @Test
     @DisplayName("表单数量已经达到上限，创建表单失败")
     void testCreateSmartFormFailWhenNumUpToMaximum() {
-        AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder()
-                .id("formId")
-                .name("test")
-                .appearance(new HashMap<>())
-                .build();
+        AppBuilderFormDto appBuilderFormDto =
+                AppBuilderFormDto.builder().id("formId").name("test").appearance(new HashMap<>()).build();
         when(this.appBuilderFormRepository.countWithType(anyString(), any())).thenReturn(400L);
-        AippException exception = Assertions.assertThrows(AippException.class, () -> {
+        AippException exception = Assertions.assertThrows(AippException.class,
+                () -> {
             this.appBuilderFormService.create(appBuilderFormDto, new OperationContext());
         });
         Assertions.assertEquals(90002134, exception.getCode());
@@ -199,13 +201,11 @@ public class AppBuilderFormServiceImplTest {
     @Test
     @DisplayName("表单名称重复，创建表单失败")
     void testCreateSmartFormFailWhenNameIsExisted() {
-        AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder()
-                .id("formId")
-                .name("test")
-                .appearance(new HashMap<>())
-                .build();
+        AppBuilderFormDto appBuilderFormDto =
+                AppBuilderFormDto.builder().id("formId").name("test").appearance(new HashMap<>()).build();
         when(this.appBuilderFormRepository.selectWithName(anyString(), any())).thenReturn(form);
-        AippException exception = Assertions.assertThrows(AippException.class, () -> {
+        AippException exception = Assertions.assertThrows(AippException.class,
+                () -> {
             this.appBuilderFormService.create(appBuilderFormDto, new OperationContext());
         });
         Assertions.assertEquals(90002135, exception.getCode());
@@ -214,12 +214,10 @@ public class AppBuilderFormServiceImplTest {
     @Test
     @DisplayName("表单名称不符合规范，创建表单失败")
     void testCreateSmartFormFailWhenNameNotUpToFormat() {
-        AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder()
-                .id("formId")
-                .name("123***haha")
-                .appearance(new HashMap<>())
-                .build();
-        AippException exception = Assertions.assertThrows(AippException.class, () -> {
+        AppBuilderFormDto appBuilderFormDto =
+                AppBuilderFormDto.builder().id("formId").name("123***haha").appearance(new HashMap<>()).build();
+        AippException exception = Assertions.assertThrows(AippException.class,
+                () -> {
             this.appBuilderFormService.create(appBuilderFormDto, new OperationContext());
         });
         Assertions.assertEquals(90002917, exception.getCode());
@@ -234,7 +232,8 @@ public class AppBuilderFormServiceImplTest {
                         + "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest")
                 .appearance(new HashMap<>())
                 .build();
-        AippException exception = Assertions.assertThrows(AippException.class, () -> {
+        AippException exception = Assertions.assertThrows(AippException.class,
+                () -> {
             this.appBuilderFormService.create(appBuilderFormDto, new OperationContext());
         });
         Assertions.assertEquals(90002129, exception.getCode());
@@ -253,12 +252,10 @@ public class AppBuilderFormServiceImplTest {
                         + "description.test form description.test form description.test form description.test form "
                         + "description.test form description.test form description.test form description.test form "
                         + "description.");
-        AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder()
-                .id("formId")
-                .name("test")
-                .appearance(appearance)
-                .build();
-        AippException exception = Assertions.assertThrows(AippException.class, () -> {
+        AppBuilderFormDto appBuilderFormDto =
+                AppBuilderFormDto.builder().id("formId").name("test").appearance(appearance).build();
+        AippException exception = Assertions.assertThrows(AippException.class,
+                () -> {
             this.appBuilderFormService.create(appBuilderFormDto, new OperationContext());
         });
         Assertions.assertEquals(90002130, exception.getCode());
@@ -274,15 +271,12 @@ public class AppBuilderFormServiceImplTest {
         appearance.put("fileUuid", "456");
         appearance.put("fileName", "form.zip");
         appearance.put("schema", new HashMap<>());
-        AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder()
-                .id("formId")
-                .name("test")
-                .appearance(appearance)
-                .build();
+        AppBuilderFormDto appBuilderFormDto =
+                AppBuilderFormDto.builder().id("formId").name("test").appearance(appearance).build();
         doNothing().when(this.appBuilderFormRepository).updateOne(any(AppBuilderForm.class));
         when(this.appBuilderFormRepository.selectWithId(any())).thenReturn(form);
-        AppBuilderFormDto result = this.appBuilderFormService.update(appBuilderFormDto, appBuilderFormDto.getId(),
-                new OperationContext());
+        AppBuilderFormDto result =
+                this.appBuilderFormService.update(appBuilderFormDto, appBuilderFormDto.getId(), new OperationContext());
         verify(this.appBuilderFormRepository, times(1)).updateOne(any(AppBuilderForm.class));
         Assertions.assertEquals(result.getName(), "test");
         Assertions.assertEquals(result.getAppearance().get("imgUrl"), "/var/share/123/form.png");
@@ -296,11 +290,8 @@ public class AppBuilderFormServiceImplTest {
     @Test
     @DisplayName("表单id有误，更新表单失败")
     void testUpdateSmartFormFailWhenFormIdIsError() {
-        AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder()
-                .id("formId")
-                .name("test")
-                .appearance(new HashMap<>())
-                .build();
+        AppBuilderFormDto appBuilderFormDto =
+                AppBuilderFormDto.builder().id("formId").name("test").appearance(new HashMap<>()).build();
         when(this.appBuilderFormRepository.selectWithId(any())).thenReturn(null);
         AippException exception = Assertions.assertThrows(AippException.class, () -> {
             this.appBuilderFormService.update(appBuilderFormDto, appBuilderFormDto.getId(), new OperationContext());
@@ -311,20 +302,15 @@ public class AppBuilderFormServiceImplTest {
     @Test
     @DisplayName("查询表单成功")
     void testQuerySmartFormSuccess() {
-        AppBuilderForm appBuilderForm1 = AppBuilderForm.builder()
-                .id("formId1")
-                .name("test1")
-                .appearance(new HashMap<>())
-                .build();
-        AppBuilderForm appBuilderForm2 = AppBuilderForm.builder()
-                .id("formId2")
-                .name("test2")
-                .appearance(new HashMap<>())
-                .build();
-        when(this.appBuilderFormRepository.selectWithCondition(any(FormQueryCondition.class))).thenReturn(
-                Arrays.asList(appBuilderForm1, appBuilderForm2));
-        RangedResultSet<AppBuilderFormDto> result = this.appBuilderFormService.query(0L, 10, null,
-                new OperationContext());
+        AppBuilderForm appBuilderForm1 =
+                AppBuilderForm.builder().id("formId1").name("test1").appearance(new HashMap<>()).build();
+        AppBuilderForm appBuilderForm2 =
+                AppBuilderForm.builder().id("formId2").name("test2").appearance(new HashMap<>()).build();
+        when(this.appBuilderFormRepository.selectWithCondition(any(FormQueryCondition.class))).thenReturn(Arrays.asList(
+                appBuilderForm1,
+                appBuilderForm2));
+        RangedResultSet<AppBuilderFormDto> result =
+                this.appBuilderFormService.query(0L, 10, null, new OperationContext());
         List<AppBuilderFormDto> forms = result.getResults();
         Assertions.assertEquals(forms.size(), 2);
         Assertions.assertEquals(forms.get(0).getId(), "formId1");

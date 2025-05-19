@@ -25,18 +25,11 @@ import java.util.List;
 @AllArgsConstructor
 public class FormQueryCondition {
     private String tenantId;
-
     private String type;
-
     private Long offset;
-
     private int limit;
-
     private String name;
-
     private String id;
-
     private String createBy;
-
     private List<String> excludeNames;
 }

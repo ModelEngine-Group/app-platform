@@ -26,15 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AippSystemConfig extends BaseDomain {
     private Long id;
-
     private String configKey;
-
     private String configValue;
-
     private String configGroup;
-
     private String configParent;
-
     private JSONObject json;
 
     /**

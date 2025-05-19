@@ -30,7 +30,7 @@ import java.util.Optional;
 /**
  * 用于静态资源的过滤器类。
  *
- * @author 邬涨财 w00575064
+ * @author 邬涨财
  * @since 2023-07-13
  */
 @Component

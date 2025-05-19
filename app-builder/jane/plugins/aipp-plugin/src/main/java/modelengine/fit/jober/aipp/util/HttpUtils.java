@@ -44,13 +44,15 @@ public class HttpUtils {
     public static String sendHttpRequest(HttpClassicClientRequest httpRequest) throws IOException {
         try (HttpClassicClientResponse<Object> response = HttpUtils.execute(httpRequest)) {
             if (response.statusCode() != HttpResponseStatus.OK.statusCode()) {
-                throw new IOException(
-                        String.format(Locale.ROOT, "send http fail. url=%s result=%d", httpRequest.requestUri(),
-                                response.statusCode()));
+                throw new IOException(String.format(Locale.ROOT,
+                        "send http fail. url=%s result=%d",
+                        httpRequest.requestUri(),
+                        response.statusCode()));
             }
             if (!response.textEntity().isPresent()) {
-                throw new IOException(
-                        String.format(Locale.ROOT, "get empty response entity, url=%s", httpRequest.requestUri()));
+                throw new IOException(String.format(Locale.ROOT,
+                        "get empty response entity, url=%s",
+                        httpRequest.requestUri()));
             }
             return response.textEntity().get().content();
         }

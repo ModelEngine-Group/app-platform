@@ -38,6 +38,15 @@ public interface AppBuilderAppMapper {
     AppBuilderAppPo selectWithPath(String path);
 
     /**
+     * 通过应用的id来查询版本列表.
+     *
+     * @param appSuiteId 应用id.
+     * @return {@link AppBuilderAppPo} 列表.
+     */
+    @Locale
+    List<AppBuilderAppPo> selectByAppSuiteId(String appSuiteId);
+
+    /**
      * 根据租户 id 获取 App 数据对象。
      *
      * @param tenantId 表示租户 id 的唯一标识的 {@link String}。

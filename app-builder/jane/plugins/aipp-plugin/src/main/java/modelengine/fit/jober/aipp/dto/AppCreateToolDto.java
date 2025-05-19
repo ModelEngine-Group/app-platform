@@ -24,17 +24,12 @@ import modelengine.fitframework.annotation.Property;
 @NoArgsConstructor
 public class AppCreateToolDto {
     private String name;
-
     private String description;
-
     private String icon;
-
     private String greeting;
 
     @Property(name = "app_type")
     private String appType;
-
     private String type;
-
     private String systemPrompt;
 }

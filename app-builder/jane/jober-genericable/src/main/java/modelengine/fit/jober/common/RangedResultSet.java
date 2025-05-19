@@ -11,6 +11,7 @@ import modelengine.fitframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 批量返回结构体。
@@ -67,7 +68,25 @@ public class RangedResultSet<T> {
      * @return RangedResultSet
      */
     public static <T> RangedResultSet<T> create(List<T> results, RangeResult range) {
-        return new RangedResultSet(results, range);
+        return new RangedResultSet<>(results, range);
+    }
+
+    /**
+     * 集合是否为空.
+     *
+     * @return true/false.
+     */
+    public boolean isEmpty() {
+        return this.range.getTotal() == 0;
+    }
+
+    /**
+     * 获取第一个元素.
+     *
+     * @return {@link Optional}{@code <}{@code T}{@code >} Optional对象.
+     */
+    public Optional<T> getFirst() {
+        return this.isEmpty() ? Optional.empty() : Optional.of(this.results.get(0));
     }
 
     public List<T> getResults() {

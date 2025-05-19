@@ -25,7 +25,6 @@ import java.util.List;
 @NoArgsConstructor
 public class AppBuilderPromptDto {
     private List<AppBuilderPromptCategoryDto> categories;
-
     private List<AppBuilderInspirationDto> inspirations;
 
     /**
@@ -37,19 +36,12 @@ public class AppBuilderPromptDto {
     @NoArgsConstructor
     public static class AppBuilderInspirationDto {
         private String name;
-
         private String id;
-
         private String prompt;
-
         private String promptTemplate;
-
         private String category;
-
         private String description;
-
         private Boolean auto;
-
         private List<AppBuilderPromptVarDataDto> promptVarData;
     }
 
@@ -62,15 +54,10 @@ public class AppBuilderPromptDto {
     @NoArgsConstructor
     public static class AppBuilderPromptVarDataDto {
         private String key;
-
         private String var;
-
         private String varType;
-
         private String sourceType;
-
         private String sourceInfo;
-
         private Boolean multiple;
     }
 }

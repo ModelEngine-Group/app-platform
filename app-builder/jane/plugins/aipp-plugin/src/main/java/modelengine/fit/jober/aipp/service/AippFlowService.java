@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.service;
 
+import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jober.aipp.common.PageResponse;
 import modelengine.fit.jober.aipp.common.exception.AippException;
@@ -13,13 +14,11 @@ import modelengine.fit.jober.aipp.common.exception.AippForbiddenException;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
 import modelengine.fit.jober.aipp.condition.AippQueryCondition;
 import modelengine.fit.jober.aipp.condition.PaginationCondition;
-import modelengine.fit.jober.aipp.domain.AppBuilderApp;
 import modelengine.fit.jober.aipp.dto.AippCreateDto;
 import modelengine.fit.jober.aipp.dto.AippDetailDto;
 import modelengine.fit.jober.aipp.dto.AippDto;
 import modelengine.fit.jober.aipp.dto.AippOverviewRspDto;
 import modelengine.fit.jober.aipp.dto.AippVersionDto;
-import modelengine.fit.jane.common.entity.OperationContext;
 
 import java.util.List;
 
@@ -93,17 +92,6 @@ public interface AippFlowService {
     AippCreateDto update(AippDto aippDto, OperationContext context) throws AippForbiddenException, AippParamException;
 
     /**
-     * 预览aipp
-     *
-     * @param baselineVersion aipp 的基线版本
-     * @param aippDto aipp定义
-     * @param context 操作上下文
-     * @return 创建预览aipp的id和version
-     * @throws AippException 预览aipp异常
-     */
-    AippCreateDto previewAipp(String baselineVersion, AippDto aippDto, OperationContext context);
-
-    /**
      * 退出预览aipp的清理
      *
      * @param previewAippId 预览版本的aippId
@@ -121,17 +109,4 @@ public interface AippFlowService {
      * @return aipp id信息
      */
     AippCreateDto upgrade(String baselineVersion, AippDto aippDto, OperationContext context);
-
-    /**
-     * 发布aipp
-     *
-     * @param aippDto aipp定义
-     * @param app app定义
-     * @param context 操作上下文
-     * @return 发布aipp概况
-     * @throws AippForbiddenException 禁止更新aipp异常
-     * @throws AippParamException 入参异常
-     * @throws AippException 发布aipp异常
-     */
-    Rsp<AippCreateDto> publish(AippDto aippDto, AppBuilderApp app, OperationContext context) throws AippException;
 }

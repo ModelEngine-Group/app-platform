@@ -13,6 +13,7 @@ import modelengine.fit.jober.aipp.dto.chat.ChatRequest;
 import modelengine.fit.jober.aipp.dto.chat.CreateAppChatRequest;
 import modelengine.fit.jober.aipp.genericable.adapter.AppChatServiceAdapter;
 import modelengine.fit.jober.aipp.service.AppChatService;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.flowable.Choir;
@@ -29,7 +30,6 @@ import java.util.Map;
 @Component
 public class AppChatServiceAdapterImpl implements AppChatServiceAdapter {
     private final AppChatService appChatService;
-
     private final ObjectSerializer serializer;
 
     public AppChatServiceAdapterImpl(AppChatService appChatService, @Fit(alias = "json") ObjectSerializer serializer) {
@@ -39,8 +39,8 @@ public class AppChatServiceAdapterImpl implements AppChatServiceAdapter {
 
     @Override
     public Choir<Object> chat(String appId, ChatRequest params, OperationContext operationContext, boolean isDebug) {
-        CreateAppChatRequest createAppChatRequest = this.serializer.deserialize(this.serializer.serialize(params),
-                CreateAppChatRequest.class);
+        CreateAppChatRequest createAppChatRequest =
+                this.serializer.deserialize(this.serializer.serialize(params), CreateAppChatRequest.class);
         createAppChatRequest.setAppId(appId);
         return this.appChatService.chat(createAppChatRequest, operationContext, isDebug);
     }

@@ -6,11 +6,12 @@
 
 package modelengine.fit.jober.aipp.po;
 
+import modelengine.fit.jober.aipp.aop.LocaleField;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import modelengine.fit.jober.aipp.aop.LocaleField;
 
 /**
  * AppBuilder表单属性结构体
@@ -24,24 +25,15 @@ import modelengine.fit.jober.aipp.aop.LocaleField;
 @Builder
 public class AppBuilderFormPropertyPo {
     private String id;
-
     private String formId;
-
     private String name;
-
     private String dataType;
-
     private String appId;
-
     @LocaleField
     private String defaultValue;
-
     private String from;
-
     private String group;
-
     @LocaleField
     private String description;
-
     private int index;
 }

@@ -23,8 +23,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StoreNodeInfoDto {
     private String name;
-
     private String type;
-
     private String uniqueName;
 }

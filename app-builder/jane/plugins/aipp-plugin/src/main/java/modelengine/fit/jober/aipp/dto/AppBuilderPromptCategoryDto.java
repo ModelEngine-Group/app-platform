@@ -25,12 +25,8 @@ import java.util.List;
 @NoArgsConstructor
 public class AppBuilderPromptCategoryDto {
     private String title;
-
     private String id;
-
     private String parent;
-
     private Boolean disable;
-
     private List<AppBuilderPromptCategoryDto> children;
 }

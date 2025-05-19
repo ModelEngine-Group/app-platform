@@ -12,6 +12,7 @@ import modelengine.fit.jober.aipp.enums.AippInstLogType;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppInspirationService;
 import modelengine.fit.jober.aipp.util.JsonUtils;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.log.Logger;
@@ -39,8 +40,8 @@ public class GetQaFromLog implements AppInspirationService {
 
     @Override
     @Fitable(id = "GetQAFromLog")
-    public List<Map<String, Object>> getCustomizedLogs(Map<String, Object> params, String aippId, String appType,
-            OperationContext context) {
+    public List<Map<String, Object>> getCustomizedLogs(Map<String, Object> params, String aippId,
+            String appType, OperationContext context) {
         List<AippInstLogDataDto> logs = aippLogService.queryRecentLogsSinceResume(aippId, appType, context);
         List<Map<String, Object>> res = new ArrayList<>();
         for (AippInstLogDataDto log : logs) {

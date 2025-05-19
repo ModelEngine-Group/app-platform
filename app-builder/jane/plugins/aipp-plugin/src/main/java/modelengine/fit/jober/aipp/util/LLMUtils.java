@@ -6,14 +6,15 @@
 
 package modelengine.fit.jober.aipp.util;
 
+import modelengine.fit.jober.aipp.common.exception.AippJsonDecodeException;
+import modelengine.fit.jober.aipp.enums.LlmModelNameEnum;
+import modelengine.fit.jober.aipp.service.LLMService;
+
 import modelengine.fel.core.chat.ChatMessage;
 import modelengine.fel.core.chat.ChatModel;
 import modelengine.fel.core.chat.ChatOption;
 import modelengine.fel.core.chat.support.ChatMessages;
 import modelengine.fel.core.chat.support.HumanMessage;
-import modelengine.fit.jober.aipp.common.exception.AippJsonDecodeException;
-import modelengine.fit.jober.aipp.enums.LlmModelNameEnum;
-import modelengine.fit.jober.aipp.service.LLMService;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.StringUtils;

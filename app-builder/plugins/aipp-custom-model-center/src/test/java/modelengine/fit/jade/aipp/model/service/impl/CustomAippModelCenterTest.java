@@ -61,6 +61,7 @@ class CustomAippModelCenterTest {
         ModelAccessInfo targetModelAccessInfo = modelList.getModels().get(0);
         Assertions.assertEquals(modelPo.getName(), targetModelAccessInfo.getServiceName());
         Assertions.assertEquals("tag1,user1", targetModelAccessInfo.getTag());
+        Assertions.assertEquals(modelPo.getBaseUrl(), targetModelAccessInfo.getBaseUrl());
         Mockito.verify(this.defaultModelCenter, Mockito.times(0))
                 .fetchModelList(Mockito.any(), Mockito.any(), Mockito.any());
     }

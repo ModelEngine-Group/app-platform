@@ -8,8 +8,8 @@ package modelengine.fit.jober.aipp.northbound;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,13 +17,14 @@ import static org.mockito.Mockito.when;
 import modelengine.fit.http.entity.FileEntity;
 import modelengine.fit.http.entity.PartitionedEntity;
 import modelengine.fit.jane.common.entity.OperationContext;
-import modelengine.fit.jane.meta.multiversion.MetaService;
 import modelengine.fit.jober.aipp.common.exception.AippTaskNotFoundException;
+import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
 import modelengine.fit.jober.aipp.dto.FileRspDto;
 import modelengine.fit.jober.aipp.dto.chat.FileUploadInfo;
 import modelengine.fit.jober.aipp.genericable.adapter.FileServiceAdapter;
+import modelengine.fit.jober.aipp.po.AppBuilderAppPo;
+import modelengine.fit.jober.aipp.service.AppBuilderAppServiceImplTest;
 import modelengine.fit.jober.aipp.service.FileService;
-import modelengine.fit.jober.aipp.util.MetaUtils;
 
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,20 +42,13 @@ import java.util.UUID;
 @DisplayName("测试 FileServiceAdapterImpl")
 public class FileServiceAdapterImplTest {
     private final FileService fileService = mock(FileService.class);
-
     private final String tenantId = UUID.randomUUID().toString();
-
-    private final String fileName = "testFile";
-
-    private final String appId = "testApp";
-
     private final PartitionedEntity partitionedEntity = mock(PartitionedEntity.class);
+    private final AppVersionService appVersionService = mock(AppVersionService.class);
+    private final FileServiceAdapter fileServiceAdapterImpl = new FileServiceAdapterImpl(fileService,
+            appVersionService);
 
     private final FileEntity fileEntity = mock(FileEntity.class);
-
-    private final MetaService metaService = mock(MetaService.class);
-
-    private final FileServiceAdapter fileServiceAdapterImpl = new FileServiceAdapterImpl(fileService, metaService);
 
     private OperationContext operationContext;
 
@@ -66,15 +60,17 @@ public class FileServiceAdapterImplTest {
     @Test
     @DisplayName("测试上传文件。")
     public void testUploadFile() throws IOException, AippTaskNotFoundException {
-        String aippId = "testAippId";
-        mockStatic(MetaUtils.class);
-        when(MetaUtils.getAippIdByAppId(this.metaService, appId, operationContext)).thenReturn(aippId);
+        String appSuiteId = "appSuiteId";
+        String appId = "testApp";
+        AppBuilderAppPo appPo = AppBuilderAppPo.builder().appId(appId).appSuiteId(appSuiteId).build();
+        when(appVersionService.retrieval(anyString())).thenReturn(AppBuilderAppServiceImplTest.mockAppVersion(appPo));
         FileRspDto fileRspDto = new FileRspDto();
         when(fileService.uploadFile(any(), any(), any(), any(), any())).thenReturn(fileRspDto);
+        String fileName = "testFile";
         FileUploadInfo result = fileServiceAdapterImpl.uploadFile(operationContext, tenantId, fileName, appId,
-                partitionedEntity);
+            partitionedEntity);
         assertThat(result.getFileName()).isEqualTo(fileRspDto.getFileName());
         assertThat(result.getFilePath()).isEqualTo(fileRspDto.getFilePath());
-        verify(fileService, times(1)).uploadFile(operationContext, tenantId, fileName, aippId, fileEntity);
+        verify(fileService, times(1)).uploadFile(operationContext, tenantId, fileName, appSuiteId, fileEntity);
     }
 }

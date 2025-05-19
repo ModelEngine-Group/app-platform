@@ -6,8 +6,11 @@
 
 package modelengine.fit.jober.aipp.aop;
 
-import lombok.RequiredArgsConstructor;
 import modelengine.fit.jober.aipp.service.DatabaseFieldLocaleService;
+import modelengine.jade.authentication.context.UserContext;
+import modelengine.jade.authentication.context.UserContextHolder;
+
+import lombok.RequiredArgsConstructor;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.aop.ProceedingJoinPoint;
 import modelengine.fitframework.aop.annotation.Around;
@@ -36,11 +39,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class LocaleAspect {
     private static final Logger log = Logger.get(LocaleAspect.class);
-
     private static final String I18N_PATTERN = "i18n_appBuilder_\\{(.*?)\\}";
-
     private static final Pattern PATTERN = Pattern.compile(I18N_PATTERN);
-
     private static final List<Locale> LOCALES = Collections.unmodifiableList(
             Arrays.asList(new Locale("en"), new Locale("zh"), new Locale("en", "US"), new Locale("zh", "CN")));
 

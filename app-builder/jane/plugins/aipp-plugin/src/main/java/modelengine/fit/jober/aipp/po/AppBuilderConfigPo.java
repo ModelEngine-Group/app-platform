@@ -25,18 +25,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class AppBuilderConfigPo {
     private String id;
-
     private String formId;
-
     private String tenantId;
-
     private String appId;
-
     private String createBy;
-
     private String updateBy;
-
     private LocalDateTime createAt;
-
     private LocalDateTime updateAt;
 }

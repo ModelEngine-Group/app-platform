@@ -6,12 +6,12 @@
 
 package modelengine.fit.jober.aipp.fitable;
 
+import modelengine.fit.jober.aipp.constants.AippConst;
+import modelengine.fit.jober.aipp.util.DataUtils;
 import modelengine.fit.waterflow.spi.FlowableService;
 import modelengine.jade.app.engine.knowledge.dto.KbVectorSearchDto;
 import modelengine.jade.app.engine.knowledge.service.KnowledgeBaseService;
 
-import modelengine.fit.jober.aipp.constants.AippConst;
-import modelengine.fit.jober.aipp.util.DataUtils;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.log.Logger;

@@ -23,10 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class I18nPo {
     private String id;
-
     private String key;
-
     private String language;
-
     private String value;
 }

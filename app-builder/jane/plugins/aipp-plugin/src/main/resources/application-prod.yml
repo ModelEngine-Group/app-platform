@@ -54,6 +54,11 @@ app-engine:
   ttl:
     businessData: 15
     nonBusinessData: 1
+  max-number: 200
+  question:
+    max-length: 20000
+  user-context:
+    max-length: 500
 elsa:
   endpoint:
   elsaKey:

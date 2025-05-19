@@ -6,10 +6,14 @@
 
 package modelengine.fit.jober.aipp.controller;
 
+import modelengine.fit.jane.common.controller.AbstractController;
+import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
-
+import modelengine.fit.jober.aipp.dto.AppTypeDto;
+import modelengine.fit.jober.aipp.service.AppTypeService;
 import modelengine.jade.service.annotations.CarverSpan;
 import modelengine.jade.service.annotations.SpanAttr;
+
 import modelengine.fit.http.annotation.DeleteMapping;
 import modelengine.fit.http.annotation.GetMapping;
 import modelengine.fit.http.annotation.PathVariable;
@@ -18,10 +22,6 @@ import modelengine.fit.http.annotation.PutMapping;
 import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.server.HttpClassicServerRequest;
-import modelengine.fit.jane.common.controller.AbstractController;
-import modelengine.fit.jane.common.response.Rsp;
-import modelengine.fit.jober.aipp.dto.AppTypeDto;
-import modelengine.fit.jober.aipp.service.AppTypeService;
 import modelengine.fitframework.annotation.Component;
 
 import java.util.List;
@@ -57,7 +57,7 @@ public class AppTypeController extends AbstractController {
      */
     @GetMapping(description = "查询所有应用业务分类")
     public Rsp<List<AppTypeDto>> queryAll(HttpClassicServerRequest request,
-            @PathVariable("tenant_id") String tenantId) {
+        @PathVariable("tenant_id") String tenantId) {
         return Rsp.ok(this.appTypeService.queryAll(tenantId));
     }
 
@@ -71,7 +71,7 @@ public class AppTypeController extends AbstractController {
      */
     @GetMapping(value = "/{id}", description = "查询一条应用业务分类")
     public Rsp<AppTypeDto> query(HttpClassicServerRequest request, @PathVariable("tenant_id") String tenantId,
-            @PathVariable("id") String id) {
+        @PathVariable("id") String id) {
         return Rsp.ok(this.appTypeService.query(id, tenantId));
     }
 
@@ -86,7 +86,7 @@ public class AppTypeController extends AbstractController {
     @PostMapping(description = "创建一条应用业务分类")
     @CarverSpan(value = "operation.appType.create")
     public Rsp<AppTypeDto> create(HttpClassicServerRequest request, @PathVariable("tenant_id") String tenantId,
-            @RequestBody @SpanAttr("name:$.name") AppTypeDto createDto) {
+        @RequestBody @SpanAttr("name:$.name") AppTypeDto createDto) {
         return Rsp.ok(this.appTypeService.add(createDto, tenantId));
     }
 
@@ -102,7 +102,7 @@ public class AppTypeController extends AbstractController {
     @PutMapping(value = "/{id}", description = "更新一条应用业务分类")
     @CarverSpan(value = "operation.appType.update")
     public Rsp<Void> update(HttpClassicServerRequest request, @PathVariable("tenant_id") String tenantId,
-            @PathVariable("id") @SpanAttr("id") String id, @RequestBody @SpanAttr("name:$.name") AppTypeDto dto) {
+        @PathVariable("id") @SpanAttr("id") String id, @RequestBody @SpanAttr("name:$.name") AppTypeDto dto) {
         dto.setId(id);
         this.appTypeService.update(dto, tenantId);
         return Rsp.ok();
@@ -119,7 +119,7 @@ public class AppTypeController extends AbstractController {
     @DeleteMapping(value = "/{id}", description = "根据id删除")
     @CarverSpan(value = "operation.appType.delete")
     public Rsp<Void> delete(HttpClassicServerRequest request, @PathVariable("tenant_id") String tenantId,
-            @PathVariable("id") @SpanAttr("id") String id) {
+        @PathVariable("id") @SpanAttr("id") String id) {
         this.appTypeService.delete(id, tenantId);
         return Rsp.ok();
     }

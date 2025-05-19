@@ -23,14 +23,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InspirationPo {
     private String aippId;
-
     private String parentId;
-
     private String categoryId;
-
     private String inspirationId;
-
     private String value;
-
     private String createUser;
 }

@@ -6,13 +6,14 @@
 
 package modelengine.fit.jober.aipp.dto;
 
+import modelengine.fit.http.annotation.PathVariable;
+import modelengine.fit.http.annotation.RequestParam;
+import modelengine.fitframework.annotation.Property;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import modelengine.fit.http.annotation.PathVariable;
-import modelengine.fit.http.annotation.RequestParam;
-import modelengine.fitframework.annotation.Property;
 
 /**
  * 恢复实例运行的启动参数类

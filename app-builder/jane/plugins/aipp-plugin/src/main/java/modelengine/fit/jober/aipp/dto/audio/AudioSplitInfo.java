@@ -23,7 +23,6 @@ import modelengine.fitframework.annotation.Property;
 public class AudioSplitInfo {
     @Property(description = "音频目录")
     private String dirPath;
-
     @Property(description = "音频分段大小")
     private int segmentSize;
 }

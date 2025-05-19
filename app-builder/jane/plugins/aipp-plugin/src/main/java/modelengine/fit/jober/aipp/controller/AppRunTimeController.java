@@ -6,7 +6,6 @@
 
 package modelengine.fit.jober.aipp.controller;
 
-import modelengine.fit.http.annotation.DeleteMapping;
 import modelengine.fit.http.annotation.GetMapping;
 import modelengine.fit.http.annotation.PathVariable;
 import modelengine.fit.http.annotation.PostMapping;
@@ -20,8 +19,6 @@ import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
-import modelengine.fit.jober.aipp.dto.AppBuilderAippCreateDto;
-import modelengine.fit.jober.aipp.dto.AppBuilderAppStartDto;
 import modelengine.fit.jober.aipp.dto.ResumeAippDto;
 import modelengine.fit.jober.aipp.service.AippFlowRuntimeInfoService;
 import modelengine.fit.jober.aipp.service.AippRunTimeService;
@@ -30,7 +27,6 @@ import modelengine.fit.runtime.entity.RuntimeData;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Property;
 import modelengine.fitframework.flowable.Choir;
-import modelengine.fitframework.validation.Validated;
 import modelengine.jade.service.annotations.CarverSpan;
 import modelengine.jade.service.annotations.SpanAttr;
 
@@ -46,9 +42,6 @@ import java.util.Map;
 @RequestMapping(path = "/v1/api/{tenant_id}", group = "aipp运行时管理接口")
 public class AppRunTimeController extends AbstractController {
     private final AippRunTimeService aippRunTimeService;
-
-    private final modelengine.fit.jober.aipp.genericable.AippRunTimeService aippRunTimeGenericable;
-
     private final AippFlowRuntimeInfoService aippFlowRuntimeInfoService;
 
     /**
@@ -56,37 +49,13 @@ public class AppRunTimeController extends AbstractController {
      *
      * @param authenticator 认证器。
      * @param aippRunTimeService AIPP运行时服务。
-     * @param aippRunTimeGenericable AIPP通用运行时服务。
      * @param aippFlowRuntimeInfoService AIPP流程运行时信息服务。
      */
     public AppRunTimeController(Authenticator authenticator, AippRunTimeService aippRunTimeService,
-            modelengine.fit.jober.aipp.genericable.AippRunTimeService aippRunTimeGenericable,
             AippFlowRuntimeInfoService aippFlowRuntimeInfoService) {
         super(authenticator);
         this.aippRunTimeService = aippRunTimeService;
-        this.aippRunTimeGenericable = aippRunTimeGenericable;
         this.aippFlowRuntimeInfoService = aippFlowRuntimeInfoService;
-    }
-
-    /**
-     * 启动一个Aipp
-     *
-     * @param httpRequest 操作上下文
-     * @param tenantId 租户id
-     * @param aippId aippId
-     * @param version aipp 版本
-     * @param initContext 表示start表单填充的内容，作为流程初始化的businessData。 例如 图片url, 文本输入, prompt
-     * @return 实例id
-     */
-    @CarverSpan(value = "operation.appRuntime.run")
-    @PostMapping(path = "/aipp/{aipp_id}", description = "启动一个Aipp")
-    public Rsp<String> createAippInstance(HttpClassicServerRequest httpRequest,
-            @PathVariable("tenant_id") String tenantId, @PathVariable("aipp_id") @SpanAttr("aipp_id") String aippId,
-            @Property(description = "initContext表示start表单填充的内容，作为流程初始化的businessData",
-                    example = "图片url, 文本输入, prompt") @RequestBody Map<String, Object> initContext,
-            @RequestParam(value = "version") @SpanAttr("version") String version) {
-        return Rsp.ok(this.aippRunTimeGenericable.createAippInstance(aippId, version, initContext,
-                this.contextOf(httpRequest, tenantId)));
     }
 
     /**
@@ -112,26 +81,6 @@ public class AppRunTimeController extends AbstractController {
     }
 
     /**
-     * 删除应用实例
-     *
-     * @param httpRequest 操作上下文
-     * @param tenantId 租户id
-     * @param aippId aippId
-     * @param instanceId 实例id
-     * @param version aipp版本
-     * @return 返回空回复的 {@link Rsp}{@code <}{@link Void}{@code >}
-     */
-    @CarverSpan(value = "operation.appRuntime.delete")
-    @DeleteMapping(path = "/aipp/{aipp_id}/instances/{instance_id}", description = "删除应用实例")
-    public Rsp<Void> deleteInstance(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
-            @PathVariable("aipp_id") @SpanAttr("aipp_id") String aippId,
-            @PathVariable("instance_id") @SpanAttr("instance_id") String instanceId,
-            @RequestParam(value = "version") String version) {
-        aippRunTimeService.deleteAippInstance(aippId, version, instanceId, this.contextOf(httpRequest, tenantId));
-        return Rsp.ok();
-    }
-
-    /**
      * 更新表单数据，并恢复实例任务执行
      *
      * @param httpRequest 操作上下文
@@ -145,8 +94,10 @@ public class AppRunTimeController extends AbstractController {
             @RequestBean ResumeAippDto resumeAippDto,
             @Property(description = "用户填写的表单信息", example = "用户选择的大模型信息") @RequestBody
             Map<String, Object> formArgs) {
-        return this.aippRunTimeService.resumeAndUpdateAippInstance(resumeAippDto.getInstanceId(), formArgs,
-                resumeAippDto.getLogId(), this.contextOf(httpRequest, resumeAippDto.getTenantId()),
+        return this.aippRunTimeService.resumeAndUpdateAippInstance(resumeAippDto.getInstanceId(),
+                formArgs,
+                resumeAippDto.getLogId(),
+                this.contextOf(httpRequest, resumeAippDto.getTenantId()),
                 resumeAippDto.isDebug());
     }
 
@@ -165,8 +116,9 @@ public class AppRunTimeController extends AbstractController {
             @PathVariable("tenant_id") String tenantId,
             @PathVariable("instance_id") @SpanAttr("instance_id") String instanceId,
             @RequestBody Map<String, Object> msgArgs) {
-        return Rsp.ok(
-                this.aippRunTimeService.terminateInstance(instanceId, msgArgs, this.contextOf(httpRequest, tenantId)));
+        return Rsp.ok(this.aippRunTimeService.terminateInstance(instanceId,
+                msgArgs,
+                this.contextOf(httpRequest, tenantId)));
     }
 
     /**
@@ -190,25 +142,6 @@ public class AppRunTimeController extends AbstractController {
     }
 
     /**
-     * 启动对话实例
-     *
-     * @param httpRequest 操作上下文
-     * @param tenantId 租户id
-     * @param appBuilderAippCreateDto 启动对话结构体
-     * @return 实例id
-     */
-    @CarverSpan(value = "operation.appRuntime.createInstance")
-    @PostMapping(path = "/aipp/{app_id}/start", description = "启动一个对话实例")
-    public Rsp<AppBuilderAppStartDto> startInstance(HttpClassicServerRequest httpRequest,
-            @PathVariable("tenant_id") String tenantId,
-            @Property(description = "initContext表示start表单填充的内容，作为流程初始化的businessData",
-                    example = "图片url, 文本输入, prompt") @RequestBody @Validated
-            AppBuilderAippCreateDto appBuilderAippCreateDto) {
-        return Rsp.ok(aippRunTimeService.startInstance(appBuilderAippCreateDto.getAppDto(),
-                appBuilderAippCreateDto.getContext(), this.contextOf(httpRequest, tenantId)));
-    }
-
-    /**
      * 查询流程运行时数据.
      *
      * @param httpRequest 操作上下文
@@ -223,8 +156,8 @@ public class AppRunTimeController extends AbstractController {
             @PathVariable("tenant_id") String tenantId, @PathVariable("aipp_id") String aippId,
             @PathVariable("instance_id") String instanceId, @RequestParam(value = "version") String version) {
         OperationContext ctx = this.contextOf(httpRequest, tenantId);
-        RuntimeData runtimeData = this.aippFlowRuntimeInfoService.getRuntimeData(aippId, version, instanceId, ctx)
-                .orElse(null);
+        RuntimeData runtimeData =
+                this.aippFlowRuntimeInfoService.getRuntimeData(aippId, version, instanceId, ctx).orElse(null);
         return Rsp.ok(runtimeData);
     }
 

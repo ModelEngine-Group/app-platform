@@ -7,13 +7,13 @@
 package modelengine.fit.jober.aipp.service.impl;
 
 import modelengine.fit.jane.task.util.Entities;
-
-import lombok.RequiredArgsConstructor;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.entity.ChatSession;
 import modelengine.fit.jober.aipp.mapper.AppChatNumMapper;
 import modelengine.fit.jober.aipp.service.AppChatSessionService;
+
+import lombok.RequiredArgsConstructor;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.schedule.annotation.Scheduled;
@@ -38,14 +38,14 @@ public class AppChatSessionServiceImpl implements AppChatSessionService {
     private static final Logger log = Logger.get(AppChatSessionServiceImpl.class);
 
     private final Map<String, ChatSession<Object>> emitterMap = new ConcurrentHashMap<>();
-
     private final AppChatNumMapper appChatNumMapper;
 
     @Override
     public void addSession(String instanceId, ChatSession<Object> chatSession) {
         this.emitterMap.put(instanceId, chatSession);
         try {
-            this.appChatNumMapper.insertOrAddOne(Entities.generateId(), chatSession.getAppId(),
+            this.appChatNumMapper.insertOrAddOne(Entities.generateId(),
+                    chatSession.getAppId(),
                     String.valueOf(chatSession.isDebug()));
             chatSession.setOccupied(true);
         } catch (DataAccessException e) {

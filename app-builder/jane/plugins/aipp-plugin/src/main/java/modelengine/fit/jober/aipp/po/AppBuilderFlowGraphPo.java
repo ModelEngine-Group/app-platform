@@ -6,11 +6,12 @@
 
 package modelengine.fit.jober.aipp.po;
 
+import modelengine.fit.jober.aipp.aop.LocaleField;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import modelengine.fit.jober.aipp.aop.LocaleField;
 
 import java.time.LocalDateTime;
 
@@ -26,17 +27,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class AppBuilderFlowGraphPo {
     private String id;
-
     private String name;
-
     @LocaleField
     private String appearance;
-
     private String createBy;
-
     private String updateBy;
-
     private LocalDateTime createAt;
-
     private LocalDateTime updateAt;
 }

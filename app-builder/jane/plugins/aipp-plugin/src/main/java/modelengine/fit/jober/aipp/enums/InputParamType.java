@@ -39,8 +39,8 @@ public enum InputParamType {
      */
     public static InputParamType getParamType(String type) {
         return Arrays.stream(InputParamType.values())
-                .filter(paramType -> StringUtils.equals(paramType.type, type))
-                .findFirst()
-                .orElse(InputParamType.UNKNOWN_TYPE);
+            .filter(paramType -> StringUtils.equals(paramType.type, type))
+            .findFirst()
+            .orElse(InputParamType.UNKNOWN_TYPE);
     }
 }

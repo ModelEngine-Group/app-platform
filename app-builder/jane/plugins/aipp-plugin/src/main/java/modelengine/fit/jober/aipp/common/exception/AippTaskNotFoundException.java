@@ -6,8 +6,9 @@
 
 package modelengine.fit.jober.aipp.common.exception;
 
-import lombok.Getter;
 import modelengine.fit.jane.common.entity.OperationContext;
+
+import lombok.Getter;
 
 /**
  * aipp通用受检异常
@@ -19,10 +20,9 @@ import modelengine.fit.jane.common.entity.OperationContext;
 public class AippTaskNotFoundException extends AippCheckedException {
     private OperationContext context;
 
-    private modelengine.fit.jober.aipp.common.exception.AippErrCode error;
+    private AippErrCode error;
 
-    public AippTaskNotFoundException(OperationContext context,
-            modelengine.fit.jober.aipp.common.exception.AippErrCode error) {
+    public AippTaskNotFoundException(OperationContext context, AippErrCode error) {
         super(context, error);
     }
 

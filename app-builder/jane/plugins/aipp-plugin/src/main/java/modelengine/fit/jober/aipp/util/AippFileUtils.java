@@ -34,9 +34,7 @@ public class AippFileUtils {
      * 上传文件会上传到该共享目录。
      */
     private static final String DOWNLOAD_FILE_ORIGIN = "/v1/api/31f20efc7e0848deab6a6bc10fc3021e/file?";
-
     private static final Pattern PATTERN = Pattern.compile("filePath=([^&]+)");
-
     private static final Logger log = Logger.get(AippFileUtils.class);
 
     /**

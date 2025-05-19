@@ -6,8 +6,9 @@
 
 package modelengine.fit.jober.aipp.common.exception;
 
-import lombok.Getter;
 import modelengine.fit.jane.common.entity.OperationContext;
+
+import lombok.Getter;
 
 /**
  * aipp通用受检异常

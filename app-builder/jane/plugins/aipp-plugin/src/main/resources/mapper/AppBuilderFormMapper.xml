@@ -90,8 +90,7 @@
         where name = #{name} and tenant_id = #{tenantId} and is_deleted = 0
     </select>
 
-    <select id="selectWithCondition" resultMap="BaseResultMap"
-            resultType="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
+    <select id="selectWithCondition" resultMap="BaseResultMap" resultType="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
         select
         <include refid="Base_Column_List"/>
         from app_builder_form where is_deleted = 0

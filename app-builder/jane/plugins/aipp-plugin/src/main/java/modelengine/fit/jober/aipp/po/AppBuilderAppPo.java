@@ -6,11 +6,12 @@
 
 package modelengine.fit.jober.aipp.po;
 
+import modelengine.fit.jober.aipp.aop.LocaleField;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import modelengine.fit.jober.aipp.aop.LocaleField;
 
 import java.time.LocalDateTime;
 
@@ -26,38 +27,30 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class AppBuilderAppPo {
     private String id;
-
     @LocaleField
     private String name;
-
     private String tenantId;
-
     private String configId;
-
     private String flowGraphId;
-
     private String type;
-
     private String createBy;
-
     private String updateBy;
-
     private String version;
-
     private LocalDateTime createAt;
-
     private LocalDateTime updateAt;
-
     @LocaleField
     private String attributes;
-
     private String path;
-
     private String state;
-
     private String appBuiltType;
-
     private String appCategory;
-
     private String appType;
+
+    // 新增字段.
+    private String appId;
+    private String appSuiteId;
+    private Boolean isActive;
+    private String status;
+    private String uniqueName;
+    private LocalDateTime publishAt;
 }

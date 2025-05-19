@@ -7,14 +7,15 @@
 package modelengine.fit.jober.aipp.service.impl;
 
 import modelengine.fit.jane.common.entity.OperationContext;
-import modelengine.fit.jane.meta.multiversion.MetaInstanceService;
-import modelengine.fit.jane.meta.multiversion.MetaService;
-import modelengine.fit.jane.meta.multiversion.definition.Meta;
-import modelengine.fit.jane.meta.multiversion.definition.MetaFilter;
-import modelengine.fit.jane.meta.multiversion.instance.Instance;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
 import modelengine.fit.jober.aipp.constants.AippConst;
+import modelengine.fit.jober.aipp.domains.business.RunContext;
+import modelengine.fit.jober.aipp.domains.log.repository.AippLogRepository;
+import modelengine.fit.jober.aipp.domains.task.AppTask;
+import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
+import modelengine.fit.jober.aipp.domains.taskinstance.AppTaskInstance;
+import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.dto.aipplog.AippInstLogDataDto;
 import modelengine.fit.jober.aipp.dto.aipplog.AippLogCreateDto;
 import modelengine.fit.jober.aipp.dto.aipplog.AippLogQueryCondition;
@@ -31,12 +32,13 @@ import modelengine.fit.jober.aipp.service.UploadedFileManageService;
 import modelengine.fit.jober.aipp.util.AippLogUtils;
 import modelengine.fit.jober.aipp.util.DataUtils;
 import modelengine.fit.jober.aipp.util.JsonUtils;
-import modelengine.fit.jober.aipp.util.MetaInstanceUtils;
-import modelengine.fit.jober.aipp.util.MetaUtils;
 import modelengine.fit.jober.common.RangedResultSet;
+
+import lombok.AllArgsConstructor;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
+import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 
@@ -63,31 +65,17 @@ import java.util.stream.Collectors;
  * @since 2024-01-08
  */
 @Component
+@AllArgsConstructor
 public class AippLogServiceImpl implements AippLogService {
     private static final Logger log = Logger.get(AippLogServiceImpl.class);
 
     private final AippLogMapper aippLogMapper;
-
     private final AippChatMapper aippChatMapper;
-
-    private final MetaInstanceService metaInstanceService;
-
     private final UploadedFileManageService uploadedFileManageService;
-
-    private final MetaService metaService;
-
     private final AopAippLogService aopAippLogService;
-
-    public AippLogServiceImpl(AippLogMapper aippLogMapper, MetaInstanceService metaInstanceService,
-            UploadedFileManageService uploadedFileManageService, MetaService metaService, AippChatMapper aippChatMapper,
-            AopAippLogService aopAippLogService) {
-        this.aippLogMapper = aippLogMapper;
-        this.aippChatMapper = aippChatMapper;
-        this.metaInstanceService = metaInstanceService;
-        this.uploadedFileManageService = uploadedFileManageService;
-        this.metaService = metaService;
-        this.aopAippLogService = aopAippLogService;
-    }
+    private final AppTaskInstanceService appTaskInstanceService;
+    private final AppTaskService appTaskService;
+    private final AippLogRepository aippLogRepository;
 
     private AippInstLog completeFormDataJson(AippInstLog instanceLog, OperationContext context) {
         if (AippInstLogType.FORM.name().equals(instanceLog.getLogType())) {
@@ -95,12 +83,10 @@ public class AippLogServiceImpl implements AippLogService {
             if (form == null) {
                 return instanceLog;
             }
-            Map<String, String> newLogData = new HashMap<String, String>() {
-                {
-                    put("formData", form.getFormData());
-                    put("formAppearance", form.getFormAppearance());
-                }
-            };
+            Map<String, String> newLogData = MapBuilder.<String, String>get()
+                    .put("formData", form.getFormData())
+                    .put("formAppearance", form.getFormAppearance())
+                    .build();
             instanceLog.setLogData(JsonUtils.toJsonString(newLogData));
         }
         return instanceLog;
@@ -125,54 +111,35 @@ public class AippLogServiceImpl implements AippLogService {
         // 只对最后一个记录查询状态
         if (!recentLogData.isEmpty()) {
             AippInstLogDataDto lastLogData = recentLogData.get(recentLogData.size() - 1);
-            Meta meta = MetaUtils.getAnyMeta(metaService, lastLogData.getAippId(), lastLogData.getVersion(), context);
-            if (meta == null) {
+            String appSuiteId = lastLogData.getAippId();
+            String version = lastLogData.getVersion();
+            Optional<AppTask> taskOp = this.appTaskService.getLatest(appSuiteId, version, context);
+            if (taskOp.isEmpty()) {
                 return Collections.emptyList();
             }
-            String versionId = meta.getVersionId();
-            RangedResultSet<Instance> instances = MetaInstanceUtils.getOneInstance(versionId,
-                    lastLogData.getInstanceId(),
-                    context,
-                    metaInstanceService);
-            if (instances.getRange().getTotal() == 0) {
+            String versionId = taskOp.get().getEntity().getTaskId();
+            Optional<AppTaskInstance> instanceOp = this.appTaskInstanceService.getInstance(versionId,
+                    lastLogData.getInstanceId(), context);
+            if (instanceOp.isEmpty()) {
                 return Collections.emptyList();
             }
-            String lastLogStatus = instances.getResults()
-                    .get(0)
-                    .getInfo()
-                    .getOrDefault(AippConst.INST_STATUS_KEY, MetaInstStatusEnum.RUNNING.name());
-            lastLogData.setStatus(lastLogStatus);
+            lastLogData.setStatus(instanceOp.get().getEntity().getStatus().orElse(MetaInstStatusEnum.RUNNING.name()));
         }
         return recentLogData;
     }
 
     private List<String> getMetaIds(String appId, OperationContext context, String aippType) {
-        return MetaUtils.getAllMetasByAppId(this.metaService, appId, aippType, context)
+        return this.appTaskService.getTasksByAppId(appId, aippType, context)
                 .stream()
                 .filter(Objects::nonNull)
-                .map(Meta::getId)
-                .distinct()
-                .collect(Collectors.toList());
+                .map(t -> t.getEntity().getAppSuiteId())
+                .toList();
     }
 
     private List<AippInstLogDataDto> queryAippRecentInstLog(List<String> aippIds, String aippType, Integer count,
             OperationContext context) {
         List<String> instanceIds =
                 this.aippLogMapper.selectRecentInstanceIdByAippIds(aippIds, aippType, count, context.getAccount());
-        return this.queryAndSortLogs(instanceIds, context);
-    }
-
-    @Override
-    public List<AippInstLogDataDto> queryAippRecentInstLog(String aippId, String aippType, Integer count,
-            OperationContext context) {
-        List<String> instanceIds = aippLogMapper.selectRecentInstanceId(aippId, aippType, count, context.getAccount());
-        return this.queryAndSortLogs(instanceIds, context);
-    }
-
-    @Override
-    public List<AippInstLogDataDto> queryChatRecentInstLog(String aippId, String aippType, Integer count,
-            OperationContext context, String chatId) {
-        List<String> instanceIds = aippChatMapper.selectFormerInstanceByChat(chatId, count);
         return this.queryAndSortLogs(instanceIds, context);
     }
 
@@ -188,12 +155,12 @@ public class AippLogServiceImpl implements AippLogService {
     private List<AippInstLogDataDto> getAippLogWithAppInfo(List<AippInstLogDataDto> logData, String appId,
             OperationContext context) {
         // 获取被@应用的头像、名称
-        List<String> originAippId = MetaUtils.getAllMetasByAppId(this.metaService, appId, context)
+        List<String> originAippId = this.appTaskService.getTasksByAppId(appId, context)
                 .stream()
                 .filter(Objects::nonNull)
-                .map(Meta::getId)
+                .map(t -> t.getEntity().getAppSuiteId())
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
         List<String> atAippIds = logData.stream()
                 .map(AippInstLogDataDto::getAippId)
                 .filter(aippId -> !originAippId.contains(aippId))
@@ -201,49 +168,42 @@ public class AippLogServiceImpl implements AippLogService {
         if (CollectionUtils.isEmpty(atAippIds)) {
             return logData;
         }
-        RangedResultSet<Meta> metas = metaService.list(this.buildAippIdFilter(atAippIds), true, 0, atAippIds.size(),
-                context);
-        if (CollectionUtils.isEmpty(metas.getResults())) {
+        RangedResultSet<AppTask> resultSet = this.appTaskService.getTasks(
+                AppTask.asQueryEntity(0, atAippIds.size()).latest().addAppSuiteIds(atAippIds).build(), context);
+        if (resultSet.isEmpty()) {
             return logData;
         }
-        Map<String, Meta> metaMap =
-                metas.getResults().stream().collect(Collectors.toMap(Meta::getId, Function.identity()));
-        return logData.stream()
-                .peek(aippInstLogDataDto -> setLogDataWithIcon(aippInstLogDataDto, metaMap))
-                .collect(Collectors.toList());
-    }
-
-    private void setLogDataWithIcon(AippInstLogDataDto aippInstLogDataDto, Map<String, Meta> metaMap) {
-        if (!metaMap.containsKey(aippInstLogDataDto.getAippId())) {
-            return;
-        }
-        Meta metaData = metaMap.get(aippInstLogDataDto.getAippId());
-        Object metaIcon = metaData.getAttributes().get("meta_icon");
-        if (metaIcon instanceof String) {
-            aippInstLogDataDto.setAppIcon((String) metaIcon);
-        }
-        aippInstLogDataDto.setAppName(metaData.getName());
-    }
-
-    private MetaFilter buildAippIdFilter(List<String> aippIds) {
-        MetaFilter filter = new MetaFilter();
-        filter.setMetaIds(aippIds);
-        return filter;
+        Map<String, AppTask> taskMap = resultSet.getResults()
+                .stream()
+                .collect(Collectors.toMap(t -> t.getEntity().getAppSuiteId(), Function.identity()));
+        return logData.stream().peek(l -> {
+            if (!taskMap.containsKey(l.getAippId())) {
+                return;
+            }
+            AppTask task = taskMap.get(l.getAippId());
+            l.setAppName(task.getEntity().getName());
+            l.setAppIcon(task.getEntity().getIcon());
+        }).collect(Collectors.toList());
     }
 
     private List<AippInstLogDataDto> queryAndSortLogs(List<String> instanceIds, OperationContext context) {
-        return queryRecentLogByInstanceIds(instanceIds, context).values()
-                .stream()
-                .filter(CollectionUtils::isNotEmpty)
-                .map((List<AippInstLog> rawLogs) -> AippInstLogDataDto.fromAippInstLogList(rawLogs,
-                        context,
-                        this.metaInstanceService))
+        return instanceIds.stream()
+                .map(id -> {
+                    String metaVersionId = appTaskInstanceService.getTaskId(id);
+                    return this.appTaskInstanceService.getInstance(metaVersionId, id, context);
+                })
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(AppTaskInstance::toLogDataDto)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .sorted(Comparator.comparing(AippInstLogDataDto::getCreateAt))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
-    public List<AippInstLogDataDto> queryChatRecentChatLog(String chatId, String appId, OperationContext context) {
+    public List<AippInstLogDataDto> queryChatRecentChatLog(String chatId, String appId,
+            OperationContext context) {
         List<String> instanceIds = aippChatMapper.selectInstanceByChat(chatId, 10);
         List<AippInstLogDataDto> logData = queryAndSortLogs(instanceIds, context);
         return this.getAippLogWithAppInfo(logData, appId, context);
@@ -254,14 +214,7 @@ public class AippLogServiceImpl implements AippLogService {
             OperationContext context) {
         List<String> instanceIds = aippLogMapper.selectRecentAfterResume(aippId, aippType, context.getAccount());
         // 该功能未上线，待测试
-        return queryRecentLogByInstanceIds(instanceIds, context).values()
-                .stream()
-                .filter(CollectionUtils::isNotEmpty)
-                .map((List<AippInstLog> rawLogs) -> AippInstLogDataDto.fromAippInstLogList(rawLogs,
-                        context,
-                        this.metaInstanceService))
-                .sorted(Comparator.comparing(AippInstLogDataDto::getCreateAt))
-                .collect(Collectors.toList());
+        return this.queryAndSortLogs(instanceIds, context);
     }
 
     private Map<String, List<AippInstLog>> queryRecentLogByInstanceIds(List<String> instanceIds,
@@ -306,8 +259,10 @@ public class AippLogServiceImpl implements AippLogService {
     @Override
     public List<AippInstLog> queryInstanceLogSince(String instanceId, String timeString) {
         LocalDateTime sinceTime = Optional.ofNullable(timeString).map(this::getLocalDateTime).orElse(null);
-        AippLogQueryCondition sqlCondition =
-                AippLogQueryCondition.builder().instanceId(instanceId).afterAt(sinceTime).build();
+        AippLogQueryCondition sqlCondition = AippLogQueryCondition.builder()
+                .instanceId(instanceId)
+                .afterAt(sinceTime)
+                .build();
         return aippLogMapper.selectWithCondition(sqlCondition)
                 .stream()
                 .filter(AippLogServiceImpl::isNeededLog)
@@ -380,35 +335,22 @@ public class AippLogServiceImpl implements AippLogService {
         if (!instanceIdList.isEmpty()) {
             // check最后的实例是不是还在运行
             String instanceId = instanceIdList.get(0);
-            String versionId = this.metaInstanceService.getMetaVersionId(instanceId);
-            RangedResultSet<Instance> instances =
-                    MetaInstanceUtils.getOneInstance(versionId, instanceId, context, this.metaInstanceService);
-            if (instances.getRange().getTotal() == 0) {
-                return;
-            }
-            String lastLogStatus = instances.getResults()
-                    .get(0)
-                    .getInfo()
-                    .getOrDefault(AippConst.INST_STATUS_KEY, MetaInstStatusEnum.RUNNING.name());
-            String instanceIdExclude = null;
-            if (lastLogStatus.equals(MetaInstStatusEnum.RUNNING.name())) {
-                instanceIdExclude = instanceIdList.get(0);
-            } else {
-                this.uploadedFileManageService.cleanAippFiles(metaIds);
-            }
-            this.aippLogMapper.delete(metaIds, aippType, context.getAccount(), instanceIdExclude);
+            String taskId = this.appTaskInstanceService.getTaskId(instanceId);
+            this.appTaskInstanceService.getInstance(taskId, instanceId, context).ifPresent(appTaskInstance -> {
+                String instanceIdExclude = null;
+                if (appTaskInstance.isRunning()) {
+                    instanceIdExclude = instanceId;
+                } else {
+                    this.uploadedFileManageService.cleanAippFiles(metaIds);
+                }
+                this.aippLogMapper.delete(metaIds, aippType, context.getAccount(), instanceIdExclude);
+            });
         }
     }
 
-    /**
-     * 删除指定aipp预览的历史记录
-     *
-     * @param previewAippId 指定aipp的id
-     * @param context 登录信息
-     */
     @Override
     public void deleteAippPreviewLog(String previewAippId, OperationContext context) {
-        this.aippLogMapper.deleteByType(previewAippId, AippTypeEnum.PREVIEW.name(), context.getAccount(), null);
+        this.aippLogRepository.deleteAippPreviewLog(previewAippId, context);
     }
 
     /**
@@ -421,18 +363,19 @@ public class AippLogServiceImpl implements AippLogService {
      */
     @Override
     public String insertLog(String logType, AippLogData logData, Map<String, Object> businessData) {
-        String aippId = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_ID_KEY));
-        String instId = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_INST_ID_KEY));
-        String parentInstId = ObjectUtils.cast(businessData.get(AippConst.PARENT_INSTANCE_ID));
-        String version = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_VERSION_KEY));
-        String aippType = ObjectUtils.cast(businessData.get(AippConst.ATTR_AIPP_TYPE_KEY));
+        RunContext runContext = new RunContext(businessData, new OperationContext());
+        String aippId = runContext.getAppSuiteId();
+        String instId = runContext.getTaskInstanceId();
+        String parentInstId = runContext.getParentInstanceId();
+        String version = runContext.getAppVersion();
+        String aippType = runContext.getAippType();
         String account = DataUtils.getOpContext(businessData).getAccount();
         if (!AippLogUtils.validFormMsg(logData, logType)) {
             return null;
         }
-        String path = buildPath(instId, parentInstId);
-        String chatId = ObjectUtils.cast(businessData.get(AippConst.BS_CHAT_ID));
-        String atChatId = ObjectUtils.cast(businessData.get(AippConst.BS_AT_CHAT_ID));
+        String path = this.buildPath(instId, parentInstId);
+        String chatId = runContext.getOriginChatId();
+        String atChatId = runContext.getAtChatId();
         return this.aopAippLogService.insertLog(AippLogCreateDto.builder()
                 .aippId(aippId)
                 .version(version)
@@ -447,24 +390,11 @@ public class AippLogServiceImpl implements AippLogService {
                 .isEnableLog(this.isEnableLog(businessData))
                 .build());
     }
-
     private Boolean isEnableLog(Map<String, Object> businessData) {
         // 兼容老数据，老数据没有这个开关的时候（enableLog为null）默认返回true。
         // 有开关后（enableLog为null），返回enableLog的值
         return Objects.isNull(businessData.get(AippConst.BS_LLM_ENABLE_LOG))
                 || ObjectUtils.<Boolean>cast(businessData.get(AippConst.BS_LLM_ENABLE_LOG));
-    }
-
-    /**
-     * 插入MSG类型的历史记录
-     *
-     * @param msg MSG日志内容
-     * @param flowData 流程执行上下文数据。
-     */
-    @Override
-    public void insertMsgLog(String msg, List<Map<String, Object>> flowData) {
-        AippLogData logData = AippLogData.builder().msg(msg).build();
-        insertLog(AippInstLogType.MSG.name(), logData, DataUtils.getBusiness(flowData));
     }
 
     /**
@@ -510,7 +440,7 @@ public class AippLogServiceImpl implements AippLogService {
             log.error("logId is null");
             throw new AippParamException(AippErrCode.INPUT_PARAM_IS_INVALID);
         }
-        this.aippLogMapper.updateDataAndType(logId, newLogType, newLogData);
+        this.aippLogRepository.updateDataAndType(logId, newLogType, newLogData);
     }
 
     @Override
@@ -518,23 +448,16 @@ public class AippLogServiceImpl implements AippLogService {
         if (parentInstId == null) {
             return "";
         }
-        return aippLogMapper.getParentPath(parentInstId);
+        return this.aippLogRepository.getParentPath(parentInstId);
     }
 
-    /**
-     * 根据父Instance的路径构建当前Instance的路径。
-     *
-     * @param instId 表示当前instance的id的 {@link String}。
-     * @param parentInstId 表示父instance的id的 {@link String}。
-     * @return 表示当前instId的路径的 {@link String}。
-     */
     @Override
     public String buildPath(String instId, String parentInstId) {
         String path;
         if (parentInstId == null) {
             path = AippLogUtils.PATH_DELIMITER + instId;
         } else {
-            String parentPath = getParentPath(parentInstId);
+            String parentPath = this.getParentPath(parentInstId);
             path = StringUtils.isEmpty(parentPath)
                     ? AippLogUtils.PATH_DELIMITER + instId
                     : String.join(AippLogUtils.PATH_DELIMITER, parentPath, instId);
@@ -543,27 +466,19 @@ public class AippLogServiceImpl implements AippLogService {
     }
 
     @Override
-    public void deleteInstanceLog(String instanceId) {
-        if (StringUtils.isEmpty(instanceId)) {
-            log.error("Instance id is null or empty.");
-            throw new AippParamException(AippErrCode.INPUT_PARAM_IS_INVALID);
-        }
-        this.aippLogMapper.deleteInstanceLog(instanceId);
-    }
-
-    @Override
     public List<AippInstLogDataDto> queryAippRecentInstLogAfterSplice(String aippId, String aippType, Integer count,
-            OperationContext context) {
-        List<String> instanceIds = aippLogMapper.selectRecentInstanceId(aippId, aippType, count, context.getAccount());
+        OperationContext context) {
+        List<String> instanceIds =
+            aippLogMapper.selectRecentInstanceId(aippId, aippType, count, context.getAccount());
         // 该功能未上线，待测试
         return queryRecentLogByInstanceIds(instanceIds, context).values()
-                .stream()
-                .filter(CollectionUtils::isNotEmpty)
+            .stream()
+            .filter(CollectionUtils::isNotEmpty)
                 .map((List<AippInstLog> rawLogs) -> AippInstLogDataDto.fromAippInstLogListAfterSplice(rawLogs,
-                        this.metaInstanceService,
+                        this.appTaskInstanceService,
                         context))
-                .sorted(Comparator.comparing(AippInstLogDataDto::getCreateAt))
-                .collect(Collectors.toList());
+            .sorted(Comparator.comparing(AippInstLogDataDto::getCreateAt))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -577,27 +492,6 @@ public class AippLogServiceImpl implements AippLogService {
                 .stream()
                 .filter(log -> !filterLogTypes.contains(log.getLogType()))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AippInstLog> queryAndFilterLogsByLogType(String instanceId, List<String> filterLogTypes) {
-        if (StringUtils.isEmpty(instanceId)) {
-            log.error("Instance id is null or empty.");
-            throw new AippParamException(AippErrCode.INPUT_PARAM_IS_INVALID);
-        }
-        return this.aippLogMapper.getLogsByInstanceId(instanceId)
-                .stream()
-                .filter(log -> !filterLogTypes.contains(log.getLogType()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AippInstLog> queryLogsByInstanceIdAndLogTypes(String instanceId, List<String> logTypes) {
-        if (StringUtils.isEmpty(instanceId)) {
-            log.error("When queryLogsByInstanceIdAndLogTypes input instance id is empty.");
-            throw new AippParamException(AippErrCode.INPUT_PARAM_IS_INVALID);
-        }
-        return this.aippLogMapper.getLogsByInstanceIdAndLogTypes(instanceId, logTypes);
     }
 
     @Override

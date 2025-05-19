@@ -9,12 +9,11 @@ package modelengine.fit.jober.aipp.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import modelengine.jade.store.service.PluginService;
-import modelengine.jade.store.service.support.DeployStatus;
-
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.dto.StatisticsDTO;
 import modelengine.fit.jober.aipp.service.impl.StatisticsServiceImpl;
+import modelengine.jade.store.service.PluginService;
+import modelengine.jade.store.service.support.DeployStatus;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

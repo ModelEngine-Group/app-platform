@@ -23,6 +23,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AppExportFlowGraph {
     private String name;
-
     private String appearance;
 }

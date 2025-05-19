@@ -24,15 +24,10 @@ import java.util.Locale;
 @Setter
 public class ChatSession<T> {
     Emitter<Object> emitter;
-
     String appId;
-
     boolean isDebug;
-
     Locale locale;
-
     LocalDateTime expireTime;
-
     boolean isOccupied;
 
     public ChatSession(Emitter<Object> emitter, String appId, boolean isDebug, Locale locale) {

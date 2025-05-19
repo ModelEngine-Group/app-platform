@@ -6,11 +6,12 @@
 
 package modelengine.fit.jober.aipp.util;
 
+import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.annotation.Value;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import modelengine.fitframework.annotation.Component;
-import modelengine.fitframework.annotation.Value;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -57,9 +58,7 @@ public class SensitiveFilterTools {
     @AllArgsConstructor
     public static class SensitiveReplaceEntity {
         private String pattern;
-
         private String to;
-
         private Pattern compiledPattern;
     }
 }

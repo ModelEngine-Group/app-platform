@@ -25,6 +25,5 @@ import java.util.List;
 @NoArgsConstructor
 public class ModelListDto {
     private List<ModelAccessInfo> models;
-
     private int total;
 }

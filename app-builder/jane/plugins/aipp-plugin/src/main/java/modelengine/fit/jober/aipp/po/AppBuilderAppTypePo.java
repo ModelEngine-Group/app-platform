@@ -6,12 +6,13 @@
 
 package modelengine.fit.jober.aipp.po;
 
+import modelengine.fit.jober.aipp.aop.LocaleField;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import modelengine.fit.jober.aipp.aop.LocaleField;
 
 import java.time.LocalDateTime;
 
@@ -28,13 +29,9 @@ import java.time.LocalDateTime;
 @Builder
 public class AppBuilderAppTypePo {
     private String id;
-
     @LocaleField
     private String name;
-
     private String tenantId;
-
     private LocalDateTime createAt;
-
     private LocalDateTime updateAt;
 }

@@ -11,8 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import modelengine.fit.jane.task.gateway.Authenticator;
-
 import modelengine.fit.http.HttpResource;
 import modelengine.fit.http.protocol.Address;
 import modelengine.fit.http.protocol.MessageHeaders;
@@ -20,6 +18,7 @@ import modelengine.fit.http.protocol.ReadableMessageBody;
 import modelengine.fit.http.protocol.RequestLine;
 import modelengine.fit.http.protocol.ServerRequest;
 import modelengine.fit.http.server.support.DefaultHttpClassicServerRequest;
+import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.jober.aipp.dto.chat.QueryChatRequest;
 import modelengine.fit.jober.aipp.service.AippChatService;
 

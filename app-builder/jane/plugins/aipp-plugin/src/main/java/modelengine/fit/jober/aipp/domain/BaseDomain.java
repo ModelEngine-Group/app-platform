@@ -27,13 +27,9 @@ import java.util.function.Supplier;
 @NoArgsConstructor
 public class BaseDomain {
     private String createBy;
-
     private String updateBy;
-
     private LocalDateTime createAt;
-
     private LocalDateTime updateAt;
-
     private Boolean isDeleted;
 
     /**

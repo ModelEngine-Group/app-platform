@@ -6,10 +6,11 @@
 
 package modelengine.fit.jober.aipp.tool.impl;
 
-import modelengine.fel.core.formatters.json.JsonOutputParser;
-import modelengine.fel.core.pattern.Parser;
 import modelengine.fit.jober.aipp.dto.image.StableDiffusionInput;
 import modelengine.fit.jober.aipp.tool.StableDiffusionParserTool;
+
+import modelengine.fel.core.formatters.json.JsonOutputParser;
+import modelengine.fel.core.pattern.Parser;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;

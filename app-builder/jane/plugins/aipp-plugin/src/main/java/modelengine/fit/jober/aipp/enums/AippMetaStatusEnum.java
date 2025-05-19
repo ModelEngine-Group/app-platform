@@ -6,9 +6,10 @@
 
 package modelengine.fit.jober.aipp.enums;
 
-import lombok.Getter;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
+
+import lombok.Getter;
 
 import java.util.Arrays;
 

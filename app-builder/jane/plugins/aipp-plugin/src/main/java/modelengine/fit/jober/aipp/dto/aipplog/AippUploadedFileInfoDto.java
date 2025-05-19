@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 /**
  * AIPP上传文件信息DTO
  *
- * @author: 孙怡菲
- * @since: 2024-04-14 16:48
+ * @author 孙怡菲
+ * @since 2024-04-14
  */
 @Data
 @Builder
@@ -23,10 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AippUploadedFileInfoDto {
     private String aippId;
-
     private String createUserAccount;
-
     private String filename;
-
     private String fileUuid;
 }

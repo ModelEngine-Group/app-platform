@@ -8,7 +8,6 @@ package modelengine.fit.jober.aipp.service;
 
 import modelengine.fit.jober.aipp.common.PageResponse;
 import modelengine.fit.jober.aipp.condition.KnowledgeQueryCondition;
-
 import modelengine.jade.app.engine.knowledge.dto.KRepoDto;
 import modelengine.jade.app.engine.knowledge.dto.KTableDto;
 

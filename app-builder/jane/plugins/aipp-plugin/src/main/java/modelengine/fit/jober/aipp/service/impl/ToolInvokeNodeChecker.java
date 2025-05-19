@@ -38,9 +38,9 @@ public class ToolInvokeNodeChecker extends AbstractNodeChecker {
     public List<CheckResult> validate(AppCheckDto appCheckDto, OperationContext context) {
         List<CheckResult> results = initialResults(appCheckDto, TOOL_INVOKE_NODE.type());
         Map<String, CheckResult> resultMap = results.stream()
-                .collect(Collectors.toMap(CheckResult::getNodeId, result -> result));
+            .collect(Collectors.toMap(CheckResult::getNodeId, result -> result));
         Map<String, Boolean> toolResults = this.getToolResult(pluginToolService,
-                this.getAllUniqueNames(appCheckDto, TOOL_NAME));
+            this.getAllUniqueNames(appCheckDto, TOOL_NAME));
         appCheckDto.getNodeInfos().forEach(nodeInfo -> {
             this.checkTool(nodeInfo, TOOL_NAME, resultMap, toolResults);
         });

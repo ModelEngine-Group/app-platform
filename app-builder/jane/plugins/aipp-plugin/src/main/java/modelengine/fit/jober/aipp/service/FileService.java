@@ -6,15 +6,16 @@
 
 package modelengine.fit.jober.aipp.service;
 
+import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jober.aipp.dto.FileRspDto;
 import modelengine.fit.jober.aipp.dto.FormFileDto;
 import modelengine.fit.jober.aipp.dto.GenerateImageDto;
+
 import modelengine.fit.http.entity.FileEntity;
 import modelengine.fit.http.entity.PartitionedEntity;
 import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.http.server.HttpClassicServerResponse;
-import modelengine.fit.jane.common.entity.OperationContext;
 
 import java.io.IOException;
 

@@ -8,6 +8,8 @@ package modelengine.fit.jober.aipp.enums;
 
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
+
+import lombok.Getter;
 import modelengine.fitframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -18,6 +20,7 @@ import java.util.Arrays;
  * @author 张越
  * @since 2024-05-24
  */
+@Getter
 public enum AppState {
     PUBLISHED("active"),
     INACTIVE("inactive"),
@@ -27,15 +30,6 @@ public enum AppState {
 
     AppState(String name) {
         this.name = name;
-    }
-
-    /**
-     * 获取状态名称.
-     *
-     * @return 状态名称.
-     */
-    public String getName() {
-        return name;
     }
 
     /**

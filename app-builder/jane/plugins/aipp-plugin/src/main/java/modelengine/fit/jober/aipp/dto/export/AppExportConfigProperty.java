@@ -23,6 +23,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AppExportConfigProperty {
     private String nodeId;
-
     private AppExportFormProperty formProperty;
 }

@@ -24,13 +24,9 @@ public enum AppCategory {
     FIT("工具", "fit", "TOOL", "FIT", "system");
 
     private final String description;
-
     private final String type;
-
     private final String category;
-
     private final String tag;
-
     private final String source;
 
     AppCategory(String description, String type, String category, String tag, String source) {

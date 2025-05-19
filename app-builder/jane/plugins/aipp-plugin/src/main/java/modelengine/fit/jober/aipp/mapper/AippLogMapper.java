@@ -180,7 +180,7 @@ public interface AippLogMapper {
      * @param logTypes 表示指定日志类型列表的 {@link List}{@code <}{@link String}{@code >}。
      * @return 表示 aipp 实例历史记录的 {@link List}{@code <}{@link AippInstLog}{@code >}。
      */
-    List<AippInstLog> getLogsByInstanceIdAndLogTypes(String instanceId, @Param("logTypes") List<String> logTypes);
+    List<AippInstLog> getLogsByInstanceIdAndLogTypes(String instanceId, @Param("logTypes")List<String> logTypes);
 
     /**
      * 删除指定实例的历史记录。

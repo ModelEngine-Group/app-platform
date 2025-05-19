@@ -6,7 +6,12 @@
 
 package modelengine.fit.jober.aipp.controller;
 
+import modelengine.fit.jane.common.controller.AbstractController;
+import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
+import modelengine.fit.jober.aipp.dto.aipplog.AippInstLogDataDto;
+import modelengine.fit.jober.aipp.entity.AippInstLog;
+import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.jade.service.annotations.CarverSpan;
 import modelengine.jade.service.annotations.SpanAttr;
 
@@ -19,11 +24,6 @@ import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.annotation.RequestParam;
 import modelengine.fit.http.server.HttpClassicServerRequest;
-import modelengine.fit.jane.common.controller.AbstractController;
-import modelengine.fit.jane.common.response.Rsp;
-import modelengine.fit.jober.aipp.dto.aipplog.AippInstLogDataDto;
-import modelengine.fit.jober.aipp.entity.AippInstLog;
-import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fitframework.annotation.Component;
 
 import java.util.List;
@@ -145,7 +145,7 @@ public class AippLogController extends AbstractController {
     }
 
     /**
-     * 删除指定的应用对话记录（针对mag网关接口）
+     * 删除指定的应用对话记录（针对不能使用delete方式的接口）
      *
      * @param logIds 需要删除的对话记录列表
      * @return 返回空回复的 {@link Rsp}{@code <}{@link Void}{@code >}。

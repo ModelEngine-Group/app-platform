@@ -35,7 +35,8 @@ public interface AppBuilderAppRepository {
      * @param limit 表示获取到的个数的 {@code int}。
      * @return 表示获取到的最新的 app 对象列表的 {@link List}{@code <}{@link AppBuilderApp}{@code >}。
      */
-    List<AppBuilderApp> selectWithLatestApp(AppQueryCondition cond, String tenantId, long offset, int limit);
+    List<AppBuilderApp> selectWithLatestApp(AppQueryCondition cond, String tenantId,
+            long offset, int limit);
 
     /**
      * 根据查询条件获取的 app 对象列表。

@@ -12,6 +12,7 @@ import modelengine.fit.jober.aipp.po.AppBuilderConfigPo;
 import modelengine.fit.jober.aipp.repository.AppBuilderConfigPropertyRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderConfigRepository;
 import modelengine.fit.jober.aipp.serializer.impl.AppBuilderConfigSerializer;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.util.CollectionUtils;
 
@@ -27,9 +28,7 @@ import java.util.stream.Collectors;
 @Component
 public class AppBuilderConfigRepositoryImpl implements AppBuilderConfigRepository {
     private final AppBuilderConfigMapper appBuilderConfigMapper;
-
     private final AppBuilderConfigSerializer serializer;
-
     private final AppBuilderConfigPropertyRepository appBuilderConfigPropertyRepository;
 
     public AppBuilderConfigRepositoryImpl(AppBuilderConfigMapper appBuilderConfigMapper,

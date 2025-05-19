@@ -11,6 +11,7 @@ import static modelengine.fitframework.util.ObjectUtils.cast;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.validation.FormFileValidator;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.ObjectUtils;
@@ -31,37 +32,23 @@ import java.util.stream.Collectors;
 @Component
 public class FormFileValidatorImpl implements FormFileValidator {
     private static final long IMAGE_MAX_SIZE = 1024 * 1024;
-
     private static final String PARAMETERS = "parameters";
-
     private static final String SCHEMA = "schema";
-
     private static final String TYPE = "type";
-
     private static final String OBJECT = "object";
-
     private static final String REQUIRED = "required";
-
     private static final String PROPERTIES = "properties";
-
-    private static final List<String> SCHEMA_LIST = Arrays.asList("string", "number", "integer", "array", "boolean",
-            "null", "object");
-
+    private static final List<String> SCHEMA_LIST =
+            Arrays.asList("string", "number", "integer", "array", "boolean", "null", "object");
     private static final String ARRAY = "array";
-
     private static final String ITEMS = "items";
-
     private static final String ENUM = "enum";
-
     private static final String RETURN = "return";
-
     private static final String ORDER = "order";
-
     private static final List<String> BUILD_FILE_LIST = Arrays.asList("index.html", "index.js");
-
-    private static final List<String> DISALLOWED_FILE_TYPE = Arrays.asList(".php", ".exe", ".bat", ".sh", ".dll",
-            ".bin", ".zip", ".tar", ".gz", ".rar", ".7z", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx");
-
+    private static final List<String> DISALLOWED_FILE_TYPE =
+            Arrays.asList(".php", ".exe", ".bat", ".sh", ".dll", ".bin", ".zip", ".tar", ".gz", ".rar",
+                    ".7z", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx");
     private static final Logger log = Logger.get(FormFileValidatorImpl.class);
 
     @Override
@@ -160,7 +147,8 @@ public class FormFileValidatorImpl implements FormFileValidator {
         Map<String, Object> items = cast(itemsObject);
         if (items != null) {
             if (!items.containsKey(TYPE)) {
-                throw new AippException(AippErrCode.FORM_SCHEMA_PROPERTY_MISSING_KEY, fieldName + " (array items)",
+                throw new AippException(AippErrCode.FORM_SCHEMA_PROPERTY_MISSING_KEY,
+                        fieldName + " (array items)",
                         TYPE);
             }
             Object type = items.get(TYPE);
@@ -173,7 +161,8 @@ public class FormFileValidatorImpl implements FormFileValidator {
 
     private void validateArrayItem(String fieldName, Map<String, Object> item) {
         if (!item.containsKey(TYPE) && !item.containsKey(ENUM)) {
-            throw new AippException(AippErrCode.FORM_SCHEMA_PROPERTY_MISSING_KEY, fieldName + " (array items)",
+            throw new AippException(AippErrCode.FORM_SCHEMA_PROPERTY_MISSING_KEY,
+                    fieldName + " (array items)",
                     TYPE + "/" + ENUM);
         }
         if (item.containsKey(TYPE)) {

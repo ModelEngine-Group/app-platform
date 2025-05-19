@@ -24,11 +24,8 @@ import modelengine.fit.http.annotation.RequestParam;
 @AllArgsConstructor
 public class InspirationQueryCondition {
     private String aippId;
-
     @RequestParam(name = "parent_id", required = false)
     private String parentId;
-
     private String categoryId;
-
     private String createUser;
 }
