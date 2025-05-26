@@ -425,3 +425,18 @@ export const getConfiguration = (curAppInfo: any) => {
   const inputList = inputData?.value || [];
   return filter(inputList, (input) => input.name !== 'Question' && input.isVisible) || [];
 };
+
+/**
+ * 获取应用graph里开始节点的appConfig配置
+ *
+ * @param {Object} appInfo 应用详情
+ * @return {Object}
+ */
+export const getAppConfig = (appInfo) => {
+  if (!appInfo?.flowGraph?.appearance) {
+    return {};
+  }
+  const graphOperator = createGraphOperator(JSON.stringify(appInfo.flowGraph.appearance));
+  const nodeList  = graphOperator.getShapeIdsByType('startNodeStart');
+  return graphOperator.getConfig(nodeList).appConfig;
+}

@@ -72,6 +72,7 @@ const Stage = (props) => {
   const testStatus = useAppSelector((state) => state.flowTestStore.testStatus);
   const appValidateInfo = useAppSelector((state) => state.appStore.validateInfo);
   const choseNodeId = useAppSelector((state) => state.appStore.choseNodeId);
+  const pluginList = useAppSelector((state) => state.chatCommonStore.pluginList);
   const { tenantId, appId } = useParams();
   const testStatusRef = useRef<any>();
   const modelCallback = useRef<any>();
@@ -112,6 +113,29 @@ const Stage = (props) => {
     return null;
   }
   const realAppId = getQueryString('appId');
+  const updateConfigs = () => {
+    const startNodeIndex = CONFIGS.findIndex(item => item.node === 'startNodeStart');
+    if (startNodeIndex === -1) {
+      return;
+    }
+    const startNode = CONFIGS[startNodeIndex];
+    if (!startNode.appConfig?.appChatStyle?.options) {
+      return;
+    }
+    // 生成 pluginOptions 并去重
+    const existingValues = new Set(
+      startNode.appConfig.appChatStyle.options.map(opt => opt.value)
+    );
+    const pluginOptions = pluginList
+      .filter(plugin => !existingValues.has(plugin.name))
+      .map(plugin => ({
+        value: plugin.name,
+        label: plugin.chineseName ?? plugin.name,
+        image: plugin.icon,
+      }));
+
+    startNode.appConfig.appChatStyle.options.push(...pluginOptions);
+  };
   // 编辑工作流
   function setElsaData() {
     let graphData = appInfo.flowGraph?.appearance || {};
@@ -120,6 +144,7 @@ const Stage = (props) => {
     let configIndex = CONFIGS.findIndex(item => item.node === 'llmNodeState');
     CONFIGS[configIndex].params.tenantId = tenantId;
     CONFIGS[configIndex].params.appId = appId;
+    updateConfigs();
     setSpinning && setSpinning(true);
     const flow = types === 'evaluate'
       ? JadeFlow.evaluate(stageDom, tenantId, realAppId, data, false, CONFIGS, i18n)

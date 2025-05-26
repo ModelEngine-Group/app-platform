@@ -54,3 +54,12 @@ export function deleteFeedback(id) {
   const url = `${PLUGIN_URL}/aipp/usr/feedback/${id}`;
   return del(url);
 }
+
+export function queryPluginList() {
+  const isProd = process.env.NODE_ENV === 'production';
+  const isSpa = process.env.PACKAGE_MODE === 'spa';
+  const prefix = isProd && isSpa ? '/apps/appengine' : '';
+  return fetch(`${prefix}/plugins/manifest.json`)
+    .then(resp => resp.json())
+    .catch(() => []);
+}

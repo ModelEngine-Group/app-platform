@@ -6,7 +6,6 @@
 
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useLocation } from 'react-router';
-import { useParams } from 'react-router-dom';
 import { Spin } from 'antd';
 import { LeftArrowIcon } from '@/assets/icon';
 import { Message } from '@/shared/utils/message';
@@ -46,7 +45,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { storage } from '@/shared/storage';
 import { EventSourceParserStream } from '@/shared/eventsource-parser/stream';
-import { setAppId, setAippId, setAppInfo } from '@/store/appInfo/appInfo';
+import { setAppId, setAippId } from '@/store/appInfo/appInfo';
 import { useTranslation } from 'react-i18next';
 import { pick, cloneDeep } from 'lodash';
 import ChatMessage from './components/chat-message';
@@ -119,7 +118,6 @@ const ChatPreview = (props) => {
     window.addEventListener("previewPicture", handlePreview);
     return () => {
       closeConnected();
-      dispatch(setAppInfo({}));
       dispatch(setAppId(null));
       dispatch(setChatId(undefined));
       dispatch(setAippId(''));
