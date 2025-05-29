@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 @Component
 public class AppBuilderAppRepositoryImpl implements AppBuilderAppRepository {
     private final AppBuilderAppMapper appBuilderAppMapper;
-
     private final AppBuilderAppSerializer serializer;
 
     public AppBuilderAppRepositoryImpl(AppBuilderAppMapper appBuilderAppMapper) {

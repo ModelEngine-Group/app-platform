@@ -37,25 +37,16 @@ import java.util.Map;
 @DisplayName("测试 AippComponentInitiatorTest")
 public class AippComponentInitiatorTest {
     private static final String RESOURCE_PATH = "component";
-
     private static final String FLOW_ZH_PATH = "/flow_zh.json";
-
     private static final String FLOW_EN_PATH = "/flow_en.json";
-
     private static final String FORM_ZH_PATH = "/form_zh.json";
-
     private static final String FORM_EN_PATH = "/form_en.json";
-
     private static final String BASIC_NODE_ZH_PATH = "/basic_node_zh.json";
-
     private static final String BASIC_NODE_EN_PATH = "/basic_node_en.json";
-
     private static final String JSON_STRING = "{\"groups\": [], \"items\": []}";
 
     private AippComponentInitiator aippComponentInitiator;
-
     private Plugin plugin;
-
     private MockedStatic<ResourceLoader> resourceLoaderMockedStatic;
 
     @BeforeEach

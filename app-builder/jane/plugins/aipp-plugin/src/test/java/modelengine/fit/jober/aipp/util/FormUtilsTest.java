@@ -60,8 +60,8 @@ public class FormUtilsTest {
         Map<String, Object> businessData = new HashMap<>();
         businessData.put("model", "Qianwen");
         String parentId = "parentId";
-        Map<String, Object> form = Assertions.assertDoesNotThrow(
-                () -> FormUtils.buildFormData(businessData, inputForm, parentId));
+        Map<String, Object> form =
+                Assertions.assertDoesNotThrow(() -> FormUtils.buildFormData(businessData, inputForm, parentId));
         Assertions.assertEquals(3, form.size());
         Assertions.assertTrue(form.containsKey(AippConst.FORM_APPEARANCE_KEY));
     }

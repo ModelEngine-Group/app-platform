@@ -69,7 +69,13 @@ create table if not exists app_builder_app
     collection_usr_cnt bigint NOT NULL DEFAULT 0,
     is_deleted int2 DEFAULT 0,
     path       varchar(255),
-    app_type   varchar(255) DEFAULT ''
+    app_type   varchar(255) DEFAULT '',
+    app_suite_id varchar(32) NULL,
+    is_active bool NULL DEFAULT false,
+    status varchar(16) NULL,
+    unique_name varchar(64) NULL,
+    publish_at timestamp(6) NULL,
+    app_id varchar(64) NULL
     );
 
 create table if not exists app_builder_component

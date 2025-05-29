@@ -13,17 +13,15 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import modelengine.fit.jane.meta.multiversion.instance.Instance;
-import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
-import modelengine.fit.waterflow.entity.FlowErrorInfo;
-import modelengine.fit.waterflow.spi.FlowExceptionService;
-import modelengine.jade.common.globalization.LocaleService;
-
-import modelengine.fit.jane.meta.multiversion.MetaInstanceService;
 import modelengine.fit.jober.aipp.constants.AippConst;
+import modelengine.fit.jober.aipp.domains.taskinstance.AppTaskInstance;
+import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.entity.ChatSession;
+import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppChatSessionService;
+import modelengine.fit.waterflow.entity.FlowErrorInfo;
+import modelengine.fit.waterflow.spi.FlowExceptionService;
 import modelengine.fitframework.broker.client.BrokerClient;
 import modelengine.fitframework.broker.client.FitableNotFoundException;
 import modelengine.fitframework.broker.client.Invoker;
@@ -44,7 +42,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -69,9 +66,6 @@ public class AippFlowExceptionHandleTest {
     private AippLogService aippLogService;
 
     @Mock
-    private MetaInstanceService metaInstanceService;
-
-    @Mock
     private LocaleService localeService;
 
     @Mock
@@ -83,21 +77,20 @@ public class AippFlowExceptionHandleTest {
     @Mock
     private BrokerClient brokerClient;
 
+    @Mock
+    private AppTaskInstanceService appTaskInstanceService;
+
     @BeforeEach
     void setUp() {
-        this.aippFlowExceptionHandle = new AippFlowExceptionHandle(this.aippLogService,
-                this.metaInstanceService,
-                this.localeService,
-                this.appChatSessionService,
-                this.toolExceptionHandle,
-                this.brokerClient);
+        this.aippFlowExceptionHandle = new AippFlowExceptionHandle(this.aippLogService, this.localeService,
+                this.appChatSessionService, this.toolExceptionHandle, this.brokerClient, this.appTaskInstanceService);
     }
 
     @Test
     @DisplayName("测试构造方法")
     void shouldSuccessWhenConstruct() {
         String opContext = "{\"tenantId\": \"test\"," + "\"operator\": \"test\"," + "\"globalUserId\":\"test\","
-                + "\"account\": \"account\"," + "\"employeeNumber\": \"employeeNumber\"," + "\"name\": \"name\","
+                + "\"account\":\"account\"," + "\"employeeNumber\": \"employeeNumber\"," + "\"name\": \"name\","
                 + "\"operatorIp\": \"operatorIp\"," + "\"sourcePlatform\": \"sourcePlatform\","
                 + "\"language\": \"language\"}";
         List<Map<String, Object>> flowData = Arrays.asList(MapBuilder.<String, Object>get()
@@ -113,12 +106,8 @@ public class AippFlowExceptionHandleTest {
         Mockito.when(this.localeService.localize(any(Locale.class), eq(UI_WORD_KEY_HINT))).thenReturn("test");
         Mockito.when(this.appChatSessionService.getSession(anyString())).thenReturn(Optional.of(chatSession));
         Mockito.when(this.toolExceptionHandle.getFixErrorMsg(any(), any(), any())).thenReturn("errorMessage");
-        Instance instance = new Instance("id",
-                MapBuilder.<String, String>get()
-                        .put(AippConst.INST_STATUS_KEY, MetaInstStatusEnum.RUNNING.name())
-                        .build(),
-                new ArrayList<>());
-        Mockito.when(this.metaInstanceService.retrieveById(any(), any())).thenReturn(instance);
+        AppTaskInstance instance = AppTaskInstance.asEntity().setStatus(MetaInstStatusEnum.RUNNING.name()).build();
+        Mockito.when(this.appTaskInstanceService.getInstanceById(any(), any())).thenReturn(Optional.of(instance));
         FlowErrorInfo flowErrorInfo = new FlowErrorInfo();
         flowErrorInfo.setErrorCode(10000);
         flowErrorInfo.setErrorMessage("errorMessage");
@@ -147,9 +136,12 @@ public class AippFlowExceptionHandleTest {
         Mockito.when(this.appChatSessionService.getSession(anyString())).thenReturn(Optional.empty());
         Router router = Mockito.mock(Router.class);
         Invoker invoker = Mockito.mock(Invoker.class);
-        Mockito.when(router.route(ArgumentMatchers.argThat(arg -> (arg instanceof FitableIdFilter) && arg.toString()
-                .equals("FitableIdFilter{fitableIds=[parent]}")))).thenReturn(invoker);
-        Mockito.when(invoker.invoke(nodeId, flowData, flowErrorInfo)).thenReturn(null);
+        Mockito.when(router.route(ArgumentMatchers.argThat(
+                        arg -> (arg instanceof FitableIdFilter) && arg.toString()
+                                .equals("FitableIdFilter{fitableIds=[parent]}"))))
+                .thenReturn(invoker);
+        Mockito.when(invoker.invoke(nodeId, flowData, flowErrorInfo))
+                .thenReturn(null);
         Mockito.when(this.brokerClient.getRouter(FlowExceptionService.class,
                 FlowExceptionService.HANDLE_EXCEPTION_GENERICABLE)).thenReturn(router);
 
@@ -177,8 +169,7 @@ public class AippFlowExceptionHandleTest {
                         FlowExceptionService.HANDLE_EXCEPTION_GENERICABLE))
                 .thenThrow(new FitableNotFoundException("not found"));
 
-        Assertions.assertDoesNotThrow(() -> this.aippFlowExceptionHandle.handleException(nodeId,
-                flowData,
-                flowErrorInfo));
+        Assertions.assertDoesNotThrow(
+                () -> this.aippFlowExceptionHandle.handleException(nodeId, flowData, flowErrorInfo));
     }
 }

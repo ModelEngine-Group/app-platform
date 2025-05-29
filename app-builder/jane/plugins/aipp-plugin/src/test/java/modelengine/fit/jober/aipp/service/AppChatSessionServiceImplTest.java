@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import modelengine.fit.jober.aipp.entity.ChatSession;
 import modelengine.fit.jober.aipp.mapper.AppChatNumMapper;
 import modelengine.fit.jober.aipp.service.impl.AppChatSessionServiceImpl;
+
 import modelengine.fitframework.flowable.Emitter;
 import modelengine.fitframework.flowable.emitter.DefaultEmitter;
 
@@ -43,8 +44,8 @@ public class AppChatSessionServiceImplTest {
     void testAddChatSession() {
         Emitter<Object> e = new DefaultEmitter<>();
         this.appChatSessionService.addSession("hello", new ChatSession<>(e, "123", true, Locale.ENGLISH));
-        Optional<ChatSession<Object>> hello = Assertions.assertDoesNotThrow(
-                () -> this.appChatSessionService.getSession("hello"));
+        Optional<ChatSession<Object>> hello =
+                Assertions.assertDoesNotThrow(() -> this.appChatSessionService.getSession("hello"));
         Assertions.assertTrue(hello.isPresent());
         Assertions.assertEquals(e, hello.get().getEmitter());
     }
@@ -55,8 +56,8 @@ public class AppChatSessionServiceImplTest {
         Emitter<Object> e = new DefaultEmitter<>();
         this.appChatSessionService.addSession("hello", new ChatSession<>(e, "123", true, Locale.ENGLISH));
         this.appChatSessionService.removeSession("hello");
-        Optional<ChatSession<Object>> hello = Assertions.assertDoesNotThrow(
-                () -> this.appChatSessionService.getSession("hello"));
+        Optional<ChatSession<Object>> hello =
+                Assertions.assertDoesNotThrow(() -> this.appChatSessionService.getSession("hello"));
         Assertions.assertFalse(hello.isPresent());
     }
 }

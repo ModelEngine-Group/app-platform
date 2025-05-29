@@ -6,13 +6,20 @@
 
 package modelengine.fit.jober.aipp.dto.chat;
 
+import modelengine.fit.jober.aipp.constants.AippConst;
+import modelengine.fit.jober.aipp.enums.AppState;
+import modelengine.fit.jober.aipp.util.JsonUtils;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import modelengine.fitframework.annotation.Property;
+import modelengine.fitframework.util.ObjectUtils;
+import modelengine.fitframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 查询会话响应体
@@ -69,4 +76,15 @@ public class QueryChatRsp {
 
     @Property(description = "total", name = "total")
     private Integer total;
+
+    /**
+     * chat是否是调试模式.
+     *
+     * @return true/false.
+     */
+    public boolean isDebug() {
+        Map<String, Object> jsonAttributes = JsonUtils.parseObject(this.getAttributes());
+        String state = ObjectUtils.cast(jsonAttributes.get(AippConst.ATTR_CHAT_STATE_KEY));
+        return StringUtils.equals(AppState.INACTIVE.getName(), state);
+    }
 }

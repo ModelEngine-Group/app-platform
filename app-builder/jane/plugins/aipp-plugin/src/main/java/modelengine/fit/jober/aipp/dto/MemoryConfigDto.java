@@ -25,8 +25,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class MemoryConfigDto {
     private Map<String, Object> initContext;
-
     private String instanceId;
-
     private String memory;
 }

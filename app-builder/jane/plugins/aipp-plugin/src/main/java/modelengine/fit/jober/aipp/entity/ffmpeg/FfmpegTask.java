@@ -73,8 +73,8 @@ public class FfmpegTask {
         ProcessBuilder builder = new ProcessBuilder();
         StringBuilder sb = new StringBuilder();
         Process p = builder.command(command).redirectErrorStream(true).start();
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream(),
+                StandardCharsets.UTF_8))) {
             String s;
             while ((s = br.readLine()) != null) {
                 sb.append(s);

@@ -39,8 +39,8 @@ public class JsonUtilsTest {
     @DisplayName("测试String转Map失败")
     void testParseObjectFailed() {
         String str = "{\"hello\": \"world\"";
-        AippJsonDecodeException aippJsonDecodeException = Assertions.assertThrows(AippJsonDecodeException.class,
-                () -> JsonUtils.parseObject(str));
+        AippJsonDecodeException aippJsonDecodeException =
+                Assertions.assertThrows(AippJsonDecodeException.class, () -> JsonUtils.parseObject(str));
         Assertions.assertEquals(90002900, aippJsonDecodeException.getCode());
     }
 
@@ -84,7 +84,6 @@ public class JsonUtilsTest {
     @Data
     private static class TestEntity {
         private String hello;
-
         private Integer start;
     }
 }

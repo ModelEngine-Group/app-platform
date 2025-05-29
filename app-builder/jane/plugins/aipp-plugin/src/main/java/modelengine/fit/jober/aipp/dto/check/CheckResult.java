@@ -26,12 +26,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class CheckResult {
     private String nodeId;
-
     private String name;
-
     private String type;
-
     private boolean isValid;
-
     private List<Map<String, Object>> configChecks;
 }

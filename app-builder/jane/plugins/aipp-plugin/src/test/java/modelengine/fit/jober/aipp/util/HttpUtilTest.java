@@ -16,6 +16,7 @@ import modelengine.fit.http.client.HttpClassicClientFactory;
 import modelengine.fit.http.client.HttpClassicClientRequest;
 import modelengine.fit.http.client.HttpClassicClientResponse;
 import modelengine.fit.http.entity.TextEntity;
+import modelengine.fit.jober.aipp.util.HttpUtils;
 
 import org.junit.jupiter.api.Test;
 

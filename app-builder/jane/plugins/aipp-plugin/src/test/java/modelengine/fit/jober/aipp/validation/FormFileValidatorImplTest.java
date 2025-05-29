@@ -38,23 +38,14 @@ import javax.imageio.ImageIO;
 @ExtendWith(MockitoExtension.class)
 public class FormFileValidatorImplTest {
     private static final String SCHEMA = "schema";
-
     private static final String PARAMETERS = "parameters";
-
     private static final String TYPE = "type";
-
     private static final String OBJECT = "object";
-
     private static final String REQUIRED = "required";
-
     private static final String PROPERTIES = "properties";
-
     private static final String RETURN = "return";
-
     private static final String ORDER = "order";
-
     private static final String ITEMS = "items";
-
     private static final String ENUM = "enum";
 
     private FormFileValidator formFileValidator;
@@ -109,8 +100,8 @@ public class FormFileValidatorImplTest {
     void testValidateSchemaFailedWithoutSchemaKey() {
         Map<String, Object> config = new HashMap<String, Object>();
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002109, ex.getCode());
     }
 
@@ -123,8 +114,8 @@ public class FormFileValidatorImplTest {
         schema.put(PARAMETERS, parameters);
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002110, ex.getCode());
     }
 
@@ -135,8 +126,8 @@ public class FormFileValidatorImplTest {
         Map<String, Object> schema = new HashMap<String, Object>();
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002109, ex.getCode());
     }
 
@@ -151,8 +142,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002111, ex.getCode());
     }
 
@@ -168,8 +159,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002111, ex.getCode());
     }
 
@@ -187,8 +178,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002109, ex.getCode());
     }
 
@@ -210,8 +201,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002112, ex.getCode());
     }
 
@@ -234,8 +225,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002113, ex.getCode());
     }
 
@@ -258,8 +249,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002114, ex.getCode());
     }
 
@@ -284,8 +275,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002112, ex.getCode());
     }
 
@@ -311,8 +302,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002115, ex.getCode());
     }
 
@@ -338,8 +329,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002112, ex.getCode());
     }
 
@@ -365,8 +356,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002116, ex.getCode());
     }
 
@@ -389,8 +380,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002117, ex.getCode());
     }
 
@@ -413,8 +404,8 @@ public class FormFileValidatorImplTest {
         schema.put(ORDER, new ArrayList<>());
         config.put(SCHEMA, schema);
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateSchema(config));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateSchema(config));
         Assertions.assertEquals(90002118, ex.getCode());
     }
 
@@ -457,8 +448,8 @@ public class FormFileValidatorImplTest {
         File directory = Files.createTempDirectory("temp").toFile();
         directory.deleteOnExit();
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateComponent(directory));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateComponent(directory));
         Assertions.assertEquals(90002119, ex.getCode());
     }
 
@@ -474,8 +465,8 @@ public class FormFileValidatorImplTest {
             writer.write("<html><body>Test JS</body></html>");
         }
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateComponent(directory));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateComponent(directory));
         Assertions.assertEquals(90002120, ex.getCode());
     }
 
@@ -501,8 +492,8 @@ public class FormFileValidatorImplTest {
             writer.write("test");
         }
 
-        AippException ex = Assertions.assertThrows(AippException.class,
-                () -> this.formFileValidator.validateComponent(directory));
+        AippException ex =
+                Assertions.assertThrows(AippException.class, () -> this.formFileValidator.validateComponent(directory));
         Assertions.assertEquals(90002124, ex.getCode());
     }
 }

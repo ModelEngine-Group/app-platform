@@ -12,6 +12,7 @@ import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.dto.aipplog.AippInstLogDataDto;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppLogService;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 

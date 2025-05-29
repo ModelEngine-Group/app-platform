@@ -18,6 +18,7 @@ import modelengine.fit.jober.aipp.repository.AppBuilderFlowGraphRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormPropertyRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormRepository;
 import modelengine.fit.jober.aipp.repository.AppTemplateRepository;
+
 import modelengine.fitframework.annotation.Component;
 
 import java.util.Collections;
@@ -32,15 +33,10 @@ import java.util.List;
 @Component
 public class AppTemplateFactory {
     private final AppBuilderFlowGraphRepository flowGraphRepository;
-
     private final AppBuilderConfigRepository configRepository;
-
     private final AppBuilderFormRepository formRepository;
-
     private final AppBuilderConfigPropertyRepository configPropertyRepository;
-
     private final AppBuilderFormPropertyRepository formPropertyRepository;
-
     private final AppTemplateRepository appTemplateRepository;
 
     public AppTemplateFactory(AppBuilderFlowGraphRepository flowGraphRepository,

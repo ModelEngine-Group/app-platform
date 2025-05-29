@@ -21,3 +21,5 @@ truncate table app_template;
 truncate table app_builder_runtime_info;
 
 truncate table t_chat_session;
+
+truncate table t_chat_session_task_instance_wide_relationship;

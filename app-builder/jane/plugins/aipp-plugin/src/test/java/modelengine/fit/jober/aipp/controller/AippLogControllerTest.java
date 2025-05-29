@@ -10,7 +10,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import modelengine.fit.jane.task.gateway.Authenticator;
-
 import modelengine.fit.jober.aipp.service.AippLogService;
 
 import org.junit.jupiter.api.BeforeEach;

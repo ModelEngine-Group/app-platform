@@ -80,12 +80,16 @@
             and chat_id = #{chatId}
         </if>
         and status != 1
+        <if test="requestParam != null">
         and attributes ->> 'state' = #{requestParam.appState}
+        </if>
         <if test="createBy != null">
             and create_by = #{createBy}
         </if>
         order by update_at desc
-        offset #{requestParam.offset} limit #{requestParam.limit}
+        <if test="requestParam != null">
+            offset #{requestParam.offset} limit #{requestParam.limit}
+        </if>
     </select>
 
     <select id="getChatListCount" resultType="long">

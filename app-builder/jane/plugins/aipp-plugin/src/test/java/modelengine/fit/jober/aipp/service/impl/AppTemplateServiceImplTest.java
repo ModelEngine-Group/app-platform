@@ -11,14 +11,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.alibaba.fastjson.JSONObject;
-
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.condition.TemplateQueryCondition;
+import modelengine.fit.jober.aipp.converters.ConverterFactory;
 import modelengine.fit.jober.aipp.domain.AppBuilderApp;
 import modelengine.fit.jober.aipp.domain.AppBuilderConfig;
 import modelengine.fit.jober.aipp.domain.AppBuilderConfigProperty;
@@ -26,26 +26,27 @@ import modelengine.fit.jober.aipp.domain.AppBuilderFlowGraph;
 import modelengine.fit.jober.aipp.domain.AppBuilderForm;
 import modelengine.fit.jober.aipp.domain.AppBuilderFormProperty;
 import modelengine.fit.jober.aipp.domain.AppTemplate;
-import modelengine.fit.jober.aipp.dto.AippCreateDto;
+import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
+import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppDto;
 import modelengine.fit.jober.aipp.dto.template.TemplateAppCreateDto;
 import modelengine.fit.jober.aipp.dto.template.TemplateInfoDto;
-import modelengine.fit.jober.aipp.factory.AppBuilderAppFactory;
 import modelengine.fit.jober.aipp.factory.AppTemplateFactory;
-import modelengine.fit.jober.aipp.repository.AppBuilderAppRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderConfigPropertyRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderConfigRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFlowGraphRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormPropertyRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormRepository;
 import modelengine.fit.jober.aipp.repository.AppTemplateRepository;
-import modelengine.fit.jober.aipp.service.AippFlowService;
 import modelengine.fit.jober.aipp.service.AppBuilderAppService;
 import modelengine.fit.jober.aipp.service.AppTemplateService;
 import modelengine.fit.jober.aipp.service.UploadedFileManageService;
 import modelengine.fit.jober.aipp.util.AippFileUtils;
 import modelengine.fit.jober.aipp.util.TemplateUtils;
 import modelengine.fit.jober.common.RangedResultSet;
+
+import com.alibaba.fastjson.JSONObject;
+
 import modelengine.fitframework.util.MapBuilder;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +64,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 应用模板服务测试类。
@@ -76,17 +76,10 @@ public class AppTemplateServiceImplTest {
     private static final LocalDateTime TIME = LocalDateTime.of(2025, 1, 16, 9, 0);
 
     private AppTemplateService templateService;
-
     private AppBuilderAppService appService;
 
     @Mock
-    private AippFlowService aippFlowService;
-
-    @Mock
     private UploadedFileManageService uploadedFileManageService;
-
-    @Mock
-    private AppBuilderAppRepository appRepository;
 
     @Mock
     private AppTemplateRepository templateRepository;
@@ -106,16 +99,27 @@ public class AppTemplateServiceImplTest {
     @Mock
     private AppBuilderFormPropertyRepository formPropertyRepository;
 
+    @Mock
+    private AppVersionService appVersionService;
+
+    private ConverterFactory converterFactory;
+
     @BeforeEach
     void setup() {
-        AppBuilderAppFactory appFactory = new AppBuilderAppFactory(this.flowGraphRepository, this.configRepository,
-                this.formRepository, this.configPropertyRepository, this.formPropertyRepository, this.appRepository);
-        AppTemplateFactory templateFactory = new AppTemplateFactory(this.flowGraphRepository, this.configRepository,
-                this.formRepository, this.configPropertyRepository, this.formPropertyRepository,
+        AppTemplateFactory templateFactory = new AppTemplateFactory(this.flowGraphRepository,
+                this.configRepository,
+                this.formRepository,
+                this.configPropertyRepository,
+                this.formPropertyRepository,
                 this.templateRepository);
-        this.appService = new AppBuilderAppServiceImpl(appFactory, this.aippFlowService, this.appRepository,
-                templateFactory, 64, null, null, null, null, this.uploadedFileManageService, null, null, null, null,
-                null, null, null, null, null, null, null, null, "", null);
+        this.converterFactory = mock(ConverterFactory.class);
+        this.appService = new AppBuilderAppServiceImpl(
+                templateFactory,
+                this.uploadedFileManageService,
+                null,
+                this.appVersionService,
+                null,
+                null, this.converterFactory, null);
         this.templateService = new AppTemplateServiceImpl(this.appService, this.templateRepository);
     }
 
@@ -129,11 +133,13 @@ public class AppTemplateServiceImplTest {
         when(this.templateRepository.selectWithCondition(any())).thenReturn(queryResult);
         when(this.templateRepository.countWithCondition(any())).thenReturn(queryResult.size());
 
-        RangedResultSet<TemplateInfoDto> res = this.templateService.query(TemplateQueryCondition.builder().build(),
-                null);
+        RangedResultSet<TemplateInfoDto> res =
+                this.templateService.query(TemplateQueryCondition.builder().build(), null);
         assertThat(res.getResults()).hasSize(1)
                 .element(0)
-                .extracting(TemplateInfoDto::getAppType, TemplateInfoDto::getId, TemplateInfoDto::getIcon,
+                .extracting(TemplateInfoDto::getAppType,
+                        TemplateInfoDto::getId,
+                        TemplateInfoDto::getIcon,
                         TemplateInfoDto::getDescription)
                 .containsExactly("default", null, "/path/to/icon", null);
     }
@@ -142,10 +148,8 @@ public class AppTemplateServiceImplTest {
     @DisplayName("测试将应用发布为应用模板")
     void testPublishAppTemplateFromApp() throws IOException {
         AppBuilderApp app = this.mockApp();
-        when(this.appRepository.selectWithId(anyString())).thenReturn(app);
-        when(this.flowGraphRepository.selectWithId(any())).thenReturn(app.getFlowGraph());
-        when(this.configRepository.selectWithId(any())).thenReturn(app.getConfig());
-        when(this.formPropertyRepository.selectWithAppId(any())).thenReturn(app.getFormProperties());
+        AppVersion mockappVersion = mock(AppVersion.class);
+        when(this.appVersionService.retrieval(anyString())).thenReturn(mockappVersion);
 
         File mockFile = File.createTempFile("old_test_icon", ".png");
         TemplateAppCreateDto mockDto = this.mockCreateDto();
@@ -153,55 +157,25 @@ public class AppTemplateServiceImplTest {
         oldIcon = oldIcon.replace(AippFileUtils.getFileNameFromIcon(oldIcon), mockFile.getCanonicalPath());
         mockDto.setIcon(oldIcon);
         app.getAttributes().put("icon", oldIcon);
-        TemplateInfoDto published = this.templateService.publish(mockDto, this.mockOperationContext());
-        File icon = new File(AippFileUtils.getFileNameFromIcon(published.getIcon()));
-        mockFile.delete();
-        icon.delete();
-
-        verify(this.uploadedFileManageService, times(1)).addFileRecord(any(), eq("demo_account"), any(), any());
-        verify(this.uploadedFileManageService, times(1)).updateRecord(any(), any(), eq(0));
-
-        assertThat(published).extracting(TemplateInfoDto::getName, TemplateInfoDto::getDescription,
-                        TemplateInfoDto::getAppType, TemplateInfoDto::getCreator)
-                .containsExactly("test_name", "test_description", "finance", "operator");
-
-        String templateId = published.getId();
-        assertThat(app.getConfig()).extracting(AppBuilderConfig::getAppId).isEqualTo(templateId);
-        assertThat(app.getFormProperties()).element(0)
-                .extracting(AppBuilderFormProperty::getAppId)
-                .isEqualTo(templateId);
+        OperationContext context = this.mockOperationContext();
+        this.templateService.publish(mockDto, context);
+        verify(mockappVersion, times(1)).publishTemplate(mockDto, context);
     }
 
     @Test
     @DisplayName("测试根据应用模板创建应用")
     void testCreateAppByTemplate() {
         AppTemplate template = this.mockTemplate();
+        AppVersion mockappVersion = mock(AppVersion.class);
+        AppBuilderAppDto mockappBuilderAppDto = mock(AppBuilderAppDto.class);
         when(this.templateRepository.selectWithId(anyString())).thenReturn(template);
-        when(this.flowGraphRepository.selectWithId(any())).thenReturn(template.getFlowGraph());
-        when(this.configRepository.selectWithId(any())).thenReturn(template.getConfig());
-        when(this.formPropertyRepository.selectWithAppId(any())).thenReturn(template.getFormProperties());
-        when(this.aippFlowService.previewAipp(any(), any(), any())).thenReturn(
-                AippCreateDto.builder().aippId("123456").build());
-
-        AppBuilderAppDto dto = this.templateService.createAppByTemplate(this.mockCreateDto(),
-                this.mockOperationContext());
+        when(this.appVersionService.createByTemplate(any(AppTemplate.class), any(OperationContext.class))).thenReturn(
+                mockappVersion);
+        when(this.converterFactory.convert(any(), any())).thenReturn(mockappBuilderAppDto);
+        this.templateService.createAppByTemplate(this.mockCreateDto(), this.mockOperationContext());
         verify(this.uploadedFileManageService, times(0)).addFileRecord(any(), any(), any(), any());
-        verify(this.uploadedFileManageService, times(1)).updateRecord(any(), any(), eq(0));
+        verify(this.uploadedFileManageService, times(0)).updateRecord(any(), any(), eq(0));
         verify(this.templateRepository, times(1)).increaseUsage(eq("123456"));
-
-        assertThat(dto).extracting(AppBuilderAppDto::getName, AppBuilderAppDto::getVersion,
-                        AppBuilderAppDto::getAppType, AppBuilderAppDto::getCreateBy, AppBuilderAppDto::getType,
-                        AppBuilderAppDto::getState, AppBuilderAppDto::getAippId)
-                .containsExactly("test_name", "1.0.0", "finance", "operator", "app", "inactive", "123456");
-        String appId = dto.getId();
-        assertThat(template.getConfig()).extracting(AppBuilderConfig::getAppId).isEqualTo(appId);
-        assertThat(template.getFormProperties()).element(0)
-                .extracting(AppBuilderFormProperty::getAppId)
-                .isEqualTo(appId);
-        Map<String, Object> attributes = dto.getAttributes();
-        assertThat(attributes).containsEntry("description", "test_description")
-                .containsEntry("icon", "/api/jober/v1/api/31f20efc7e0848deab6a6bc10fc3021e/file?filePath=/tmp/test_old"
-                        + ".jpg&fileName=test_old.jpg");
     }
 
     @Test
@@ -211,20 +185,27 @@ public class AppTemplateServiceImplTest {
         when(this.templateRepository.selectWithId(anyString())).thenReturn(template);
         this.templateService.delete(template.getId(), this.mockOperationContext());
 
-        verify(this.configRepository, times(1)).delete(
-                argThat(arg -> arg.size() == 1 && arg.get(0).equals(template.getConfigId())));
-        verify(this.flowGraphRepository, times(1)).delete(
-                argThat(arg -> arg.size() == 1 && arg.get(0).equals(template.getFlowGraphId())));
+        verify(this.configRepository, times(1)).delete(argThat(arg -> arg.size() == 1 && arg.get(0)
+                .equals(template.getConfigId())));
+        verify(this.flowGraphRepository, times(1)).delete(argThat(arg -> arg.size() == 1 && arg.get(0)
+                .equals(template.getFlowGraphId())));
         verify(this.templateRepository, times(1)).deleteOne(eq(template.getId()));
-        verify(this.formPropertyRepository, times(1)).deleteByAppIds(
-                argThat(arg -> arg.size() == 1 && arg.get(0).equals(template.getId())));
-        verify(this.uploadedFileManageService, times(1)).cleanAippFiles(
-                argThat(arg -> arg.size() == 1 && arg.get(0).equals(template.getId())));
+        verify(this.formPropertyRepository, times(1)).deleteByAppIds(argThat(arg -> arg.size() == 1 && arg.get(0)
+                .equals(template.getId())));
+        verify(this.uploadedFileManageService, times(1)).cleanAippFiles(argThat(arg -> arg.size() == 1 && arg.get(0)
+                .equals(template.getId())));
     }
 
     private OperationContext mockOperationContext() {
-        return new OperationContext("tenant_id", "operator", "global_user_id", "demo_account", "employ_number", "name",
-                "0.0.0.0", "unit test", "zh_CN");
+        return new OperationContext("tenant_id",
+                "operator",
+                "global_user_id",
+                "account",
+                "employ_number",
+                "name",
+                "0.0.0.0",
+                "unit test",
+                "zh_CN");
     }
 
     private TemplateAppCreateDto mockCreateDto() {
@@ -239,8 +220,11 @@ public class AppTemplateServiceImplTest {
     }
 
     private AppTemplate mockTemplate() {
-        AppTemplate template = new AppTemplate(flowGraphRepository, configRepository, formRepository,
-                configPropertyRepository, formPropertyRepository);
+        AppTemplate template = new AppTemplate(flowGraphRepository,
+                configRepository,
+                formRepository,
+                configPropertyRepository,
+                formPropertyRepository);
         template.setBuiltType("basic");
         template.setCategory("chatbot");
         template.setName("Unit Test Template");
@@ -264,8 +248,11 @@ public class AppTemplateServiceImplTest {
     }
 
     private AppBuilderApp mockApp() {
-        AppBuilderApp appBuilderApp = new AppBuilderApp(flowGraphRepository, configRepository, formRepository,
-                configPropertyRepository, formPropertyRepository);
+        AppBuilderApp appBuilderApp = new AppBuilderApp(flowGraphRepository,
+                configRepository,
+                formRepository,
+                configPropertyRepository,
+                formPropertyRepository);
         appBuilderApp.setType("template");
         appBuilderApp.setAppBuiltType("basic");
         appBuilderApp.setAppCategory("chatbot");
@@ -274,8 +261,9 @@ public class AppTemplateServiceImplTest {
         appBuilderApp.setId("45698235b3d24209aefd59eb7d1c3322");
         appBuilderApp.setAttributes(new HashMap<>());
         appBuilderApp.getAttributes()
-                .put("icon", "/api/jober/v1/api/31f20efc7e0848deab6a6bc10fc3021e/file?filePath=/tmp/test_old"
-                        + ".jpg&fileName=test_old.jpg");
+                .put("icon",
+                        "/api/jober/v1/api/31f20efc7e0848deab6a6bc10fc3021e/file?filePath=/tmp/test_old"
+                                + ".jpg&fileName=test_old.jpg");
         appBuilderApp.getAttributes().put("app_type", "编程开发");
         appBuilderApp.getAttributes().put("greeting", "1");
         appBuilderApp.getAttributes().put("description", "1");
@@ -287,7 +275,6 @@ public class AppTemplateServiceImplTest {
         appBuilderApp.setVersion("1.0.0");
         appBuilderApp.setPath("YGHmQFJE5ZaFW4wl");
         appBuilderApp.setConfig(this.mockConfig());
-        appBuilderApp.getConfig().setApp(appBuilderApp);
         appBuilderApp.setConfigId(appBuilderApp.getConfig().getId());
         appBuilderApp.setFlowGraph(this.mockGraph());
         appBuilderApp.setFlowGraphId(appBuilderApp.getFlowGraph().getId());
@@ -296,8 +283,10 @@ public class AppTemplateServiceImplTest {
     }
 
     private AppBuilderConfig mockConfig() {
-        AppBuilderConfig config = new AppBuilderConfig(this.formRepository, this.formPropertyRepository,
-                this.configPropertyRepository, this.appRepository);
+        AppBuilderConfig config = new AppBuilderConfig(this.formRepository,
+                this.formPropertyRepository,
+                this.configPropertyRepository,
+                this.appVersionService);
 
         config.setAppId("45698235b3d24209aefd59eb7d1c3322");
         config.setId("24581235b3d24209aefd59eb7d1c3322");
@@ -335,27 +324,36 @@ public class AppTemplateServiceImplTest {
     }
 
     private List<AppBuilderFormProperty> mockFormProperties() {
-        List<Object> values = Arrays.asList("null", "null", Collections.singletonList("jadewdnjbq"),
+        List<Object> values = Arrays.asList(
+                "null", "null", Collections.singletonList("jadewdnjbq"),
                 Arrays.asList(Arrays.asList("jadewdnjbq", "tools"), Arrays.asList("jadewdnjbq", "workflows")),
                 Arrays.asList("jade0pg2ag", "knowledge"), "null", Arrays.asList("jade6qm5eg", "memory"),
                 JSONObject.parseObject(
                         "{\"category\":[{\"title\":\"root\",\"id\":\"root\",\"children\":[]}],\"inspirations\":[]}"),
                 JSONObject.parseObject("{\"showRecommend\":false, \"list\":[]}"),
-                "i18n_appBuilder_{form_property_opening_content}");
-        List<String> names = Arrays.asList("basic", "ability", "model", "tools", "knowledge", "chat", "memory",
-                "inspiration", "recommend", "opening");
-        List<String> dataTypes = Arrays.asList("String", "String", "List<String>", "List<List<String>>", "List<String>",
-                "String", "List<String>", "object", "object", "String");
-        List<String> from = Arrays.asList("none", "none", "graph", "graph", "graph", "none", "graph", "input", "input",
-                "input");
-        List<String> group = Arrays.asList("null", "basic", "ability", "ability", "ability", "basic", "chat", "chat",
-                "chat", "chat");
-        List<String> description = Arrays.asList("i18n_appBuilder_{form_property_basic}",
-                "i18n_appBuilder_{form_property_ability}", "i18n_appBuilder_{form_property_model}",
-                "i18n_appBuilder_{form_property_tools}", "i18n_appBuilder_{form_property_knowledge}",
-                "i18n_appBuilder_{form_property_chat}", "i18n_appBuilder_{form_property_memory}",
-                "i18n_appBuilder_{form_property_inspiration}", "i18n_appBuilder_{form_property_recommend}",
-                "i18n_appBuilder_{form_property_opening}");
+                "i18n_appBuilder_{form_property_opening_content}"
+        );
+        List<String> names = Arrays.asList(
+                "basic", "ability", "model", "tools", "knowledge", "chat", "memory", "inspiration", "recommend",
+                "opening"
+        );
+        List<String> dataTypes = Arrays.asList(
+                "String", "String", "List<String>", "List<List<String>>", "List<String>", "String", "List<String>",
+                "object", "object", "String"
+        );
+        List<String> from = Arrays.asList(
+                "none", "none", "graph", "graph", "graph", "none", "graph", "input", "input", "input"
+        );
+        List<String> group = Arrays.asList(
+                "null", "basic", "ability", "ability", "ability", "basic", "chat", "chat", "chat", "chat"
+        );
+        List<String> description = Arrays.asList(
+                "i18n_appBuilder_{form_property_basic}", "i18n_appBuilder_{form_property_ability}",
+                "i18n_appBuilder_{form_property_model}", "i18n_appBuilder_{form_property_tools}",
+                "i18n_appBuilder_{form_property_knowledge}", "i18n_appBuilder_{form_property_chat}",
+                "i18n_appBuilder_{form_property_memory}", "i18n_appBuilder_{form_property_inspiration}",
+                "i18n_appBuilder_{form_property_recommend}", "i18n_appBuilder_{form_property_opening}"
+        );
         List<AppBuilderFormProperty> formProperties = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             AppBuilderFormProperty formProperty = new AppBuilderFormProperty();
@@ -379,7 +377,8 @@ public class AppTemplateServiceImplTest {
         List<AppBuilderConfigProperty> configProperties = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             AppBuilderConfigProperty configProperty = new AppBuilderConfigProperty(this.configRepository,
-                    this.formRepository, this.formPropertyRepository);
+                    this.formRepository,
+                    this.formPropertyRepository);
             configProperty.setConfigId(i + "275e235b3d24209aefd59eb8541a549" + i);
             configProperty.setFormPropertyId(i + "c65e235b3d24209aefd59eb7d1a549" + i);
             configProperty.setNodeId(nodeIds[i]);
@@ -390,8 +389,8 @@ public class AppTemplateServiceImplTest {
     }
 
     private AppBuilderFlowGraph mockGraph() {
-        String appearance
-                = "{\"id\": \"69e9dec999384b1791e24a3032010e77\", \"type\": \"jadeFlowGraph\", \"pages\": []}";
+        String appearance =
+                "{\"id\": \"69e9dec999384b1791e24a3032010e77\", \"type\": \"jadeFlowGraph\", \"pages\": []}";
         AppBuilderFlowGraph graph = new AppBuilderFlowGraph("69e9dec999384b1791e24a3032010e77", "graph", appearance);
         graph.setUpdateAt(TIME);
         graph.setCreateAt(TIME);

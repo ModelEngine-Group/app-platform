@@ -58,9 +58,8 @@ public class AsyncAppNodeListenerTest {
                         MapBuilder.<String, Object>get().put(endNodeId, endExecuteInfo).build())
                 .build());
 
-        Map<String, Object> contextData = MapBuilder.<String, Object>get()
-                .put(FlowDataConstant.FLOW_NODE_ID, endNodeId)
-                .build();
+        Map<String, Object> contextData =
+                MapBuilder.<String, Object>get().put(FlowDataConstant.FLOW_NODE_ID, endNodeId).build();
 
         Map<String, Object> context = MapBuilder.<String, Object>get()
                 .put(AippConst.BS_DATA_KEY, businessData)
@@ -82,9 +81,8 @@ public class AsyncAppNodeListenerTest {
         Map<String, Object> businessData = buildAppBasicBusinessData(flowDataId);
 
         String endNodeId = "endNodeId";
-        Map<String, Object> contextData = MapBuilder.<String, Object>get()
-                .put(FlowDataConstant.FLOW_NODE_ID, endNodeId)
-                .build();
+        Map<String, Object> contextData =
+                MapBuilder.<String, Object>get().put(FlowDataConstant.FLOW_NODE_ID, endNodeId).build();
 
         Map<String, Object> context = MapBuilder.<String, Object>get()
                 .put(AippConst.BS_DATA_KEY, businessData)
@@ -103,9 +101,8 @@ public class AsyncAppNodeListenerTest {
         Map<String, Object> businessData = buildAppBasicBusinessData(flowDataId);
 
         String exceptionNodeId = "endNodeId";
-        Map<String, Object> contextData = MapBuilder.<String, Object>get()
-                .put(FlowDataConstant.FLOW_NODE_ID, exceptionNodeId)
-                .build();
+        Map<String, Object> contextData =
+                MapBuilder.<String, Object>get().put(FlowDataConstant.FLOW_NODE_ID, exceptionNodeId).build();
 
         Map<String, Object> context = MapBuilder.<String, Object>get()
                 .put(AippConst.BS_DATA_KEY, businessData)

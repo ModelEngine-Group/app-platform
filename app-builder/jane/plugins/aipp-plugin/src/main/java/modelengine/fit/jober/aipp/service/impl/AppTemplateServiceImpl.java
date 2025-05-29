@@ -16,8 +16,9 @@ import modelengine.fit.jober.aipp.service.AppBuilderAppService;
 import modelengine.fit.jober.aipp.service.AppTemplateService;
 import modelengine.fit.jober.aipp.util.TemplateUtils;
 import modelengine.fit.jober.common.RangedResultSet;
+
+import lombok.AllArgsConstructor;
 import modelengine.fitframework.annotation.Component;
-import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.transaction.Transactional;
 
 import java.util.List;
@@ -30,17 +31,10 @@ import java.util.stream.Collectors;
  * @since 2025-01-02
  */
 @Component
+@AllArgsConstructor
 public class AppTemplateServiceImpl implements AppTemplateService {
-    private static final Logger log = Logger.get(AppTemplateServiceImpl.class);
-
     private final AppBuilderAppService appService;
-
     private final AppTemplateRepository templateRepository;
-
-    AppTemplateServiceImpl(AppBuilderAppService appService, AppTemplateRepository templateRepository) {
-        this.appService = appService;
-        this.templateRepository = templateRepository;
-    }
 
     @Override
     public RangedResultSet<TemplateInfoDto> query(TemplateQueryCondition cond, OperationContext context) {

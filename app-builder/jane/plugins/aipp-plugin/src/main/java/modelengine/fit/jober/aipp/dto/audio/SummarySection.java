@@ -23,10 +23,8 @@ import modelengine.fitframework.annotation.Property;
 public class SummarySection {
     @Property(description = "音频坐标, 格式HH:mm:ss")
     private String position;
-
     @Property(description = "摘要标题")
     private String title;
-
     @Property(description = "片段摘要")
     private String text;
 }

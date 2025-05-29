@@ -8,6 +8,7 @@ package modelengine.fit.jober.aipp.service.impl;
 
 import modelengine.fit.jober.aipp.repository.I18nRepository;
 import modelengine.fit.jober.aipp.service.DatabaseFieldLocaleService;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Initialize;
 import modelengine.fitframework.log.Logger;
@@ -25,7 +26,6 @@ import java.util.Map;
 @Component
 public class DatabaseFieldLocaleServiceImpl implements DatabaseFieldLocaleService {
     private static final Logger log = Logger.get(DatabaseFieldLocaleServiceImpl.class);
-
     private static Map<String, Map<String, String>> resourceMap = null;
 
     private final I18nRepository i18nRepository;

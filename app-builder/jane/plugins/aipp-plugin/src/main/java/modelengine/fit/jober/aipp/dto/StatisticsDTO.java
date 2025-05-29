@@ -6,11 +6,12 @@
 
 package modelengine.fit.jober.aipp.dto;
 
+import modelengine.fitframework.annotation.Property;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import modelengine.fitframework.annotation.Property;
 
 /**
  * appengine统计数据

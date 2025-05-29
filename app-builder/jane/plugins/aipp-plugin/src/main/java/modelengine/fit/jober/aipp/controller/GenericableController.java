@@ -6,10 +6,14 @@
 
 package modelengine.fit.jober.aipp.controller;
 
+import modelengine.fit.jane.common.controller.AbstractController;
+import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
-
+import modelengine.fit.jober.aipp.dto.FitableInfoDto;
+import modelengine.fit.jober.aipp.service.GenericableManageService;
 import modelengine.jade.service.annotations.CarverSpan;
 import modelengine.jade.service.annotations.SpanAttr;
+
 import modelengine.fit.http.annotation.GetMapping;
 import modelengine.fit.http.annotation.PathVariable;
 import modelengine.fit.http.annotation.PostMapping;
@@ -17,10 +21,6 @@ import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.annotation.RequestParam;
 import modelengine.fit.http.server.HttpClassicServerRequest;
-import modelengine.fit.jane.common.controller.AbstractController;
-import modelengine.fit.jane.common.response.Rsp;
-import modelengine.fit.jober.aipp.dto.FitableInfoDto;
-import modelengine.fit.jober.aipp.service.GenericableManageService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.util.ObjectUtils;
 
@@ -84,7 +84,9 @@ public class GenericableController extends AbstractController {
             @RequestBody Map<String, Object> body) {
         String appId = ObjectUtils.cast(body.get("appId"));
         String appType = ObjectUtils.cast(body.get("appType"));
-        return Rsp.ok(this.genericableManageService.executeInspirationFitable(fitableId, appId, appType,
+        return Rsp.ok(this.genericableManageService.executeInspirationFitable(fitableId,
+                appId,
+                appType,
                 this.contextOf(httpRequest, tenantId)));
     }
 }

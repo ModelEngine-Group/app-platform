@@ -7,13 +7,13 @@
 package modelengine.fit.jober.aipp.service.impl;
 
 import modelengine.fit.jane.task.util.Entities;
-
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
 import modelengine.fit.jober.aipp.dto.AppTypeDto;
 import modelengine.fit.jober.aipp.mapper.AppBuilderAppTypeMapper;
 import modelengine.fit.jober.aipp.po.AppBuilderAppTypePo;
 import modelengine.fit.jober.aipp.service.AppTypeService;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.util.StringUtils;
@@ -39,9 +39,9 @@ public class AppTypeServiceImpl implements AppTypeService {
     @Override
     public List<AppTypeDto> queryAll(String tenantId) {
         return this.appBuilderAppTypeMapper.queryAll(tenantId)
-                .stream()
-                .map(this::deserialize)
-                .collect(Collectors.toList());
+            .stream()
+            .map(this::deserialize)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -73,12 +73,12 @@ public class AppTypeServiceImpl implements AppTypeService {
     private AppBuilderAppTypePo serialize(AppTypeDto dto, String tenantId) {
         LocalDateTime now = LocalDateTime.now();
         return AppBuilderAppTypePo.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .tenantId(tenantId)
-                .createAt(now)
-                .updateAt(now)
-                .build();
+            .id(dto.getId())
+            .name(dto.getName())
+            .tenantId(tenantId)
+            .createAt(now)
+            .updateAt(now)
+            .build();
     }
 
     private AppTypeDto deserialize(AppBuilderAppTypePo po) {

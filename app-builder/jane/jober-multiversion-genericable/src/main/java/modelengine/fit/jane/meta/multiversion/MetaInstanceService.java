@@ -76,7 +76,6 @@ public interface MetaInstanceService {
      * 查询meta实例。
      *
      * @param versionId 表示实例所属meta唯一标识的 {@link String}。
-     * @param filter 表示meta实例过滤器的 {@link MetaInstanceFilter}。
      * @param offset 表示查询到的meta版本的结果集在全量结果集中的偏移量的 64 位整数。
      * @param limit 表示查询到的meta版本的结果集中的最大数量的 32 位整数。
      * @param context 表示操作上下文的 {@link OperationContext}。

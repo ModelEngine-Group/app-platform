@@ -47,22 +47,16 @@ import java.util.Map;
 @DisplayName("测试 StoreServiceImpl")
 public class StoreServiceImplTest {
     private static final String RESOURCE_PATH = "component";
-
     private static final String BASIC_NODE_ZH_PATH = "/basic_node_zh.json";
-
     private static final String BASIC_NODE_EN_PATH = "/basic_node_en.json";
-
     private static final String EVALUATION_NODE_ZH_PATH = "/evaluation_node_zh.json";
-
     private static final String EVALUATION_NODE_EN_PATH = "/evaluation_node_en.json";
-
     private static final Map<String, String> TAGS = MapBuilder.<String, String>get()
             .put("CODENODESTATE", "codeNodeState")
             .put("QUERYOPTIMIZATIONNODESTATE", "queryOptimizationNodeState")
             .build();
 
     private PluginToolService pluginToolService;
-
     private StoreServiceImpl storeService;
 
     @BeforeEach

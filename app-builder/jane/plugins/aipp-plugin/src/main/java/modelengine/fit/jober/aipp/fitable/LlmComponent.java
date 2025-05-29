@@ -16,6 +16,7 @@ import modelengine.fel.core.chat.Prompt;
 import modelengine.fel.core.chat.support.ChatMessages;
 import modelengine.fel.core.chat.support.ToolMessage;
 import modelengine.fel.core.model.http.SecureConfig;
+import modelengine.fel.core.model.http.ModelExtraHttpBody;
 import modelengine.fel.core.tool.ToolInfo;
 import modelengine.fel.core.tool.ToolProvider;
 import modelengine.fel.core.util.Tip;
@@ -30,12 +31,13 @@ import modelengine.fit.jade.aipp.prompt.UserAdvice;
 import modelengine.fit.jade.aipp.prompt.repository.PromptBuilderChain;
 import modelengine.fit.jade.waterflow.FlowInstanceService;
 import modelengine.fit.jane.common.entity.OperationContext;
-import modelengine.fit.jane.meta.multiversion.MetaInstanceService;
-import modelengine.fit.jane.meta.multiversion.instance.InstanceDeclarationInfo;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.common.exception.AippJsonDecodeException;
 import modelengine.fit.jober.aipp.constants.AippConst;
+import modelengine.fit.jober.aipp.domains.business.RunContext;
+import modelengine.fit.jober.aipp.domains.taskinstance.AppTaskInstance;
+import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.entity.AippLogData;
 import modelengine.fit.jober.aipp.enums.AippInstLogType;
 import modelengine.fit.jober.aipp.enums.ModelErrCode;
@@ -55,7 +57,7 @@ import modelengine.fit.waterflow.spi.FlowableService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
-import modelengine.fitframework.broker.client.BrokerClient;
+import modelengine.fitframework.annotation.Property;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.parameterization.StringFormatException;
 import modelengine.fitframework.serialization.ObjectSerializer;
@@ -65,7 +67,6 @@ import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.fitframework.util.UuidUtils;
-import modelengine.jade.common.globalization.LocaleService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,80 +87,56 @@ import java.util.stream.Collectors;
 @Component
 public class LlmComponent implements FlowableService, FlowCallbackService, FlowExceptionService {
     private static final Logger log = Logger.get(LlmComponent.class);
-
     private static final String SYSTEM_PROMPT = "{{0}}";
-
     private static final String PROMPT_TEMPLATE = "{{1}}";
-
     private static final String AGENT_NODE_ID = "agent";
-
-    private static final String UI_WORD_KEY = "aipp.fitable.LlmComponent";
-
     private static final String REGEX_MODEL = "statusCode=(\\d+)";
-
-    private static final String WORKFLOW_CALLBACK_FITABLE_ID =
-            "modelengine.fit.jober.aipp.fitable.LLMComponentCallback";
-
+    private static final String WORKFLOW_CALLBACK_FITABLE_ID = "modelengine.fit.jober.aipp.fitable.LLMComponentCallback";
     private static final String WORKFLOW_EXCEPTION_FITABLE_ID =
             "modelengine.fit.jober.aipp.fitable.LLMComponentException";
-
     private static final String TOOL_UNIQUE_NAME = "toolUniqueName";
-
     private static final String TOOL_NAME = "name";
 
     // 暂时使用ConcurrentHashMap存储父节点的元数据
     private final ConcurrentHashMap<String, AippLlmMeta> llmCache = new ConcurrentHashMap<>();
 
     private final FlowInstanceService flowInstanceService;
-
-    private final MetaInstanceService metaInstanceService;
-
     private final ToolProvider toolProvider;
-
     private final AiProcessFlow<Tip, Prompt> agentFlow;
-
     private final AippLogService aippLogService;
-
     private final AippLogStreamService aippLogStreamService;
-
-    private final BrokerClient client;
-
     private final ObjectSerializer serializer;
-
-    private final LocaleService localeService;
-
     private final AippModelCenter aippModelCenter;
-
     private final PromptBuilderChain promptBuilderChain;
+    private final AppTaskInstanceService appTaskInstanceService;
 
     /**
      * 大模型节点构造器，内部通过提供的 agent 和 tool 构建智能体工作流。
      *
      * @param flowInstanceService 表示流程实例服务的 {@link FlowInstanceService}。
-     * @param metaInstanceService 表示元数据实例服务的 {@link MetaInstanceService}。
      * @param toolProvider 表示具提供者功能的 {@link ToolProvider}。
      * @param agent 表示提供智能体功能的 {@link AbstractAgent}{@code <}{@link ChatMessages}{@code ,
      * }{@link ChatMessages}{@code >}。
      * @param aippLogService 表示提供日志服务的 {@link AippLogService}。
      * @param aippLogStreamService 表示提供日志流服务的 {@link AippLogStreamService}。
-     * @param client 表示消息代理客户端的 {@link BrokerClient}。
      * @param serializer 表示序列化器的 {@link ObjectSerializer}。
-     * @param localeService 表示界面词国际化转换器的 {@link LocaleService}。
      * @param aippModelCenter 表示模型中心的 {@link AippModelCenter}。
      * @param promptBuilderChain 表示提示器构造器职责链的 {@link PromptBuilderChain}。
+     * @param appTaskInstanceService 表示任务实例服务的 {@link AppTaskInstanceService}。
      */
-    public LlmComponent(FlowInstanceService flowInstanceService, MetaInstanceService metaInstanceService,
+    public LlmComponent(FlowInstanceService flowInstanceService,
             ToolProvider toolProvider,
             @Fit(alias = AippConst.WATER_FLOW_AGENT_BEAN) AbstractAgent<Prompt, Prompt> agent,
-            AippLogService aippLogService, AippLogStreamService aippLogStreamService, BrokerClient client,
-            @Fit(alias = "json") ObjectSerializer serializer, LocaleService localeService,
-            AippModelCenter aippModelCenter, PromptBuilderChain promptBuilderChain) {
+            AippLogService aippLogService,
+            AippLogStreamService aippLogStreamService,
+            @Fit(alias = "json") ObjectSerializer serializer,
+            AippModelCenter aippModelCenter,
+            PromptBuilderChain promptBuilderChain,
+            AppTaskInstanceService appTaskInstanceService) {
         this.flowInstanceService = flowInstanceService;
-        this.metaInstanceService = metaInstanceService;
         this.toolProvider = toolProvider;
         this.aippLogService = aippLogService;
         this.aippLogStreamService = aippLogStreamService;
-        this.client = client;
         this.serializer = notNull(serializer, "The serializer cannot be nul.");
         this.aippModelCenter = aippModelCenter;
 
@@ -169,8 +146,8 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
                 .id(AGENT_NODE_ID)
                 .delegate(agent)
                 .close();
-        this.localeService = localeService;
         this.promptBuilderChain = promptBuilderChain;
+        this.appTaskInstanceService = appTaskInstanceService;
     }
 
     /**
@@ -235,17 +212,12 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
                 : ObjectUtils.cast(toolInfoList.get(0).parameters().getOrDefault(TOOL_NAME, toolUniqueName));
         String parentFlowDataId = llmMeta.getFlowDataId();
         log.info("[LlmComponent] handle exception start. instanceId={}, parentInstanceId={}, parentFlowDataId={}",
-                instanceId,
-                parentInstanceId,
-                parentFlowDataId);
+                instanceId, parentInstanceId, parentFlowDataId);
         this.failLlmComponentNode(llmMeta,
                 new JoberErrorInfo(StringUtils.format("[{0}] {1}", toolName, errorInfo.getErrorMessage()),
-                        errorInfo.getErrorCode(),
-                        errorInfo.getArgs()));
+                        errorInfo.getErrorCode(), errorInfo.getArgs()));
         log.info("[LlmComponent] handle exception end. instanceId={}, parentInstanceId={}, parentFlowDataId={}",
-                instanceId,
-                parentInstanceId,
-                parentFlowDataId);
+                instanceId, parentInstanceId, parentFlowDataId);
     }
 
     /**
@@ -286,13 +258,12 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
         agentFlow.converse()
                 .bind((acc, chunk) -> {
                     if (firstTokenFlag[0]) {
-                        log.info("[perf] [{}] converse sendLog start, instId={}, chunk={}",
-                                System.currentTimeMillis(),
-                                instId,
-                                chunk.text());
+                        log.info("[perf] [{}] converse sendLog start, instId={}, chunk={}", System.currentTimeMillis(),
+                                instId, chunk.text());
                         firstTokenFlag[0] = false;
                         streamMsgSender.sendMsg(chunk.text(), businessData);
-                        log.info("[perf] [{}] converse sendLog end, instId={}", System.currentTimeMillis(), instId);
+                        log.info("[perf] [{}] converse sendLog end, instId={}", System.currentTimeMillis(),
+                                instId);
                         return;
                     }
                     streamMsgSender.sendMsg(chunk.text(), businessData);
@@ -391,21 +362,23 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
         output.put("llmOutput", answer);
         output.put("reference", promptMetadata.getOrDefault(PROMPT_METADATA_KEY, Collections.emptyMap()));
         businessData.put("output", output);
-        InstanceDeclarationInfo info = InstanceDeclarationInfo.custom().putInfo("llmOutput", answer).build();
-        this.metaInstanceService.patchMetaInstance(llmMeta.getVersionId(),
-                llmMeta.getInstId(),
-                info,
-                llmMeta.getContext());
+
+        // 修改taskInstance.
+        AppTaskInstance updateEntity = AppTaskInstance.asUpdate(llmMeta.getVersionId(), llmMeta.getInstId())
+                .setLlmOutput(answer)
+                .build();
+        this.appTaskInstanceService.update(updateEntity,
+                JsonUtils.parseObject(ObjectUtils.cast(businessData.get(AippConst.BS_HTTP_CONTEXT_KEY)),
+                        OperationContext.class));
         doOnAgentComplete(llmMeta);
     }
 
     private void setChildInstanceId(AippLlmMeta llmMeta, String childInstanceId) {
-        InstanceDeclarationInfo info =
-                InstanceDeclarationInfo.custom().putInfo(AippConst.INST_CHILD_INSTANCE_ID, childInstanceId).build();
-        this.metaInstanceService.patchMetaInstance(llmMeta.getVersionId(),
-                llmMeta.getInstId(),
-                info,
-                llmMeta.getContext());
+        // 修改taskInstance.
+        AppTaskInstance updateEntity = AppTaskInstance.asUpdate(llmMeta.getVersionId(), llmMeta.getInstId())
+                .setChildInstanceId(childInstanceId)
+                .build();
+        this.appTaskInstanceService.update(updateEntity, llmMeta.getContext());
     }
 
     /**
@@ -530,7 +503,9 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
         String model = ObjectUtils.cast(businessData.get("model"));
         Map<String, String> accessInfo = ObjectUtils.nullIf(ObjectUtils.cast(businessData.get("accessInfo")),
                 MapBuilder.<String, String>get().put("serviceName", model).put("tag", "INTERNAL").build());
-        String chatId = ObjectUtils.cast(businessData.get(AippConst.BS_CHAT_ID));
+
+        RunContext runContext = new RunContext(businessData, new OperationContext());
+        String chatId = runContext.getOriginChatId();
         OperationContext opContext = DataUtils.getOpContext(businessData);
         ModelAccessInfo modelAccessInfo = this.aippModelCenter.getModelAccessInfo(accessInfo.get("tag"),
                 accessInfo.get("serviceName"), opContext);
@@ -542,22 +517,34 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
                 .temperature(ObjectUtils.cast(businessData.get("temperature")))
                 .tools(this.toolProvider.getTool(skillNameList))
                 .user(opContext.getOperator())
+                .extras(Collections.singletonList(new ModelExtraHttpBody(new ModelExtraBody(chatId))))
                 .build();
+    }
+
+    private static class ModelExtraBody {
+        @Property(name = "session_id")
+        private String sessionId;
+
+        public ModelExtraBody(String sessionId) {
+            if (!UuidUtils.isUuidString(sessionId, true)) {
+                throw new IllegalArgumentException("Invalid session id. It should be 32 characters without hyphens.");
+            }
+            // 下层要求是一个标准的 uuid，理论上不应该有这个限制，后续应该可以放开，目前暂时做一次标准化
+            this.sessionId =
+                    sessionId.substring(0, 8) + "-" + sessionId.substring(8, 12) + "-" + sessionId.substring(12, 16)
+                            + "-" + sessionId.substring(16, 20) + "-" + sessionId.substring(20);
+        }
     }
 
     static class StreamMsgSender {
         private final AippLogStreamService aippLogStreamService;
-
         private final ObjectSerializer serializer;
-
         private final String path;
-
         private final String msgId;
-
         private final String instId;
 
-        StreamMsgSender(AippLogStreamService aippLogStreamService, ObjectSerializer serializer, String path,
-                String msgId, String instId) {
+        StreamMsgSender(AippLogStreamService aippLogStreamService, ObjectSerializer serializer,
+                String path, String msgId, String instId) {
             this.aippLogStreamService = aippLogStreamService;
             this.serializer = serializer;
             this.path = path;
@@ -600,8 +587,9 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
         }
 
         private void sendMsgHandle(String msg, StreamMsgType logType, Map<String, Object> businessData) {
-            String chatId = ObjectUtils.cast(businessData.get(AippConst.BS_CHAT_ID));
-            String atChatId = ObjectUtils.cast(businessData.get(AippConst.BS_AT_CHAT_ID));
+            RunContext runContext = new RunContext(businessData, new OperationContext());
+            String chatId = runContext.getOriginChatId();
+            String atChatId = runContext.getAtChatId();
             AippLogData logData = AippLogData.builder().msg(msg).build();
             AippLogVO logVO = AippLogVO.builder()
                     .logData(JsonUtils.toJsonString(logData))

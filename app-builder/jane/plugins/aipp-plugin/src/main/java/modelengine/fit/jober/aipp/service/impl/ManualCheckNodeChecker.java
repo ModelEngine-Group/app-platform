@@ -11,6 +11,7 @@ import static modelengine.fit.jober.aipp.enums.NodeType.MANUAL_CHECK_NODE;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.dto.check.AppCheckDto;
 import modelengine.fit.jober.aipp.dto.check.CheckResult;
+
 import modelengine.fitframework.annotation.Component;
 
 import java.util.List;

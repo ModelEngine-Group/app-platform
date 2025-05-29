@@ -8,10 +8,15 @@ package modelengine.fit.jober.aipp.util;
 
 import modelengine.fit.jober.aipp.domain.AppBuilderApp;
 import modelengine.fit.jober.aipp.domain.AppTemplate;
+import modelengine.fit.jober.aipp.dto.AppBuilderAppCreateDto;
 import modelengine.fit.jober.aipp.dto.template.TemplateInfoDto;
 import modelengine.fit.jober.aipp.enums.AppState;
 import modelengine.fit.jober.aipp.enums.AppTypeEnum;
+
 import modelengine.fitframework.util.ObjectUtils;
+import modelengine.fitframework.util.StringUtils;
+
+import java.util.Map;
 
 /**
  * 应用模板相关的工具类。
@@ -30,8 +35,10 @@ public class TemplateUtils {
      */
     public static final String ICON_ATTR_KEY = "icon";
 
+    private static final String APP_ATTR_ICON = "icon";
+    private static final String APP_ATTR_GREETING = "greeting";
+    private static final String APP_ATTR_STORE_ID = "store_id";
     private static final String INIT_VERSION = "1.0.0";
-
     private static final int ZERO_COUNT = 0;
 
     /**
@@ -96,5 +103,37 @@ public class TemplateUtils {
                 .appBuiltType(template.getBuiltType())
                 .appCategory(template.getCategory())
                 .build();
+    }
+
+    /**
+     * 将 {@link AppTemplate} 转换 {@link AppBuilderAppCreateDto}。
+     *
+     * @param template {@link AppTemplate} 对象.
+     * @return {@link AppBuilderAppCreateDto} 对象.
+     */
+    public static AppBuilderAppCreateDto toAppCreateDTO(AppTemplate template) {
+        AppBuilderApp appTemplate = convertToAppBuilderApp(template);
+        Map<String, Object> attributes = appTemplate.getAttributes();
+        String description = getAttribute(attributes, DESCRIPTION_ATTR_KEY);
+        String icon = getAttribute(attributes, APP_ATTR_ICON);
+        String greeting = getAttribute(attributes, APP_ATTR_GREETING);
+        String storeId = getAttribute(attributes, APP_ATTR_STORE_ID);
+        return AppBuilderAppCreateDto.builder()
+                .name(appTemplate.getName())
+                .description(description)
+                .icon(icon)
+                .greeting(greeting)
+                .appType(appTemplate.getAppType())
+                .type(appTemplate.getType())
+                .storeId(storeId)
+                .appBuiltType(appTemplate.getAppBuiltType())
+                .appCategory(appTemplate.getAppCategory())
+                .build();
+    }
+
+    private static String getAttribute(Map<String, Object> attributes, String name) {
+        // 增加保护，之前创建的应用部分前端传入了null, 如果再新建版本则导致新版本出现字符串"null"
+        Object value = attributes.get(name);
+        return value == null ? StringUtils.EMPTY : String.valueOf(value);
     }
 }

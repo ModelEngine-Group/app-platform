@@ -7,6 +7,7 @@
 package modelengine.fit.jober.aipp.service;
 
 import modelengine.fit.jane.common.entity.OperationContext;
+
 import modelengine.fitframework.annotation.Genericable;
 
 import java.util.List;
@@ -31,6 +32,6 @@ public interface AppInspirationService {
      * @since 2024-04-25
      */
     @Genericable(id = "d01041a73e00ac46bedde08d02c6818e")
-    List<Map<String, Object>> getCustomizedLogs(Map<String, Object> params, String aippId, String appType,
-            OperationContext context);
+    List<Map<String, Object>> getCustomizedLogs(Map<String, Object> params,
+            String aippId, String appType, OperationContext context);
 }

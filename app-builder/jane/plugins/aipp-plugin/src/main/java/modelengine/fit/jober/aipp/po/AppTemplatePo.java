@@ -25,34 +25,19 @@ import java.time.LocalDateTime;
 @Builder
 public class AppTemplatePo {
     private String id;
-
     private String name;
-
     private String builtType;
-
     private String category;
-
     private String attributes;
-
     private String appType;
-
     private long like;
-
     private long collection;
-
     private long usage;
-
     private String version;
-
     private String configId;
-
     private String flowGraphId;
-
     private String createBy;
-
     private LocalDateTime createAt;
-
     private String updateBy;
-
     private LocalDateTime updateAt;
 }

@@ -95,8 +95,8 @@ class AppTypeServiceImplTest {
         Mockito.doNothing()
                 .when(this.appBuilderAppTypeMapper)
                 .insert(Mockito.argThat(
-                        po -> !po.getId().isEmpty() && po.getName().equals(expectPo.getName()) && po.getTenantId()
-                                .equals(expectPo.getTenantId())));
+                        po -> !po.getId().isEmpty() && po.getName().equals(expectPo.getName())
+                                && po.getTenantId().equals(expectPo.getTenantId())));
 
         AppTypeDto result = this.appTypeService.add(new AppTypeDto("", expectPo.getName()), tenantId);
 

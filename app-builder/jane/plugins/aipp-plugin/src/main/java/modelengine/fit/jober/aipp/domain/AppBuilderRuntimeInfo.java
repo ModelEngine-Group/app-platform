@@ -6,10 +6,11 @@
 
 package modelengine.fit.jober.aipp.domain;
 
+import modelengine.fit.runtime.entity.Parameter;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
-import modelengine.fit.runtime.entity.Parameter;
 
 import java.util.List;
 
@@ -24,29 +25,17 @@ import java.util.List;
 @SuperBuilder
 public class AppBuilderRuntimeInfo extends BaseDomain {
     private Long id;
-
     private String traceId;
-
     private String flowDefinitionId;
-
     private String instanceId;
-
     private String nodeId;
-
     private String nodeType;
-
     private long startTime;
-
     private long endTime;
-
     private String status;
-
     private boolean published;
-
     private String errorMsg;
-
     private String nextPositionId;
-
     private List<Parameter> parameters;
 
     /**

@@ -40,7 +40,10 @@ public class AppBuilderSaveConfigDtoTest {
     @Test
     @DisplayName("测试构建器构造传输类")
     public void testBuilderConstruction() {
-        AppBuilderSaveConfigDto dto = AppBuilderSaveConfigDto.builder().input(Collections.EMPTY_LIST).graph("").build();
+        AppBuilderSaveConfigDto dto = AppBuilderSaveConfigDto.builder()
+                .input(Collections.EMPTY_LIST)
+                .graph("")
+                .build();
         Assertions.assertEquals(Collections.EMPTY_LIST, dto.getInput());
     }
 }

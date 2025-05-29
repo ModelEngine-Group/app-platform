@@ -6,18 +6,20 @@
 
 package modelengine.fit.jober.aipp.domain;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
-import lombok.extern.slf4j.Slf4j;
 import modelengine.fit.jober.aipp.enums.AppState;
 import modelengine.fit.jober.aipp.repository.AppBuilderConfigPropertyRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderConfigRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFlowGraphRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormPropertyRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormRepository;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 import modelengine.fitframework.inspection.Validation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -33,45 +35,31 @@ import java.util.Map;
 @Slf4j
 public class AppBuilderApp extends BaseDomain {
     private String id;
-
     private String name;
-
+    private String appId;
+    private String appSuiteId;
     private String tenantId;
-
     private String configId;
-
     private String flowGraphId;
-
     private String type;
-
     private String version;
-
     private Map<String, Object> attributes;
-
     private String path;
-
     private String state;
-
     private String appType;
-
     private String appBuiltType;
-
     private String appCategory;
-
+    private Boolean isActive;
+    private String status;
+    private String uniqueName;
+    private LocalDateTime publishAt;
     private AppBuilderFlowGraph flowGraph;
-
     private AppBuilderConfig config;
-
     private List<AppBuilderFormProperty> formProperties;
-
     private AppBuilderFlowGraphRepository flowGraphRepository;
-
     private AppBuilderConfigRepository configRepository;
-
     private AppBuilderConfigPropertyRepository configPropertyRepository;
-
     private AppBuilderFormRepository formRepository;
-
     private AppBuilderFormPropertyRepository formPropertyRepository;
 
     public AppBuilderApp(AppBuilderFlowGraphRepository flowGraphRepository, AppBuilderConfigRepository configRepository,

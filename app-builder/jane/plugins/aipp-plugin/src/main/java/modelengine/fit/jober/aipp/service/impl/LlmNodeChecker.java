@@ -47,7 +47,7 @@ public class LlmNodeChecker extends AbstractNodeChecker {
     public List<CheckResult> validate(AppCheckDto appCheckDto, OperationContext context) {
         List<CheckResult> results = this.initialResults(appCheckDto, LLM_NODE.type());
         Map<String, CheckResult> resultMap = results.stream()
-                .collect(Collectors.toMap(CheckResult::getNodeId, result -> result));
+            .collect(Collectors.toMap(CheckResult::getNodeId, result -> result));
 
         List<ModelAccessInfo> modelInfos =
                 fetchModelService.fetchModelList(AippConst.CHAT_MODEL_TYPE, null, context).getModels();

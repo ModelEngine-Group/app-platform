@@ -10,6 +10,7 @@ import modelengine.fit.jober.aipp.domain.AippSystemConfig;
 import modelengine.fit.jober.aipp.mapper.AippSystemConfigMapper;
 import modelengine.fit.jober.aipp.repository.AippSystemConfigRepository;
 import modelengine.fit.jober.aipp.serializer.impl.AippSystemConfigSerializer;
+
 import modelengine.fitframework.annotation.Component;
 
 import java.util.Optional;
@@ -23,7 +24,6 @@ import java.util.Optional;
 @Component
 public class AippSystemConfigRepositoryImpl implements AippSystemConfigRepository {
     private final AippSystemConfigMapper aippSystemConfigMapper;
-
     private final AippSystemConfigSerializer serializer;
 
     public AippSystemConfigRepositoryImpl(AippSystemConfigMapper aippSystemConfigMapper) {

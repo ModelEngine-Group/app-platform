@@ -55,9 +55,7 @@ public class AppChatRsp {
     @Builder
     public static class Answer {
         Object content;
-
         String type;
-
         String msgId;
     }
 }

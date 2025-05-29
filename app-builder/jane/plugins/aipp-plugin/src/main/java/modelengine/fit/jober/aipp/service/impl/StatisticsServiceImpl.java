@@ -6,9 +6,6 @@
 
 package modelengine.fit.jober.aipp.service.impl;
 
-import modelengine.jade.store.service.PluginService;
-import modelengine.jade.store.service.support.DeployStatus;
-
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.condition.AppQueryCondition;
 import modelengine.fit.jober.aipp.dto.StatisticsDTO;
@@ -17,6 +14,9 @@ import modelengine.fit.jober.aipp.enums.AppTypeEnum;
 import modelengine.fit.jober.aipp.service.AppBuilderAppService;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.StatisticsService;
+import modelengine.jade.store.service.PluginService;
+import modelengine.jade.store.service.support.DeployStatus;
+
 import modelengine.fitframework.annotation.Component;
 
 /**
@@ -30,9 +30,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private static final String RUNTIME = "runtime";
 
     private final PluginService pluginService;
-
     private final AppBuilderFormService appBuilderFormService;
-
     private final AppBuilderAppService appBuilderAppService;
 
     public StatisticsServiceImpl(PluginService pluginService, AppBuilderFormService appBuilderFormService,

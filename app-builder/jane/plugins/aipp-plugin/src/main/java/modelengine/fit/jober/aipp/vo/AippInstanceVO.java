@@ -26,22 +26,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class AippInstanceVO {
     private List<String> ancestors;
-
     private String aippInstanceId;
-
     private String tenantId;
-
     private String aippInstanceName;
-
     private String status;
-
     private String formMetadata;
-
     private Map<String, String> formArgs;
-
     private String startTime;
-
     private String endTime;
-
     private List<AippLogVO> aippInstanceLogs;
 }

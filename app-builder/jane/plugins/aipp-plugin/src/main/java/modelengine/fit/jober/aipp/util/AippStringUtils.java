@@ -24,7 +24,6 @@ public class AippStringUtils {
      * 标题数量
      */
     public static final int MAX_OUTLINE_LINE = 50;
-
     private static final Logger log = Logger.get(AippStringUtils.class);
 
     /**

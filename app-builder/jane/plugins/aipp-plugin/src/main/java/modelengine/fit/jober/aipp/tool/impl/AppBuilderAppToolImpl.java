@@ -6,11 +6,11 @@
 
 package modelengine.fit.jober.aipp.tool.impl;
 
-import modelengine.fel.core.formatters.OutputParser;
-import modelengine.fel.core.formatters.json.JsonOutputParser;
-import modelengine.fel.core.formatters.support.MarkdownParser;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.common.exception.AippException;
+import modelengine.fit.jober.aipp.converters.ConverterFactory;
+import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
+import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppCreateDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderConfigDto;
@@ -19,6 +19,10 @@ import modelengine.fit.jober.aipp.dto.AppCreateToolDto;
 import modelengine.fit.jober.aipp.enums.AppTypeEnum;
 import modelengine.fit.jober.aipp.service.AppBuilderAppService;
 import modelengine.fit.jober.aipp.tool.AppBuilderAppTool;
+
+import modelengine.fel.core.formatters.OutputParser;
+import modelengine.fel.core.formatters.json.JsonOutputParser;
+import modelengine.fel.core.formatters.support.MarkdownParser;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
@@ -42,39 +46,29 @@ import java.util.Optional;
 @Component
 public class AppBuilderAppToolImpl implements AppBuilderAppTool {
     private static final String DEFAULT_TENANT_ID = "31f20efc7e0848deab6a6bc10fc3021e";
-
     private static final String SYSTEM_PROMPT_KEY = "systemPrompt";
-
     private static final String DEFAULT_TEMPLATE_ID = "df87073b9bc85a48a9b01eccc9afccc4";
-
-    private static final String INDEX_URL_FORMAT
-            = "应用创建成功！ \n访问地址：{0}//#//app-develop//31f20efc7e0848deab6a6bc10fc3021e//app-detail//{1}";
-
+    private static final String INDEX_URL_FORMAT =
+            "应用创建成功！ \n访问地址：{0}//#//app-develop//31f20efc7e0848deab6a6bc10fc3021e//app-detail//{1}";
     private static final Logger log = Logger.get(AppBuilderAppToolImpl.class);
-
     private static final String APP_BUILT_TYPE = "app";
-
     private static final String APP_CATEGORY = "chatbot";
 
     private final AppBuilderAppService appService;
-
     private final String appEngineUrl;
-
     private final ObjectSerializer objectSerializer;
+    private final AppVersionService appVersionService;
+    private final ConverterFactory converterFactory;
 
-    /**
-     * 构造函数
-     *
-     * @param appService app服务
-     * @param objectSerializer 序列化器
-     * @param appEngineUrl app引擎url
-     */
     public AppBuilderAppToolImpl(AppBuilderAppService appService,
             @Fit(alias = "json") ObjectSerializer objectSerializer,
-            @Value("${app-engine.endpoint}") String appEngineUrl) {
+            @Value("${app-engine.endpoint}") String appEngineUrl, AppVersionService appVersionService,
+            ConverterFactory converterFactory) {
         this.appService = appService;
         this.appEngineUrl = appEngineUrl;
         this.objectSerializer = objectSerializer;
+        this.appVersionService = appVersionService;
+        this.converterFactory = converterFactory;
     }
 
     @Override
@@ -82,8 +76,9 @@ public class AppBuilderAppToolImpl implements AppBuilderAppTool {
     public String createApp(String appInfo, String userId) {
         AppCreateToolDto dto;
         try {
-            OutputParser<AppCreateToolDto> parser = new MarkdownParser<>(
-                    JsonOutputParser.create(this.objectSerializer, AppCreateToolDto.class), "json");
+            OutputParser<AppCreateToolDto> parser =
+                    new MarkdownParser<>(JsonOutputParser.create(this.objectSerializer, AppCreateToolDto.class),
+                            "json");
             dto = parser.parse(appInfo);
         } catch (SerializationException exception) {
             log.error("Failed to create app, parse json str error: {}", appInfo, exception);
@@ -106,7 +101,8 @@ public class AppBuilderAppToolImpl implements AppBuilderAppTool {
         OperationContext context = this.buildOperationContext(userId);
         AppBuilderAppDto appDto;
         try {
-            appDto = this.appService.create(DEFAULT_TEMPLATE_ID, this.convert(dto), context, false);
+            AppVersion appVersion = this.appVersionService.create(DEFAULT_TEMPLATE_ID, this.convert(dto), context);
+            appDto = this.converterFactory.convert(appVersion, AppBuilderAppDto.class);
         } catch (AippException exception) {
             log.error("Failed to create app: {}", exception.getMessage(), exception);
             return "创建应用失败：" + exception.getMessage();

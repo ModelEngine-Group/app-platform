@@ -23,16 +23,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AppExportFormProperty {
     private String name;
-
     private String dataType;
-
     private String defaultValue;
-
     private String from;
-
     private String group;
-
     private String description;
-
     private int index;
 }

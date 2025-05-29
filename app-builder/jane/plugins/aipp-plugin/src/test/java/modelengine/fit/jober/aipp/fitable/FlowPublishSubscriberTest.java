@@ -11,27 +11,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import modelengine.fit.jane.common.entity.OperationContext;
-import modelengine.fit.jane.meta.multiversion.MetaService;
-import modelengine.fit.jane.meta.multiversion.definition.Meta;
-import modelengine.fit.jane.meta.multiversion.definition.MetaFilter;
 import modelengine.fit.jober.aipp.constants.AippConst;
-import modelengine.fit.jober.aipp.domain.AppBuilderApp;
 import modelengine.fit.jober.aipp.domain.AppBuilderRuntimeInfo;
+import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
+import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
+import modelengine.fit.jober.aipp.domains.task.AppTask;
+import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
+import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.entity.ChatSession;
-import modelengine.fit.jober.aipp.enums.AppState;
-import modelengine.fit.jober.aipp.factory.AppBuilderAppFactory;
 import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
 import modelengine.fit.jober.aipp.service.AppChatSessionService;
 import modelengine.fit.jober.aipp.service.impl.RuntimeInfoServiceImpl;
 import modelengine.fit.jober.aipp.util.JsonUtils;
-import modelengine.fit.jober.common.RangedResultSet;
 import modelengine.fit.jober.entity.consts.NodeTypes;
 import modelengine.fit.waterflow.domain.enums.FlowNodeStatus;
 import modelengine.fit.waterflow.entity.FlowErrorInfo;
@@ -49,7 +47,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -66,12 +63,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @ExtendWith(MockitoExtension.class)
 public class FlowPublishSubscriberTest {
     @Mock
-    private MetaService metaService;
-
-    @Mock
-    private AppBuilderAppFactory appFactory;
-
-    @Mock
     private AppBuilderRuntimeInfoRepository repository;
 
     private FlowPublishSubscriber flowPublishSubscriber;
@@ -82,13 +73,22 @@ public class FlowPublishSubscriberTest {
     @Mock
     private ToolExceptionHandle toolExceptionHandle;
 
+    @Mock
+    private AppTaskService appTaskService;
+
+    @Mock
+    private AppVersionService appVersionService;
+
+    @Mock
+    private AppTaskInstanceService appTaskInstanceService;
+
     /**
      * 初始化.
      */
     @BeforeEach
     void setUp() {
-        RuntimeInfoServiceImpl runtimeInfoService = new RuntimeInfoServiceImpl(this.metaService, this.appFactory, null,
-                null);
+        RuntimeInfoServiceImpl runtimeInfoService = new RuntimeInfoServiceImpl(null, this.appTaskService,
+                this.appTaskInstanceService, this.appVersionService);
         this.flowPublishSubscriber = new FlowPublishSubscriber(this.repository, this.toolExceptionHandle,
                 this.appChatSessionService, null, runtimeInfoService);
     }
@@ -102,18 +102,12 @@ public class FlowPublishSubscriberTest {
         FlowPublishContext context = this.buildFlowPublishContext();
         FlowNodePublishInfo publishInfo = this.buildFlowNodePublishInfo(context);
 
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put(AippConst.ATTR_APP_ID_KEY, "app1");
-        Meta meta = new Meta();
-        meta.setAttributes(attributes);
-        RangedResultSet<Meta> metaRangedResultSet = new RangedResultSet<>();
-        metaRangedResultSet.setResults(Collections.singletonList(meta));
-        doReturn(metaRangedResultSet).when(this.metaService)
-                .list(any(MetaFilter.class), anyBoolean(), anyLong(), anyInt(), any(OperationContext.class));
+        doReturn(Optional.of(AppTask.asEntity().setAppId("app1").build())).when(this.appTaskService)
+                .getLatest(anyString(), anyString(), any(OperationContext.class));
 
-        AppBuilderApp appBuilderApp = new AppBuilderApp(null, null, null, null, null);
-        appBuilderApp.setState(AppState.PUBLISHED.getName());
-        doReturn(appBuilderApp).when(this.appFactory).create(anyString());
+        AppVersion appVersion = mock(AppVersion.class);
+        when(appVersion.isPublished()).thenReturn(true);
+        doReturn(appVersion).when(this.appVersionService).retrieval(anyString());
 
         AtomicReference<AppBuilderRuntimeInfo> reference = new AtomicReference<>();
         doAnswer(invocationOnMock -> {

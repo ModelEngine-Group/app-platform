@@ -102,7 +102,6 @@ public class FileController extends AbstractController {
             @RequestHeader(value = "attachment-filename", defaultValue = "blank") @SpanAttr("fileName") String fileName,
             @RequestParam(value = "aipp_id", required = false) String aippId, PartitionedEntity receivedFile) throws IOException {
         OperationContext context = this.contextOf(httpRequest, tenantId);
-
         List<FileEntity> files = AippFileUtils.getFileEntity(receivedFile);
         if (files.isEmpty()) {
             throw new AippException(AippErrCode.UPLOAD_FAILED);

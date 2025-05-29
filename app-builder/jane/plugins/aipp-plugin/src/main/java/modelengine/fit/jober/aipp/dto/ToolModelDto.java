@@ -29,27 +29,16 @@ import java.util.Set;
 @NoArgsConstructor
 public class ToolModelDto {
     private String creator;
-
     private String modifier;
-
     private String name;
-
     private String description;
-
     private String uniqueName;
-
     private Map<String, Object> schema;
-
     private Map<String, Object> runnables;
-
     private Map<String, Object> extensions;
-
     private String source;
-
     private String icon;
-
     private Set<String> tags;
-
     private String defaultModel;
 
     /**

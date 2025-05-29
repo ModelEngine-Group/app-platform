@@ -23,7 +23,6 @@ import java.util.List;
 @Component
 public class AppBuilderFlowGraphRepositoryImpl implements AppBuilderFlowGraphRepository {
     private final AppBuilderFlowGraphMapper appBuilderFlowGraphMapper;
-
     private final AppBuilderFlowGraphSerializer serializer;
 
     public AppBuilderFlowGraphRepositoryImpl(AppBuilderFlowGraphMapper appBuilderFlowGraphMapper) {

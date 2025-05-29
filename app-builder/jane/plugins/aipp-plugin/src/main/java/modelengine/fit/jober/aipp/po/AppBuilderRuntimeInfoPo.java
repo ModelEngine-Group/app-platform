@@ -25,37 +25,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AppBuilderRuntimeInfoPo {
     private String traceId;
-
     private String flowDefinitionId;
-
     private String instanceId;
-
     private String nodeId;
-
     private String nodeType;
-
     private long startTime;
-
     private long endTime;
-
     private String status;
-
     private int published;
-
     private String errorMsg;
-
     private String nextPositionId;
-
     private String parameters;
 
     /* ------------ 公共字段 ------------ */
     private Long id;
-
     private String createBy;
-
     private String updateBy;
-
     private LocalDateTime createAt;
-
     private LocalDateTime updateAt;
 }

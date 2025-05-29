@@ -26,7 +26,6 @@ import java.util.Map;
 @NoArgsConstructor
 public class AppCheckDto {
     private String type;
-
     private List<NodeInfo> nodeInfos;
 
     /**
@@ -38,9 +37,7 @@ public class AppCheckDto {
     @NoArgsConstructor
     public static class NodeInfo {
         private String nodeId;
-
         private String nodeName;
-
         private List<Map<String, Object>> configs;
     }
 }

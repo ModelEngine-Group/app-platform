@@ -25,6 +25,5 @@ import java.util.List;
 @NoArgsConstructor
 public class AppExportConfig {
     private AppExportForm form;
-
     private List<AppExportConfigProperty> configProperties;
 }

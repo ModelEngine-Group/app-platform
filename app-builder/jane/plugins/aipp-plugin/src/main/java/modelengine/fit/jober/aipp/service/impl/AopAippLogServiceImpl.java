@@ -13,6 +13,7 @@ import modelengine.fit.jober.aipp.dto.aipplog.AippLogCreateDto;
 import modelengine.fit.jober.aipp.mapper.AippLogMapper;
 import modelengine.fit.jober.aipp.service.AopAippLogService;
 import modelengine.fit.jober.aipp.util.SensitiveFilterTools;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.log.Logger;
 

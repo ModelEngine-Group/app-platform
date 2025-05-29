@@ -31,9 +31,8 @@ import java.util.Arrays;
 @DisplayName("测试 AppBuilderAppServiceAdapterImpl")
 public class AppBuilderAppServiceAdapterImplTest {
     private final AppBuilderAppService appBuilderAppService = mock(AppBuilderAppService.class);
-
-    private final AppBuilderAppServiceAdapterImpl appBuilderAppServiceAdapterImpl = new AppBuilderAppServiceAdapterImpl(
-            appBuilderAppService);
+    private final AppBuilderAppServiceAdapterImpl appBuilderAppServiceAdapterImpl =
+            new AppBuilderAppServiceAdapterImpl(appBuilderAppService);
 
     @Test
     @DisplayName("测试应用元数据类转换为适配器类。")
@@ -51,11 +50,11 @@ public class AppBuilderAppServiceAdapterImplTest {
         when(appMetadata2.getType()).thenReturn("testType2");
         when(appMetadata2.getName()).thenReturn("testName2");
 
-        Rsp<RangedResultSet<AppBuilderAppMetadataDto>> rsp = Rsp.ok(
-                RangedResultSet.create(Arrays.asList(appBuilderAppMetadataDto1, appBuilderAppMetadataDto2),
+        Rsp<RangedResultSet<AppBuilderAppMetadataDto>> rsp =
+                Rsp.ok(RangedResultSet.create(Arrays.asList(appBuilderAppMetadataDto1, appBuilderAppMetadataDto2),
                         new RangeResult(1, 2, 3)));
-        RangedResultSet<AppMetadata> result = appBuilderAppServiceAdapterImpl.appMetadataDtoConvertToAdapter(
-                rsp.getData());
+        RangedResultSet<AppMetadata> result =
+                appBuilderAppServiceAdapterImpl.appMetadataDtoConvertToAdapter(rsp.getData());
         assertThat(result.getResults()).hasSize(2)
                 .extracting(AppMetadata::getName)
                 .containsExactly("testName1", "testName2");

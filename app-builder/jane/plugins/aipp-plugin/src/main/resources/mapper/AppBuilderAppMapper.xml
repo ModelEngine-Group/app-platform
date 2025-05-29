@@ -4,6 +4,7 @@
     <resultMap id="BaseResultMap" type="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
         <result column="id" property="id"/>
         <result column="name" property="name"/>
+        <result column="app_suite_id" property="appSuiteId"/>
         <result column="config_id" property="configId"/>
         <result column="flow_graph_id" property="flowGraphId"/>
         <result column="tenant_id" property="tenantId"/>
@@ -18,11 +19,15 @@
         <result column="app_built_type" property="appBuiltType"/>
         <result column="app_category" property="appCategory"/>
         <result column="app_type" property="appType"/>
+        <result column="is_active" property="isActive"/>
+        <result column="status" property="status"/>
+        <result column="unique_name" property="uniqueName"/>
+        <result column="publish_at" property="publishAt"/>
+        <result column="app_id" property="appId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id
-        , name, config_id, flow_graph_id, tenant_id, type, version, attributes, path, state, app_built_type, app_category, create_by, create_at, update_by, update_at, app_type
+        id, name, app_id, app_suite_id, config_id, flow_graph_id, tenant_id, type, version, attributes, path, state, app_built_type, app_category, create_by, create_at, update_by, update_at, is_active, status, unique_name, publish_at, app_type
     </sql>
 
     <sql id="appTypeCondition">
@@ -58,6 +63,15 @@
         and is_deleted = 0
         order by update_at desc
         limit 1
+    </select>
+
+    <select id="selectByAppSuiteId" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_app
+        where app_suite_id = #{appSuiteId}
+        and is_deleted = 0
     </select>
 
     <select id="selectWithTenantId" resultMap="BaseResultMap"
@@ -130,6 +144,9 @@
             <if test="name!=null">
                 and name = #{name}
             </if>
+            <if test="appSuiteId!=null">
+                and app_suite_id = #{appSuiteId}
+            </if>
             <if test="type!=null">
                 and type = #{type}
             </if>
@@ -141,6 +158,12 @@
             </if>
             <if test="appType != null and appType != ''">
                 and app_type = #{appType}
+            </if>
+            <if test="orderBy!=null and sort!=null">
+                ORDER BY ${orderBy} ${sort}
+            </if>
+            <if test="offset!=null and limit!=null">
+                offset #{offset} limit #{limit}
             </if>
         </where>
     </select>
@@ -187,8 +210,8 @@
         insert into app_builder_app (
         <include refid="Base_Column_List"/>
         )
-        values (#{id}, #{name}, #{configId}, #{flowGraphId}, #{tenantId}, #{type}, #{version}, #{attributes}::jsonb,
-        #{path}, #{state}, #{appBuiltType}, #{appCategory}, #{createBy}, #{createAt}, #{updateBy}, #{updateAt}, #{appType})
+        values (#{id}, #{name}, #{appId}, #{appSuiteId}, #{configId}, #{flowGraphId}, #{tenantId}, #{type}, #{version}, #{attributes}::jsonb,
+        #{path}, #{state}, #{appBuiltType}, #{appCategory}, #{createBy}, #{createAt}, #{updateBy}, #{updateAt}, #{isActive}, #{status}, #{uniqueName}, #{publishAt}, #{appType})
     </insert>
 
     <update id="updateOne" parameterType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
@@ -196,6 +219,12 @@
         <set>
             <if test="name != null">
                 name = #{name},
+            </if>
+            <if test="appId != null">
+                app_id = #{appId},
+            </if>
+            <if test="appSuiteId != null">
+                app_suite_id = #{appSuiteId},
             </if>
             <if test="configId != null">
                 config_id = #{configId},
@@ -237,7 +266,19 @@
                 path = #{path},
             </if>
             <if test="appType != null">
-                app_type = #{appType}
+                app_type = #{appType},
+            </if>
+            <if test="isActive != null">
+                is_active = #{isActive},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="uniqueName != null">
+                unique_name = #{uniqueName},
+            </if>
+            <if test="publishAt != null">
+                publish_at = #{publishAt}
             </if>
         </set>
         where id = #{id}

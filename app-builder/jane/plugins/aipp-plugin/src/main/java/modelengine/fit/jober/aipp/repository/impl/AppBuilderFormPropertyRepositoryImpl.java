@@ -11,6 +11,7 @@ import modelengine.fit.jober.aipp.mapper.AppBuilderFormPropertyMapper;
 import modelengine.fit.jober.aipp.po.AppBuilderFormPropertyPo;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormPropertyRepository;
 import modelengine.fit.jober.aipp.serializer.impl.AppBuilderFormPropertySerializer;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.util.CollectionUtils;
 

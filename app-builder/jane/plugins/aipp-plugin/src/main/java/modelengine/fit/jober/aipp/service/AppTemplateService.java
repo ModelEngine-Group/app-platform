@@ -6,12 +6,12 @@
 
 package modelengine.fit.jober.aipp.service;
 
+import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.condition.TemplateQueryCondition;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppDto;
 import modelengine.fit.jober.aipp.dto.template.TemplateAppCreateDto;
 import modelengine.fit.jober.aipp.dto.template.TemplateInfoDto;
 import modelengine.fit.jober.common.RangedResultSet;
-import modelengine.fit.jane.common.entity.OperationContext;
 
 /**
  * 应用模板 Service 接口定义。

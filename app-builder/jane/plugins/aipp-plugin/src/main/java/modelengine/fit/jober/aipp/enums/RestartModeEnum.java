@@ -6,12 +6,15 @@
 
 package modelengine.fit.jober.aipp.enums;
 
+import lombok.Getter;
+
 /**
  * 表示重新对话的模式。
  *
  * @author 黄夏露
  * @since 2024-07-12
  */
+@Getter
 public enum RestartModeEnum {
     /**
      * 覆盖式。
@@ -27,14 +30,5 @@ public enum RestartModeEnum {
 
     RestartModeEnum(String mode) {
         this.mode = mode;
-    }
-
-    /**
-     * 获取重新对话的模式。
-     *
-     * @return 表示重新对话模式的 {@link String}。
-     */
-    public String getMode() {
-        return this.mode;
     }
 }

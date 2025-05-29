@@ -9,6 +9,7 @@ package modelengine.fit.jober.aipp.service.impl;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.dto.check.AppCheckDto;
 import modelengine.fit.jober.aipp.dto.check.CheckResult;
+
 import modelengine.fitframework.annotation.Component;
 
 import java.util.List;

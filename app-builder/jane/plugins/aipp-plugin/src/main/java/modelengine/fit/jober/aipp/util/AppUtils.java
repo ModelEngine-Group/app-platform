@@ -26,7 +26,10 @@ public class AppUtils {
      * @return 表示替换处理后的询接口排除的应用名称的 {@link List}{@code <}{@link String}{@code >}。
      */
     public static List<String> replaceAsterisks(List<String> excludeNames) {
-        return excludeNames.stream().map(s -> s.replaceAll("\\*(\\w+)\\*", "{$1}")).collect(Collectors.toList());
+        return excludeNames
+                .stream()
+                .map(s -> s.replaceAll("\\*(\\w+)\\*", "{$1}"))
+                .collect(Collectors.toList());
     }
 
     /**

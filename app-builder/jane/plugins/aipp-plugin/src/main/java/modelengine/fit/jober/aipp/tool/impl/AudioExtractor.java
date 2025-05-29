@@ -8,9 +8,6 @@ package modelengine.fit.jober.aipp.tool.impl;
 
 import static modelengine.fit.jober.aipp.constant.AippConstant.NAS_SHARE_DIR;
 
-import modelengine.jade.voice.service.VoiceService;
-
-import modelengine.fel.core.chat.ChatModel;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.dto.audio.AudioSplitInfo;
@@ -24,6 +21,9 @@ import modelengine.fit.jober.aipp.util.AippFileUtils;
 import modelengine.fit.jober.aipp.util.JsonUtils;
 import modelengine.fit.jober.aipp.util.LLMUtils;
 import modelengine.fit.jober.aipp.util.UUIDUtil;
+import modelengine.jade.voice.service.VoiceService;
+
+import modelengine.fel.core.chat.ChatModel;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
@@ -68,21 +68,18 @@ public class AudioExtractor implements FileExtractor {
 
     private static final String TMP_DIR_PREFIX = "audioTmp-";
 
-    private static final ExecutorService SUMMARY_EXECUTOR = new ThreadPoolExecutor(8, 8, 0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>());
+    private static final ExecutorService SUMMARY_EXECUTOR =
+            new ThreadPoolExecutor(8, 8, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
     private final ChatModel openAiClient;
-
     private final VoiceService voiceService;
-
     private final String endpoint;
-
     private final String pathPrefix;
-
     private final FfmpegService ffmpegService;
 
-    public AudioExtractor(FfmpegService ffmpegService, @Fit ChatModel openAiClient, @Fit VoiceService voiceService,
-            @Value("${app-engine.endpoint}") String endpoint, @Value("${app-engine.pathPrefix}") String pathPrefix) {
+    public AudioExtractor(FfmpegService ffmpegService, @Fit ChatModel openAiClient,
+                          @Fit VoiceService voiceService, @Value("${app-engine.endpoint}") String endpoint,
+                          @Value("${app-engine.pathPrefix}") String pathPrefix) {
         this.ffmpegService = ffmpegService;
         this.openAiClient = openAiClient;
         this.voiceService = voiceService;
@@ -100,8 +97,8 @@ public class AudioExtractor implements FileExtractor {
             SUMMARY_EXECUTOR.execute(() -> {
                 try {
                     File audio = audioList.get(id);
-                    String audioPath = AippFileUtils.getFileDownloadFilePath(endpoint, this.pathPrefix,
-                            audio.getPath());
+                    String audioPath = AippFileUtils.getFileDownloadFilePath(
+                            endpoint, this.pathPrefix, audio.getPath());
                     log.info("audio filePath: {}, audio fileName: {}", audioPath, audio.getName());
                     String text = voiceService.getText(audioPath + "&fileName=" + audio.getName());
                     String summary = LLMUtils.askModelForSummary(openAiClient, String.format(PROMPT, text),
@@ -117,8 +114,10 @@ public class AudioExtractor implements FileExtractor {
         countDownLatch.await();
         SummaryDto summaryDto = generateSummary(output, segmentSize);
         long endTime = System.currentTimeMillis();
-        log.info("Summarize {} task use time {} seconds, segment size: {} seconds.", taskCnt,
-                (endTime - startTime) / 1000, segmentSize);
+        log.info("Summarize {} task use time {} seconds, segment size: {} seconds.",
+                taskCnt,
+                (endTime - startTime) / 1000,
+                segmentSize);
         return summaryDto;
     }
 
@@ -129,8 +128,8 @@ public class AudioExtractor implements FileExtractor {
         try {
             String llmOutput = LLMUtils.askModelForSummary(openAiClient, String.format(PROMPT, sb),
                     LlmModelNameEnum.QWEN_72B, 16000);
-            SummarySection section = JsonUtils.parseObject(LLMUtils.tryFixLlmJsonString(llmOutput),
-                    SummarySection.class);
+            SummarySection section =
+                    JsonUtils.parseObject(LLMUtils.tryFixLlmJsonString(llmOutput), SummarySection.class);
             summaryDto.setSummary(section.getText());
         } catch (IOException e) {
             log.error("Llm generate unexpect rsp, msg: {}.", e);
@@ -148,7 +147,8 @@ public class AudioExtractor implements FileExtractor {
             int segmentCount = Math.max(1, Math.min(meta.getDuration() / 300, 8));
             int segmentSize = (meta.getDuration() + segmentCount - 1) / segmentCount;
             ffmpegService.splitAudio(audio.getCanonicalPath(),
-                    targetDir.getCanonicalPath() + "/split_%03d." + meta.getVideoExt(), segmentSize);
+                    targetDir.getCanonicalPath() + "/split_%03d." + meta.getVideoExt(),
+                    segmentSize);
             FileUtils.delete(copyAudio);
             return new AudioSplitInfo(targetDir.getCanonicalPath(), segmentSize);
         }

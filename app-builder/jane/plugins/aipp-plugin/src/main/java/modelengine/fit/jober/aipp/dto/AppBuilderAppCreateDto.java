@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import modelengine.fitframework.annotation.Property;
 
 /**
+ *
  * This class is used to create a new application.
  * 应用创建Dto
  *
@@ -25,21 +26,16 @@ import modelengine.fitframework.annotation.Property;
 @NoArgsConstructor
 public class AppBuilderAppCreateDto {
     private String name;
-
     private String description;
-
     private String icon;
-
     private String greeting;
 
     @Property(name = "app_type")
     private String appType;
-
     private String type;
 
     @Property(name = "store_id")
     private String storeId;
-
     @Property(name = "app_built_type")
     private String appBuiltType;
 

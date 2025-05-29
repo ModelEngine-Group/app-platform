@@ -23,10 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AppBuilderConfigPropertyPo {
     private String id;
-
     private String nodeId;
-
     private String formPropertyId;
-
     private String configId;
 }

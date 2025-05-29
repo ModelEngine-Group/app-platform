@@ -29,6 +29,10 @@ import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.condition.AppQueryCondition;
+import modelengine.fit.jober.aipp.converters.ConverterFactory;
+import modelengine.fit.jober.aipp.domains.app.service.AppDomainService;
+import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
+import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
 import modelengine.fit.jober.aipp.dto.AippCreateDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppCreateDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppDto;
@@ -58,6 +62,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -70,23 +75,19 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "/v1/api/{tenant_id}/app")
 public class AppBuilderAppController extends AbstractController {
     private static final String DEFAULT_TYPE = "app";
-
     private static final int ERR_CODE = -1;
-
     private static final String ERR_LOCALE_CODE = "90002920";
-
     private static final Logger log = Logger.get(AppBuilderAppController.class);
 
     private final List<String> excludeNames;
-
     private final AppBuilderAppService appService;
-
     private final modelengine.fit.jober.aipp.genericable.AppBuilderAppService appGenericable;
-
     private final LocaleService localeService;
-
+    private final AppVersionService appVersionService;
+    private final AppDomainService appDomainService;
+    private final ConverterFactory converterFactory;
+    private final Map<String, String> exportMeta;
     private final FitRuntime fitRuntime;
-
     private final int maxAppNum;
 
     /**
@@ -101,20 +102,29 @@ public class AppBuilderAppController extends AbstractController {
      */
     public AppBuilderAppController(Authenticator authenticator, AppBuilderAppService appService,
             modelengine.fit.jober.aipp.genericable.AppBuilderAppService appGenericable,
-            @Value("${app-engine.exclude-names}") List<String> excludeNames,
-            @Value("${app.max-number}") Integer maxAppNum, LocaleService localeService, FitRuntime fitRuntime) {
+            @Value("${app-engine.exclude-names}") List<String> excludeNames, LocaleService localeService,
+            AppVersionService appVersionService, AppDomainService appDomainService,
+            @Value("${export-meta}") Map<String, String> exportMeta, ConverterFactory converterFactory,
+            @Value("${app-engine.max-number}") Integer maxAppNum, FitRuntime fitRuntime) {
         super(authenticator);
         // 需要FIT框架支持exclude-names配置大括号
         this.excludeNames = replaceAsterisks(excludeNames);
         this.appService = appService;
         this.appGenericable = appGenericable;
         this.localeService = localeService;
+        this.appVersionService = appVersionService;
+        this.appDomainService = appDomainService;
+        this.exportMeta = exportMeta;
+        this.converterFactory = converterFactory;
         this.fitRuntime = fitRuntime;
         this.maxAppNum = maxAppNum != null ? maxAppNum : 200;
     }
 
     private static List<String> replaceAsterisks(List<String> excludeNames) {
-        return excludeNames.stream().map(s -> s.replaceAll("\\*(\\w+)\\*", "{$1}")).collect(Collectors.toList());
+        return excludeNames
+                .stream()
+                .map(s -> s.replaceAll("\\*(\\w+)\\*", "{$1}"))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -145,8 +155,8 @@ public class AppBuilderAppController extends AbstractController {
      * @return 表示查询app的最新可编排版本的DTO {@link Rsp}{@code <}{@link AppBuilderAppDto}{@code >}。
      */
     @GetMapping(value = "/{app_id}", description = "查询 app ")
-    public Rsp<AppBuilderAppDto> query(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
-            @PathVariable("app_id") String appId) {
+    public Rsp<AppBuilderAppDto> query(HttpClassicServerRequest httpRequest,
+            @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId) {
         return Rsp.ok(this.appGenericable.query(appId, this.contextOf(httpRequest, tenantId)));
     }
 
@@ -223,7 +233,8 @@ public class AppBuilderAppController extends AbstractController {
                         DEFAULT_TYPE)) >= this.maxAppNum) {
             return Rsp.err(ERR_CODE, this.localeService.localize(AppBuilderAppController.ERR_LOCALE_CODE));
         }
-        return Rsp.ok(this.appService.create(appId, dto, context, false));
+        AppVersion appVersion = this.appVersionService.create(appId, dto, context);
+        return Rsp.ok(this.converterFactory.convert(appVersion, AppBuilderAppDto.class));
     }
 
     /**
@@ -367,9 +378,10 @@ public class AppBuilderAppController extends AbstractController {
     @GetMapping(path = "/export/{app_id}", description = "导出应用配置")
     public FileEntity export(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
             @PathVariable("app_id") String appId, HttpClassicServerResponse response) {
-        AppExportDto configDto = this.appService.export(appId, this.contextOf(httpRequest, tenantId));
-        ByteArrayInputStream fileStream =
-                new ByteArrayInputStream(JsonUtils.toJsonString(configDto).getBytes(StandardCharsets.UTF_8));
+        AppExportDto configDto = this.appDomainService.exportApp(appId, this.exportMeta,
+                this.contextOf(httpRequest, tenantId));
+        ByteArrayInputStream fileStream = new ByteArrayInputStream(JsonUtils.toJsonString(configDto).getBytes(
+                StandardCharsets.UTF_8));
         return FileEntity.createAttachment(response,
                 configDto.getApp().getName() + ".json",
                 fileStream,
@@ -418,7 +430,8 @@ public class AppBuilderAppController extends AbstractController {
             }
             String configString = new String(AppImExportUtil.readAllBytes(appConfigFileEntity.getInputStream()),
                     StandardCharsets.UTF_8);
-            return Rsp.ok(this.appService.importApp(configString, this.contextOf(httpRequest, tenantId)));
+            return Rsp.ok(this.appDomainService.importApp(configString,
+                this.contextOf(httpRequest, tenantId)));
         } catch (IOException e) {
             log.error("Failed to read uploaded application config file", e);
             throw new AippException(AippErrCode.UPLOAD_FAILED);

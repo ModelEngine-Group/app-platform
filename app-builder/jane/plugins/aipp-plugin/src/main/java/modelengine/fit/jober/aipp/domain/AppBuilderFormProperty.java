@@ -8,13 +8,18 @@ package modelengine.fit.jober.aipp.domain;
 
 import static modelengine.fit.jober.aipp.domain.BaseDomain.lazyGet;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import modelengine.fit.jober.aipp.domains.jadeconfig.JadeShape;
 import modelengine.fit.jober.aipp.dto.AppBuilderConfigFormPropertyDto;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormRepository;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import modelengine.fitframework.util.ObjectUtils;
+
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * 应用构建器表单属性实体类
@@ -27,27 +32,16 @@ import java.util.ArrayList;
 @Builder
 public class AppBuilderFormProperty {
     private String id;
-
     private String formId;
-
     private String name;
-
     private String dataType;
-
     private Object defaultValue;
-
     private String from;
-
     private String group;
-
     private String description;
-
     private int index;
-
     private String appId;
-
     private AppBuilderForm form;
-
     private AppBuilderFormRepository formRepository;
 
     public AppBuilderFormProperty(String id, String formId, String name, String dataType, Object defaultValue,
@@ -89,6 +83,28 @@ public class AppBuilderFormProperty {
                 .description(formProperty.getDescription())
                 .children(new ArrayList<>())
                 .build();
+    }
+
+    /**
+     * 通过 {@link JadeShape} 修改数据.
+     *
+     * @param shape {@link JadeShape} 对象.
+     */
+    public void updateByShape(JadeShape shape) {
+        Optional<Object> valueOp = shape.getValue(this.getName());
+        if (valueOp.isEmpty()) {
+            // 2024/4/29 0029 暂时先不删除了，仅修改现存的内容
+            return;
+        }
+        Object value = valueOp.get();
+        if ("model".equals(this.getName())) {
+            shape.getValue("accessInfo")
+                    .ifPresentOrElse(
+                            (v) -> this.setDefaultValue(ObjectUtils.<Map<String, String>>cast(v).get("serviceName")),
+                            () -> this.setDefaultValue(value));
+        } else {
+            this.setDefaultValue(value);
+        }
     }
 
     private AppBuilderForm loadForm() {

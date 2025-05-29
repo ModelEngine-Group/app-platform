@@ -8,6 +8,7 @@ package modelengine.fit.jober.aipp.enums;
 
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
+
 import modelengine.fitframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -96,6 +97,6 @@ public enum StreamMsgType {
      * @return 表示流式响应消息的 {@link StreamMsgType}。
      */
     public static StreamMsgType from(AippInstLogType value) {
-        return StreamMsgType.from(value.name());
+        return from(value.name());
     }
 }

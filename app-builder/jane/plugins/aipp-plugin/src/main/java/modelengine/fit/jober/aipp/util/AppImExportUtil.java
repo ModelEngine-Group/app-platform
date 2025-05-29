@@ -9,9 +9,8 @@ package modelengine.fit.jober.aipp.util;
 import static modelengine.fit.jober.aipp.common.exception.AippErrCode.IMPORT_CONFIG_FIELD_ERROR;
 import static modelengine.fit.jober.aipp.constant.AippConstant.NAS_SHARE_DIR;
 
-import modelengine.fit.jane.task.util.Entities;
-
 import modelengine.fit.jane.common.entity.OperationContext;
+import modelengine.fit.jane.task.util.Entities;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.common.exception.AippJsonDecodeException;
 import modelengine.fit.jober.aipp.domain.AppBuilderApp;
@@ -20,6 +19,7 @@ import modelengine.fit.jober.aipp.domain.AppBuilderConfigProperty;
 import modelengine.fit.jober.aipp.domain.AppBuilderFlowGraph;
 import modelengine.fit.jober.aipp.domain.AppBuilderForm;
 import modelengine.fit.jober.aipp.domain.AppBuilderFormProperty;
+import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
 import modelengine.fit.jober.aipp.dto.export.AppExportApp;
 import modelengine.fit.jober.aipp.dto.export.AppExportConfig;
 import modelengine.fit.jober.aipp.dto.export.AppExportConfigProperty;
@@ -29,6 +29,7 @@ import modelengine.fit.jober.aipp.dto.export.AppExportForm;
 import modelengine.fit.jober.aipp.dto.export.AppExportFormProperty;
 import modelengine.fit.jober.aipp.enums.AppState;
 import modelengine.fit.jober.aipp.enums.FormPropertyTypeEnum;
+
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.StringUtils;
 
@@ -62,33 +63,19 @@ import java.util.stream.Stream;
  */
 public class AppImExportUtil {
     private static final char FILE_EXTENSION_DELIM = '.';
-
     private static final String RENAME_PATTERN = "-副本([1-9]\\d*)?";
-
     private static final String RENAME_FORMATTER = "{0}-副本{1}";
-
     private static final Pattern TENANT_PATTERN = Pattern.compile("^[0-9a-fA-F]{32}$");
-
     private static final Pattern VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+");
-
     private static final String ICON_URL_PATTERN = "/v1/api/{0}/file?filePath={1}&fileName={2}";
-
-    private static final String[] FORM_PROPERTY_GROUP_SET = new String[] {
-            "null", "ability", "basic", "workflow", "chat"
-    };
-
-    private static final String[] FORM_PROPERTY_FROM_SET = new String[] {"graph", "input", "none"};
-
+    private static final String[] FORM_PROPERTY_GROUP_SET =
+            new String[]{"null", "ability", "basic", "workflow", "chat"};
+    private static final String[] FORM_PROPERTY_FROM_SET = new String[]{"graph", "input", "none"};
     private static final int MAX_NAME_LENGTH = 64;
-
     private static final String[] LEGAL_ICON_TYPE = {"jpg", "jpeg", "png", "gif"};
-
     private static final String[] APP_BUILT_TYPE_SET = {"basic", "workflow"};
-
     private static final String[] APP_CATEGORY_SET = {"chatbot", "workflow", "agent"};
-
     private static final String[] APP_TYPE_SET = {"app", "waterflow", "template"};
-
     private static final String[] APP_ATTR_DEFAULT_SET = {"icon", "greeting", "description", "name"};
 
     /**
@@ -120,13 +107,8 @@ public class AppImExportUtil {
     public static AppExportConfig convertToAppExportConfig(AppBuilderConfig appBuilderConfig) {
         List<AppBuilderConfigProperty> configProperties = appBuilderConfig.getConfigProperties();
         AppBuilderForm appBuilderForm = appBuilderConfig.getForm();
-        Map<String, AppBuilderFormProperty> idToFormProperty = appBuilderConfig.getApp()
-                .getFormProperties()
-                .stream()
-                .collect(Collectors.toMap(AppBuilderFormProperty::getId, Function.identity()));
-
         List<AppExportConfigProperty> exportProperties = configProperties.stream()
-                .map(configProperty -> convertToAppExportConfigProperty(configProperty, idToFormProperty))
+                .map(configProperty -> convertToAppExportConfigProperty(configProperty, appBuilderConfig.getAppVersion()))
                 .filter(appExportConfigProperty -> appExportConfigProperty.getFormProperty() != null)
                 .collect(Collectors.toList());
         AppExportForm exportForm = AppExportForm.builder()
@@ -144,14 +126,15 @@ public class AppImExportUtil {
      * 将应用 configUI 配置属性导出为应用导出的 config 配置属性。
      *
      * @param configProperty 表示应用 configUI 配置的 {@link AppBuilderConfigProperty}。
-     * @param idToFormProperty 表达从 formPropertyId 到 appBuilderFormProperty 的映射的 {@link Map}。
+     * @param appVersion 应用版本。
      * @return 表示应用导出 config 配置的 {@link AppExportConfig}。
      */
     public static AppExportConfigProperty convertToAppExportConfigProperty(AppBuilderConfigProperty configProperty,
-            Map<String, AppBuilderFormProperty> idToFormProperty) {
+            AppVersion appVersion) {
         return AppExportConfigProperty.builder()
                 .nodeId(configProperty.getNodeId())
-                .formProperty(convertToAppExportFormProperty(idToFormProperty.get(configProperty.getFormPropertyId())))
+                .formProperty(
+                        convertToAppExportFormProperty(appVersion.getFormProperty(configProperty.getFormPropertyId())))
                 .build();
     }
 
@@ -432,8 +415,18 @@ public class AppImExportUtil {
                 .build();
     }
 
-    private static List<AppBuilderFormProperty> getFormProperties(List<AppBuilderConfigProperty> configProperties) {
-        return configProperties.stream().map(AppBuilderConfigProperty::getFormProperty).collect(Collectors.toList());
+    /**
+     * 将应用的配置 {@link List}{@code <}{@link AppBuilderConfigProperty}{@code >} 转换
+     * 为应用的表单配置 {@link List}{@code <}{@link AppBuilderFormProperty}{@code >}。
+     *
+     * @param configProperties 表示应用配置列表。
+     * @return {@link List}{@code <}{@link AppBuilderFormProperty}{@code >} 表示表单配置。
+     */
+    public static List<AppBuilderFormProperty> getFormProperties(List<AppBuilderConfigProperty> configProperties) {
+        return configProperties
+                .stream()
+                .map(AppBuilderConfigProperty::getFormProperty)
+                .collect(Collectors.toList());
     }
 
     private static void resetAppAttributes(AppExportApp importedApp) {
@@ -471,8 +464,7 @@ public class AppImExportUtil {
      * @return 表示应用的 ConfigUI 表单配置的 {@link AppBuilderForm}。
      */
     public static AppBuilderForm convertToAppBuilderForm(AppExportForm appExportForm, OperationContext context) {
-        return AppBuilderForm.builder()
-                .id(appExportForm.getId())
+        return AppBuilderForm.builder().id(appExportForm.getId())
                 .name(appExportForm.getName())
                 .type(appExportForm.getType())
                 .appearance(appExportForm.getAppearance())

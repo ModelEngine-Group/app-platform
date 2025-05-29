@@ -6,19 +6,6 @@
 
 package modelengine.fit.jober.aipp.controller;
 
-import modelengine.fit.jane.task.gateway.Authenticator;
-import modelengine.fit.jober.aipp.dto.chat.ChatInfoRspDto;
-import modelengine.fit.jober.aipp.common.exception.AippTaskNotFoundException;
-import modelengine.fit.jober.aipp.dto.chat.CreateChatRequest;
-import modelengine.fit.jober.aipp.dto.chat.QueryChatInfoRequest;
-import modelengine.fit.jober.aipp.dto.chat.QueryChatRequest;
-import modelengine.fit.jober.aipp.dto.chat.QueryChatRsp;
-import modelengine.fit.jober.aipp.dto.chat.QueryChatRspDto;
-import modelengine.fit.jober.aipp.service.AippChatService;
-import modelengine.fit.jober.common.RangedResultSet;
-import modelengine.jade.service.annotations.CarverSpan;
-import modelengine.jade.service.annotations.SpanAttr;
-
 import modelengine.fit.http.annotation.DeleteMapping;
 import modelengine.fit.http.annotation.PathVariable;
 import modelengine.fit.http.annotation.PostMapping;
@@ -28,6 +15,7 @@ import modelengine.fit.http.annotation.RequestParam;
 import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.response.Rsp;
+import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.jober.aipp.common.exception.AippTaskNotFoundException;
 import modelengine.fit.jober.aipp.dto.chat.ChatInfoRspDto;
 import modelengine.fit.jober.aipp.dto.chat.CreateChatRequest;
@@ -39,6 +27,8 @@ import modelengine.fit.jober.aipp.service.AippChatService;
 import modelengine.fit.jober.common.RangedResultSet;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.jade.service.annotations.CarverSpan;
+import modelengine.jade.service.annotations.SpanAttr;
 
 import java.util.List;
 import java.util.Map;
@@ -169,46 +159,5 @@ public class AippChatController extends AbstractController {
             @RequestParam(value = "app_id", required = false) @SpanAttr("app_id") String appId,
             @RequestBody("chat_id") String chatIds) {
         return this.deleteChat(httpRequest, tenantId, appId, chatIds);
-    }
-
-    /**
-     * deleteChat（用于mag网关）
-     *
-     * @param httpRequest httpRequest
-     * @param tenantId tenantId
-     * @param chatId 会话ID, 当传入多个id时，以“,”进行分割
-     * @param body 请求体
-     * @return Rsp<Void>
-     * @throws AippTaskNotFoundException 未查询到task异常
-     * @deprecated 废弃，下个版本删除
-     */
-    @Deprecated
-    @CarverSpan(value = "operation.aippChat.update")
-    @PostMapping(path = "/{chat_id}", description = "更新会话接口")
-    public Rsp<QueryChatRsp> updateChat(HttpClassicServerRequest httpRequest,
-            @PathVariable("tenant_id") String tenantId, @PathVariable("chat_id") @SpanAttr("chat_id") String chatId,
-            @RequestBody CreateChatRequest body) throws AippTaskNotFoundException {
-        return Rsp.ok(this.aippChatService.updateChat(chatId, body, this.contextOf(httpRequest, tenantId)));
-    }
-
-    /**
-     * 重新发起会话。
-     *
-     * @param httpRequest Http 请求体。
-     * @param currentInstanceId 需要重新发起会话的实例 ID。
-     * @param tenantId 租户 ID。
-     * @param additionalContext 重新会话需要的信息，如是否使用多轮对话等等。
-     * @return 表示会话相应体的 {@link Rsp}{@code <}{@link QueryChatRsp}{@code >}。
-     * @deprecated 废弃，下个版本删除
-     */
-    @Deprecated
-    @CarverSpan(value = "operation.aippChat.rechat")
-    @PostMapping(path = "/instances/{current_instance_id}", description = "重新发起会话接口")
-    public Rsp<QueryChatRsp> restartChat(HttpClassicServerRequest httpRequest,
-            @PathVariable("tenant_id") String tenantId,
-            @PathVariable("current_instance_id") @SpanAttr("current_instance_id") String currentInstanceId,
-            @RequestBody Map<String, Object> additionalContext) {
-        return Rsp.ok(this.aippChatService.restartChat(currentInstanceId, additionalContext,
-                this.contextOf(httpRequest, tenantId)));
     }
 }

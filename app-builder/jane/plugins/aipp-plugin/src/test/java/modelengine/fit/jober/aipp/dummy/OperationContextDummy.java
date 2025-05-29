@@ -32,8 +32,8 @@ public class OperationContextDummy {
 
     public static boolean operationContextDummyMatcher(OperationContext context) {
         return DUMMY_TENANT_ID.equals(context.getTenantId()) && DUMMY_OPERATOR.equals(context.getOperator())
-                && DUMMY_GLOBAL_USER_ID.equals(context.getGlobalUserId()) && DUMMY_ACCOUNT.equals(
-                context.getAccount())
+                && DUMMY_GLOBAL_USER_ID.equals(context.getGlobalUserId())
+                && DUMMY_ACCOUNT.equals(context.getAccount())
                 && DUMMY_EMPLOYEE_NUMBER.equals(context.getEmployeeNumber()) && DUMMY_NAME.equals(context.getName())
                 && DUMMY_OPERATOR_IP.equals(context.getOperatorIp())
                 && DUMMY_SOURCE_PLATFORM.equals(context.getSourcePlatform())

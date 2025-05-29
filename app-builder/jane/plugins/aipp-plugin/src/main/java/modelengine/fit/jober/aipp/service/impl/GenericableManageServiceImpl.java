@@ -11,6 +11,7 @@ import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.dto.FitableInfoDto;
 import modelengine.fit.jober.aipp.service.GenericableManageService;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.broker.client.BrokerClient;
 import modelengine.fitframework.broker.client.filter.route.FitableIdFilter;
@@ -62,13 +63,13 @@ public class GenericableManageServiceImpl implements GenericableManageService {
 
     @Override
     public List<Map<String, Object>> executeInspirationFitable(String fitableId, String appId, String appType,
-            OperationContext operationContext) {
+        OperationContext operationContext) {
         final String genericableId = "d01041a73e00ac46bedde08d02c6818e";
         List<Map<String, Object>> res;
         try {
             res = this.client.getRouter(genericableId)
-                    .route(new FitableIdFilter(fitableId))
-                    .invoke(new HashMap<>(), appId, appType, operationContext);
+                .route(new FitableIdFilter(fitableId))
+                .invoke(new HashMap<>(), appId, appType, operationContext);
         } catch (FitException e) {
             log.error("Error occurred when running inspiration fitable, error: {}", e.getMessage());
             throw new AippException(AippErrCode.EXECUTE_INSPIRATION_FITABLE_FAILED);

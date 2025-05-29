@@ -27,6 +27,5 @@ import java.util.List;
 @NoArgsConstructor
 public class PluginToolDto {
     private List<PluginToolData> pluginToolData;
-
     private int total;
 }

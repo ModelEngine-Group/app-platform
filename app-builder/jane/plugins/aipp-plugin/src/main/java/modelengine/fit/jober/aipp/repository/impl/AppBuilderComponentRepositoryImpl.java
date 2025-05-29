@@ -21,7 +21,6 @@ import modelengine.fitframework.annotation.Component;
 @Component
 public class AppBuilderComponentRepositoryImpl implements AppBuilderComponentRepository {
     private final AppBuilderComponentMapper appBuilderComponentMapper;
-
     private final AppBuilderComponentSerializer serializer;
 
     public AppBuilderComponentRepositoryImpl(AppBuilderComponentMapper appBuilderComponentMapper) {

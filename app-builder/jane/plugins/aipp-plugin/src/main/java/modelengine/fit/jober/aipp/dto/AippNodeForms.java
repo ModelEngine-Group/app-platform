@@ -6,12 +6,12 @@
 
 package modelengine.fit.jober.aipp.dto;
 
+import modelengine.fit.dynamicform.entity.FormMetaInfo;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import modelengine.fit.dynamicform.entity.FormMetaInfo;
-import modelengine.fit.jober.entity.consts.NodeTypes;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ import java.util.List;
 public class AippNodeForms {
     /**
      * 节点类型
-     * 查看 {@link NodeTypes}
+     * 查看 {@link modelengine.fit.jober.entity.consts.NodeTypes}
      */
     private String type;
 

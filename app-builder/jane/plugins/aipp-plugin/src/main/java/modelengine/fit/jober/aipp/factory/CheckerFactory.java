@@ -13,8 +13,6 @@ import static modelengine.fit.jober.aipp.enums.NodeType.OLD_RETRIEVAL_NODE;
 import static modelengine.fit.jober.aipp.enums.NodeType.RETRIEVAL_NODE;
 import static modelengine.fit.jober.aipp.enums.NodeType.TOOL_INVOKE_NODE;
 
-import modelengine.jade.store.service.PluginToolService;
-
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
@@ -24,6 +22,8 @@ import modelengine.fit.jober.aipp.service.impl.LlmNodeChecker;
 import modelengine.fit.jober.aipp.service.impl.ManualCheckNodeChecker;
 import modelengine.fit.jober.aipp.service.impl.RetrievalNodeChecker;
 import modelengine.fit.jober.aipp.service.impl.ToolInvokeNodeChecker;
+import modelengine.jade.store.service.PluginToolService;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Initialize;
 

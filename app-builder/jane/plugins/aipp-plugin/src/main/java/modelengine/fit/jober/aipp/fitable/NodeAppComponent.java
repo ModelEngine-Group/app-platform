@@ -6,16 +6,17 @@
 
 package modelengine.fit.jober.aipp.fitable;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import modelengine.fit.jane.common.entity.OperationContext;
+import modelengine.fit.waterflow.spi.FlowableService;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.genericable.AippRunTimeService;
 import modelengine.fit.jober.aipp.util.DataUtils;
 import modelengine.fit.jober.common.ErrorCodes;
 import modelengine.fit.jober.common.exceptions.JobberParamException;
 import modelengine.fit.jober.util.FlowDataUtils;
-import modelengine.fit.waterflow.spi.FlowableService;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.inspection.Validation;
@@ -56,11 +57,11 @@ public class NodeAppComponent implements FlowableService {
      * 节点执行应用的实现
      * 该组件的入参格式如下：
      * {
-     * "aippId": "",
-     * "version": "",
-     * "inputParams": {
-     * "key1": "value1"
-     * }
+     *   "aippId": "",
+     *   "version": "",
+     *   "inputParams": {
+     *     "key1": "value1"
+     *   }
      * }
      *
      * @param flowDataList 流程执行上下文数据

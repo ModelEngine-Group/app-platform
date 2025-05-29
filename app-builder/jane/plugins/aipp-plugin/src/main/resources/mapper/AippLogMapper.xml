@@ -135,8 +135,7 @@
         </if>
     </update>
 
-    <insert id="insertOne" parameterType="modelengine.fit.jober.aipp.dto.aipplog.AippLogCreateDto"
-            useGeneratedKeys="true" keyProperty="logId">
+    <insert id="insertOne" parameterType="modelengine.fit.jober.aipp.dto.aipplog.AippLogCreateDto" useGeneratedKeys="true" keyProperty="logId">
         insert into aipp_instance_log (aipp_id, version, aipp_type, instance_id, log_data, log_type, create_by, path)
         values (#{aippId}, #{version}, #{aippType}, #{instanceId}, #{logData}::jsonb, #{logType}, #{createUserAccount},
                 #{path})

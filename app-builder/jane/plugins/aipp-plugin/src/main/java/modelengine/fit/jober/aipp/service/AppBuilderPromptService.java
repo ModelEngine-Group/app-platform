@@ -6,10 +6,10 @@
 
 package modelengine.fit.jober.aipp.service;
 
+import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jober.aipp.dto.AppBuilderPromptCategoryDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderPromptDto;
-import modelengine.fit.jane.common.entity.OperationContext;
 
 import java.util.List;
 

@@ -26,21 +26,18 @@ import modelengine.fitframework.annotation.Property;
 public class AippQueryCondition {
     @RequestQuery(name = "name", required = false)
     private String name;
-
     @RequestQuery(name = "status", required = false)
     private String status;
-
     @RequestQuery(name = "version", required = false)
     private String version;
-
     @RequestQuery(name = "creator", required = false)
     private String creator;
-
-    @Property(description = "排序条件,支持字段:create_at/update_at", example = "create_at")
+    @Property(description = "排序条件,支持字段:create_at/update_at",
+            example = "create_at")
     @RequestQuery(name = "sort", required = false, defaultValue = "update_at")
     private String sort;
-
-    @Property(description = "排序方向,descend表示降序，ascend表示升序", example = "descend")
+    @Property(description = "排序方向,descend表示降序，ascend表示升序",
+            example = "descend")
     @RequestQuery(name = "order", required = false, defaultValue = "descend")
     private String order;
 }

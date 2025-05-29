@@ -27,9 +27,7 @@ import java.util.stream.Collectors;
 @Component
 public class AppBuilderFormRepositoryImpl implements AppBuilderFormRepository {
     private final AppBuilderFormMapper appBuilderFormMapper;
-
     private final AppBuilderFormSerializer serializer;
-
     private final AppBuilderFormPropertyRepository formPropertyRepository;
 
     public AppBuilderFormRepositoryImpl(AppBuilderFormMapper appBuilderFormMapper,

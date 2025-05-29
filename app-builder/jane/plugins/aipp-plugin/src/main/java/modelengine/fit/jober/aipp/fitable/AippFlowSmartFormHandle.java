@@ -9,25 +9,25 @@ package modelengine.fit.jober.aipp.fitable;
 import static modelengine.fit.jober.aipp.constants.AippConst.BS_NODE_ID_KEY;
 import static modelengine.fit.jober.aipp.constants.AippConst.BUSINESS_DATA_INTERNAL_KEY;
 
-import modelengine.fit.jade.waterflow.FlowInstanceService;
 import modelengine.fit.jane.common.entity.OperationContext;
-import modelengine.fit.jane.meta.multiversion.MetaInstanceService;
-import modelengine.fit.jane.meta.multiversion.MetaService;
-import modelengine.fit.jane.meta.multiversion.definition.Meta;
-import modelengine.fit.jane.meta.multiversion.instance.Instance;
-import modelengine.fit.jane.meta.multiversion.instance.InstanceDeclarationInfo;
+import modelengine.fit.jade.waterflow.FlowInstanceService;
 import modelengine.fit.jober.FlowSmartFormService;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.constants.AippConst;
-import modelengine.fit.jober.aipp.domain.AppBuilderApp;
 import modelengine.fit.jober.aipp.domain.AppBuilderForm;
 import modelengine.fit.jober.aipp.domain.AppBuilderFormProperty;
+import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
+import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
+import modelengine.fit.jober.aipp.domains.business.RunContext;
+import modelengine.fit.jober.aipp.domains.task.AppTask;
+import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
+import modelengine.fit.jober.aipp.domains.taskinstance.AppTaskInstance;
+import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.dto.aipplog.AippLogCreateDto;
 import modelengine.fit.jober.aipp.dto.chat.AppChatRsp;
 import modelengine.fit.jober.aipp.entity.AippLogData;
 import modelengine.fit.jober.aipp.enums.AippInstLogType;
 import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
-import modelengine.fit.jober.aipp.factory.AppBuilderAppFactory;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AopAippLogService;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
@@ -37,13 +37,16 @@ import modelengine.fit.jober.aipp.util.ConvertUtils;
 import modelengine.fit.jober.aipp.util.DataUtils;
 import modelengine.fit.jober.aipp.util.FormUtils;
 import modelengine.fit.jober.aipp.util.JsonUtils;
-import modelengine.fit.jober.aipp.util.MetaInstanceUtils;
+import modelengine.fit.jober.common.ErrorCodes;
+import modelengine.fit.jober.common.exceptions.JobberException;
+
+import lombok.AllArgsConstructor;
 import modelengine.fit.waterflow.domain.enums.FlowTraceStatus;
 import modelengine.fitframework.annotation.Component;
-import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.ObjectUtils;
+import modelengine.fitframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -57,44 +60,20 @@ import java.util.Map;
  * @since 2023-12-25
  */
 @Component
+@AllArgsConstructor
 public class AippFlowSmartFormHandle implements FlowSmartFormService {
     private static final Logger log = Logger.get(AippFlowSmartFormHandle.class);
-
     private static final String DEFAULT_CURR_FORM_VERSION = "1.0.0";
 
     private final AppBuilderFormService formService;
-
-    private final MetaInstanceService metaInstanceService;
-
     private final AppChatSseService appChatSseService;
-
     private final AippLogService aippLogService;
-
-    private final AppBuilderAppFactory appFactory;
-
+    private final AppTaskService appTaskService;
+    private final AppTaskInstanceService appTaskInstanceService;
+    private final AppVersionService appVersionService;
     private final FlowInstanceService flowInstanceService;
-
-    private final MetaService metaService;
-
     private final AopAippLogService aopAippLogService;
-
     private final RuntimeInfoService runtimeInfoService;
-
-    public AippFlowSmartFormHandle(@Fit AppBuilderFormService formService, @Fit MetaInstanceService metaInstanceService,
-            AppChatSseService appChatSseService, @Fit AippLogService aippLogService,
-            @Fit AppBuilderAppFactory appFactory, @Fit FlowInstanceService flowInstanceService,
-            @Fit MetaService metaService, @Fit AopAippLogService aopAippLogService,
-            @Fit RuntimeInfoService runtimeInfoService) {
-        this.formService = formService;
-        this.metaInstanceService = metaInstanceService;
-        this.appChatSseService = appChatSseService;
-        this.aippLogService = aippLogService;
-        this.appFactory = appFactory;
-        this.flowInstanceService = flowInstanceService;
-        this.metaService = metaService;
-        this.aopAippLogService = aopAippLogService;
-        this.runtimeInfoService = runtimeInfoService;
-    }
 
     /**
      * 智能表单处理
@@ -119,25 +98,28 @@ public class AippFlowSmartFormHandle implements FlowSmartFormService {
             this.exceptionHandler(businessData);
             return;
         }
-        String parentInstanceId = ObjectUtils.cast(businessData.get(AippConst.PARENT_INSTANCE_ID));
-        String instanceId = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_INST_ID_KEY));
-        String chatId = ObjectUtils.cast(businessData.get(AippConst.BS_CHAT_ID));
-        String atChatId = ObjectUtils.cast(businessData.get(AippConst.BS_AT_CHAT_ID));
-        String appId = ObjectUtils.cast(businessData.get(AippConst.CONTEXT_APP_ID));
-        AppBuilderApp app = this.appFactory.create(appId);
+        RunContext runContext = new RunContext(businessData, new OperationContext());
+        String parentInstanceId = runContext.getParentInstanceId();
+        String instanceId = runContext.getTaskInstanceId();
+        String chatId = runContext.getOriginChatId();
+        String atChatId = runContext.getAtChatId();
+        String appId = runContext.getAppId();
+        AppVersion appVersion = this.appVersionService.retrieval(appId);
         Map<String, Object> formDataMap = FormUtils.buildFormData(businessData, appBuilderForm, parentInstanceId);
         formDataMap.put(AippConst.NODE_START_TIME_KEY, startTime);
         if (businessData.containsKey(BUSINESS_DATA_INTERNAL_KEY)) {
             formDataMap.put(BUSINESS_DATA_INTERNAL_KEY, businessData.get(BUSINESS_DATA_INTERNAL_KEY));
         }
         formDataMap.put(BS_NODE_ID_KEY, nodeId);
-        String logId = this.insertFormLog(app.getFormProperties(), sheetId, businessData, formDataMap);
+        String logId = this.insertFormLog(appVersion.getFormProperties(), sheetId, businessData, formDataMap);
         AppChatRsp appChatRsp = AppChatRsp.builder()
                 .chatId(chatId)
                 .atChatId(atChatId)
                 .status(FlowTraceStatus.RUNNING.name())
-                .answer(Collections.singletonList(
-                        AppChatRsp.Answer.builder().content(formDataMap).type(AippInstLogType.FORM.name()).build()))
+                .answer(Collections.singletonList(AppChatRsp.Answer.builder()
+                        .content(formDataMap)
+                        .type(AippInstLogType.FORM.name())
+                        .build()))
                 .instanceId(instanceId)
                 .logId(logId)
                 .build();
@@ -150,26 +132,35 @@ public class AippFlowSmartFormHandle implements FlowSmartFormService {
      * @param businessData 表示业务数据
      */
     private void exceptionHandler(Map<String, Object> businessData) {
-        OperationContext context = JsonUtils.parseObject(
-                ObjectUtils.cast(businessData.get(AippConst.BS_HTTP_CONTEXT_KEY)), OperationContext.class);
+        OperationContext context =
+                JsonUtils.parseObject(ObjectUtils.cast(businessData.get(AippConst.BS_HTTP_CONTEXT_KEY)),
+                        OperationContext.class);
         String instanceId = ObjectUtils.cast(businessData.get(AippConst.CONTEXT_INSTANCE_ID));
-        String versionId = this.metaInstanceService.getMetaVersionId(instanceId);
-        Meta meta = this.metaService.retrieve(versionId, context);
-        Instance instDetail = MetaInstanceUtils.getInstanceDetail(versionId, instanceId, context,
-                this.metaInstanceService);
-        String flowTraceId = instDetail.getInfo().get(AippConst.INST_FLOW_INST_ID_KEY);
+        String taskId = this.appTaskInstanceService.getTaskId(instanceId);
+        AppTask task = this.appTaskService.retrieveById(taskId, context);
+        AppTaskInstance instance = this.appTaskInstanceService.getInstanceById(instanceId, context)
+                .orElseThrow(() -> new JobberException(ErrorCodes.UN_EXCEPTED_ERROR,
+                        StringUtils.format("App task instance[{0}] not found.", instanceId)));
+
+        // 终止所有流程.
+        String flowTraceId = instance.getEntity().getFlowTranceId();
         this.flowInstanceService.terminateFlows(null, flowTraceId, Collections.emptyMap(), context);
-        InstanceDeclarationInfo info = InstanceDeclarationInfo.custom()
-                .putInfo(AippConst.INST_FINISH_TIME_KEY, LocalDateTime.now())
-                .putInfo(AippConst.INST_STATUS_KEY, MetaInstStatusEnum.TERMINATED.name())
+
+        // 修改实例.
+        AppTaskInstance updateEntity = AppTaskInstance.asUpdate(taskId, instanceId)
+                .setFinishTime(LocalDateTime.now())
+                .setStatus(MetaInstStatusEnum.TERMINATED.name())
                 .build();
-        this.metaInstanceService.patchMetaInstance(versionId, instanceId, info, context);
+        this.appTaskInstanceService.update(updateEntity,
+                JsonUtils.parseObject(ObjectUtils.cast(businessData.get(AippConst.BS_HTTP_CONTEXT_KEY)),
+                        OperationContext.class));
+
+        // 插入日志.
         String message = AippErrCode.FORM_RUNNING_FAILED_CAUSE_NOT_EXISTED.getMessage();
         this.aopAippLogService.insertLog(AippLogCreateDto.builder()
-                .aippId(meta.getId())
-                .version(meta.getVersion())
-                .aippType(ObjectUtils.cast(meta.getAttributes().get(AippConst.ATTR_AIPP_TYPE_KEY)))
-                .aippType(ObjectUtils.cast(meta.getAttributes().get(AippConst.ATTR_AIPP_TYPE_KEY)))
+                .aippId(task.getEntity().getAppSuiteId())
+                .version(task.getEntity().getVersion())
+                .aippType(task.getEntity().getAippType())
                 .instanceId(instanceId)
                 .logType(AippInstLogType.ERROR.name())
                 .logData(JsonUtils.toJsonString(AippLogData.builder().msg(message).build()))
@@ -181,8 +172,8 @@ public class AippFlowSmartFormHandle implements FlowSmartFormService {
 
     private String insertFormLog(List<AppBuilderFormProperty> formProperties, String sheetId,
             Map<String, Object> businessData, Map<String, Object> formDataMap) {
-        AippLogData logData = FormUtils.buildLogDataWithFormData(formProperties, sheetId, DEFAULT_CURR_FORM_VERSION,
-                businessData);
+        AippLogData logData =
+                FormUtils.buildLogDataWithFormData(formProperties, sheetId, DEFAULT_CURR_FORM_VERSION, businessData);
         Object appearance = formDataMap.get(AippConst.FORM_APPEARANCE_KEY);
         logData.setFormAppearance(ObjectUtils.cast(JsonUtils.toJsonString(appearance)));
         logData.setFormData(ObjectUtils.cast(JsonUtils.toJsonString(formDataMap.get(AippConst.FORM_DATA_KEY))));
@@ -190,15 +181,15 @@ public class AippFlowSmartFormHandle implements FlowSmartFormService {
     }
 
     private void updateInstance(String sheetId, String nodeId, Map<String, Object> businessData) {
-        InstanceDeclarationInfo declarationInfo = InstanceDeclarationInfo.custom()
-                .putInfo(AippConst.INST_CURR_FORM_ID_KEY, sheetId)
-                .putInfo(AippConst.INST_CURR_FORM_VERSION_KEY, DEFAULT_CURR_FORM_VERSION)
-                .putInfo(AippConst.INST_CURR_NODE_ID_KEY, nodeId)
-                .putInfo(AippConst.INST_SMART_FORM_TIME_KEY, LocalDateTime.now())
+        String taskId = ObjectUtils.cast(businessData.get(AippConst.BS_META_VERSION_ID_KEY));
+        String taskInstanceId = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_INST_ID_KEY));
+        AppTaskInstance updateEntity = AppTaskInstance.asUpdate(taskId, taskInstanceId)
+                .setFormId(sheetId)
+                .setFormVersion(DEFAULT_CURR_FORM_VERSION)
+                .setCurrentNodeId(nodeId)
+                .setSmartFormTime(LocalDateTime.now())
                 .build();
-
-        this.metaInstanceService.patchMetaInstance(ObjectUtils.cast(businessData.get(AippConst.BS_META_VERSION_ID_KEY)),
-                ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_INST_ID_KEY)), declarationInfo,
+        this.appTaskInstanceService.update(updateEntity,
                 JsonUtils.parseObject(ObjectUtils.cast(businessData.get(AippConst.BS_HTTP_CONTEXT_KEY)),
                         OperationContext.class));
     }

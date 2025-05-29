@@ -6,10 +6,11 @@
 
 package modelengine.fit.jober.aipp.enums;
 
-import lombok.Getter;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
 import modelengine.fit.jober.aipp.constants.AippConst;
+
+import lombok.Getter;
 
 import java.util.Arrays;
 
@@ -25,7 +26,6 @@ public enum FormEdgeEnum {
     END(AippConst.ATTR_END_FORM_ID_KEY, AippConst.ATTR_END_FORM_VERSION_KEY);
 
     private final String formIdKey;
-
     private final String versionKey;
 
     FormEdgeEnum(String formIdKey, String versionKey) {

@@ -722,6 +722,16 @@ public class AippConst {
     public static final String BS_CHAT_ID = "chatId";
 
     /**
+     * business中的原始会话的id的key，用于应用之间@的场景.
+     */
+    public static final String BS_ORIGIN_CHAT_ID = "originChatId";
+
+    /**
+     * business中的原始应用版本的id的key，用于应用之间@的场景.
+     */
+    public static final String BS_ORIGIN_APP_ID = "originAppId";
+
+    /**
      * aippId
      */
     public static final String AIPP_ID = "aippId";
@@ -763,12 +773,8 @@ public class AippConst {
     /**
      * aipp initial static meta items
      */
-    public static final List<FormMetaItem> STATIC_META_ITEMS =
-            Collections.unmodifiableList(Arrays.asList(new FormMetaItem(INST_NAME_KEY,
-                            "meta实例名称",
-                            "TEXT",
-                            STRING_LEN,
-                            null),
+    public static final List<FormMetaItem> STATIC_META_ITEMS = Collections.unmodifiableList(Arrays.asList(
+                    new FormMetaItem(INST_NAME_KEY, "meta实例名称", "TEXT", STRING_LEN, null),
                     new FormMetaItem(INST_CREATOR_KEY, "创建人", "TEXT", STRING_LEN, null),
                     new FormMetaItem(INST_CREATE_TIME_KEY, "创建时间", "DATETIME", null, null),
                     new FormMetaItem(INST_MODIFY_BY_KEY, "更新人", "TEXT", STRING_LEN, null),

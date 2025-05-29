@@ -147,6 +147,43 @@ create table if not exists app_template (
     is_deleted int2 not null default 0
 );
 
+create table if not exists t_chat_session (
+    chat_id     VARCHAR(32)   NOT NULL DEFAULT NULL,
+    app_id      VARCHAR(32)   NULL     DEFAULT NULL,
+    app_version VARCHAR(32)   NULL     DEFAULT NULL,
+    name        VARCHAR(2000) NULL     DEFAULT NULL,
+    attributes  JSON          NULL     DEFAULT NULL,
+    create_at   TIMESTAMP(6)  NULL     DEFAULT NULL,
+    create_by   VARCHAR(32)   NULL     DEFAULT NULL,
+    update_at   TIMESTAMP(6)  NULL     DEFAULT NULL,
+    update_by   VARCHAR(32)   NULL     DEFAULT NULL,
+    status      INT4          NULL     DEFAULT NULL
+    );
+
+CREATE TABLE IF NOT EXISTS t_chat_session_task_instance_wide_relationship (
+    msg_id                VARCHAR(32)  NOT NULL DEFAULT NULL,
+    chat_id               VARCHAR(32)  NULL     DEFAULT NULL,
+    task_instance_wide_id VARCHAR(32)  NULL     DEFAULT NULL,
+    create_at             TIMESTAMP(6) NULL     DEFAULT NULL,
+    create_by             VARCHAR      NULL     DEFAULT NULL,
+    update_at             TIMESTAMP(6) NULL     DEFAULT NULL,
+    update_by             VARCHAR      NULL     DEFAULT NULL
+    );
+
+ALTER TABLE app_builder_app ADD COLUMN IF NOT EXISTS app_suite_id VARCHAR(32) NULL;
+-- UPDATE app_builder_app SET app_suite_id = task.template_id from task where task.attributes->>'app_id' = app_builder_app.id;
+ALTER TABLE app_builder_app
+    ADD COLUMN IF NOT EXISTS  is_active bool NULL DEFAULT false;
+ALTER TABLE app_builder_app
+    ADD COLUMN IF NOT EXISTS status varchar(16) NULL;
+ALTER TABLE app_builder_app
+    ADD COLUMN IF NOT EXISTS unique_name varchar(64) NULL;
+ALTER TABLE app_builder_app
+    ADD COLUMN IF NOT EXISTS publish_at timestamp(6) NULL;
+ALTER TABLE app_builder_app
+    ADD COLUMN IF NOT EXISTS app_id varchar(64) NULL;
+
+
 create table if not exists app_builder_runtime_info
 (
     id                 BIGSERIAL primary key,
@@ -166,17 +203,4 @@ create table if not exists app_builder_runtime_info
     create_at          timestamp    not null default current_timestamp,
     update_by          varchar(64),
     update_at          timestamp    not null default current_timestamp
-);
-
-CREATE TABLE IF NOT EXISTS t_chat_session (
-    chat_id     VARCHAR(32)   NOT NULL DEFAULT NULL,
-    app_id      VARCHAR(32)   NULL     DEFAULT NULL,
-    app_version VARCHAR(32)   NULL     DEFAULT NULL,
-    name        VARCHAR(2000) NULL     DEFAULT NULL,
-    attributes  JSON          NULL     DEFAULT NULL,
-    create_at   TIMESTAMP(6)  NULL     DEFAULT NULL,
-    create_by   VARCHAR(32)   NULL     DEFAULT NULL,
-    update_at   TIMESTAMP(6)  NULL     DEFAULT NULL,
-    update_by   VARCHAR(32)   NULL     DEFAULT NULL,
-    status      INT4          NULL     DEFAULT NULL
 );

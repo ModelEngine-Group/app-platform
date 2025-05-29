@@ -28,7 +28,9 @@ public class TemplateUtilsTest {
     void testAppBuilderAppConvertToAppTemplate() {
         AppBuilderApp testApp = AppBuilderApp.builder().id("123456789").updateBy("jade").version("1.1.1").build();
         AppTemplate template = TemplateUtils.convertToAppTemplate(testApp);
-        assertThat(template).extracting(AppTemplate::getId, AppTemplate::getLike, AppTemplate::getUpdateBy,
+        assertThat(template).extracting(AppTemplate::getId,
+                AppTemplate::getLike,
+                AppTemplate::getUpdateBy,
                 AppTemplate::getVersion).containsExactly("123456789", 0L, null, "1.0.0");
     }
 
@@ -49,7 +51,9 @@ public class TemplateUtilsTest {
     void testAppTemplateConvertToAppBuilderApp() {
         AppTemplate testTemplate = AppTemplate.builder().id("123456789").version("1.1.1").build();
         AppBuilderApp app = TemplateUtils.convertToAppBuilderApp(testTemplate);
-        assertThat(app).extracting(AppBuilderApp::getId, AppBuilderApp::getVersion, AppBuilderApp::getState,
+        assertThat(app).extracting(AppBuilderApp::getId,
+                AppBuilderApp::getVersion,
+                AppBuilderApp::getState,
                 AppBuilderApp::getType).containsExactly("123456789", "1.0.0", "inactive", "template");
     }
 }

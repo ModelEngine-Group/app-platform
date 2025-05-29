@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.controller;
 
+import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.http.protocol.Address;
 import modelengine.fit.http.protocol.support.DefaultMessageHeaders;
 import modelengine.fit.http.server.HttpClassicServerRequest;
@@ -15,6 +16,11 @@ import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
 import modelengine.fit.jober.aipp.dto.chat.CreateAppChatRequest;
 import modelengine.fit.jober.aipp.service.AppChatService;
+
+import modelengine.fit.http.protocol.Address;
+import modelengine.fit.http.protocol.support.DefaultMessageHeaders;
+import modelengine.fit.http.server.HttpClassicServerRequest;
+import modelengine.fit.http.support.DefaultCookieCollection;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,10 +45,8 @@ public class AppChatControllerTest {
 
     @Mock
     private Authenticator authenticator;
-
     @Mock
     private AppChatService appChatService;
-
     @Mock
     private HttpClassicServerRequest request;
 
@@ -83,8 +87,8 @@ public class AppChatControllerTest {
     @Test
     @DisplayName("测试app_chat接口")
     void testChatFailedByNoBody() {
-        AippParamException exception = Assertions.assertThrows(AippParamException.class,
-                () -> this.controller.chat(request, "123", null));
+        AippParamException exception =
+                Assertions.assertThrows(AippParamException.class, () -> this.controller.chat(request, "123", null));
         Assertions.assertEquals(AippErrCode.APP_CHAT_REQUEST_IS_NULL.getErrorCode(), exception.getCode());
     }
 

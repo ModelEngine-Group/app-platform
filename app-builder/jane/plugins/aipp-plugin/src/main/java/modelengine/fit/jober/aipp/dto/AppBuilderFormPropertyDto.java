@@ -23,12 +23,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AppBuilderFormPropertyDto {
     private String id;
-
     private String formId;
-
     private String name;
-
     private String dataType;
-
     private String defaultValue;
 }

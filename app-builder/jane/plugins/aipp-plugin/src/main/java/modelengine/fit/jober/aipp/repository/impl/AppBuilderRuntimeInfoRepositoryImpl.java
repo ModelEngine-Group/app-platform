@@ -10,6 +10,7 @@ import modelengine.fit.jober.aipp.domain.AppBuilderRuntimeInfo;
 import modelengine.fit.jober.aipp.mapper.AppBuilderRuntimeInfoMapper;
 import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
 import modelengine.fit.jober.aipp.serializer.impl.AppBuilderRuntimeInfoSerializer;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.util.CollectionUtils;
 
@@ -25,7 +26,6 @@ import java.util.stream.Collectors;
 @Component
 public class AppBuilderRuntimeInfoRepositoryImpl implements AppBuilderRuntimeInfoRepository {
     private final AppBuilderRuntimeInfoMapper mapper;
-
     private final AppBuilderRuntimeInfoSerializer serializer;
 
     public AppBuilderRuntimeInfoRepositoryImpl(AppBuilderRuntimeInfoMapper mapper) {

@@ -8,11 +8,9 @@ package modelengine.fit.jober.aipp.service.impl;
 
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
-import modelengine.fit.jane.task.util.Entities;
-
-import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
+import modelengine.fit.jane.task.util.Entities;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.condition.FormQueryCondition;
@@ -23,6 +21,8 @@ import modelengine.fit.jober.aipp.repository.AppBuilderFormRepository;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.UploadedFileManageService;
 import modelengine.fit.jober.common.RangedResultSet;
+
+import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.log.Logger;
@@ -43,39 +43,23 @@ import java.util.stream.Collectors;
 @Component
 public class AppBuilderFormServiceImpl implements AppBuilderFormService {
     private static final String RUNTIME = "runtime";
-
     private static final String VERSION = "1.0.0";
-
     private static final double NAME_MAX_LENGTH = 64;
-
     private static final double DESCRIPTION_MAX_LENGTH = 300;
-
     private static final String IMG_URL = "imgUrl";
-
     private static final String IFRAME_URL = "iframeUrl";
-
     private static final String FILE_UUID = "fileUuid";
-
     private static final String FILE_NAME = "fileName";
-
     private static final String SCHEMA = "schema";
-
     private static final String DESCRIPTION = "description";
-
     private static final int REMOVABLE = 1;
-
     private static final int IRREMOVABLE = 0;
-
     private static final String FORM_NAME_FORMAT = "^[\\u4E00-\\u9FA5A-Za-z0-9][\\u4E00-\\u9FA5A-Za-z0-9-_]*$";
-
     private static final Logger log = Logger.get(AppBuilderFormServiceImpl.class);
 
     private final AppBuilderFormRepository formRepository;
-
     private final AippFormCreateConfig aippFormCreateConfig;
-
     private final UploadedFileManageService uploadedFileManageService;
-
     private final List<String> excludeNames;
 
     public AppBuilderFormServiceImpl(AppBuilderFormRepository formRepository, AippFormCreateConfig aippFormCreateConfig,

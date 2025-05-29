@@ -11,15 +11,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import modelengine.fel.core.document.MeasurableDocument;
+import modelengine.fitframework.broker.client.Invoker;
 import modelengine.jade.knowledge.document.KnowledgeDocument;
 import modelengine.jade.knowledge.entity.RetrieverOption;
 import modelengine.jade.knowledge.retriever.RetrieverHandler;
 import modelengine.jade.knowledge.retriever.support.DefaultRetrieverHandler;
 import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
 import modelengine.jade.knowledge.util.RetrieverServiceUtils;
-
-import modelengine.fel.core.document.MeasurableDocument;
-import modelengine.fitframework.broker.client.Invoker;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

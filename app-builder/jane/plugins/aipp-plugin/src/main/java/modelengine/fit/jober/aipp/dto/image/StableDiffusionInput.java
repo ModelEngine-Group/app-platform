@@ -17,6 +17,5 @@ import lombok.Data;
 @Data
 public class StableDiffusionInput {
     private String prompt;
-
     private String negativePrompt;
 }

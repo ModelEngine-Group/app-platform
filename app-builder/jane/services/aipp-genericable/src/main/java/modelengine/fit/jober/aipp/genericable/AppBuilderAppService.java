@@ -67,11 +67,11 @@ public interface AppBuilderAppService {
     AppBuilderAppDto queryLatestOrchestration(String appId, OperationContext context);
 
     /**
-     * 查询 app 最新可编排的版本。
+     * 查询 app 最新发布的版本。
      *
      * @param appId 表示 app 唯一标识的 {@link String}。
      * @param context 表示操作者上下文的 {@link OperationContext}。
-     * @return 表示查询到的 app 最新可编排的版本的 {@link AppBuilderAppDto}。
+     * @return 表示查询到的 app 最新发布的版本的 {@link AppBuilderAppDto}。
      */
     @Genericable(id = "modelengine.fit.jober.aipp.service.app.query.latest.published")
     AippCreate queryLatestPublished(String appId, OperationContext context);

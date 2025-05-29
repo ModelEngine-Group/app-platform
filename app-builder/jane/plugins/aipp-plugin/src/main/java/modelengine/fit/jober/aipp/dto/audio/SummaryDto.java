@@ -6,12 +6,13 @@
 
 package modelengine.fit.jober.aipp.dto.audio;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import modelengine.fit.jober.aipp.entity.ffmpeg.FfmpegUtil;
 import modelengine.fit.jober.aipp.util.JsonUtils;
 import modelengine.fit.jober.aipp.util.LLMUtils;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import modelengine.fitframework.annotation.Property;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
@@ -33,7 +34,6 @@ import java.util.Random;
 @NoArgsConstructor
 public class SummaryDto {
     private static final Random POS_RANDOM = new Random();
-
     private static final Logger log = Logger.get(SummaryDto.class);
 
     @Property(description = "视频摘要")
@@ -57,13 +57,13 @@ public class SummaryDto {
                     continue;
                 }
                 try {
-                    SummarySection section = JsonUtils.parseObject(LLMUtils.tryFixLlmJsonString(item),
-                            SummarySection.class);
-                    section.setPosition(
-                            FfmpegUtil.formatTimestamps(Math.max(segmentSize * i - POS_RANDOM.nextInt(60) - 30, 0)));
+                    SummarySection section =
+                            JsonUtils.parseObject(LLMUtils.tryFixLlmJsonString(item), SummarySection.class);
+                    section.setPosition(FfmpegUtil.formatTimestamps(Math.max(
+                            segmentSize * i - POS_RANDOM.nextInt(60) - 30, 0)));
                     sectionList.add(section);
-                } catch (IOException | IllegalArgumentException | UnsupportedOperationException | ClassCastException |
-                         NullPointerException e) {
+                } catch (IOException | IllegalArgumentException | UnsupportedOperationException | ClassCastException
+                    | NullPointerException e) {
                     log.warn("Llm generate unexpect rsp.");
                 }
             }

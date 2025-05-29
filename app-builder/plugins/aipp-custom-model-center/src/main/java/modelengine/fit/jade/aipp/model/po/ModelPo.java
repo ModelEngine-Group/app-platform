@@ -6,6 +6,7 @@
 
 package modelengine.fit.jade.aipp.model.po;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import modelengine.jade.common.po.BasePo;
 

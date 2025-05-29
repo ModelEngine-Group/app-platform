@@ -19,7 +19,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MindJsonElement {
     String name;
-
     String children;
 
     /**

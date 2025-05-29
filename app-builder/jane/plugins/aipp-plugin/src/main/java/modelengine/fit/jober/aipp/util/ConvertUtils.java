@@ -6,12 +6,13 @@
 
 package modelengine.fit.jober.aipp.util;
 
-import modelengine.fit.appbuilder.security.util.XssUtils;
 import modelengine.fit.jober.aipp.domain.AppBuilderApp;
 import modelengine.fit.jober.aipp.dto.AippCreateDto;
 import modelengine.fit.jober.aipp.dto.AippDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppDto;
 import modelengine.fit.jober.aipp.genericable.entity.AippCreate;
+
+import modelengine.fit.appbuilder.security.util.XssUtils;
 import modelengine.fitframework.util.StringUtils;
 
 import java.time.LocalDateTime;

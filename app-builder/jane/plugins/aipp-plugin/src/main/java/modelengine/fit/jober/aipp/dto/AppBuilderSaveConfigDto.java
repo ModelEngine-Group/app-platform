@@ -25,6 +25,5 @@ import java.util.List;
 @NoArgsConstructor
 public class AppBuilderSaveConfigDto {
     private List<AppBuilderConfigFormPropertyDto> input;
-
     private String graph;
 }
