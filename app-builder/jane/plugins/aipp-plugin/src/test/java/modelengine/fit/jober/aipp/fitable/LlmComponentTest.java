@@ -58,7 +58,6 @@ import modelengine.fitframework.util.ObjectUtils;
 import modelengine.jade.common.globalization.LocaleService;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -118,19 +117,6 @@ public class LlmComponentTest {
 
     @Mock
     private AippModelCenter aippModelCenter;
-
-    @BeforeEach
-    void setUp() {
-        Mockito.when(toolProvider.getTool(any())).thenReturn(Collections.emptyList());
-        doAnswer(invocationOnMock -> {
-            Object advice = invocationOnMock.getArgument(0);
-            Object context = invocationOnMock.getArgument(1);
-            return new PromptBuilderStub().build(ObjectUtils.cast(advice), ObjectUtils.cast(context));
-        }).when(this.promptBuilderChain).build(any(), any());
-
-        when(this.aippModelCenter.getModelAccessInfo(any(), any(), any())).thenReturn(
-                ModelAccessInfo.builder().tag("tag").build());
-    }
 
     static class PromptBuilderStub implements PromptBuilder {
         @Override
@@ -232,6 +218,7 @@ public class LlmComponentTest {
     @Disabled("多线程阻塞，无法唤醒")
     void shouldOkWhenWaterFlowAgentWithoutAsyncTool() throws InterruptedException {
         // stub
+        this.prepareModel();
         AbstractAgent<Prompt, Prompt> agent = this.getWaterFlowAgent(this.buildChatStreamModel(null), false);
         LlmComponent llmComponent = getLlmComponent(agent);
 
@@ -253,6 +240,7 @@ public class LlmComponentTest {
     @Test
     void shouldFailWhenWaterFlowAgentThrowException() throws InterruptedException {
         // stub
+        this.prepareModel();
         AbstractAgent<Prompt, Prompt> agent = this.getWaterFlowAgent(this.buildChatStreamModel("exceptionMsg"), false);
         LlmComponent llmComponent = getLlmComponent(agent);
 
@@ -268,6 +256,7 @@ public class LlmComponentTest {
     @Disabled("多线程阻塞，无法唤醒")
     void shouldOkWhenWaterFlowAgentWithAsyncTool() throws InterruptedException {
         // stub
+        this.prepareModel();
         AbstractAgent<Prompt, Prompt> agent = this.getWaterFlowAgent(this.buildChatStreamModel(null), true);
         LlmComponent llmComponent = getLlmComponent(agent);
 
@@ -305,6 +294,7 @@ public class LlmComponentTest {
     @Test
     void shouldOkWhenNoTool() throws InterruptedException {
         // stub
+        this.prepareModel();
         AiProcessFlow<Prompt, Prompt> testAgent = AiFlows.<Prompt>create()
                 .map(m -> ObjectUtils.<Prompt>cast(ChatMessages.from(new AiMessage("bad"))))
                 .close();
@@ -322,6 +312,7 @@ public class LlmComponentTest {
     @Test
     void shouldFailedWhenNoTool() throws InterruptedException {
         // stub
+        this.prepareModel();
         AiProcessFlow<Prompt, Prompt> testAgent = AiFlows.<Prompt>create().just(m -> {
             int err = 1 / 0;
         }).close();
@@ -341,6 +332,7 @@ public class LlmComponentTest {
     void shouldOkWhenUseWorkflowNoReturn() throws InterruptedException {
         AtomicReference<Prompt> prompt = new AtomicReference<>();
         // stub
+        this.prepareModel();
         AiProcessFlow<Prompt, Prompt> testAgent = AiFlows.<Prompt>create()
                 .just(prompt::set)
                 .map(m -> ObjectUtils.<Prompt>cast(ChatMessages.from(new ToolMessage("1", "\"tool_async\""))))
@@ -372,6 +364,7 @@ public class LlmComponentTest {
     @Test
     void shouldOkWhenUseWorkflowNormalReturn() throws InterruptedException {
         // stub
+        this.prepareModel();
         AtomicBoolean flag = new AtomicBoolean(false);
         List<Prompt> prompts = new ArrayList<>();
         AiProcessFlow<Prompt, Prompt> testAgent = AiFlows.<Prompt>create().just(m -> prompts.add(m)).map(m -> {
@@ -428,6 +421,7 @@ public class LlmComponentTest {
     @Test
     void shouldOkWhenUseMaxMemoryRounds() throws InterruptedException {
         // stub
+        this.prepareModel();
         AiProcessFlow<Prompt, Prompt> testAgent = AiFlows.<Prompt>create().just(m -> {
             List<? extends ChatMessage> messages = m.messages();
             Assertions.assertEquals(2, messages.size());
@@ -450,6 +444,7 @@ public class LlmComponentTest {
     @Test
     void shouldFailLLmNodeWhenHandleGivenWorkflowException() throws InterruptedException {
         // given
+        this.prepareModel();
         AbstractAgent<Prompt, Prompt> agent = this.getWaterFlowAgent(this.buildChatStreamModel(null), true);
         LlmComponent llmComponent = getLlmComponent(agent);
 
@@ -500,5 +495,17 @@ public class LlmComponentTest {
     private LlmComponent getLlmComponent(final AbstractAgent<Prompt, Prompt> agent) {
         return new LlmComponent(flowInstanceService, metaInstanceService, toolProvider, agent, aippLogService,
                 aippLogStreamService, client, serializer, localeService, aippModelCenter, promptBuilderChain);
+    }
+
+    private void prepareModel() {
+        Mockito.when(toolProvider.getTool(any())).thenReturn(Collections.emptyList());
+        doAnswer(invocationOnMock -> {
+            Object advice = invocationOnMock.getArgument(0);
+            Object context = invocationOnMock.getArgument(1);
+            return new PromptBuilderStub().build(ObjectUtils.cast(advice), ObjectUtils.cast(context));
+        }).when(this.promptBuilderChain).build(any(), any());
+
+        when(this.aippModelCenter.getModelAccessInfo(any(), any(), any())).thenReturn(
+                ModelAccessInfo.builder().tag("tag").build());
     }
 }

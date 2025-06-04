@@ -268,6 +268,7 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
 
         if (!this.checkModelAvailable(businessData)) {
             this.doOnAgentError(llmMeta, "statusCode=500");
+            return flowData;
         }
 
         // 待add多模态，期望使用image的url，当前传入的历史记录里面没有image
