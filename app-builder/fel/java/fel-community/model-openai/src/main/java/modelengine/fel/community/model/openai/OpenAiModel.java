@@ -232,7 +232,6 @@ public class OpenAiModel implements EmbedModel, ChatModel, ImageModel {
                    return value;
                }));
 
-        log.info("Create custom HTTPS config: {}", this.serializer.serialize(custom));
         return this.httpClientFactory.create(HttpClassicClientFactory.Config.builder()
                 .socketTimeout(this.clientConfig.socketTimeout())
                 .connectTimeout(this.clientConfig.connectTimeout())
@@ -246,7 +245,6 @@ public class OpenAiModel implements EmbedModel, ChatModel, ImageModel {
         }
 
         Map<String, Object> custom = buildHttpsConfig(secureConfig);
-        log.info("Create custom HTTPS config: {}", this.serializer.serialize(custom));
         return this.httpClientFactory.create(HttpClassicClientFactory.Config.builder()
                 .socketTimeout(this.clientConfig.socketTimeout())
                 .connectTimeout(this.clientConfig.connectTimeout())
