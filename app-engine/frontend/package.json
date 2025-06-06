@@ -64,7 +64,7 @@
     "@fit-elsa/elsa-core": "file:../../../fit-framework/framework/elsa/fit-elsa",
     "@fit-elsa/elsa-react": "file:../../../fit-framework/framework/elsa/fit-elsa-react",
     "antd": "4.24.13",
-    "axios": "1.7.4",
+    "axios": "1.8.2",
     "dayjs": "1.11.10",
     "echarts": "5.4.3",
     "echarts-for-react": "3.0.2",
