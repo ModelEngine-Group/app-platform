@@ -62,6 +62,7 @@ public class TaskPublisher implements Publisher {
                 .setAippType(NORMAL.name())
                 .setFlowConfigId(flowInfo.getFlowId())
                 .setFlowDefinitionId(flowInfo.getFlowDefinitionId())
+                .setAppSuiteId(appVersion.getData().getAppSuiteId())
                 .build();
         log.debug("create aipp, task info {}", createArgs.getEntity().toString());
         this.appTaskService.createTask(createArgs, context.getOperationContext());

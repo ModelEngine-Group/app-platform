@@ -19,6 +19,7 @@ import modelengine.fit.task_new.po.MetaPo;
 import modelengine.fit.task_new.repository.MetaRepository;
 import modelengine.fit.task_new.util.UUIDUtil;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,7 +44,7 @@ public class MetaRepositoryImpl implements MetaRepository {
     @Override
     public Meta insertOne(MetaDeclarationInfo metaDeclarationInfo, OperationContext context) {
         MetaPo metaPO = MetaPo.convertToMetaPO(metaDeclarationInfo, context);
-        String templateId = this.retrieveByName(metaPO.getName()).map(Meta::getId).orElse(UUIDUtil.uuid());
+        String templateId = StringUtils.isNotEmpty(metaPO.getTemplateId()) ? metaPO.getTemplateId() : UUIDUtil.uuid();
         metaPO.setTemplateId(templateId);
         metaPO.setId(UUIDUtil.uuid());
         metaPO.setCreatedBy(context.getOperator());
