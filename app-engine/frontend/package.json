@@ -83,7 +83,7 @@
     "react-router": "5.3.4",
     "react-router-dom": "5.3.4",
     "redux": "4.2.1",
-    "tinymce": "6.8.4",
+    "tinymce": "7.2.0",
     "xss": "1.0.15"
   }
 }
