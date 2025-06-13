@@ -487,7 +487,7 @@ const ChatPreview = (props) => {
         idx = listRef.current.length;
       } else {
         if (!extensions.isEnableLog && !listRef.current[idx].step) {
-          initObj.content ? null :  initObj.content = listRef.current[idx].content;
+          initObj.content = listRef.current[idx].content;
         }
       }
     }
