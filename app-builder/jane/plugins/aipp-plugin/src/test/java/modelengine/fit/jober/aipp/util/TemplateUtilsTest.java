@@ -54,6 +54,6 @@ public class TemplateUtilsTest {
         assertThat(app).extracting(AppBuilderApp::getId,
                 AppBuilderApp::getVersion,
                 AppBuilderApp::getState,
-                AppBuilderApp::getType).containsExactly("123456789", "1.0.0", "inactive", "template");
+                AppBuilderApp::getType).containsExactly("123456789", "1.0.0", "inactive", "app");
     }
 }

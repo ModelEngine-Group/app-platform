@@ -95,7 +95,7 @@ public class TemplateUtils {
                 .name(template.getName())
                 .configId(template.getConfigId())
                 .flowGraphId(template.getFlowGraphId())
-                .type(AppTypeEnum.TEMPLATE.code())
+                .type(AppTypeEnum.APP.code())
                 .appType(template.getAppType())
                 .version(INIT_VERSION)
                 .attributes(template.getAttributes())
