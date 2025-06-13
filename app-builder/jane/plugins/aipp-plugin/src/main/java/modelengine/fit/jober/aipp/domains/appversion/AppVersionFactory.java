@@ -146,6 +146,7 @@ public class AppVersionFactory {
                 .maxUserContextLen(this.maxUserContextLen)
                 .knowledgeCenterService(this.knowledgeCenterService)
                 .resourcePath(this.resourcePath)
+                .formPropertyRepository(this.formPropertyRepository)
                 .build());
     }
 }

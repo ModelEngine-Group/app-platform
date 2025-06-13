@@ -124,7 +124,7 @@ public class TemplateUtils {
                 .icon(icon)
                 .greeting(greeting)
                 .appType(appTemplate.getAppType())
-                .type(appTemplate.getType())
+                .type(AppTypeEnum.APP.code())
                 .storeId(storeId)
                 .appBuiltType(appTemplate.getAppBuiltType())
                 .appCategory(appTemplate.getAppCategory())

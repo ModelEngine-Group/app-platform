@@ -237,8 +237,10 @@ public class AppVersionServiceImpl implements AppVersionService {
         AppVersion appVersion = this.appVersionFactory.create(new AppBuilderAppPo(), this.repository);
         appVersion.getData().setConfigId(template.getConfigId());
         appVersion.getData().setFlowGraphId(template.getFlowGraphId());
+        appVersion.getData().setId(template.getId());
         appVersion.cloneVersion(TemplateUtils.toAppCreateDTO(template), DEFAULT_APP_VERSION, AppTypeEnum.APP.name(),
                 context);
+        appVersion.getData().setState(AppState.INACTIVE.getName());
         this.save(appVersion);
         return appVersion;
     }

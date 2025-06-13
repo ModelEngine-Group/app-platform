@@ -771,10 +771,7 @@ public class AppVersion {
         this.data.setAppId(newAppID);
 
         // 只保留模板相关的属性.
-        this.attributes = this.attributes.entrySet()
-                .stream()
-                .filter(e -> TEMPLATE_DEFAULT_ATTRIBUTE_KEYS.contains(e.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        this.attributes.keySet().retainAll(TEMPLATE_DEFAULT_ATTRIBUTE_KEYS);
 
         // 创建参数设置.
         if (createDto != null) {
@@ -806,6 +803,7 @@ public class AppVersion {
         graph.setUpdateAt(now);
 
         AppTemplate template = this.converterFactory.convert(this, AppTemplate.class);
+        this.templateFactory.setRepositories(template);
         this.templateFactory.save(template);
         String icon = this.getIcon();
         if (StringUtils.isNotBlank(icon)) {
