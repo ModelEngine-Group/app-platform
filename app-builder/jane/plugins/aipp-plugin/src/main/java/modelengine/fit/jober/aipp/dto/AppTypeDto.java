@@ -28,4 +28,7 @@ public class AppTypeDto {
 
     @Property(description = "名字")
     private String name;
+
+    @Property(description = "语言类型")
+    private String language;
 }

@@ -21,9 +21,10 @@ public interface AppBuilderAppTypeMapper {
      * 查询所有分类信息。
      *
      * @param tenantId 表示租户唯一标识的 {@link String}。
+     * @param language 表示分类的语音类型的 {@link String}。
      * @return 表示分类列表的 {@link List}{@code <}{@link AppBuilderAppTypePo}{@code >}。
      */
-    List<AppBuilderAppTypePo> queryAll(String tenantId);
+    List<AppBuilderAppTypePo> queryAll(String tenantId, String language);
 
     /**
      * 插入一条分类信息。

@@ -21,9 +21,10 @@ public interface AppTypeService {
      * 查询租户下所有分类定义信息。
      *
      * @param tenantId 表示租户唯一标识的 {@link String}。
+     * @param language 表示分类的语音类型的 {@link String}。
      * @return 表示分类定义信息列表的 {@link List}{@code <}{@link AppTypeDto}{@code >}。
      */
-    List<AppTypeDto> queryAll(String tenantId);
+    List<AppTypeDto> queryAll(String tenantId, String language);
 
     /**
      * 根据应用分类唯一标识和租户唯一标识查询分类信息。

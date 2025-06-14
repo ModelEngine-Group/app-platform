@@ -34,4 +34,5 @@ public class AppBuilderAppTypePo {
     private String tenantId;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
+    private String language;
 }
