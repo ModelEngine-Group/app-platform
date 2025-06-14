@@ -45,11 +45,12 @@ class AppTypeServiceImplTest {
         List<AppBuilderAppTypePo> expectResult = new ArrayList<>();
         String tenantId = "tenant";
         AppBuilderAppTypePo expectType = new AppBuilderAppTypePo("1", "type1", tenantId, LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now(), "zh");
         expectResult.add(expectType);
-        Mockito.when(this.appBuilderAppTypeMapper.queryAll(tenantId)).thenReturn(expectResult);
+        Mockito.when(this.appBuilderAppTypeMapper.queryAll(Mockito.eq(tenantId), Mockito.eq("zh")))
+                .thenReturn(expectResult);
 
-        List<AppTypeDto> result = this.appTypeService.queryAll(tenantId);
+        List<AppTypeDto> result = this.appTypeService.queryAll(tenantId, "zh" );
 
         Assertions.assertEquals(expectResult.size(), result.size());
         Assertions.assertEquals(expectType.getId(), result.get(0).getId());
@@ -60,7 +61,7 @@ class AppTypeServiceImplTest {
     void shouldCallMapperWhenQueryById() {
         String tenantId = "tenant";
         AppBuilderAppTypePo expectPo = new AppBuilderAppTypePo("1", "type1", tenantId, LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now(), "zh");
         Mockito.when(this.appBuilderAppTypeMapper.query(expectPo.getId(), tenantId)).thenReturn(expectPo);
 
         AppTypeDto result = this.appTypeService.query(expectPo.getId(), tenantId);
@@ -73,14 +74,16 @@ class AppTypeServiceImplTest {
     void shouldCallMapperWhenAddGivenTypeWithId() {
         String tenantId = "tenant";
         AppBuilderAppTypePo expectPo = new AppBuilderAppTypePo("1", "type1", tenantId, LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now(), "zh");
         Mockito.doNothing()
                 .when(this.appBuilderAppTypeMapper)
                 .insert(Mockito.argThat(
                         po -> po.getId().equals(expectPo.getId()) && po.getName().equals(expectPo.getName())
                                 && po.getTenantId().equals(expectPo.getTenantId())));
 
-        AppTypeDto result = this.appTypeService.add(new AppTypeDto(expectPo.getId(), expectPo.getName()), tenantId);
+        AppTypeDto result =
+                this.appTypeService.add(new AppTypeDto(expectPo.getId(), expectPo.getName(), expectPo.getLanguage()),
+                        tenantId);
 
         Mockito.verify(this.appBuilderAppTypeMapper, Mockito.times(1)).insert(Mockito.any(AppBuilderAppTypePo.class));
         Assertions.assertEquals(expectPo.getId(), result.getId());
@@ -91,14 +94,15 @@ class AppTypeServiceImplTest {
     void shouldReturnNewIdWhenAddGivenTypeWithoutId() {
         String tenantId = "tenant";
         AppBuilderAppTypePo expectPo = new AppBuilderAppTypePo("1", "type1", tenantId, LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now(), "zh");
         Mockito.doNothing()
                 .when(this.appBuilderAppTypeMapper)
                 .insert(Mockito.argThat(
                         po -> !po.getId().isEmpty() && po.getName().equals(expectPo.getName())
                                 && po.getTenantId().equals(expectPo.getTenantId())));
 
-        AppTypeDto result = this.appTypeService.add(new AppTypeDto("", expectPo.getName()), tenantId);
+        AppTypeDto result =
+                this.appTypeService.add(new AppTypeDto("", expectPo.getName(), expectPo.getLanguage()), tenantId);
 
         Mockito.verify(this.appBuilderAppTypeMapper, Mockito.times(1)).insert(Mockito.any(AppBuilderAppTypePo.class));
         Assertions.assertFalse(result.getId().isEmpty());
@@ -109,7 +113,7 @@ class AppTypeServiceImplTest {
     void shouldCallMapperWhenDeleteGivenTypeId() {
         String tenantId = "tenant";
         AppBuilderAppTypePo expectPo = new AppBuilderAppTypePo("1", "type1", tenantId, LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now(), "zh");
         Mockito.doNothing().when(this.appBuilderAppTypeMapper).delete(expectPo.getId(), tenantId);
 
         this.appTypeService.delete(expectPo.getId(), tenantId);
@@ -121,14 +125,15 @@ class AppTypeServiceImplTest {
     void shouldCallMapperWhenUpdateGivenTypeInfo() {
         String tenantId = "tenant";
         AppBuilderAppTypePo expectPo = new AppBuilderAppTypePo("1", "type1", tenantId, LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now(), "zh");
         Mockito.doNothing()
                 .when(this.appBuilderAppTypeMapper)
                 .update(Mockito.argThat(
                         po -> po.getId().equals(expectPo.getId()) && po.getName().equals(expectPo.getName())
                                 && po.getTenantId().equals(expectPo.getTenantId())));
 
-        this.appTypeService.update(new AppTypeDto(expectPo.getId(), expectPo.getName()), tenantId);
+        this.appTypeService.update(new AppTypeDto(expectPo.getId(), expectPo.getName(), expectPo.getLanguage()),
+                tenantId);
 
         Mockito.verify(this.appBuilderAppTypeMapper, Mockito.times(1)).update(Mockito.any(AppBuilderAppTypePo.class));
     }

@@ -11,6 +11,7 @@ import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.jober.aipp.dto.AppTypeDto;
 import modelengine.fit.jober.aipp.service.AppTypeService;
+import modelengine.jade.common.locale.LocaleUtil;
 import modelengine.jade.service.annotations.CarverSpan;
 import modelengine.jade.service.annotations.SpanAttr;
 
@@ -25,6 +26,7 @@ import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fitframework.annotation.Component;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 应用业务分类对外接口。
@@ -58,7 +60,8 @@ public class AppTypeController extends AbstractController {
     @GetMapping(description = "查询所有应用业务分类")
     public Rsp<List<AppTypeDto>> queryAll(HttpClassicServerRequest request,
         @PathVariable("tenant_id") String tenantId) {
-        return Rsp.ok(this.appTypeService.queryAll(tenantId));
+        Locale locale = LocaleUtil.getLocale();
+        return Rsp.ok(this.appTypeService.queryAll(tenantId, locale.getLanguage()));
     }
 
     /**

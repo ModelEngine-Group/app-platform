@@ -37,8 +37,8 @@ public class AppTypeServiceImpl implements AppTypeService {
     }
 
     @Override
-    public List<AppTypeDto> queryAll(String tenantId) {
-        return this.appBuilderAppTypeMapper.queryAll(tenantId)
+    public List<AppTypeDto> queryAll(String tenantId, String language) {
+        return this.appBuilderAppTypeMapper.queryAll(tenantId, language)
             .stream()
             .map(this::deserialize)
             .collect(Collectors.toList());
@@ -73,15 +73,16 @@ public class AppTypeServiceImpl implements AppTypeService {
     private AppBuilderAppTypePo serialize(AppTypeDto dto, String tenantId) {
         LocalDateTime now = LocalDateTime.now();
         return AppBuilderAppTypePo.builder()
-            .id(dto.getId())
-            .name(dto.getName())
-            .tenantId(tenantId)
-            .createAt(now)
-            .updateAt(now)
-            .build();
+                .id(dto.getId())
+                .name(dto.getName())
+                .tenantId(tenantId)
+                .createAt(now)
+                .updateAt(now)
+                .language(dto.getLanguage())
+                .build();
     }
 
     private AppTypeDto deserialize(AppBuilderAppTypePo po) {
-        return AppTypeDto.builder().id(po.getId()).name(po.getName()).build();
+        return AppTypeDto.builder().id(po.getId()).name(po.getName()).language(po.getLanguage()).build();
     }
 }

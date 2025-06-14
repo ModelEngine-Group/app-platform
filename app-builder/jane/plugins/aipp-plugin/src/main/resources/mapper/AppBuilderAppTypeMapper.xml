@@ -10,15 +10,15 @@
     </resultMap>
 
     <select id="queryAll" resultType="modelengine.fit.jober.aipp.po.AppBuilderAppTypePo" resultMap="ResultMap">
-        SELECT id, name, tenant_id, create_at, update_at
+        SELECT id, name, tenant_id, create_at, update_at, language
         FROM app_builder_app_type
-        WHERE tenant_id = #{tenantId}
+        WHERE tenant_id = #{tenantId} and language = #{language}
         ORDER BY create_at ASC
     </select>
 
     <insert id="insert" parameterType="modelengine.fit.jober.aipp.po.AppBuilderAppTypePo">
-        INSERT INTO app_builder_app_type (id, name, tenant_id, create_at, update_at)
-        VALUES (#{id}, #{name}, #{tenantId}, #{createAt}, #{updateAt})
+        INSERT INTO app_builder_app_type (id, name, tenant_id, create_at, update_at, language)
+        VALUES (#{id}, #{name}, #{tenantId}, #{createAt}, #{updateAt}, #{language})
     </insert>
 
     <update id="update" parameterType="modelengine.fit.jober.aipp.po.AppBuilderAppTypePo">
@@ -35,7 +35,7 @@
     </delete>
 
     <select id="query" resultType="modelengine.fit.jober.aipp.po.AppBuilderAppTypePo" resultMap="ResultMap">
-        SELECT id, name, tenant_id, create_at, update_at
+        SELECT id, name, tenant_id, create_at, update_at, language
         FROM app_builder_app_type
         WHERE id = #{id}
     </select>

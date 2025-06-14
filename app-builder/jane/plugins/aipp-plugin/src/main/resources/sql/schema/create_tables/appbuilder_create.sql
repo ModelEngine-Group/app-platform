@@ -291,6 +291,7 @@ create table if not exists app_builder_app_type
     tenant_id  varchar(255) not null,
     create_at  timestamp    not null default current_timestamp,
     update_at  timestamp    not null default current_timestamp,
+    language   varchar(64)  NULL,
     CONSTRAINT "app_builder_app_type_name_tenant_id_key" UNIQUE ("name", "tenant_id")
 );
 
