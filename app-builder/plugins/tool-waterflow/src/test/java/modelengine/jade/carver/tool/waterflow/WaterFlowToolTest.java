@@ -50,7 +50,7 @@ public class WaterFlowToolTest {
         this.client = mock(BrokerClient.class);
         Tool.Info toolInfo = this.buildToolInfo();
         Tool.Metadata toolMetadata = Tool.Metadata.fromSchema(DEFINITION_GROUP_NAME, toolInfo.schema());
-        this.serializer = new JacksonObjectSerializer(null, null, null);
+        this.serializer = new JacksonObjectSerializer(null, null, null, true);
 
         WaterFlowToolFactory waterflowToolFactory = new WaterFlowToolFactory(this.client, this.serializer);
         Tool waterFlowTool = waterflowToolFactory.create(toolInfo, toolMetadata);

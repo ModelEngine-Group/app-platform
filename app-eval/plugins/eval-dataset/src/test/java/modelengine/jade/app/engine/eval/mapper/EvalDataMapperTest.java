@@ -87,7 +87,7 @@ public class EvalDataMapperTest {
     static class QueryTestCaseProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws IOException {
-            ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+            ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
             String resourceName = "/test/query_eval_data_test_case.json";
             String jsonContent = content(QueryTestCaseProvider.class, resourceName);

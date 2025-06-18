@@ -27,7 +27,7 @@ import java.util.Collections;
  */
 @DisplayName("测试 PluginDo")
 public class PluginDoTest {
-    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
     @Test
     @DisplayName("从传输层实体类转换数据库类，返回正确结果")

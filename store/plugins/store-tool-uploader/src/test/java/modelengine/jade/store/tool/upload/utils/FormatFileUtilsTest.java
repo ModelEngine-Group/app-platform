@@ -48,7 +48,7 @@ import java.util.zip.ZipOutputStream;
 public class FormatFileUtilsTest {
     private static final String NEW_TOOL_JSON = "src/test/resources/tools.json";
 
-    private final JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
     @Test
     @DisplayName("当转换为字符串时，成功")

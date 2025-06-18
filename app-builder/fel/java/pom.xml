@@ -24,7 +24,7 @@
         <java.version>17</java.version>
 
         <!-- Framework version -->
-        <fit.version>3.5.0-M2</fit.version>
+        <fit.version>3.5.0-M3</fit.version>
         <fel.version>1.0.0-SNAPSHOT</fel.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
         <tool.version>1.0.0-SNAPSHOT</tool.version>
@@ -145,7 +145,7 @@
             <dependency>
                 <groupId>org.fitframework.plugin</groupId>
                 <artifactId>fit-message-serializer-json-jackson</artifactId>
-                <version>3.5.0-M2.1</version>
+                <version>3.5.0-M3</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

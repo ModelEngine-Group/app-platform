@@ -51,7 +51,7 @@ import java.util.Optional;
 public class ReferencePromptBuilderTest {
     @Fit
     private PromptBuilder promptBuilder;
-    private final ObjectSerializer jsonSerializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer jsonSerializer = new JacksonObjectSerializer(null, null, null, true);
 
     @Mock
     private LocaleService localeService;

@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import modelengine.fit.data.repository.exception.CapacityOverflowException;
 import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
 import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.ohscript.util.UUIDUtil;
@@ -64,6 +63,7 @@ import modelengine.fit.waterflow.spi.lock.InvalidDistributedLockNotify;
 import modelengine.fitframework.broker.client.BrokerClient;
 import modelengine.fitframework.broker.client.Invoker;
 import modelengine.fitframework.broker.client.Router;
+import modelengine.fitframework.broker.client.TargetNotFoundException;
 import modelengine.fitframework.event.EventPublisher;
 import modelengine.fitframework.plugin.Plugin;
 import modelengine.fitframework.runtime.FitRuntime;
@@ -731,7 +731,7 @@ public class FlowContextPersistTest extends DatabaseBaseTest {
             Invoker mockInvoker = Mockito.mock(Invoker.class);
             when(mockRouter.route(any())).thenReturn(mockInvoker);
             when(mockInvoker.communicationType(any())).thenReturn(mockInvoker);
-            CapacityOverflowException exception = new CapacityOverflowException("test");
+            TargetNotFoundException exception = new TargetNotFoundException("test");
             when(mockInvoker.invoke(anyList())).thenThrow(exception);
 
             FlowData flowData = getFlowData(flowsExecutorWithOnlyStateNode1To1(), "lzf");

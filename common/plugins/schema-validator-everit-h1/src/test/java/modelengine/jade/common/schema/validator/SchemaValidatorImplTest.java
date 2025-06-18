@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  * @since 2024-07-29
  */
 public class SchemaValidatorImplTest {
-    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
     static class ValidateTestCaseProvider implements ArgumentsProvider {
         static final Map<String, String> testCaseMap = MapBuilder.<String, String>get()
@@ -58,7 +58,7 @@ public class SchemaValidatorImplTest {
 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws IOException {
-            ObjectSerializer objectSerializer = new JacksonObjectSerializer(null, null, null);
+            ObjectSerializer objectSerializer = new JacksonObjectSerializer(null, null, null, true);
 
             String resourceName = testCaseMap.get(extensionContext.getTestMethod().get().getName());
             String jsonContent = content(ValidateTestCaseProvider.class, resourceName);

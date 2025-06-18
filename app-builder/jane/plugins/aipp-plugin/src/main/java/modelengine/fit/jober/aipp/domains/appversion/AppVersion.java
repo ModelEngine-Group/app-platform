@@ -31,7 +31,7 @@ import static modelengine.fitframework.util.ObjectUtils.cast;
 import com.alibaba.fastjson.JSON;
 
 import lombok.Getter;
-import modelengine.fel.tool.service.ToolService;
+import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.dto.ModelListDto;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;

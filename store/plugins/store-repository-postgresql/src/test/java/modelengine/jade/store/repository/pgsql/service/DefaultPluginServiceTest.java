@@ -40,7 +40,7 @@ import java.util.List;
  */
 @DisplayName("测试 DefaultPluginService")
 public class DefaultPluginServiceTest {
-    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
     private DefaultPluginService pluginService;
     private PluginRepository pluginRepository;

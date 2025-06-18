@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * @since 2024-12-18
  */
 public class OpenAiImageEntityTest {
-    private static final ObjectSerializer SERIALIZER = new JacksonObjectSerializer(null, null, null);
+    private static final ObjectSerializer SERIALIZER = new JacksonObjectSerializer(null, null, null, true);
 
     @Test
     @DisplayName("测试序列化图片生成请求成功")

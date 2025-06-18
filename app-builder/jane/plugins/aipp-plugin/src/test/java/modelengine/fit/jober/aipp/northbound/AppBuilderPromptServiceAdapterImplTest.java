@@ -38,7 +38,7 @@ import java.util.List;
  */
 @DisplayName("测试 AppBuilderPromptServiceAdapterImpl")
 public class AppBuilderPromptServiceAdapterImplTest {
-    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
     private final AppBuilderPromptService appBuilderPromptService = mock(AppBuilderPromptService.class);
     private final AppBuilderPromptServiceAdapterImpl appBuilderPromptServiceAdapter =
             new AppBuilderPromptServiceAdapterImpl(appBuilderPromptService, serializer);

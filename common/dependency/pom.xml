@@ -14,7 +14,7 @@
         <java.version>17</java.version>
 
         <!-- Framework version -->
-        <fit.version>3.5.0-M2</fit.version>
+        <fit.version>3.5.0-M3</fit.version>
         <fel.version>1.0.0-SNAPSHOT</fel.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
         <carver.version>1.0.0-SNAPSHOT</carver.version>
@@ -144,14 +144,9 @@
                 <version>${fit.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.fitframework.service</groupId>
-                <artifactId>fit-data-repository-service</artifactId>
-                <version>${fit.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.fitframework.plugin</groupId>
                 <artifactId>fit-message-serializer-json-jackson</artifactId>
-                <version>3.5.0-M2.1</version>
+                <version>3.5.0-M3</version>
             </dependency>
             <!-- WaterFlow -->
             <dependency>
@@ -240,7 +235,7 @@
             <dependency>
                 <groupId>org.fitframework.fel</groupId>
                 <artifactId>tool-service</artifactId>
-                <version>3.5.0-M2.1</version>
+                <version>3.5.0-M3</version>
             </dependency>
             <dependency>
                 <groupId>modelengine.fit.jade.service</groupId>

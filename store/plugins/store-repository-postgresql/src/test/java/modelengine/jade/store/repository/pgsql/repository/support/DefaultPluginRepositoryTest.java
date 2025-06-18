@@ -39,7 +39,7 @@ public class DefaultPluginRepositoryTest {
     private PluginMapper pluginMapper;
 
     private final ObjectSerializer serializer =
-            new JacksonObjectSerializer(null, null, null);
+            new JacksonObjectSerializer(null, null, null, true);
 
     @BeforeEach
     void setUp() {

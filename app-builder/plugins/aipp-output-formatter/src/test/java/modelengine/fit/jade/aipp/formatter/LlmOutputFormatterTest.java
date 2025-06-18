@@ -48,7 +48,7 @@ import java.util.stream.Stream;
  */
 @FitTestWithJunit(includeClasses = {LlmOutputFormatter.class})
 public class LlmOutputFormatterTest {
-    private static final ObjectSerializer SERIALIZER = new JacksonObjectSerializer(null, null, null);
+    private static final ObjectSerializer SERIALIZER = new JacksonObjectSerializer(null, null, null, true);
 
     @Fit
     private OutputFormatter formatter;

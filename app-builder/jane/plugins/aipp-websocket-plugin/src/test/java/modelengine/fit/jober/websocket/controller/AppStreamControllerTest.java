@@ -84,7 +84,7 @@ public class AppStreamControllerTest {
 
     @BeforeEach
     public void setup() {
-        this.serializer = new JacksonObjectSerializer(null, null, null);
+        this.serializer = new JacksonObjectSerializer(null, null, null, true);
         this.appStreamController =
                 new AppStreamController(this.authenticator, this.serializer, this.authenticationService, this.registry);
         when(this.request.headers()).thenReturn(new DefaultMessageHeaders());

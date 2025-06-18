@@ -48,7 +48,7 @@ public class DefaultOutputFormatterTest {
     static class DefaultFormatterTestCaseProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws IOException {
-            ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+            ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
             String resourceName = "/default_formatter_test_case.json";
             String jsonContent = content(DefaultFormatterTestCaseProvider.class, resourceName);

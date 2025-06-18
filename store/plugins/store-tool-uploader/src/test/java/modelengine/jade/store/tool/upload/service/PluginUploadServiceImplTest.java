@@ -74,7 +74,7 @@ import java.util.Map;
 public class PluginUploadServiceImplTest {
     private static final String NEW_TOOL_JSON = "src/test/resources/tools.json";
 
-    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
     @Mock
     private PluginService mockPluginService;

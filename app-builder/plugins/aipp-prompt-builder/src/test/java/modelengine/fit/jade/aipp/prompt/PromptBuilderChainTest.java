@@ -88,7 +88,7 @@ public class PromptBuilderChainTest {
 
         private MockedStatic<LocaleUtil> localeUtilMock;
         private Map<String, Object> context;
-        private final ObjectSerializer jsonSerializer = new JacksonObjectSerializer(null, null, null);
+        private final ObjectSerializer jsonSerializer = new JacksonObjectSerializer(null, null, null, true);
         private UserAdvice defaultUserAdvice;
 
         @BeforeEach

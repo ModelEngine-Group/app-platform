@@ -14,10 +14,10 @@
         <java.version>17</java.version>
 
         <!-- Framework version -->
-        <fit.version>3.5.0-M2</fit.version>
+        <fit.version>3.5.0-M3</fit.version>
         <fel.version>1.0.0-SNAPSHOT</fel.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
-        <ohscript.version>3.5.0-M2</ohscript.version>
+        <ohscript.version>3.5.0-M3</ohscript.version>
 
         <!-- Third-party versions -->
         <druid.version>1.2.20</druid.version>
@@ -41,11 +41,6 @@
             <dependency>
                 <groupId>org.fitframework</groupId>
                 <artifactId>fit-api</artifactId>
-                <version>${fit.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.fitframework.service</groupId>
-                <artifactId>fit-data-repository-service</artifactId>
                 <version>${fit.version}</version>
             </dependency>
             <dependency>

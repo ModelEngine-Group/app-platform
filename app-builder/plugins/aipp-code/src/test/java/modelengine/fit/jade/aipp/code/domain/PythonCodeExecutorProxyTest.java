@@ -55,7 +55,7 @@ public class PythonCodeExecutorProxyTest {
         when(brokerClient.getRouter(anyString())).thenReturn(router);
         when(router.route(any())).thenReturn(invoker);
         factory = new CodeExecutorAutoConfig().getCodeExecutorFactory(brokerClient,
-                new JacksonObjectSerializer(null, null, null));
+                new JacksonObjectSerializer(null, null, null, true));
     }
 
     @Nested

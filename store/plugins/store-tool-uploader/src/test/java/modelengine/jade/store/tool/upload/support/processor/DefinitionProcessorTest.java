@@ -37,7 +37,7 @@ public class DefinitionProcessorTest {
     private static final String TOOL_JSON = "src/test/resources/tools.json";
     private static final String HTTP_TOOL_JSON = "src/test/resources/toolsHttp.json";
 
-    private final JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
     private DefinitionProcessor processor;
     private ToolJsonEntity tool;

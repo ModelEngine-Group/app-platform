@@ -55,7 +55,7 @@ public class ContentExtractorTest {
     @BeforeAll
     static void beforeAll() throws IOException {
         modelService = mock(ChatModel.class);
-        extractor = new FunctionCallContentExtractor(modelService, new JacksonObjectSerializer(null, null, null));
+        extractor = new FunctionCallContentExtractor(modelService, new JacksonObjectSerializer(null, null, null, true));
     }
 
     @Test

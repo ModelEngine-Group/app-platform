@@ -53,7 +53,7 @@ public class RewriterTest {
     static void beforeAll() throws IOException {
         modelService = mock(ChatModel.class);
         factory =
-                new RewriteAutoConfig().getRewriteFactory(modelService, new JacksonObjectSerializer(null, null, null));
+                new RewriteAutoConfig().getRewriteFactory(modelService, new JacksonObjectSerializer(null, null, null, true));
     }
 
     @Nested

@@ -42,7 +42,7 @@ import java.util.Map;
 class IntegrationReferencePromptBuilderTest {
     @Fit
     private PromptBuilder promptBuilder;
-    private final ObjectSerializer jsonSerializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer jsonSerializer = new JacksonObjectSerializer(null, null, null, true);
     private UserAdvice defaultUserAdvice;
 
     @BeforeEach

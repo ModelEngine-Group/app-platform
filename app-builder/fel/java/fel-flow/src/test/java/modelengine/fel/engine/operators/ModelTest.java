@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 2024-05-08
  */
 public class ModelTest {
-    private static final ObjectSerializer TEST_SERIALIZER = new JacksonObjectSerializer(null, null, null);
+    private static final ObjectSerializer TEST_SERIALIZER = new JacksonObjectSerializer(null, null, null, true);
 
     @Data
     private static class ModelOutput {

@@ -83,7 +83,7 @@ public class AppStreamControllerTest {
 
     @BeforeEach
     public void setup() {
-        ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+        ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
         this.appStreamController =
                 new AppStreamController(this.authenticator, this.appChatService, serializer, authenticationService);
         when(request.headers()).thenReturn(new DefaultMessageHeaders());

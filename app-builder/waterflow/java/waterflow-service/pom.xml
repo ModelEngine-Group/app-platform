@@ -21,10 +21,6 @@
         </dependency>
         <dependency>
             <groupId>org.fitframework.service</groupId>
-            <artifactId>fit-data-repository-service</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.fitframework.service</groupId>
             <artifactId>fit-http-classic</artifactId>
         </dependency>
         <dependency>

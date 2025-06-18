@@ -116,7 +116,7 @@ public class LlmComponentTest {
     private AppTaskInstanceService appTaskInstanceService;
     @Mock
     private PromptBuilderChain promptBuilderChain;
-    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
     @Mock
     private AippModelCenter aippModelCenter;
 

@@ -51,7 +51,7 @@ import java.util.stream.Stream;
         SchemaValidatorImpl.class
 })
 public class OutputFormatterIntegrationTest {
-    private static final ObjectSerializer SERIALIZER = new JacksonObjectSerializer(null, null, null);
+    private static final ObjectSerializer SERIALIZER = new JacksonObjectSerializer(null, null, null, true);
 
     @Fit
     private OutputFormatterChain chain;

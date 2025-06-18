@@ -40,7 +40,7 @@ import java.util.Optional;
  */
 @DisplayName("测试 DefaultToolService")
 public class DefaultToolServiceTest {
-    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
     @InjectMocks
     private DefaultToolService toolService;
