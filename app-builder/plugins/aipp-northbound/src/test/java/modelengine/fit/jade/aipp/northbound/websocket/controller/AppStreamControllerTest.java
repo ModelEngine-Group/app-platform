@@ -50,6 +50,7 @@ public class AppStreamControllerTest {
     private final String chatMsg = """
             {
                 "method": "appChat",
+                "requestId": "1",
                 "params": {
                     "tenantId": "123",
                     "isDebug": true,
@@ -105,9 +106,9 @@ public class AppStreamControllerTest {
         appStreamController.onMessage(session, chatMsg);
 
         assertThat(result).hasSize(2)
-                .contains("{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":\"test route success\","
+                .contains("{\"requestId\":\"1\",\"code\":0,\"data\":\"test route success\","
                                 + "\"completed\":false}",
-                        "{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":null,\"completed\":true}");
+                        "{\"requestId\":\"1\",\"code\":0,\"completed\":true}");
     }
 
     @Test
@@ -118,7 +119,7 @@ public class AppStreamControllerTest {
         appStreamController.onMessage(session, chatMsg);
 
         assertThat(result).hasSize(1)
-                .contains("{\"requestId\":null,\"code\":90000002,\"msg\":\"服务器内部错误，请联系管理员。\",\"data\":null,"
+                .contains("{\"requestId\":\"1\",\"code\":90000002,\"msg\":\"服务器内部错误，请联系管理员。\","
                         + "\"completed\":true}");
     }
 
@@ -132,8 +133,8 @@ public class AppStreamControllerTest {
 
         appStreamController.onMessage(session, chatMsg);
         assertThat(result).hasSize(2)
-                .contains("{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":\"emit success\",\"completed\":false}",
-                        "{\"requestId\":null,\"code\":90000002,\"msg\":\"emit fail\",\"data\":null,"
+                .contains("{\"requestId\":\"1\",\"code\":0,\"data\":\"emit success\",\"completed\":false}",
+                        "{\"requestId\":\"1\",\"code\":90000002,\"msg\":\"emit fail\","
                                 + "\"completed\":true}");
     }
 }

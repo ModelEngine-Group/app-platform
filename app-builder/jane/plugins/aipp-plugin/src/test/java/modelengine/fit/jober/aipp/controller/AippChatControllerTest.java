@@ -12,11 +12,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import modelengine.fit.http.HttpResource;
+import modelengine.fit.http.header.CookieCollection;
 import modelengine.fit.http.protocol.Address;
 import modelengine.fit.http.protocol.MessageHeaders;
 import modelengine.fit.http.protocol.ReadableMessageBody;
 import modelengine.fit.http.protocol.RequestLine;
 import modelengine.fit.http.protocol.ServerRequest;
+import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.http.server.support.DefaultHttpClassicServerRequest;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.jober.aipp.dto.chat.QueryChatRequest;
@@ -37,27 +39,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
  */
 @ExtendWith(MockitoExtension.class)
 class AippChatControllerTest {
-    private final HttpResource httpResource = mock(HttpResource.class);
-    private final ServerRequest serverRequest = mock(ServerRequest.class);
     private final AippChatService aippChatService = mock(AippChatService.class);
     private final Authenticator authenticator = mock(Authenticator.class);
+    private final HttpClassicServerRequest httpClassicServerRequest = mock(HttpClassicServerRequest.class);
 
-    private DefaultHttpClassicServerRequest httpClassicServerRequest;
     private AippChatController aippChatController;
 
     @BeforeEach
     void before() {
-        RequestLine startLine = mock(RequestLine.class);
-        MessageHeaders headers = mock(MessageHeaders.class);
-        when(this.serverRequest.startLine()).thenReturn(startLine);
-        when(this.serverRequest.headers()).thenReturn(headers);
-        ReadableMessageBody body = mock(ReadableMessageBody.class);
-        when(this.serverRequest.body()).thenReturn(body);
-        when(startLine.requestUri()).thenReturn("?");
-        Address remoteAddress = mock(Address.class);
-        when(this.serverRequest.remoteAddress()).thenReturn(remoteAddress);
-        when(this.serverRequest.remoteAddress().hostAddress()).thenReturn("127.0.0.1");
-        this.httpClassicServerRequest = new DefaultHttpClassicServerRequest(this.httpResource, this.serverRequest);
+        MessageHeaders messageHeaders = mock(MessageHeaders.class);
+        when(this.httpClassicServerRequest.headers()).thenReturn(messageHeaders);
+        when(this.httpClassicServerRequest.remoteAddress()).thenReturn(Address.builder()
+                .hostAddress("127.0.0.1")
+                .port(123)
+                .build());
+        CookieCollection cookieCollection = mock(CookieCollection.class);
+        when(this.httpClassicServerRequest.cookies()).thenReturn(cookieCollection);
         this.aippChatController = new AippChatController(this.authenticator, this.aippChatService);
     }
 
