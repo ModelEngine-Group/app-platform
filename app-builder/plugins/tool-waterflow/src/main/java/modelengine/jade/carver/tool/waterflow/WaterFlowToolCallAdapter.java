@@ -30,19 +30,19 @@ import java.util.Map;
  * @since 2024-4-17
  */
 @Component
-public class WaterFlowToolProvider implements SyncToolCall {
+public class WaterFlowToolCallAdapter implements SyncToolCall {
     private static final String DEFAULT_USER_ID = "jade";
+
     private final ToolService toolService;
-    private static final Logger logger = Logger.get(WaterFlowToolProvider.class);
     private final List<ToolInvoker> toolInvokers;
 
     /**
-     * 创建默认工具提供者。
+     * {@link WaterFlowToolCallAdapter} 的构造方法。
      *
      * @param toolService 表示查询服务的 {@link ToolService}。
      * @param toolInvokers 表示执行能力列表的 {@link ToolInvoker}。
      */
-    public WaterFlowToolProvider(ToolService toolService, List<ToolInvoker> toolInvokers) {
+    public WaterFlowToolCallAdapter(ToolService toolService, List<ToolInvoker> toolInvokers) {
         this.toolService = toolService;
         this.toolInvokers = toolInvokers;
     }

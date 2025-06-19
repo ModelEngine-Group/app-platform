@@ -24,25 +24,25 @@ import java.util.Collections;
 import java.util.HashMap;
 
 /**
- * {@link WaterFlowToolProvider} 的测试
+ * {@link WaterFlowToolCallAdapter} 的测试
  *
  * @author songyongtan
  * @since 2024/12/17
  */
 @ExtendWith(MockitoExtension.class)
-class WaterFlowToolProviderTest {
+class WaterFlowToolCallAdapterTest {
     @Mock
     private ToolService toolService;
 
     @Mock
     private ToolInvoker toolInvoker;
 
-    private WaterFlowToolProvider waterFlowToolProvider;
+    private WaterFlowToolCallAdapter waterFlowToolProvider;
 
     @BeforeEach
     void setUp() {
         this.waterFlowToolProvider =
-                new WaterFlowToolProvider(this.toolService, Collections.singletonList(this.toolInvoker));
+                new WaterFlowToolCallAdapter(this.toolService, Collections.singletonList(this.toolInvoker));
     }
 
     @Test
