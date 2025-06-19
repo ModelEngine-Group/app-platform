@@ -1,4 +1,0 @@
-fit:
-  beans:
-    packages:
-      - 'modelengine.fel.community.tokenizer.hanlp'
