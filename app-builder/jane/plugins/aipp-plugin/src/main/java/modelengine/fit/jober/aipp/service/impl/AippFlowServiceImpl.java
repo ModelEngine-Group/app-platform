@@ -80,9 +80,10 @@ public class AippFlowServiceImpl implements AippFlowService {
      */
     @Override
     public Rsp<AippDetailDto> queryAippDetail(String aippId, String version, OperationContext context) {
-        AppTask task = this.appTaskService.getLatest(aippId, version, context)
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                        StringUtils.format("App task not found, appSuiteId:{}, version: {}.", aippId, version)));
+        AppTask task = this.appTaskService.getLatest(aippId, version, context).orElseThrow(() -> {
+            log.error("The app task is not found. [appSuiteId={}, version={}]", aippId, version);
+            return new AippException(AippErrCode.APP_NOT_FOUND);
+        });
         String flowConfigId = task.getEntity().getFlowConfigId();
         try {
             FlowInfo rsp = this.flowsService.getFlows(flowConfigId, version, context);  // 是否要改？
@@ -174,9 +175,10 @@ public class AippFlowServiceImpl implements AippFlowService {
     @Override
     public void deleteAipp(String aippId, String version, OperationContext context) throws AippForbiddenException {
         log.info("deleting aipp {} version {}", aippId, version);
-        AppTask task = this.appTaskService.getLatest(aippId, version, context)
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                        StringUtils.format("App task not found, appSuiteId:{}, version: {}.", aippId, version)));
+        AppTask task = this.appTaskService.getLatest(aippId, version, context).orElseThrow(() -> {
+            log.error("The app task is not found. [appSuiteId={}, version={}]", aippId, version);
+            return new AippException(AippErrCode.APP_NOT_FOUND);
+        });
         if (task.isActive()) {
             log.error("not allow to delete an active aipp, aippId {} version {} status {}", aippId, version,
                     task.getEntity().getStatus());
@@ -369,9 +371,13 @@ public class AippFlowServiceImpl implements AippFlowService {
     private AippCreateDto updateNewVersionAipp(AippDto aippDto, OperationContext context, String aippId,
             String version) {
         AppTask task = this.appTaskService.getLatestCreate(aippId, NORMAL.name(), INACTIVE.getCode(), context)
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                        StringUtils.format("App task not found, appSuiteId:{}, aippType: {}, status: {}.", aippId,
-                                NORMAL.name(), INACTIVE.getCode())));
+                .orElseThrow(() -> {
+                    log.error("The app task is not found. [appSuiteId={}, aippType={}, status={}]",
+                            aippId,
+                            NORMAL.name(),
+                            INACTIVE.getCode());
+                    return new AippException(AippErrCode.APP_NOT_FOUND);
+                });
 
         String flowId = Optional.ofNullable(task.getEntity().getFlowConfigId()).orElse(StringUtils.EMPTY);
         this.upgradeAippHandle(aippDto, AippCreateDto.builder().aippId(aippId).build(), context, flowId, version);
@@ -392,10 +398,13 @@ public class AippFlowServiceImpl implements AippFlowService {
             throw new AippParamException(context, AippErrCode.INPUT_PARAM_IS_INVALID, "version is not preview");
         }
         CompletableFuture.runAsync(() -> {
-            AppTask previewTask = this.appTaskService.getLatest(previewAippId, previewVersion, context)
-                    .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                            StringUtils.format("App task not found, appSuiteId:{}, version: {}.", previewAippId,
-                                    previewVersion)));
+            AppTask previewTask =
+                    this.appTaskService.getLatest(previewAippId, previewVersion, context).orElseThrow(() -> {
+                        log.error("The app task is not found. [appSuiteId={}, version={}]",
+                                previewAippId,
+                                previewVersion);
+                        return new AippException(AippErrCode.APP_NOT_FOUND);
+                    });
             previewTask.cleanResource(context);
         });
     }
@@ -449,10 +458,10 @@ public class AippFlowServiceImpl implements AippFlowService {
                     AippErrCode.INPUT_PARAM_IS_INVALID,
                     AippConst.FLOW_CONFIG_VERSION_KEY);
         }
-        AppTask task = this.appTaskService.getLatestCreate(aippId, NORMAL.name(), context)
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                        StringUtils.format("App task not found, appSuiteId:{}, aippType: {}.", aippId,
-                                NORMAL.name())));
+        AppTask task = this.appTaskService.getLatestCreate(aippId, NORMAL.name(), context).orElseThrow(() -> {
+            log.error("The app task is not found. [appSuiteId={}, aippType={}]", aippId, NORMAL.name());
+            return new AippException(AippErrCode.APP_NOT_FOUND);
+        });
 
         String flowId = Optional.ofNullable(task.getEntity().getFlowConfigId()).orElse(StringUtils.EMPTY);
         Validation.notBlank(flowId, () -> {

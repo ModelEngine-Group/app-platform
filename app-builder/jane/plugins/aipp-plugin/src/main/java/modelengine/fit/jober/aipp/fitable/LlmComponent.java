@@ -376,7 +376,8 @@ public class LlmComponent implements FlowableService {
         }
         Object data = businessData.get(AippConst.BS_AIPP_FILE_DESC_KEY);
         if (!(data instanceof Map)) {
-            throw new AippException(AippErrCode.MODEL_NODE_FAILED_TO_PARSE_THE_FILE, data.getClass().getName());
+            log.error("The file desc type is not map. [type={}]", data.getClass().getName());
+            throw new AippException(AippErrCode.MODEL_NODE_FAILED_TO_PARSE_THE_FILE);
         }
         Map<String, String> fileDesc = ObjectUtils.cast(data);
         if (MapUtils.isEmpty(fileDesc)) {

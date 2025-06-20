@@ -124,9 +124,10 @@ public class AppVersionServiceImpl implements AppVersionService {
 
     @Override
     public AppVersion retrieval(String appId) {
-        return this.getByAppId(appId)
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                        StringUtils.format("app version[{0}] not exists.", appId)));
+        return this.getByAppId(appId).orElseThrow(() -> {
+            LOGGER.error("The app version is not found. [version={}]", appId);
+            return new AippException(AippErrCode.APP_NOT_FOUND);
+        });
     }
 
     @Override
@@ -166,7 +167,9 @@ public class AppVersionServiceImpl implements AppVersionService {
     public Choir<Object> restart(String instanceId, Map<String, Object> restartParams, OperationContext context) {
         String taskId = this.appTaskInstanceService.getTaskId(instanceId);
         AppTask task = this.appTaskService.getTaskById(taskId, context)
-                .orElseThrow(() -> new AippException(AippErrCode.TASK_NOT_FOUND, taskId));
+                .orElseThrow(() -> {
+                    LOGGER.error("The task is not found. [taskId={}]", taskId);
+                    return new AippException(AippErrCode.TASK_NOT_FOUND);});
 
         // 这边instance的获取暂时没有放在 Choir.create 里：Choir 会把异常吞掉
         AppTaskInstance instance = this.appTaskInstanceService.getInstanceById(instanceId, context)
@@ -174,12 +177,13 @@ public class AppVersionServiceImpl implements AppVersionService {
         String parentInstanceId = instance.getParentInstanceId();
         List<QueryChatRsp> chatList = instance.getChats();
         if (CollectionUtils.isEmpty(chatList)) {
-            LOGGER.error("chatList is empty.");
-            throw new AippParamException(AippErrCode.RE_CHAT_FAILED, parentInstanceId);
+            LOGGER.error("Chat list are empty. [parentInstanceId={}]", parentInstanceId);
+            throw new AippParamException(AippErrCode.RE_CHAT_FAILED);
         }
         List<AppLog> instanceLogs = instance.getLogs();
         if (CollectionUtils.isEmpty(instanceLogs)) {
-            throw new AippParamException(AippErrCode.AIPP_INSTANCE_LOG_IS_NULL, parentInstanceId);
+            LOGGER.error("Instance logs are empty. [parentInstanceId={}]", parentInstanceId);
+            throw new AippParamException(AippErrCode.AIPP_INSTANCE_LOG_IS_NULL);
         }
         String appId = task.getEntity().getAppId();
         Locale locale = LocaleUtil.getLocale();

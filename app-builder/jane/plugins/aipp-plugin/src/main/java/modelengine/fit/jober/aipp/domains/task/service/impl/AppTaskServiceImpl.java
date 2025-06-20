@@ -30,6 +30,7 @@ import modelengine.fit.jober.common.RangedResultSet;
 
 import lombok.RequiredArgsConstructor;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.log.Logger;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class AppTaskServiceImpl implements AppTaskService {
+    private static final Logger LOGGER = Logger.get(AppTaskServiceImpl.class);
     private static final int DEFAULT_LIMIT = 10;
 
     private final MetaService metaService;
@@ -204,6 +206,8 @@ public class AppTaskServiceImpl implements AppTaskService {
     @Override
     public AppTask retrieveById(String taskId, OperationContext context) {
         return this.getTaskById(taskId, context)
-                .orElseThrow(() -> new AippException(AippErrCode.TASK_NOT_FOUND, taskId));
+                .orElseThrow(() -> {
+                    LOGGER.error("The task is not found. [taskId={}]", taskId);
+                    return new AippException(AippErrCode.TASK_NOT_FOUND);});
     }
 }

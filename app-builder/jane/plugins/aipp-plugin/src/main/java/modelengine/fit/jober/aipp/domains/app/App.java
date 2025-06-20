@@ -24,6 +24,7 @@ import modelengine.fit.jober.aipp.repository.AppBuilderConfigRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFlowGraphRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormPropertyRepository;
 import modelengine.fit.jober.aipp.util.UsefulUtils;
+import modelengine.fitframework.log.Logger;
 import modelengine.jade.store.entity.transfer.PluginToolData;
 import modelengine.jade.store.service.AppService;
 
@@ -45,6 +46,8 @@ import java.util.Optional;
  * @since 2025-01-14
  */
 public class App {
+    private static final Logger LOGGER = Logger.get(App.class);
+
     private final String appSuiteId;
 
     // 注入.
@@ -103,9 +106,12 @@ public class App {
      */
     public AppExportDto export(OperationContext context) {
         AppVersion latestVersion = this.getVersions()
-            .stream()
-            .max(Comparator.comparing(version -> version.getData().getUpdateAt()))
-            .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND, "app version not exists."));
+                .stream()
+                .max(Comparator.comparing(version -> version.getData().getUpdateAt()))
+                .orElseThrow(() -> {
+                    LOGGER.error("The app version is not found. [appSuiteId={}]", this.appSuiteId);
+                    return new AippException(AippErrCode.APP_NOT_FOUND);
+                });
         return latestVersion.export(context, this.exportMeta);
     }
 

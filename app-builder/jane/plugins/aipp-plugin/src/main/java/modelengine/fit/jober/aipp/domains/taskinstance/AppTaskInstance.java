@@ -179,7 +179,8 @@ public class AppTaskInstance implements AppTaskRunnable {
     public void run(RunContext ctx, ChatSession<Object> chatSession) {
         AppTask task = ctx.getAppTask();
         if (task == null) {
-            throw new AippException(AippErrCode.TASK_NOT_FOUND, ctx.getTaskId());
+            log.error("The task is not found. [taskId={}]", ctx.getTaskId());
+            throw new AippException(AippErrCode.TASK_NOT_FOUND);
         }
         String flowDefinitionId = task.getEntity().getFlowDefinitionId();
         if (ctx.shouldUseMemory()) {

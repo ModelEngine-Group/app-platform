@@ -417,9 +417,11 @@ public class FileServiceImpl implements FileService, CustomResourceHandler {
         try {
             FileUtils.ensureDirectory(targetDirectory);
         } catch (IOException e) {
-            log.error("Failed to ensureDirectory when store form file, msg:{}", e.getMessage());
+            log.error("Failed to ensureDirectory when store form file. [msg={}, fileName={}]",
+                    e.getMessage(),
+                    fileName);
             log.error("Failed to ensureDirectory when store form file", e);
-            throw new AippException(AippErrCode.ENSURE_FORM_DIRECTORY_FAILED, fileName);
+            throw new AippException(AippErrCode.ENSURE_FORM_DIRECTORY_FAILED);
         }
         try (InputStream inStream = file.getInputStream();
              OutputStream outStream = Files.newOutputStream(targetFile.toPath())) {
@@ -429,10 +431,10 @@ public class FileServiceImpl implements FileService, CustomResourceHandler {
                 outStream.write(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
-            log.error("Failed to read data when store form file, msg:{}", e.getMessage());
+            log.error("Failed to read data when store form file. [msg={}, fileName={}]", e.getMessage(), fileName);
             log.error("Failed to read data when store form file", e);
             FileUtils.delete(targetFile.getPath());
-            throw new AippException(AippErrCode.WRITE_FORM_FILE_FAILED, fileName);
+            throw new AippException(AippErrCode.WRITE_FORM_FILE_FAILED);
         }
     }
 

@@ -122,9 +122,10 @@ public class AppBuilderAppServiceImpl
     @Fitable(id = "default")
     @Transactional
     public Rsp<AippCreateDto> publish(AppBuilderAppDto appDto, OperationContext contextOf) {
-        AppVersion appVersion = this.appVersionService.getByAppId(appDto.getId())
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                        StringUtils.format("App version[{0}] not found.", appDto.getId())));
+        AppVersion appVersion = this.appVersionService.getByAppId(appDto.getId()).orElseThrow(() -> {
+            log.error("The app version is not found. [version={}]", appDto.getId());
+            return new AippException(AippErrCode.APP_NOT_FOUND);
+        });
         if (appVersion.isPublished()) {
             throw new AippException(AippErrCode.APP_HAS_PUBLISHED);
         }

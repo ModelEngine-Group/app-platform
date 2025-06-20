@@ -138,9 +138,10 @@ public class AippRunTimeServiceImpl
     @Fitable("default")
     public String createAippInstance(String aippId, String version, Map<String, Object> initContext,
             OperationContext context) {
-        AppTask task = this.appTaskService.getLatest(aippId, version, context)
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                        StringUtils.format("App task not found, appSuiteId:{}, version: {}.", aippId, version)));
+        AppTask task = this.appTaskService.getLatest(aippId, version, context).orElseThrow(() -> {
+            log.error("The app task is not found. [appSuiteId={}, version={}]", aippId, version);
+            return new AippException(AippErrCode.APP_NOT_FOUND);
+        });
 
         // 启动任务.
         RunContext ctx = new RunContext(ObjectUtils.cast(initContext.get(AippConst.BS_INIT_CONTEXT_KEY)), context);
@@ -205,8 +206,10 @@ public class AippRunTimeServiceImpl
                 .orElseThrow(() -> new JobberException(ErrorCodes.UN_EXCEPTED_ERROR,
                         StringUtils.format("App task[{0}] instance[{1}] not found.", taskId, taskInstanceId)));
 
-        AppTask task = this.appTaskService.getTaskById(taskId, context)
-                .orElseThrow(() -> new AippException(AippErrCode.TASK_NOT_FOUND, taskId));
+        AppTask task = this.appTaskService.getTaskById(taskId, context).orElseThrow(() -> {
+            log.error("The task is not found. [taskId={}]", taskId);
+            return new AippException(AippErrCode.TASK_NOT_FOUND);
+        });
         Locale locale = this.getLocale();
         return Choir.create(emitter -> {
             ChatSession<Object> chatSession = new ChatSession<>(emitter, task.getEntity().getAppId(), isDebug, locale);
@@ -301,9 +304,10 @@ public class AippRunTimeServiceImpl
      */
     @Override
     public void deleteAippInstance(String aippId, String version, String instanceId, OperationContext context) {
-        AppTask task = this.appTaskService.getLatest(aippId, version, context)
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                        StringUtils.format("App task not found, appSuiteId:{}, version: {}.", aippId, version)));
+        AppTask task = this.appTaskService.getLatest(aippId, version, context).orElseThrow(() -> {
+            log.error("The app task is not found. [appSuiteId={}, version={}]", aippId, version);
+            return new AippException(AippErrCode.APP_NOT_FOUND);
+        });
         String taskId = task.getEntity().getTaskId();
         AppTaskInstance instance = this.appTaskInstanceService.getInstance(taskId, instanceId, null)
                 .orElseThrow(() -> new JobberException(ErrorCodes.UN_EXCEPTED_ERROR,
