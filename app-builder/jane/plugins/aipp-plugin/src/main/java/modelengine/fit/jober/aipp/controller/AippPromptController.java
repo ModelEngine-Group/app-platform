@@ -20,13 +20,13 @@ import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fitframework.annotation.Component;
 
 /**
- * 大模型服务接口.
+ * 提示词服务接口.
  *
  * @author 张越
  * @since 2024/11/29
  */
 @Component
-@RequestMapping(path = "/v1/api/model", group = "aipp对话管理接口")
+@RequestMapping(path = "/v1/api/model", group = "aipp提示词管理接口")
 public class AippPromptController extends AbstractController {
     private final AippModelService aippModelService;
 
