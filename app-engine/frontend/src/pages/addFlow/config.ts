@@ -134,11 +134,6 @@ export const configMap = {
                 label: i18n.t('heatMap'),
                 image: heatmapScreenshot,
               },
-              {
-                value: 'default1',
-                label: i18n.t('default'),
-                image: heatmapScreenshot,
-              },
             ],
             rules: [{required: true, message: 'appChatStyleCannotBeEmpty'}],
           },
