@@ -53,7 +53,7 @@
         <dependency>
             <groupId>org.fitframework.fel</groupId>
             <artifactId>tool-info</artifactId>
-            <version>3.5.0-M3</version>
+            <version>3.5.0-M4</version>
         </dependency>
 
         <!-- Test -->
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.fitframework.plugin</groupId>
             <artifactId>fit-message-serializer-json-jackson</artifactId>
-            <version>3.5.0-M3</version>
+            <version>3.5.0-M4</version>
             <scope>test</scope>
         </dependency>
         <dependency>

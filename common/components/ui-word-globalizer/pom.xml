@@ -40,7 +40,7 @@
             <plugin>
                 <groupId>org.fitframework</groupId>
                 <artifactId>fit-dependency-maven-plugin</artifactId>
-                <version>3.5.0-M3</version>
+                <version>3.5.0-M4</version>
                 <executions>
                     <execution>
                         <id>dependency</id>
