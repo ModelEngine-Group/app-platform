@@ -140,6 +140,12 @@ do
   cp "$i" "$directory/data"
 done
 
+# app-template 相关 sql 脚本
+app_template_data_sql_list=$(find "../app-builder/builtin/app-template" -name '*.sql')
+echo "${app_template_data_sql_list}"
+for sql_file in ${app_template_data_sql_list}
+do
+  cp "$sql_file" "$directory/data"
+done
+
 exit 0
-
-
