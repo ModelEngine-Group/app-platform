@@ -15,7 +15,6 @@
 
         <!-- Framework version -->
         <fit.version>3.5.0-M4</fit.version>
-        <fel.version>1.0.0-SNAPSHOT</fel.version>
         <waterflow.core.version>3.5.0-M4</waterflow.core.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
         <ohscript.version>3.5.0-M4</ohscript.version>

@@ -66,6 +66,15 @@ Licensed under the MIT License. See License.txt in the project root for license 
   - 所有 `@param` 和 `@return` 的注释，最后都需要根据其类型添加引用，基本类型需要添加 `{@code }` 标记，其他需要添加 `{@link }` 标记。
   - 所有半角字符和全角字符之间需要增加一个空格，来使得整体排版规整，方便超长内容的换行。
 
+### 插件sql
+
+- 如果插件包含数据库相关操作，需要在插件的 `resources` 目录下创建 `sql` 目录，其中包含 `schema` 目录（存放创表相关语句）和 `data` 目录（存放预置数据相关的语句）。具体目录格式如下：
+```text
+sql
+├── schema
+└── data
+```
+
 ## 提交规则
 
 ### 本地提交配置

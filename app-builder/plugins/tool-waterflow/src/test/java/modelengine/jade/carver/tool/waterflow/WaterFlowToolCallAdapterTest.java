@@ -24,10 +24,10 @@ import java.util.Collections;
 import java.util.HashMap;
 
 /**
- * {@link WaterFlowToolCallAdapter} 的测试
+ * {@link WaterFlowToolCallAdapter} 的测试。
  *
- * @author songyongtan
- * @since 2024/12/17
+ * @author 宋永坦
+ * @since 2024-12-17
  */
 @ExtendWith(MockitoExtension.class)
 class WaterFlowToolCallAdapterTest {

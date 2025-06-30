@@ -91,6 +91,11 @@ public class AippFlowDefinitionServiceImpl implements AippFlowDefinitionService 
         flowsService.deleteFlows(metaId, version, convertOperationContext(context));
     }
 
+    /**
+     * convert the context type.
+     * @param context the provided context.
+     * @return waterflow context.
+     */
     public static modelengine.fit.waterflow.entity.OperationContext convertOperationContext(OperationContext context) {
         if (Objects.isNull(context)) {
             return modelengine.fit.waterflow.entity.OperationContext.custom().build();

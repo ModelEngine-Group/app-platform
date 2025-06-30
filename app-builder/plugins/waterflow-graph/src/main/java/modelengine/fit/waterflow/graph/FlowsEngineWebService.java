@@ -287,6 +287,11 @@ public class FlowsEngineWebService implements FlowsEngineService {
         return flowInfo;
     }
 
+    /**
+     * convert the context type.
+     * @param context the provided context.
+     * @return waterflow context.
+     */
     public static modelengine.fit.waterflow.entity.OperationContext convertOperationContext(OperationContext context) {
         return modelengine.fit.waterflow.entity.OperationContext.custom()
                 .tenantId(context.getTenantId())

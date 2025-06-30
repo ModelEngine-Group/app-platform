@@ -112,7 +112,7 @@ fit start -Dfit.profiles.active=prod
 
 > 这里直接使用了 `fit` 命令，该命令请参考 `fit-framework` 项目的[指导手册](https://github.com/ModelEngine-Group/fit-framework/blob/main/docs/framework/fit/java/quick-start-guide/03.%20%E4%BD%BF%E7%94%A8%E6%8F%92%E4%BB%B6%E7%9A%84%E7%83%AD%E6%8F%92%E6%8B%94%E8%83%BD%E5%8A%9B.md)。
 > 
-> 当前，`app-platform` 使用了 `fit` 的 3.5.0-M4 版本，因此，如果采用手动编译，需要在 `fit-framework` 仓库中切换到 `v3.5.0-M3` 标签处进行编译构建操作。
+> 当前，`app-platform` 使用了 `fit` 的 3.5.0-M4 版本，因此，如果采用手动编译，需要在 `fit-framework` 仓库中切换到 `v3.5.0-M4` 标签处进行编译构建操作。
 
 ---------
 
