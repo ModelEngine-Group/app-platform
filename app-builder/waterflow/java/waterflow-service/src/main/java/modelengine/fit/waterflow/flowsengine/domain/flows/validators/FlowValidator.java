@@ -7,9 +7,9 @@
 package modelengine.fit.waterflow.flowsengine.domain.flows.validators;
 
 import lombok.RequiredArgsConstructor;
-import modelengine.fit.jade.waterflow.ErrorCodes;
-import modelengine.fit.jade.waterflow.exceptions.BadRequestException;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.ErrorCodes;
+import modelengine.fit.waterflow.exceptions.BadRequestException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.FlowDefinition;
 import modelengine.fit.waterflow.flowsengine.domain.flows.validators.rules.FlowRule;
 import modelengine.fitframework.annotation.Component;

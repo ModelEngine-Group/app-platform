@@ -6,8 +6,8 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.jobers;
 
-import modelengine.fit.jade.waterflow.ErrorCodes;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.ErrorCodes;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;
 import modelengine.fitframework.exception.FitException;
 import modelengine.fitframework.log.Logger;

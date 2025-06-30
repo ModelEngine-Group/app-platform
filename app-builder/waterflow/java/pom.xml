@@ -9,14 +9,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>waterflow-common</module>
         <module>waterflow-runtime-service</module>
-        <module>waterflow-core</module>
         <module>waterflow-dependency</module>
         <module>waterflow-service</module>
-        <module>waterflow-domain-definition</module>
         <module>waterflow-definition-service</module>
-        <module>waterflow-eco</module>
     </modules>
 
     <properties>
@@ -25,7 +21,7 @@
         <java.version>17</java.version>
 
         <!-- Framework version -->
-        <fit.version>3.5.0-M2</fit.version>
+        <fit.version>3.5.0-M4</fit.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
 
         <!-- Jacoco version -->

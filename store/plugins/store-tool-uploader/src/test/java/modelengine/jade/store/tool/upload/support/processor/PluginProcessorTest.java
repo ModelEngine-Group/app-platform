@@ -52,7 +52,7 @@ public class PluginProcessorTest {
     private static final String TEMP_DIR_PATH = "src/test/resources/temp";
     private static final Logger log = Logger.get(PluginProcessorTest.class);
 
-    private final JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
     private PluginProcessor processor;
     private PluginJsonEntity javaPlugin;

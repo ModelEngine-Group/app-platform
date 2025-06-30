@@ -6,8 +6,8 @@
 
 package modelengine.fit.waterflow.flowsengine.biz.service;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_GRAPH_DATA_PARSE_FAILED;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_VALIDATE_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_GRAPH_DATA_PARSE_FAILED;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_VALIDATE_ERROR;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -15,8 +15,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import modelengine.fit.jade.waterflow.entity.FlowDefinitionResult;
-import modelengine.fit.jade.waterflow.entity.OperationContext;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.entity.OperationContext;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.jade.waterflow.service.FlowDefinitionService;
 import modelengine.fit.waterflow.DatabaseBaseTest;
 import modelengine.fit.waterflow.FlowsDataBaseTest;

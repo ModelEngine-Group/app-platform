@@ -8,7 +8,7 @@ package modelengine.fit.waterflow;
 
 import static com.alibaba.druid.pool.DruidDataSourceFactory.createDataSource;
 
-import modelengine.fit.jade.waterflow.exceptions.ServerInternalException;
+import modelengine.fit.waterflow.exceptions.ServerInternalException;
 import modelengine.fitframework.log.Logger;
 
 import org.apache.ibatis.datasource.DataSourceFactory;

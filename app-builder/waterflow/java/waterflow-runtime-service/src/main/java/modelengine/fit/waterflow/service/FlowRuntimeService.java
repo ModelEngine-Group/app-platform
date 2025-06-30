@@ -6,8 +6,8 @@
 
 package modelengine.fit.waterflow.service;
 
-import modelengine.fit.jade.waterflow.entity.OperationContext;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.entity.OperationContext;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.entity.FlowStartDTO;
 import modelengine.fit.waterflow.entity.FlowStartInfo;
 

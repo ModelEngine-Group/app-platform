@@ -81,10 +81,12 @@ class BatchRequestTest {
             return null;
         }).when(this.taskExecutor).post(Mockito.any());
         Mockito.when(this.aippInstanceStatus.isRunning(Mockito.any())).thenReturn(true);
-        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(0).getUniqueName()), Mockito.eq("{}")))
-                .thenReturn("1");
-        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(1).getUniqueName()), Mockito.eq("{\"a\":1}")))
-                .thenReturn("\"2\"");
+        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(0).getUniqueName()),
+                Mockito.eq("{}"),
+                Mockito.any())).thenReturn("1");
+        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(1).getUniqueName()),
+                Mockito.eq("{\"a\":1}"),
+                Mockito.any())).thenReturn("\"2\"");
 
         BatchRequest batchRequest = new BatchRequest(toolCalls,
                 config,
@@ -114,7 +116,9 @@ class BatchRequestTest {
             return null;
         }).when(this.taskExecutor).post(Mockito.any());
         Mockito.when(this.aippInstanceStatus.isRunning(Mockito.any())).thenReturn(true);
-        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(0).getUniqueName()), Mockito.eq("{}")))
+        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(0).getUniqueName()),
+                        Mockito.eq("{}"),
+                        Mockito.any()))
                 .thenThrow(new IllegalArgumentException("wrong argument"));
 
         BatchRequest batchRequest = new BatchRequest(toolCalls,
@@ -139,7 +143,7 @@ class BatchRequestTest {
             runnable.run();
             return null;
         }).when(this.taskExecutor).post(Mockito.any());
-        Mockito.when(this.syncToolCall.call(Mockito.any(), Mockito.any())).thenReturn("1");
+        Mockito.when(this.syncToolCall.call(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn("1");
         Map<String, Object> context = MapBuilder.<String, Object>get().put("instanceId", "1").build();
         Mockito.when(this.aippInstanceStatus.isRunning(Mockito.same(context))).thenReturn(true).thenReturn(false);
 
@@ -153,7 +157,7 @@ class BatchRequestTest {
         IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, batchRequest::await);
 
         Mockito.verify(this.taskExecutor, Mockito.times(2)).post(Mockito.any());
-        Mockito.verify(this.syncToolCall, Mockito.times(1)).call(Mockito.any(), Mockito.any());
+        Mockito.verify(this.syncToolCall, Mockito.times(1)).call(Mockito.any(), Mockito.any(), Mockito.any());
         Assertions.assertTrue(exception.getMessage()
                 .endsWith("errorMessage=The instance is not running. [context={instanceId=1}]]"));
     }

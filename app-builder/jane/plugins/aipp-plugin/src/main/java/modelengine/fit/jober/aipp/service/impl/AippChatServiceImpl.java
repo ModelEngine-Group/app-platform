@@ -7,12 +7,9 @@
 package modelengine.fit.jober.aipp.service.impl;
 
 import static modelengine.fit.jober.aipp.common.exception.AippErrCode.OBTAIN_HISTORY_CONVERSATION_FAILED;
-import static modelengine.fit.jober.aipp.common.exception.AippErrCode.RE_CHAT_FAILED;
 
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.meta.multiversion.MetaService;
-import modelengine.fit.jane.meta.multiversion.definition.Meta;
-import modelengine.fit.jane.meta.multiversion.definition.MetaFilter;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.common.exception.AippTaskNotFoundException;
@@ -31,12 +28,10 @@ import modelengine.fit.jober.aipp.dto.chat.QueryChatInfoRequest;
 import modelengine.fit.jober.aipp.dto.chat.QueryChatRequest;
 import modelengine.fit.jober.aipp.dto.chat.QueryChatRsp;
 import modelengine.fit.jober.aipp.dto.chat.QueryChatRspDto;
-import modelengine.fit.jober.aipp.entity.AippInstLog;
 import modelengine.fit.jober.aipp.entity.AippLogData;
 import modelengine.fit.jober.aipp.entity.ChatAndInstanceMap;
 import modelengine.fit.jober.aipp.entity.ChatInfo;
 import modelengine.fit.jober.aipp.enums.AippInstLogType;
-import modelengine.fit.jober.aipp.enums.RestartModeEnum;
 import modelengine.fit.jober.aipp.mapper.AippChatMapper;
 import modelengine.fit.jober.aipp.mapper.AppBuilderAppMapper;
 import modelengine.fit.jober.aipp.po.AppBuilderAppPo;
@@ -45,13 +40,12 @@ import modelengine.fit.jober.aipp.repository.AppBuilderAppRepository;
 import modelengine.fit.jober.aipp.service.AippChatService;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.util.JsonUtils;
-import modelengine.fit.jober.aipp.util.MetaUtils;
 import modelengine.fit.jober.aipp.util.UUIDUtil;
-import modelengine.fit.jober.aipp.vo.AippLogVO;
 import modelengine.fit.jober.common.RangedResultSet;
 
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
+import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
@@ -59,7 +53,6 @@ import modelengine.fitframework.util.StringUtils;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +68,7 @@ import java.util.stream.Collectors;
  */
 @Component
 public class AippChatServiceImpl implements AippChatService {
+    private static final Logger LOGGER = Logger.get(AippChatServiceImpl.class);
     private static final String NORMAL_CHAT = "normal";
     private static final String FROM_OTHER_CHAT = "fromOtherApp";
 
@@ -199,9 +193,10 @@ public class AippChatServiceImpl implements AippChatService {
     }
 
     private AppBuilderAppPo convertAippToApp(String aippId, String appVersion, OperationContext context) {
-        AppTask task = this.appTaskService.getLatest(aippId, appVersion, context)
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                        StringUtils.format("App task not found, appSuiteId:{}, version: {}.", aippId, appVersion)));
+        AppTask task = this.appTaskService.getLatest(aippId, appVersion, context).orElseThrow(() -> {
+            LOGGER.error("The app task is not found. [appSuiteId={}, version={}]", aippId, appVersion);
+            return new AippException(AippErrCode.APP_NOT_FOUND);
+        });
         return this.appBuilderAppMapper.selectWithId(task.getEntity().getAppId());
     }
 
@@ -437,7 +432,8 @@ public class AippChatServiceImpl implements AippChatService {
         if (initContext.containsKey(AippConst.BS_AIPP_FILE_DESC_KEY)) {
             Object data = initContext.get(AippConst.BS_AIPP_FILE_DESC_KEY);
             if (!(data instanceof Map)) {
-                throw new AippException(AippErrCode.FILE_FORMAT_VERIFICATION_FAILED, data.getClass().getName());
+                LOGGER.error("The file desc type is not map. [type={}]", data.getClass().getName());
+                throw new AippException(AippErrCode.FILE_FORMAT_VERIFICATION_FAILED);
             }
             Map<String, String> fileDesc = ObjectUtils.cast(data);
             chatName = fileDesc.get("file_name");

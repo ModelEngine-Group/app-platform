@@ -47,7 +47,7 @@ public class DefaultToolExecuteServiceTest {
         ToolService toolService = mock(ToolService.class);
         DefinitionService definitionService = mock(DefinitionService.class);
         ToolFactoryRepository toolFactoryRepository = mock(ToolFactoryRepository.class);
-        this.serializer = new JacksonObjectSerializer(null, null, null);
+        this.serializer = new JacksonObjectSerializer(null, null, null, true);
         this.service =
                 new DefaultToolExecuteService(definitionService, toolService, toolFactoryRepository, this.serializer);
         ToolFactory toolFactory = mock(ToolFactory.class);

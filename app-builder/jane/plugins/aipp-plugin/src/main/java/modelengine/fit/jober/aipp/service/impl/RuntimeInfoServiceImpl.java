@@ -35,6 +35,7 @@ import modelengine.fit.runtime.entity.Parameter;
 
 import lombok.AllArgsConstructor;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 
@@ -55,6 +56,8 @@ import java.util.stream.Collectors;
 @Component
 @AllArgsConstructor
 public class RuntimeInfoServiceImpl implements RuntimeInfoService {
+    private static final Logger LOGGER = Logger.get(RuntimeInfoServiceImpl.class);
+
     private final AppBuilderRuntimeInfoRepository runtimeInfoRepository;
     private final AppTaskService appTaskService;
     private final AppTaskInstanceService appTaskInstanceService;
@@ -64,9 +67,11 @@ public class RuntimeInfoServiceImpl implements RuntimeInfoService {
     public boolean isPublished(Map<String, Object> businessData) {
         String aippId = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_ID_KEY));
         String version = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_VERSION_KEY));
-        AppTask task = this.appTaskService.getLatest(aippId, version, DataUtils.getOpContext(businessData))
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND,
-                        StringUtils.format("App task not found, appSuiteId:{0}, version: {1}.", aippId, version)));
+        AppTask task =
+                this.appTaskService.getLatest(aippId, version, DataUtils.getOpContext(businessData)).orElseThrow(() -> {
+                    LOGGER.error("The app task is not found. [aippId={}, version={}]", aippId, version);
+                    return new AippException(AippErrCode.APP_NOT_FOUND);
+                });
         String appId = task.getEntity().getAppId();
         AppVersion appVersion = this.appVersionService.retrieval(appId);
         return appVersion.isPublished();

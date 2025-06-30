@@ -7,15 +7,15 @@
 package modelengine.fit.waterflow.flowsengine.domain.flows.parsers;
 
 import static java.util.Locale.ROOT;
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
-import static modelengine.fit.jade.waterflow.ErrorCodes.INVALID_EVENT_SIZE;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
+import static modelengine.fit.waterflow.ErrorCodes.INVALID_EVENT_SIZE;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeType;
 import modelengine.fit.waterflow.flowsengine.domain.flows.parsers.util.ConvertConditionToRuleUtils;

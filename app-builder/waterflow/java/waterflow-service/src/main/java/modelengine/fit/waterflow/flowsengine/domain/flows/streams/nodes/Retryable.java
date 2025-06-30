@@ -6,7 +6,6 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes;
 
-import modelengine.fit.data.repository.exception.CapacityOverflowException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowContext;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowcontext.FlowContextRepo;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.To;
@@ -45,8 +44,7 @@ public class Retryable<I> {
      * @return 是否可重试
      */
     private boolean isRetryableException(Exception exception) {
-        return exception.getCause() instanceof CapacityOverflowException
-                || exception.getCause() instanceof TargetNotFoundException
+        return exception.getCause() instanceof TargetNotFoundException
                 || exception.getCause() instanceof ClientException
                 || exception.getCause() instanceof ClientLocalExecutorNotFoundException
                 || exception.getCause() instanceof ServerLocalExecutorNotFoundException;

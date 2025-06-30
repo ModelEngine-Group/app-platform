@@ -49,7 +49,7 @@ public class SchemaGeneratorImplTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext)
             throws IOException {
-            ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+            ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
             String resourceName = testCaseMap.get(extensionContext.getTestMethod().get().getName());
             String jsonContent = content(SchemaGeneratorImplTest.ValidateTestCaseProvider.class, resourceName);

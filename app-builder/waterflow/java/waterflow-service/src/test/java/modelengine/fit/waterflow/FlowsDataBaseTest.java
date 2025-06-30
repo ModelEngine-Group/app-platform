@@ -6,7 +6,7 @@
 
 package modelengine.fit.waterflow;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_ENGINE_EXECUTOR_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_ENGINE_EXECUTOR_ERROR;
 import static modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeStatus.ARCHIVED;
 import static modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeStatus.ERROR;
 import static modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeStatus.PENDING;
@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.entity.FlowErrorInfo;
 import modelengine.fit.waterflow.flowsengine.biz.service.cache.FlowCacheService;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowContext;

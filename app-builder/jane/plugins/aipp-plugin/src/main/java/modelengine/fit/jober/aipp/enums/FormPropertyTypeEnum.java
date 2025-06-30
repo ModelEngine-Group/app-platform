@@ -9,6 +9,7 @@ package modelengine.fit.jober.aipp.enums;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
 
+import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -32,6 +33,8 @@ public enum FormPropertyTypeEnum {
     MAP("Map", java.util.Map.class),
     LIST("List", java.util.List.class);
 
+    private static final Logger LOGGER = Logger.get(FormPropertyTypeEnum.class);
+
     private final String code;
     private final Class<?> clazz;
 
@@ -52,7 +55,10 @@ public enum FormPropertyTypeEnum {
         return Arrays.stream(values())
                 .filter(item -> StringUtils.startsWithIgnoreCase(code, item.code()))
                 .findFirst()
-                .orElseThrow(() -> new AippParamException(AippErrCode.FORM_PROPERTY_TYPE_IS_INVALID, code))
+                .orElseThrow(() -> {
+                    LOGGER.error("The form property type is invalid. [code={}]", code);
+                    return new AippParamException(AippErrCode.FORM_PROPERTY_TYPE_IS_INVALID);
+                })
                 .clazz();
     }
 }

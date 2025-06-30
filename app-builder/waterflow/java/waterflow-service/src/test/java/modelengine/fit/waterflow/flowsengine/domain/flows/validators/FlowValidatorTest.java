@@ -6,18 +6,18 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.validators;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
-import static modelengine.fit.jade.waterflow.ErrorCodes.INVALID_EVENT_CONFIG;
-import static modelengine.fit.jade.waterflow.ErrorCodes.INVALID_FLOW_NODE_SIZE;
-import static modelengine.fit.jade.waterflow.ErrorCodes.INVALID_START_NODE_EVENT_SIZE;
-import static modelengine.fit.jade.waterflow.ErrorCodes.INVALID_STATE_NODE_EVENT_SIZE;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
+import static modelengine.fit.waterflow.ErrorCodes.INVALID_EVENT_CONFIG;
+import static modelengine.fit.waterflow.ErrorCodes.INVALID_FLOW_NODE_SIZE;
+import static modelengine.fit.waterflow.ErrorCodes.INVALID_START_NODE_EVENT_SIZE;
+import static modelengine.fit.waterflow.ErrorCodes.INVALID_STATE_NODE_EVENT_SIZE;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.waterflow.FlowsDataBaseTest;
 import modelengine.fit.waterflow.MethodNameLoggerExtension;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.FlowDefinition;

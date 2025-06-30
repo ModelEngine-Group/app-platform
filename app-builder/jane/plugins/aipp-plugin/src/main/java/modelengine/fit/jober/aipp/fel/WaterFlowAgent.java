@@ -8,27 +8,26 @@ package modelengine.fit.jober.aipp.fel;
 
 import modelengine.fel.core.chat.ChatMessage;
 import modelengine.fel.core.chat.ChatModel;
-import modelengine.fel.core.chat.ChatOption;
 import modelengine.fel.core.chat.Prompt;
 import modelengine.fel.core.chat.support.ChatMessages;
+import modelengine.fel.core.chat.support.FlatChatMessage;
+import modelengine.fel.core.chat.support.ToolMessage;
 import modelengine.fel.core.tool.ToolCall;
-import modelengine.fel.core.tool.ToolProvider;
 import modelengine.fel.engine.flows.AiFlows;
 import modelengine.fel.engine.flows.AiProcessFlow;
 import modelengine.fel.engine.operators.models.ChatChunk;
-import modelengine.fel.engine.operators.models.ChatStreamModel;
+import modelengine.fel.engine.operators.models.ChatFlowModel;
 import modelengine.fel.engine.operators.patterns.AbstractAgent;
+import modelengine.fit.jade.tool.SyncToolCall;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.waterflow.domain.context.StateContext;
+import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.inspection.Validation;
-import modelengine.fitframework.util.CollectionUtils;
-import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.ObjectUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -37,74 +36,70 @@ import java.util.stream.Collectors;
  * @author 刘信宏
  * @since 2024-06-04
  */
-public class WaterFlowAgent extends AbstractAgent<Prompt, Prompt> {
+public class WaterFlowAgent extends AbstractAgent {
     private static final String AGENT_MSG_KEY = "water_flow_agent_request";
     private static final String GOTO_NODE_ID = "ahead_llm_node";
 
-    private final ToolProvider toolProvider;
-    private final ChatStreamModel model;
     private final String agentMsgKey;
+    private final SyncToolCall syncToolCall;
 
-    public WaterFlowAgent(ToolProvider toolProvider, ChatModel chatStreamModel, ChatOption option) {
-        this.toolProvider = Validation.notNull(toolProvider, "The tool provider cannot be null.");
-        this.model = new ChatStreamModel(chatStreamModel, option);
+    /**
+     * {@link WaterFlowAgent} 的构造方法。
+     *
+     * @param syncToolCall 表示工具调用服务的 {@link SyncToolCall}。
+     * @param chatStreamModel 表示流式对话大模型的 {@link ChatModel}。
+     */
+    public WaterFlowAgent(@Fit SyncToolCall syncToolCall, ChatModel chatStreamModel) {
+        super(new ChatFlowModel(chatStreamModel, null));
+        this.syncToolCall =  Validation.notNull(syncToolCall, "The tool sync tool call cannot be null.");
         this.agentMsgKey = AGENT_MSG_KEY;
     }
 
     @Override
-    protected AiProcessFlow<Prompt, Prompt> buildFlow() {
+    protected Prompt doToolCall(List<ToolCall> toolCalls, StateContext ctx) {
+        Validation.notNull(ctx, "The state context cannot be null.");
+        Map<String, Object> toolContext = ObjectUtils.getIfNull(ctx.getState(AippConst.TOOL_CONTEXT_KEY),
+                Collections::emptyMap);
+        return toolCalls.stream()
+                .map(toolCall -> (ChatMessage) new ToolMessage(toolCall.id(),
+                        this.syncToolCall.call(toolCall.name(), toolCall.arguments(), toolContext)))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), ChatMessages::from));
+    }
+
+    @Override
+    public AiProcessFlow<Prompt, ChatMessage> buildFlow() {
         return AiFlows.<Prompt>create()
                 .just((input, ctx) -> ctx.setState(this.agentMsgKey, ChatMessages.from(input.messages())))
                 .id(GOTO_NODE_ID)
-                .generate(this.model)
-                .reduce(ChatChunk::new, AbstractAgent::defaultReduce)
-                .delegate(this::handleTool)
+                .generate(this.getModel())
+                .reduce(ChatChunk::new, (acc, chunk, context) -> {
+                    acc.merge(chunk);
+                    return acc;
+                })
+                .map(input -> (ChatMessage) input)
                 .conditions()
-                .matchTo(this::shouldRepeated, node -> node.map(this::getAgentMsg).to(GOTO_NODE_ID))
-                .others(node -> node.map(this::getAgentMsg))
+                .matchTo(ChatMessage::isToolCall,
+                        node -> node.map(this::handleTool).map(this::getAgentMsg).to(GOTO_NODE_ID))
+                .others(node -> node)
                 .close();
     }
 
     private ChatMessage handleTool(ChatMessage input, StateContext ctx) {
         Validation.notNull(ctx, "The state context cannot be null.");
+        Validation.notNull(input, "The input message cannot be null.");
 
-        Map<String, Object> toolContext =
-                ObjectUtils.getIfNull(ctx.getState(AippConst.TOOL_CONTEXT_KEY), Collections::emptyMap);
+        Map<String, Object> toolContext = ObjectUtils.getIfNull(ctx.getState(AippConst.TOOL_CONTEXT_KEY),
+                Collections::emptyMap);
         ChatMessages lastRequest = ctx.getState(this.agentMsgKey);
-        lastRequest.add(Validation.notNull(input, "The input message cannot be null."));
-        lastRequest.addAll(AbstractAgent.toolCallHandle(this.toolProvider, input, toolContext).messages());
+        lastRequest.add(input);
+        input.toolCalls().forEach(toolCall -> {
+            lastRequest.add(FlatChatMessage.from(new ToolMessage(toolCall.id(),
+                    this.syncToolCall.call(toolCall.name(), toolCall.arguments(), toolContext))));
+        });
         return input;
     }
 
-    private boolean shouldRepeated(ChatMessage message) {
-        Validation.notNull(message, "The message cannot be null.");
-        // boolean repeat = CollectionUtils.isNotEmpty(message.toolCalls()) && !this.containAsyncTool(message);
-        boolean repeat = CollectionUtils.isNotEmpty(message.toolCalls()) && !this.containAsyncTool(message) && !message.text().contains("</final>");
-        // System.out.println("repeat: " + repeat + ". " + JSONObject.toJSONString(message.toolCalls()));
-        return repeat;
-    }
-
-    private boolean containAsyncTool(ChatMessage message) {
-        List<String> toolsName = Optional.ofNullable(message.toolCalls())
-                .map(m -> m.stream().map(ToolCall::name).collect(Collectors.toList()))
-                .orElseGet(Collections::emptyList);
-        if (toolsName.isEmpty()) {
-            return false;
-        }
-        return this.toolProvider.getTool(toolsName).stream().anyMatch(tool -> {
-            Map<String, Object> context = tool.extensions();
-            if (MapUtils.isEmpty(context)) {
-                return false;
-            }
-            Object isAsyncValue = context.get("isAsync");
-            if (isAsyncValue == null) {
-                return false;
-            }
-            return Boolean.parseBoolean(isAsyncValue.toString());
-        });
-    }
-
-    private Prompt getAgentMsg(ChatMessage input, StateContext ctx) {
+    private ChatMessages getAgentMsg(ChatMessage input, StateContext ctx) {
         Validation.notNull(ctx, "The state context cannot be null.");
         return ctx.getState(this.agentMsgKey);
     }

@@ -25,7 +25,7 @@
             <artifactId>waterflow-task-event-handler</artifactId>
         </dependency>
         <dependency>
-            <groupId>modelengine.fit.jade.waterflow</groupId>
+            <groupId>org.fitframework.waterflow</groupId>
             <artifactId>waterflow-common</artifactId>
         </dependency>
         <dependency>

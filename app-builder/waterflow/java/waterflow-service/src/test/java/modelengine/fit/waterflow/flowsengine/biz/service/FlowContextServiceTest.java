@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 import com.alibaba.fastjson.JSON;
 
-import modelengine.fit.jade.waterflow.entity.OperationContext;
+import modelengine.fit.waterflow.entity.OperationContext;
 import modelengine.fit.ohscript.util.UUIDUtil;
 import modelengine.fit.waterflow.DatabaseBaseTest;
 import modelengine.fit.waterflow.FlowsDataBaseTest;

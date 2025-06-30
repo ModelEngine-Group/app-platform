@@ -22,7 +22,7 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>modelengine.fit.jade.waterflow</groupId>
+            <groupId>org.fitframework.waterflow</groupId>
             <artifactId>waterflow-common</artifactId>
         </dependency>
     </dependencies>

@@ -6,7 +6,7 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.jobers;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_GENERICALBE_JOBER_INVOKE_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_GENERICALBE_JOBER_INVOKE_ERROR;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
 import com.alibaba.fastjson.JSON;
@@ -14,7 +14,7 @@ import com.alibaba.fastjson.JSON;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;
 import modelengine.fitframework.broker.CommunicationType;

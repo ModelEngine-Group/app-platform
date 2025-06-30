@@ -7,11 +7,11 @@
 package modelengine.fit.waterflow.flowsengine.domain.flows.enums;
 
 import lombok.Getter;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 
 import java.util.Arrays;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.ENUM_CONVERT_FAILED;
+import static modelengine.fit.waterflow.ErrorCodes.ENUM_CONVERT_FAILED;
 
 /**
  * 流程定义对应状态

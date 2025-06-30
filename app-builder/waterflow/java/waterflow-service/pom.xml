@@ -21,10 +21,6 @@
         </dependency>
         <dependency>
             <groupId>org.fitframework.service</groupId>
-            <artifactId>fit-data-repository-service</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.fitframework.service</groupId>
             <artifactId>fit-http-classic</artifactId>
         </dependency>
         <dependency>
@@ -48,6 +44,19 @@
         <dependency>
             <groupId>org.fitframework.ohscript</groupId>
             <artifactId>ohscript</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>modelengine.fit.jade.waterflow</groupId>
+            <artifactId>waterflow-runtime-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>modelengine.fit.jade.waterflow</groupId>
+            <artifactId>waterflow-definition-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fitframework.waterflow</groupId>
+            <artifactId>waterflow-common</artifactId>
         </dependency>
 
         <!-- Third-party -->
@@ -103,18 +112,6 @@
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>modelengine.fit.jade.waterflow</groupId>
-            <artifactId>waterflow-runtime-service</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>modelengine.fit.jade.waterflow</groupId>
-            <artifactId>waterflow-definition-service</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>modelengine.fit.jade.waterflow</groupId>
-            <artifactId>waterflow-common</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -7,7 +7,7 @@
 package modelengine.fit.jade.waterflow.service;
 
 import modelengine.fit.jade.waterflow.entity.FlowDefinitionResult;
-import modelengine.fit.jade.waterflow.entity.OperationContext;
+import modelengine.fit.waterflow.entity.OperationContext;
 
 import java.util.List;
 import java.util.Map;

@@ -13,7 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import modelengine.fel.core.chat.ChatOption;
-import modelengine.fel.core.memory.CacheMemory;
+import modelengine.fel.core.memory.support.CacheMemory;
 import modelengine.fit.jade.aipp.memory.AippMemoryFactory;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;

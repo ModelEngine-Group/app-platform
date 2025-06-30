@@ -72,7 +72,7 @@ public class BasicValidatorTest {
     private static final String NEW_TOOL_JSON = "src/test/resources/tools.json";
     private static final String MOCK_TOOLS_PATH = "/mock/store/tools/";
 
-    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
     private PluginService pluginService;
     private PluginUploadConstraintConfig config;
 
@@ -194,7 +194,7 @@ public class BasicValidatorTest {
     @Nested
     @DisplayName("测试重复的组信息")
     class ValidateGroupInfo {
-        private JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+        private JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
         private ToolJsonEntity tool;
         private List<ToolGroupData> toolGroups;
         private List<DefinitionGroupData> defGroups;

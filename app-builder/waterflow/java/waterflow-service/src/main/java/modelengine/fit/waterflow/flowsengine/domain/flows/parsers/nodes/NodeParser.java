@@ -8,7 +8,7 @@ package modelengine.fit.waterflow.flowsengine.domain.flows.parsers.nodes;
 
 import com.alibaba.fastjson.JSONObject;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.FlowNode;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.callbacks.FlowCallback;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.filters.FlowFilter;
@@ -29,7 +29,7 @@ import modelengine.fitframework.inspection.Validation;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
 
 /**
  * 流程节点解析接口

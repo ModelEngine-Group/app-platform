@@ -23,6 +23,7 @@ import modelengine.fit.runtime.entity.NodeInfo;
 import modelengine.fit.runtime.entity.RuntimeData;
 import modelengine.fit.waterflow.domain.enums.FlowNodeStatus;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.StringUtils;
 
@@ -38,6 +39,8 @@ import java.util.stream.Collectors;
  */
 @Component
 public class AippFlowRuntimeInfoServiceImpl implements AippFlowRuntimeInfoService {
+    private static final Logger LOGGER = Logger.get(AippFlowRuntimeInfoServiceImpl.class);
+
     private final AppBuilderRuntimeInfoRepository runtimeInfoRepository;
     private final AppTaskInstanceService appTaskInstanceService;
     private final AppTaskService appTaskService;
@@ -52,9 +55,10 @@ public class AippFlowRuntimeInfoServiceImpl implements AippFlowRuntimeInfoServic
     @Override
     public Optional<RuntimeData> getRuntimeData(String aippId, String version, String instanceId,
             OperationContext context) {
-        AppTask task = this.appTaskService.getLatest(aippId, version, context)
-                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND_WHEN_DEBUG,
-                        StringUtils.format("App task not found, appSuiteId:{0}, version: {1}.", aippId, version)));
+        AppTask task = this.appTaskService.getLatest(aippId, version, context).orElseThrow(() -> {
+            LOGGER.error("The app task is not found. [appSuiteId={}, version={}]", aippId, version);
+            return new AippException(AippErrCode.APP_NOT_FOUND_WHEN_DEBUG);
+        });
         String versionId = task.getEntity().getTaskId();
         AppTaskInstance instance = this.appTaskInstanceService.getInstance(versionId, instanceId, context)
                 .orElseThrow(() -> new JobberException(ErrorCodes.UN_EXCEPTED_ERROR,

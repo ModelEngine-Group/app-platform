@@ -48,7 +48,7 @@ public class ProcessorTest {
     private static final String SCHEMA_CUBE_JSON = "src/test/resources/schema_cube.json";
     private static final int MAX_NAME_LENGTH = 256;
 
-    private JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
 
     private Processor processor = mock(Processor.class, CALLS_REAL_METHODS);
 

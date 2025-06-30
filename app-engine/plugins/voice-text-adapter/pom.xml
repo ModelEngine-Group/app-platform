@@ -30,7 +30,7 @@
             <artifactId>fit-http-classic</artifactId>
         </dependency>
         <dependency>
-            <groupId>modelengine.fit.jade.service</groupId>
+            <groupId>org.fitframework.fel</groupId>
             <artifactId>fel-pipeline-service</artifactId>
         </dependency>
         <dependency>

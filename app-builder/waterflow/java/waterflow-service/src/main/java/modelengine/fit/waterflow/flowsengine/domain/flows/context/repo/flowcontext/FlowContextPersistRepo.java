@@ -6,14 +6,14 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowcontext;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.ENTITY_NOT_FOUND;
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_EMPTY;
+import static modelengine.fit.waterflow.ErrorCodes.ENTITY_NOT_FOUND;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_EMPTY;
 import static modelengine.fit.waterflow.common.Constant.CONTEXT_EXCLUSIVE_STATUS_MAP;
 import static modelengine.fit.waterflow.common.Constant.RETRY_INTERVAL;
 import static modelengine.fit.waterflow.common.Constant.STREAM_ID_SEPARATOR;
 import static modelengine.fit.waterflow.common.Constant.TO_BATCH_KEY;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.waterflow.flowsengine.biz.service.TraceOwnerService;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowContext;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;

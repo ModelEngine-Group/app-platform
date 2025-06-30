@@ -6,15 +6,15 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.converter;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
-import static modelengine.fit.jade.waterflow.ErrorCodes.NOT_SUPPORT;
+import static modelengine.fit.waterflow.ErrorCodes.INPUT_PARAM_IS_INVALID;
+import static modelengine.fit.waterflow.ErrorCodes.NOT_SUPPORT;
 import static modelengine.fit.waterflow.common.Constant.BUSINESS_DATA_INTERNAL_KEY;
 import static modelengine.fit.waterflow.common.Constant.INTERNAL_OUTPUT_SCOPE_KEY;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
 
 import lombok.Getter;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fitframework.log.Logger;
 
 import java.util.HashMap;

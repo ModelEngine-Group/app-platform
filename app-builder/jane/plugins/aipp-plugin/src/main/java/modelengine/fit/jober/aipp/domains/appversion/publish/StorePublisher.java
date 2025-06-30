@@ -6,7 +6,7 @@
 
 package modelengine.fit.jober.aipp.domains.appversion.publish;
 
-import modelengine.fel.tool.service.ToolService;
+import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jane.task.util.Entities;
 import modelengine.fit.jober.WaterFlowService;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;

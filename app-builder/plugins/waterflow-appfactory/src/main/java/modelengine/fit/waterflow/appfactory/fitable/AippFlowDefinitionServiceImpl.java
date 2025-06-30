@@ -91,11 +91,11 @@ public class AippFlowDefinitionServiceImpl implements AippFlowDefinitionService 
         flowsService.deleteFlows(metaId, version, convertOperationContext(context));
     }
 
-    public static modelengine.fit.jade.waterflow.entity.OperationContext convertOperationContext(OperationContext context) {
+    public static modelengine.fit.waterflow.entity.OperationContext convertOperationContext(OperationContext context) {
         if (Objects.isNull(context)) {
-            return modelengine.fit.jade.waterflow.entity.OperationContext.custom().build();
+            return modelengine.fit.waterflow.entity.OperationContext.custom().build();
         }
-        return modelengine.fit.jade.waterflow.entity.OperationContext.custom()
+        return modelengine.fit.waterflow.entity.OperationContext.custom()
                 .tenantId(context.getTenantId())
                 .operator(context.getOperator())
                 .operatorIp(context.getOperatorIp())

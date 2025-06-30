@@ -6,7 +6,7 @@
 
 package modelengine.fit.jober.aipp.domains.appversion;
 
-import modelengine.fel.tool.service.ToolService;
+import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jade.waterflow.AippFlowDefinitionService;
 import modelengine.fit.jade.waterflow.FlowsService;

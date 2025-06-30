@@ -6,11 +6,11 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.validators.rules.nodes;
 
-import modelengine.fit.jade.waterflow.exceptions.WaterflowParamException;
+import modelengine.fit.waterflow.exceptions.WaterflowParamException;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.FlowNode;
 import modelengine.fitframework.inspection.Validation;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.INVALID_START_NODE_EVENT_SIZE;
+import static modelengine.fit.waterflow.ErrorCodes.INVALID_START_NODE_EVENT_SIZE;
 
 /**
  * 开始节点校验规则

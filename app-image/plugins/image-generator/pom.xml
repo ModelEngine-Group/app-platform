@@ -25,7 +25,7 @@
 
         <!-- Fel -->
         <dependency>
-            <groupId>modelengine.fit.jade.fel</groupId>
+            <groupId>org.fitframework.fel</groupId>
             <artifactId>fel-core</artifactId>
         </dependency>
 

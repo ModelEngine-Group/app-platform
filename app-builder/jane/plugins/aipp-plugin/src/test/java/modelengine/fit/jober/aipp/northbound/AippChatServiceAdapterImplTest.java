@@ -41,7 +41,7 @@ import java.util.List;
 @DisplayName("测试 AippChatServiceAdapterImpl")
 public class AippChatServiceAdapterImplTest {
     private final AippChatService aippChatService = mock(AippChatService.class);
-    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
     private final AippChatServiceAdapterImpl aippChatServiceAdapterImpl =
             new AippChatServiceAdapterImpl(aippChatService, serializer);
 

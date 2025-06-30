@@ -337,7 +337,8 @@ public class AppBuilderFlowGraph extends BaseDomain {
 
     private void checkEntryType(Map.Entry<String, Object> entry, Class<?> clazz) {
         if (!clazz.isInstance(entry.getValue())) {
-            throw new AippException(AippErrCode.UPDATE_APP_CONFIGURATION_FAILED, entry.getValue().getClass().getName());
+            LOGGER.error("Failed to update app configuration. [entryType={}]", entry.getValue().getClass().getName());
+            throw new AippException(AippErrCode.UPDATE_APP_CONFIGURATION_FAILED);
         }
     }
 

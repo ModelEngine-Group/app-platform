@@ -100,7 +100,7 @@ public class AppChatServiceImplTest {
         Map<String, Object> context = new HashMap<>();
         context.put("user_1", true);
         context.put("user_2", "nofind");
-        doThrow(new AippException(TASK_NOT_FOUND, "1234")).when(appVersionService).restart(any(), any(), any());
+        doThrow(new AippException(TASK_NOT_FOUND)).when(appVersionService).restart(any(), any(), any());
         AippException exception = Assertions.assertThrows(AippException.class,
                 () -> this.appChatService.restartChat("1", context, new OperationContext()));
         Assertions.assertEquals(90002909, exception.getCode());

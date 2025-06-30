@@ -9,10 +9,10 @@ package modelengine.fit.waterflow.flowsengine.fitable;
 import static modelengine.fit.waterflow.spi.FlowPublishService.PUBLISH_NODE_INFO_GENERICABLE;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
-import modelengine.fit.jade.waterflow.ErrorCodes;
+import modelengine.fit.waterflow.ErrorCodes;
 import modelengine.fit.jade.waterflow.entity.FlowDefinitionResult;
-import modelengine.fit.jade.waterflow.entity.OperationContext;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.entity.OperationContext;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.jade.waterflow.service.FlowDefinitionService;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.entity.FlowErrorInfo;
