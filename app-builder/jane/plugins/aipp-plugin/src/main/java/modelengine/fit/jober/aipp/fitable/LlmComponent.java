@@ -26,6 +26,8 @@ import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fit.jober.aipp.util.McpUtils;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.jade.store.service.ToolService;
+import modelengine.fit.jade.aipp.formatter.OutputFormatterChain;
+import modelengine.fit.jade.aipp.formatter.support.ResponsibilityResult;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jade.aipp.prompt.PromptMessage;
@@ -71,7 +73,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -109,6 +110,7 @@ public class LlmComponent implements FlowableService {
     private final PromptBuilderChain promptBuilderChain;
     private final AppTaskInstanceService appTaskInstanceService;
     private final McpClientFactory mcpClientFactory;
+    private final OutputFormatterChain formatterChain;
 
     /**
      * 大模型节点构造器，内部通过提供的 agent 和 tool 构建智能体工作流。
@@ -133,6 +135,7 @@ public class LlmComponent implements FlowableService {
             AippModelCenter aippModelCenter,
             PromptBuilderChain promptBuilderChain,
             AppTaskInstanceService appTaskInstanceService,
+            OutputFormatterChain formatterChain,
             McpClientFactory mcpClientFactory) {
         this.flowInstanceService = flowInstanceService;
         this.toolService = toolService;
@@ -150,6 +153,7 @@ public class LlmComponent implements FlowableService {
         this.promptBuilderChain = promptBuilderChain;
         this.appTaskInstanceService = appTaskInstanceService;
         this.mcpClientFactory = notNull(mcpClientFactory, "The mcp client factory cannot be null.");
+        this.formatterChain = formatterChain;
     }
 
     /**
@@ -275,8 +279,12 @@ public class LlmComponent implements FlowableService {
         // 如果节点配置为输出到聊天，模型回复内容需要持久化
         boolean enableLog = checkEnableLog(businessData);
         if (enableLog) {
-            this.aippLogService.insertLog(AippInstLogType.MSG.name(),
-                    AippLogData.builder().msg(answer).build(),
+            Map<String, Object> llmOutput = new HashMap<>();
+            llmOutput.put("output", output);
+            Optional<ResponsibilityResult> formatOutput = this.formatterChain.handle(llmOutput);
+            String logMsg = formatOutput.map(ResponsibilityResult::text).orElse(answer);
+            this.aippLogService.insertLogWithInterception(AippInstLogType.META_MSG.name(),
+                    AippLogData.builder().msg(logMsg).build(),
                     businessData);
         }
 
