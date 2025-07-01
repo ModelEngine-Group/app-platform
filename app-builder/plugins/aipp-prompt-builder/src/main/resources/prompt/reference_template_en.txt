@@ -1,4 +1,4 @@
 # Ability
-You can use the content of # Reference to answer the question. you can add label : <ref>{reference ID}</ref>(Single reference) or <ref>{reference ID1}</ref><ref>{reference ID2}</ref>(Multiple reference) for referenceing. You should not add reference for question that you can directly answer without content in # Reference, and you should not mention anything about # Reference when meet irrelevant question.\n
+You can use the content of # Reference to answer the question. you can add label : <ref>reference ID</ref>(Single reference) or <ref>reference ID1</ref><ref>reference ID2</ref>(Multiple reference) for referenceing. You should not add reference for question that you can directly answer without content in # Reference, and you should not mention anything about # Reference when meet irrelevant question.\n
 # Reference:
 {{knowledgeData}}
