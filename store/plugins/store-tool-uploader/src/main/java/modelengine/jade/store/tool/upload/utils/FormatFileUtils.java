@@ -224,7 +224,7 @@ public class FormatFileUtils {
     public static File renameFile(File sourceFile) {
         String sourceFileName = sourceFile.getName();
         File targetFile = new File(sourceFile.getParent(),
-                FileUtils.ignoreExtension(sourceFileName) + "_" + System.currentTimeMillis() + FileUtils.extension(
+                FileUtils.ignoreExtension(sourceFileName) + "-" + System.currentTimeMillis() + FileUtils.extension(
                         sourceFileName));
         sourceFile.renameTo(targetFile);
         return targetFile;
