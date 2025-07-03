@@ -896,7 +896,7 @@ public class AppVersion {
         String newName = AppImExportUtil.generateNewAppName(similarNames, initAppName);
         this.data.setName(newName);
 
-        this.attributes = JsonUtils.parseObject(this.data.getAttributes());
+        this.attributes = AppImExportUtil.resetAppAttributes(JsonUtils.parseObject(this.data.getAttributes()));
         this.config = AppImExportUtil.convertToAppBuilderConfig(appDto.getConfig(), context);
         this.flowGraph = AppImExportUtil.convertToAppBuilderFlowGraph(appDto.getFlowGraph(), context);
         this.formProperties = AppImExportUtil.getFormProperties(this.config.getConfigProperties());

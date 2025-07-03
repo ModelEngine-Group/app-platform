@@ -76,7 +76,7 @@ public class AppImExportUtil {
     private static final String[] APP_BUILT_TYPE_SET = {"basic", "workflow"};
     private static final String[] APP_CATEGORY_SET = {"chatbot", "workflow", "agent"};
     private static final String[] APP_TYPE_SET = {"app", "waterflow", "template"};
-    private static final String[] APP_ATTR_DEFAULT_SET = {"icon", "greeting", "description", "name"};
+    private static final String[] APP_ATTR_DEFAULT_SET = {"icon", "description"};
 
     /**
      * 将 {@link AppBuilderApp} 转换为 {@link AppExportApp}。
@@ -396,7 +396,7 @@ public class AppImExportUtil {
         AppBuilderConfig config = convertToAppBuilderConfig(appExportDto.getConfig(), context);
         AppBuilderFlowGraph flowGraph = convertToAppBuilderFlowGraph(appExportDto.getFlowGraph(), context);
         appExportApp.getAttributes().put("icon", "");
-        resetAppAttributes(appExportApp);
+        appExportApp.setAttributes(resetAppAttributes(appExportApp.getAttributes()));
         return AppBuilderApp.builder()
                 .createBy(context.getOperator())
                 .config(config)
@@ -429,10 +429,15 @@ public class AppImExportUtil {
                 .collect(Collectors.toList());
     }
 
-    private static void resetAppAttributes(AppExportApp importedApp) {
-        Map<String, Object> attributes = Stream.of(APP_ATTR_DEFAULT_SET)
-                .collect(Collectors.toMap(Function.identity(), importedApp.getAttributes()::get));
-        importedApp.setAttributes(attributes);
+    /**
+     * 将应用属性重置为预定义的默认属性集，仅保留输入参数与默认集。
+     *
+     * @param attributes 表示导入应用属性的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
+     * @return 表示重置后应用属性的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
+     */
+    public static Map<String, Object> resetAppAttributes(Map<String, Object> attributes) {
+        return Stream.of(APP_ATTR_DEFAULT_SET)
+                .collect(Collectors.toMap(Function.identity(), attributes::get));
     }
 
     /**
