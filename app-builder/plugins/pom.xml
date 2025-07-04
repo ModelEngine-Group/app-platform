@@ -30,6 +30,7 @@
         <module>aipp-prompt-builder</module>
         <module>aipp-rewriter</module>
         <module>aipp-variable-aggregation</module>
+        <module>aipp-variable-updater</module>
         <module>aipp-websocket-plugin</module>
         <module>app-announcement</module>
         <module>app-base</module>

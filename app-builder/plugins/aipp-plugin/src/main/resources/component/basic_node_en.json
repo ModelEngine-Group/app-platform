@@ -55,6 +55,11 @@
     "uniqueName": ""
   },
   {
+    "type": "variableUpdaterNodeState",
+    "name": "Variable Updater",
+    "uniqueName": ""
+  },
+  {
     "type": "fileExtractionNodeState",
     "name": "File Extraction",
     "uniqueName": ""

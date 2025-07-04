@@ -55,6 +55,11 @@
     "uniqueName": ""
   },
   {
+    "type": "variableUpdaterNodeState",
+    "name": "变量更新",
+    "uniqueName": ""
+  },
+  {
     "type": "fileExtractionNodeState",
     "name": "文件提取",
     "uniqueName": ""
