@@ -114,7 +114,7 @@ public class AppIntegrationTest {
         when(this.toolService.getTool(any())).thenReturn(this.mockAppPublishData());
         ListResult<AppPublishData> apps = this.appService.getApps(appQuery);
         assertThat(apps.getCount()).isEqualTo(2);
-        assertThat(apps.getData().get(0).getTags()).isEqualTo(new HashSet<>(Arrays.asList("HUGGINGFACE", "FIT")));
+        assertThat(apps.getData().get(1).getTags()).isEqualTo(new HashSet<>(Arrays.asList("HUGGINGFACE", "FIT")));
     }
 
     @Test
