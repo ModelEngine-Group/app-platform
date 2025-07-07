@@ -72,8 +72,7 @@
     </sql>
     <sql id="sortAndLimit">
         order by
-        CASE WHEN i.creator = 'system' THEN 0 ELSE 1 END,
-        i.creator asc,
+        i.creator = 'system' desc,
         i."updated_time" desc
         <if test="offset != null and offset >= 0">
             offset #{offset}
