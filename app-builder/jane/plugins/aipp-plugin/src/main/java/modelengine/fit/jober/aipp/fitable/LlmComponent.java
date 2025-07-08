@@ -15,8 +15,8 @@ import modelengine.fel.core.chat.MessageType;
 import modelengine.fel.core.chat.Prompt;
 import modelengine.fel.core.chat.support.ChatMessages;
 import modelengine.fel.core.chat.support.ToolMessage;
-import modelengine.fel.core.model.http.SecureConfig;
 import modelengine.fel.core.model.http.ModelExtraHttpBody;
+import modelengine.fel.core.model.http.SecureConfig;
 import modelengine.fel.core.tool.ToolInfo;
 import modelengine.fel.core.tool.ToolProvider;
 import modelengine.fel.core.util.Tip;
@@ -24,6 +24,8 @@ import modelengine.fel.engine.flows.AiFlows;
 import modelengine.fel.engine.flows.AiProcessFlow;
 import modelengine.fel.engine.operators.patterns.AbstractAgent;
 import modelengine.fel.engine.operators.prompts.Prompts;
+import modelengine.fit.jade.aipp.formatter.OutputFormatterChain;
+import modelengine.fit.jade.aipp.formatter.support.ResponsibilityResult;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jade.aipp.prompt.PromptMessage;
@@ -73,7 +75,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -109,6 +110,7 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
     private final AippModelCenter aippModelCenter;
     private final PromptBuilderChain promptBuilderChain;
     private final AppTaskInstanceService appTaskInstanceService;
+    private final OutputFormatterChain formatterChain;
 
     /**
      * 大模型节点构造器，内部通过提供的 agent 和 tool 构建智能体工作流。
@@ -132,7 +134,7 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
             @Fit(alias = "json") ObjectSerializer serializer,
             AippModelCenter aippModelCenter,
             PromptBuilderChain promptBuilderChain,
-            AppTaskInstanceService appTaskInstanceService) {
+            AppTaskInstanceService appTaskInstanceService, OutputFormatterChain formatterChain) {
         this.flowInstanceService = flowInstanceService;
         this.toolProvider = toolProvider;
         this.aippLogService = aippLogService;
@@ -148,6 +150,7 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
                 .close();
         this.promptBuilderChain = promptBuilderChain;
         this.appTaskInstanceService = appTaskInstanceService;
+        this.formatterChain = formatterChain;
     }
 
     /**
@@ -367,8 +370,12 @@ public class LlmComponent implements FlowableService, FlowCallbackService, FlowE
         // 如果节点配置为输出到聊天，模型回复内容需要持久化
         boolean enableLog = checkEnableLog(businessData);
         if (enableLog) {
-            this.aippLogService.insertLog(AippInstLogType.MSG.name(),
-                    AippLogData.builder().msg(answer).build(),
+            Map<String, Object> llmOutput = new HashMap<>();
+            llmOutput.put("output", output);
+            Optional<ResponsibilityResult> formatOutput = this.formatterChain.handle(llmOutput);
+            String logMsg = formatOutput.map(ResponsibilityResult::text).orElse(answer);
+            this.aippLogService.insertLogWithInterception(AippInstLogType.META_MSG.name(),
+                    AippLogData.builder().msg(logMsg).build(),
                     businessData);
         }
 

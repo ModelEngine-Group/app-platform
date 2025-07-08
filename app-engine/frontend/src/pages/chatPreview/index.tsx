@@ -403,7 +403,7 @@ const ChatPreview = (props) => {
         let msg = messageData.extensions.stageDesc || '';
         receiveItem.content = msg;
         receiveItem.logId = messageData.log_id;
-        chatStrInit(msg, receiveItem, messageData.status, messageData.log_id, { isStepLog: true });
+        chatStrInit(msg, receiveItem, messageData.status, messageData.log_id, { isStepLog: true }, false);
         return
       }
       // 普通日志
@@ -427,7 +427,7 @@ const ChatPreview = (props) => {
           if (log.msgId) {
             chatSplicing(log, msg, recieveChatItem, messageData.status);
           } else {
-            chatStrInit(msg, recieveChatItem, messageData.status, messageData.log_id, messageData.extensions);
+            chatStrInit(msg, recieveChatItem, messageData.status, messageData.log_id, messageData.extensions, false);
           }
         }
       });
@@ -468,7 +468,7 @@ const ChatPreview = (props) => {
     scrollToBottom();
   };
   // 流式输出
-  function chatStrInit(msg, initObj, status, logId, extensions:any = {}) {
+  function chatStrInit(msg, initObj, status, logId, extensions:any = {}, addChat) {
     let idx = 0;
     if (isJsonString(msg)) {
       let msgObj = JSON.parse(msg);
@@ -481,6 +481,9 @@ const ChatPreview = (props) => {
     }
     initObj.loading = false;
     idx = listRef.current.length - 1;
+    if (addChat) {
+      idx = listRef.current.length;
+    }
     if (status === 'ARCHIVED') {
       initObj.finished = true;
       if (extensions.isEnableLog && !listRef.current[idx].loading) {
@@ -530,7 +533,11 @@ const ChatPreview = (props) => {
       }
       dispatch(setChatList(deepClone(listRef.current)));
     } else {
-      chatStrInit(msg, initObj, status, '');
+      let addChat = false;
+      if (!listRef.current[listRef.current.length - 1].loading) {
+        addChat = true;
+      }
+      chatStrInit(msg, initObj, status, '', {}, addChat);
     }
   }
   // 多模型回答时消息处理
