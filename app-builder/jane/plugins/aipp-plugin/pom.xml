@@ -134,6 +134,10 @@
             <groupId>modelengine.fit.jade.waterflow</groupId>
             <artifactId>waterflow-graph-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.fitframework.fel</groupId>
+            <artifactId>tool-mcp-client-service</artifactId>
+        </dependency>
 
         <!-- Redis -->
         <dependency>

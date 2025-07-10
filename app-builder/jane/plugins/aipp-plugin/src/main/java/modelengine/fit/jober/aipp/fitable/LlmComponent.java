@@ -19,7 +19,12 @@ import modelengine.fel.engine.flows.AiFlows;
 import modelengine.fel.engine.flows.AiProcessFlow;
 import modelengine.fel.engine.operators.patterns.AbstractAgent;
 import modelengine.fel.engine.operators.prompts.Prompts;
+import modelengine.fel.tool.mcp.client.McpClient;
+import modelengine.fel.tool.mcp.client.McpClientFactory;
+import modelengine.fel.tool.mcp.entity.Tool;
 import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fit.jober.aipp.util.McpUtils;
+import modelengine.fitframework.inspection.Validation;
 import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
@@ -60,6 +65,7 @@ import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.fitframework.util.UuidUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -69,6 +75,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * LLM 组件实现
@@ -101,6 +108,7 @@ public class LlmComponent implements FlowableService {
     private final AippModelCenter aippModelCenter;
     private final PromptBuilderChain promptBuilderChain;
     private final AppTaskInstanceService appTaskInstanceService;
+    private final McpClientFactory mcpClientFactory;
 
     /**
      * 大模型节点构造器，内部通过提供的 agent 和 tool 构建智能体工作流。
@@ -114,6 +122,7 @@ public class LlmComponent implements FlowableService {
      * @param aippModelCenter 表示模型中心的 {@link AippModelCenter}。
      * @param promptBuilderChain 表示提示器构造器职责链的 {@link PromptBuilderChain}。
      * @param appTaskInstanceService 表示任务实例服务的 {@link AppTaskInstanceService}。
+     * @param mcpClientFactory 表示大模型上下文客户端工厂的 {@link McpClientFactory}。
      */
     public LlmComponent(FlowInstanceService flowInstanceService,
             @Fit ToolService toolService,
@@ -123,7 +132,8 @@ public class LlmComponent implements FlowableService {
             @Fit(alias = "json") ObjectSerializer serializer,
             AippModelCenter aippModelCenter,
             PromptBuilderChain promptBuilderChain,
-            AppTaskInstanceService appTaskInstanceService) {
+            AppTaskInstanceService appTaskInstanceService,
+            McpClientFactory mcpClientFactory) {
         this.flowInstanceService = flowInstanceService;
         this.toolService = toolService;
         this.aippLogService = aippLogService;
@@ -139,6 +149,7 @@ public class LlmComponent implements FlowableService {
                 .close();
         this.promptBuilderChain = promptBuilderChain;
         this.appTaskInstanceService = appTaskInstanceService;
+        this.mcpClientFactory = notNull(mcpClientFactory, "The mcp client factory cannot be null.");
     }
 
     /**
@@ -177,6 +188,7 @@ public class LlmComponent implements FlowableService {
         StreamMsgSender streamMsgSender =
                 new StreamMsgSender(this.aippLogStreamService, this.serializer, path, msgId, instId);
         streamMsgSender.sendKnowledge(promptMessage.getMetadata(), businessData);
+        ChatOption chatOption = buildChatOptions(businessData);
         agentFlow.converse()
                 .bind((acc, chunk) -> {
                     if (firstTokenFlag[0]) {
@@ -195,7 +207,8 @@ public class LlmComponent implements FlowableService {
                 .doOnConsume(msg -> llmOutputConsumer(llmMeta, msg, promptMessage.getMetadata()))
                 .doOnError(throwable -> doOnAgentError(llmMeta,
                         throwable.getCause() == null ? throwable.getMessage() : throwable.getCause().getMessage()))
-                .bind(buildChatOptions(businessData))
+                .bind(chatOption)
+                .bind(AippConst.TOOLS_KEY, chatOption.tools())
                 .offer(Tip.fromArray(promptMessage.getSystemMessage(), promptMessage.getHumanMessage()));
         log.info("[perf] [{}] handleTask end, instId={}", System.currentTimeMillis(), instId);
         return flowData;
@@ -393,10 +406,6 @@ public class LlmComponent implements FlowableService {
      * @return 返回表示自定义参数。
      */
     private ChatOption buildChatOptions(Map<String, Object> businessData) {
-        List<String> skillNameList = new ArrayList<>(ObjectUtils.cast(businessData.get("tools")));
-        if (businessData.containsKey("workflows")) {
-            skillNameList.addAll(ObjectUtils.cast(businessData.get("workflows")));
-        }
         String model = ObjectUtils.cast(businessData.get("model"));
         Map<String, String> accessInfo = ObjectUtils.nullIf(ObjectUtils.cast(businessData.get("accessInfo")),
                 MapBuilder.<String, String>get().put("serviceName", model).put("tag", "INTERNAL").build());
@@ -413,8 +422,48 @@ public class LlmComponent implements FlowableService {
                 .secureConfig(modelAccessInfo.isSystemModel() ? null : SecureConfig.custom().ignoreTrust(true).build())
                 .apiKey(modelAccessInfo.getAccessKey())
                 .temperature(ObjectUtils.cast(businessData.get("temperature")))
-                .tools(this.buildToolInfos(skillNameList))
+                .tools(this.buildToolInfos(businessData))
                 .build();
+    }
+
+    private List<ToolInfo> buildToolInfos(Map<String, Object> businessData) {
+        List<String> skillNameList = new ArrayList<>(ObjectUtils.cast(businessData.get("tools")));
+        if (businessData.containsKey("workflows")) {
+            skillNameList.addAll(ObjectUtils.cast(businessData.get("workflows")));
+        }
+        Map<String, Object> mcpServersConfig = ObjectUtils.cast(businessData.get(AippConst.MCP_SERVERS_KEY));
+
+        return Stream.concat(this.buildToolInfos(skillNameList).stream(),
+                this.buildMcpToolInfos(mcpServersConfig).stream()).collect(Collectors.toList());
+    }
+
+    private List<ToolInfo> buildMcpToolInfos(Map<String, Object> mcpServersConfig) {
+        List<ToolInfo> result = new ArrayList<>();
+        ObjectUtils.nullIf(mcpServersConfig, new HashMap<String, Object>()).forEach((serverName, value) -> {
+            Map<String, Object> serverConfig = ObjectUtils.cast(value);
+            String url = Validation.notBlank(ObjectUtils.cast(serverConfig.get(AippConst.MCP_SERVER_URL_KEY)),
+                    "The mcp url should not be empty.");
+
+            try (McpClient mcpClient = this.mcpClientFactory.create(McpUtils.getBaseUrl(url),
+                    McpUtils.getSseEndpoint(url))) {
+                mcpClient.initialize();
+                List<Tool> tools = mcpClient.getTools();
+                result.addAll(tools.stream()
+                        .map(tool -> ToolInfo.custom()
+                                .name(buildUniqueToolName(AippConst.MCP_SERVER_TYPE, serverName, tool.getName()))
+                                .description(tool.getDescription())
+                                .parameters(tool.getInputSchema())
+                                .extensions(MapBuilder.<String, Object>get()
+                                        .put(AippConst.MCP_SERVER_KEY, serverConfig)
+                                        .put(AippConst.TOOL_REAL_NAME, tool.getName())
+                                        .build())
+                                .build())
+                        .toList());
+            } catch (IOException exception) {
+                throw new AippException(AippErrCode.CALL_MCP_SERVER_FAILED, exception.getMessage());
+            }
+        });
+        return result;
     }
 
     private List<ToolInfo> buildToolInfos(List<String> skillNameList) {
@@ -427,10 +476,19 @@ public class LlmComponent implements FlowableService {
 
     private ToolInfo buildToolInfo(ToolData toolData) {
         return ToolInfo.custom()
-                .name(toolData.getUniqueName())
+                .name(buildUniqueToolName(AippConst.STORE_SERVER_TYPE,
+                        AippConst.STORE_SERVER_NAME,
+                        toolData.getUniqueName()))
                 .description(toolData.getDescription())
                 .parameters(new HashMap<>(toolData.getSchema()))
+                .extensions(MapBuilder.<String, Object>get()
+                        .put(AippConst.TOOL_REAL_NAME, toolData.getUniqueName())
+                        .build())
                 .build();
+    }
+
+    private static String buildUniqueToolName(String type, String serverName, String toolName) {
+        return String.format("%s_%s_%s", type, serverName, toolName);
     }
 
     public static boolean checkEnableLog(Map<String, Object> businessData) {

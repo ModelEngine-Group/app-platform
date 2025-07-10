@@ -1707,6 +1707,10 @@ export const errorCodeData = [
     message: '无效文件路径。',
   },
   {
+    code: 90002004,
+    message: '调用 MCP 服务失败，原因：{错误信息}。',
+  },
+  {
     code: 90002900,
     message: 'Json解析失败，原因：{错误信息}。',
   },

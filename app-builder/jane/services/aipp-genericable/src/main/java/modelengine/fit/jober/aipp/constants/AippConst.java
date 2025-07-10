@@ -769,6 +769,47 @@ public class AippConst {
      */
     public static final String BUSINESS_INFOS_KEY = "infos";
 
+    /**
+     * mcp server key
+     */
+    public static final String MCP_SERVER_KEY = "mcpServer";
+
+    /**
+     * mcp servers key
+     */
+    public static final String MCP_SERVERS_KEY = "mcpServers";
+
+    /**
+     * mcp server url key
+     */
+    public static final String MCP_SERVER_URL_KEY = "url";
+
+
+    /**
+     * mcp server type
+     */
+    public static final String MCP_SERVER_TYPE = "mcp";
+
+    /**
+     * store server type
+     */
+    public static final String STORE_SERVER_TYPE = "store";
+
+    /**
+     * store server name
+     */
+    public static final String STORE_SERVER_NAME = "store";
+
+    /**
+     * tool real name
+     */
+    public static final String TOOL_REAL_NAME = "toolRealName";
+
+    /**
+     * tools key
+     */
+    public static final String TOOLS_KEY = "tools";
+
     // *** aipp initial static meta items ***
     /**
      * aipp initial static meta items

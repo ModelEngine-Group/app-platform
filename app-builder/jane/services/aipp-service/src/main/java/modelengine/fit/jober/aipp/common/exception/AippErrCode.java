@@ -138,6 +138,11 @@ public enum AippErrCode implements ErrorCode, RetCode {
     INVALID_FILE_PATH(90002003, "无效文件路径。"),
 
     /**
+     * 调用 MCP 服务失败。
+     */
+    CALL_MCP_SERVER_FAILED(90002004, "调用 MCP 服务失败，原因：{0}。"),
+
+    /**
      * json解析失败
      */
     JSON_DECODE_FAILED(90002900, "Json解析失败，原因：{0}。"),

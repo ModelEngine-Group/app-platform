@@ -10,10 +10,18 @@ import static modelengine.fit.jober.aipp.TestUtils.mockFailAsyncJob;
 import static modelengine.fit.jober.aipp.TestUtils.mockResumeFlow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
+import modelengine.fel.core.chat.ChatOption;
+import modelengine.fel.core.tool.ToolInfo;
 import modelengine.fel.engine.operators.models.ChatFlowModel;
+import modelengine.fel.tool.ToolSchema;
+import modelengine.fel.tool.mcp.client.McpClient;
+import modelengine.fel.tool.mcp.client.McpClientFactory;
+import modelengine.fel.tool.mcp.entity.Tool;
+import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fit.jade.aipp.model.dto.ModelListDto;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jade.aipp.prompt.PromptBuilder;
@@ -26,7 +34,6 @@ import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jade.waterflow.FlowInstanceService;
 import modelengine.fit.jober.aipp.TestUtils;
 import modelengine.fit.jober.aipp.constants.AippConst;
-import modelengine.fit.jober.aipp.domains.taskinstance.AppTaskInstance;
 import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.fel.WaterFlowAgent;
 import modelengine.fit.jober.aipp.service.AippLogService;
@@ -48,19 +55,21 @@ import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.flowable.Choir;
 import modelengine.fitframework.serialization.ObjectSerializer;
+import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.ObjectUtils;
+import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.store.service.ToolService;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +103,8 @@ public class LlmComponentTest {
     private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
     @Mock
     private AippModelCenter aippModelCenter;
+    @Mock
+    private McpClientFactory mcpClientFactory;
 
     static class PromptBuilderStub implements PromptBuilder {
         @Override
@@ -220,15 +231,16 @@ public class LlmComponentTest {
             throw new RuntimeException("test");
         }).map(m -> ObjectUtils.<ChatMessage>cast(new AiMessage("bad"))).close();
         AbstractAgent agent = this.buildStubAgent(testAgent);
-        LlmComponent llmComponent = new LlmComponent(flowInstanceService,
+        LlmComponent llmComponent = new LlmComponent(this.flowInstanceService,
                 this.toolService,
                 agent,
-                aippLogService,
+                this.aippLogService,
                 null,
-                serializer,
-                aippModelCenter,
-                promptBuilderChain,
-                this.appTaskInstanceService);
+                this.serializer,
+                this.aippModelCenter,
+                this.promptBuilderChain,
+                this.appTaskInstanceService,
+                this.mcpClientFactory);
 
         // mock
         CountDownLatch countDownLatch = mockFailAsyncJob(flowInstanceService);
@@ -289,16 +301,113 @@ public class LlmComponentTest {
         countDownLatch.await();
     }
 
+    @Test
+    void shouldGetStoreToolsWhenHandleTaskGivenStoreToolsConfig() throws InterruptedException {
+        // given
+        this.prepareModel();
+        ChatModel chatModel = Mockito.mock(ChatModel.class);
+        doAnswer(invocation -> Choir.create(emitter -> {
+            for (int i = 0; i < 4; i++) {
+                emitter.emit(new AiMessage(String.valueOf(i)));
+            }
+            emitter.complete();
+        })).when(chatModel).generate(any(), any());
+
+        AbstractAgent agent = this.getWaterFlowAgent(chatModel);
+        LlmComponent llmComponent = getLlmComponent(agent);
+
+        CountDownLatch countDownLatch = mockResumeFlow(flowInstanceService);
+        Map<String, Object> businessData = buildLlmTestData();
+        String toolUniqueName = "tool1";
+        businessData.put(AippConst.TOOLS_KEY, Arrays.asList(toolUniqueName));
+        ToolData tool = new ToolData();
+        tool.setName(toolUniqueName);
+        tool.setUniqueName(toolUniqueName);
+        tool.setDescription("desc");
+        tool.setSchema(MapBuilder.<String, Object>get()
+                .put(ToolSchema.PARAMETERS, MapBuilder.get().put("name", toolUniqueName).build())
+                .build());
+        when(this.toolService.getTool(toolUniqueName)).thenReturn(tool);
+
+        // when
+        llmComponent.handleTask(TestUtils.buildFlowDataWithExtraConfig(businessData, null));
+
+        // then
+        countDownLatch.await();
+        ArgumentCaptor<ChatOption> chatOptionCaptor = ArgumentCaptor.forClass(ChatOption.class);
+        Mockito.verify(chatModel).generate(any(), chatOptionCaptor.capture());
+        ChatOption capturedChatOptions = chatOptionCaptor.getValue();
+        Assertions.assertTrue(CollectionUtils.isNotEmpty(capturedChatOptions.tools()));
+        Assertions.assertEquals(1, capturedChatOptions.tools().size());
+        ToolInfo toolInfo = capturedChatOptions.tools().get(0);
+        Assertions.assertEquals(AippConst.STORE_SERVER_TYPE + "_" + AippConst.STORE_SERVER_NAME + "_" + tool.getName(),
+                toolInfo.name());
+        Assertions.assertEquals(tool.getDescription(), toolInfo.description());
+        Assertions.assertEquals(tool.getSchema(), toolInfo.parameters());
+    }
+
+    @Test
+    void shouldGetMcpToolsWhenHandleTaskGivenMcpServersConfig() throws InterruptedException {
+        // given
+        this.prepareModel();
+        ChatModel chatModel = Mockito.mock(ChatModel.class);
+        doAnswer(invocation -> Choir.create(emitter -> {
+            for (int i = 0; i < 4; i++) {
+                emitter.emit(new AiMessage(String.valueOf(i)));
+            }
+            emitter.complete();
+        })).when(chatModel).generate(any(), any());
+
+        AbstractAgent agent = this.getWaterFlowAgent(chatModel);
+        LlmComponent llmComponent = getLlmComponent(agent);
+
+        CountDownLatch countDownLatch = mockResumeFlow(flowInstanceService);
+        Map<String, Object> businessData = buildLlmTestData();
+        String baseUrl = "http://127.0.0.1";
+        String sseEndpoint = "/sse";
+        String url = baseUrl + sseEndpoint;
+        Map<Object, Object> mcpServerInfo = MapBuilder.get().put("url", url).build();
+        String serverName = "server1";
+        businessData.put(AippConst.MCP_SERVERS_KEY, MapBuilder.get().put(serverName, mcpServerInfo).build());
+        McpClient mcpCLient = Mockito.mock(McpClient.class);
+        doNothing().when(mcpCLient).initialize();
+        Tool tool = new Tool();
+        tool.setName("tool1");
+        tool.setDescription("desc");
+        tool.setInputSchema(new HashMap<>());
+        when(mcpCLient.getTools()).thenReturn(Arrays.asList(tool));
+        when(this.mcpClientFactory.create(baseUrl, sseEndpoint)).thenReturn(mcpCLient);
+
+        // when
+        llmComponent.handleTask(TestUtils.buildFlowDataWithExtraConfig(businessData, null));
+
+        // then
+        countDownLatch.await();
+        ArgumentCaptor<ChatOption> chatOptionCaptor = ArgumentCaptor.forClass(ChatOption.class);
+        Mockito.verify(chatModel).generate(any(), chatOptionCaptor.capture());
+        ChatOption capturedChatOptions = chatOptionCaptor.getValue();
+        Assertions.assertTrue(CollectionUtils.isNotEmpty(capturedChatOptions.tools()));
+        Assertions.assertEquals(1, capturedChatOptions.tools().size());
+        ToolInfo toolInfo = capturedChatOptions.tools().get(0);
+        Assertions.assertEquals("mcp_" + serverName + "_" + tool.getName(), toolInfo.name());
+        Assertions.assertEquals(tool.getDescription(), toolInfo.description());
+        Assertions.assertEquals(tool.getInputSchema(), toolInfo.parameters());
+        Assertions.assertEquals(mcpServerInfo, toolInfo.extensions().get(AippConst.MCP_SERVER_KEY));
+    }
+
+
+
     private LlmComponent getLlmComponent(final AbstractAgent agent) {
-        return new LlmComponent(flowInstanceService,
+        return new LlmComponent(this.flowInstanceService,
                 this.toolService,
                 agent,
-                aippLogService,
-                aippLogStreamService,
-                serializer,
-                aippModelCenter,
-                promptBuilderChain,
-                this.appTaskInstanceService);
+                this.aippLogService,
+                this.aippLogStreamService,
+                this.serializer,
+                this.aippModelCenter,
+                this.promptBuilderChain,
+                this.appTaskInstanceService,
+                this.mcpClientFactory);
     }
 
     private void prepareModel() {
