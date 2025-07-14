@@ -166,7 +166,7 @@ public class LlmComponentTest {
     }
 
     private AbstractAgent getWaterFlowAgent(ChatModel model) {
-        return new WaterFlowAgent(this.syncToolCall, model);
+        return new WaterFlowAgent(this.syncToolCall, model, this.mcpClientFactory);
     }
 
     private ChatModel buildChatStreamModel(String exceptionMsg) {
