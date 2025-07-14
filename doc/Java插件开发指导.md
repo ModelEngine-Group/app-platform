@@ -243,18 +243,18 @@ fit:
         "parameters" : {
           "type" : "object",
           "properties" : {
-            "arg0" : {
+            "location" : {
               "defaultValue" : "",
               "description" : "查询地点",
-              "name" : "arg0",
+              "name" : "location",
               "type" : "string",
               "examples" : "",
               "required" : true
             }
           },
-          "required" : [ "arg0" ]
+          "required" : [ "location" ]
         },
-        "order" : [ "arg0" ],
+        "order" : [ "location" ],
         "return" : {
           "type" : "string",
           "convertor" : ""
@@ -267,10 +267,10 @@ fit:
         "parameters" : {
           "type" : "object",
           "properties" : {
-            "arg0" : {
+            "location" : {
               "defaultValue" : "",
               "description" : "查询地点列表",
-              "name" : "arg0",
+              "name" : "location",
               "type" : "array",
               "items" : {
                 "type" : "string"
@@ -279,9 +279,9 @@ fit:
               "required" : true
             }
           },
-          "required" : [ "arg0" ]
+          "required" : [ "location" ]
         },
-        "order" : [ "arg0" ],
+        "order" : [ "location" ],
         "return" : {
           "type" : "array",
           "items" : {
@@ -306,15 +306,15 @@ fit:
         "parameters" : {
           "type" : "object",
           "properties" : {
-            "arg0" : {
-              "name" : "arg0",
+            "location" : {
+              "name" : "location",
               "type" : "string",
               "required" : false
             }
           },
           "required" : [ ]
         },
-        "order" : [ "arg0" ],
+        "order" : [ "location" ],
         "return" : {
           "name" : "",
           "description" : "获取今日下雨信息的结果",
@@ -341,8 +341,8 @@ fit:
         "parameters" : {
           "type" : "object",
           "properties" : {
-            "arg0" : {
-              "name" : "arg0",
+            "location" : {
+              "name" : "location",
               "type" : "array",
               "items" : {
                 "type" : "string"
@@ -352,7 +352,7 @@ fit:
           },
           "required" : [ ]
         },
-        "order" : [ "arg0" ],
+        "order" : [ "location" ],
         "return" : {
           "name" : "",
           "description" : "获取明日下雨信息的结果",
@@ -389,15 +389,15 @@ fit:
         "parameters" : {
           "type" : "object",
           "properties" : {
-            "arg0" : {
-              "name" : "arg0",
+            "location" : {
+              "name" : "location",
               "type" : "string",
               "required" : false
             }
           },
           "required" : [ ]
         },
-        "order" : [ "arg0" ],
+        "order" : [ "location" ],
         "return" : {
           "name" : "",
           "description" : "获取今日下雨信息的结果",
@@ -424,8 +424,8 @@ fit:
         "parameters" : {
           "type" : "object",
           "properties" : {
-            "arg0" : {
-              "name" : "arg0",
+            "location" : {
+              "name" : "location",
               "type" : "array",
               "items" : {
                 "type" : "string"
@@ -435,7 +435,7 @@ fit:
           },
           "required" : [ ]
         },
-        "order" : [ "arg0" ],
+        "order" : [ "location" ],
         "return" : {
           "name" : "",
           "description" : "获取明日下雨信息的结果",
