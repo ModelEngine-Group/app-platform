@@ -235,11 +235,6 @@ public class AippLogServiceImpl implements AippLogService {
                 }
             }
         }
-
-        for (List<AippInstLog> logList : result.values()) {
-            logList.sort(Comparator.comparing(AippInstLog::getLogId));
-        }
-
         return result;
     }
 

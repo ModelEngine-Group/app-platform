@@ -29,6 +29,7 @@ import modelengine.fitframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -78,6 +79,7 @@ public class AippInstLogDataDto {
             this.instanceLogBodies = logs.stream()
                     .filter(l -> !l.isQuestionType())
                     .map(AppLog::toBody)
+                    .sorted(Comparator.comparing(AippInstanceLogBody::getLogId))
                     .collect(Collectors.toList());
         }
     }
@@ -177,10 +179,8 @@ public class AippInstLogDataDto {
         }
         String msg = logInfo.get("msg");
         if (Objects.equals(logType, AippInstLogType.META_MSG.name())) {
-            List<Map<String, Object>> referenceMsg = ObjectUtils.cast(JSON.parse(msg));
-            StringBuilder sb = new StringBuilder();
-            referenceMsg.stream().map(item -> ObjectUtils.<String>cast(item.get("data"))).forEach(sb::append);
-            return sb.toString();
+            Map<String, Object> referenceMsg = ObjectUtils.cast(JSON.parse(msg));
+            return ObjectUtils.cast(referenceMsg.get("data"));
         }
         if (Objects.equals(logType, AippInstLogType.QUESTION_WITH_FILE.name())) {
             return JSONObject.parseObject(msg).getString("question");
