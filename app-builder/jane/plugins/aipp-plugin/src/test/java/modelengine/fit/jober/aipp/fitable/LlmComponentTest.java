@@ -22,6 +22,7 @@ import modelengine.fel.tool.mcp.client.McpClient;
 import modelengine.fel.tool.mcp.client.McpClientFactory;
 import modelengine.fel.tool.mcp.entity.Tool;
 import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fit.jade.aipp.formatter.OutputFormatterChain;
 import modelengine.fit.jade.aipp.model.dto.ModelListDto;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jade.aipp.prompt.PromptBuilder;
@@ -105,6 +106,8 @@ public class LlmComponentTest {
     private AippModelCenter aippModelCenter;
     @Mock
     private McpClientFactory mcpClientFactory;
+    @Mock
+    private OutputFormatterChain formatterChain;
 
     static class PromptBuilderStub implements PromptBuilder {
         @Override
@@ -240,7 +243,8 @@ public class LlmComponentTest {
                 this.aippModelCenter,
                 this.promptBuilderChain,
                 this.appTaskInstanceService,
-                this.mcpClientFactory);
+                this.mcpClientFactory,
+                this.formatterChain);
 
         // mock
         CountDownLatch countDownLatch = mockFailAsyncJob(flowInstanceService);
@@ -405,7 +409,8 @@ public class LlmComponentTest {
                 this.aippModelCenter,
                 this.promptBuilderChain,
                 this.appTaskInstanceService,
-                this.mcpClientFactory);
+                this.mcpClientFactory,
+                this.formatterChain);
     }
 
     private void prepareModel() {
