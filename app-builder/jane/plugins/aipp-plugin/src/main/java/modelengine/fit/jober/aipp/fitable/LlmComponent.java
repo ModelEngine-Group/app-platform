@@ -188,7 +188,7 @@ public class LlmComponent implements FlowableService {
         StreamMsgSender streamMsgSender =
                 new StreamMsgSender(this.aippLogStreamService, this.serializer, path, msgId, instId);
         streamMsgSender.sendKnowledge(promptMessage.getMetadata(), businessData);
-        ChatOption chatOption = buildChatOptions(businessData);
+        ChatOption chatOption = this.buildChatOptions(businessData);
         agentFlow.converse()
                 .bind((acc, chunk) -> {
                     if (firstTokenFlag[0]) {
@@ -448,17 +448,7 @@ public class LlmComponent implements FlowableService {
                     McpUtils.getSseEndpoint(url))) {
                 mcpClient.initialize();
                 List<Tool> tools = mcpClient.getTools();
-                result.addAll(tools.stream()
-                        .map(tool -> ToolInfo.custom()
-                                .name(buildUniqueToolName(AippConst.MCP_SERVER_TYPE, serverName, tool.getName()))
-                                .description(tool.getDescription())
-                                .parameters(tool.getInputSchema())
-                                .extensions(MapBuilder.<String, Object>get()
-                                        .put(AippConst.MCP_SERVER_KEY, serverConfig)
-                                        .put(AippConst.TOOL_REAL_NAME, tool.getName())
-                                        .build())
-                                .build())
-                        .toList());
+                result.addAll(tools.stream().map(tool -> buildMcpToolInfo(serverName, tool, serverConfig)).toList());
             } catch (IOException exception) {
                 throw new AippException(AippErrCode.CALL_MCP_SERVER_FAILED, exception.getMessage());
             }
@@ -487,10 +477,28 @@ public class LlmComponent implements FlowableService {
                 .build();
     }
 
-    private static String buildUniqueToolName(String type, String serverName, String toolName) {
-        return String.format("%s_%s_%s", type, serverName, toolName);
+    private static ToolInfo buildMcpToolInfo(String serverName, Tool tool, Map<String, Object> serverConfig) {
+        return ToolInfo.custom()
+                .name(buildUniqueToolName(AippConst.MCP_SERVER_TYPE, serverName, tool.getName()))
+                .description(tool.getDescription())
+                .parameters(tool.getInputSchema())
+                .extensions(MapBuilder.<String, Object>get()
+                        .put(AippConst.MCP_SERVER_KEY, serverConfig)
+                        .put(AippConst.TOOL_REAL_NAME, tool.getName())
+                        .build())
+                .build();
     }
 
+    private static String buildUniqueToolName(String type, String serverName, String toolName) {
+        return StringUtils.format("{0}_{1}_{2}", type, serverName, toolName);
+    }
+
+    /**
+     * 判断是否启用日志。
+     *
+     * @param businessData 表示业务上下文数据的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
+     * @return 表示是否启用日志的 {@code boolean}。
+     */
     public static boolean checkEnableLog(Map<String, Object> businessData) {
         Object value = businessData.get(AippConst.BS_LLM_ENABLE_LOG);
         if (value == null) {

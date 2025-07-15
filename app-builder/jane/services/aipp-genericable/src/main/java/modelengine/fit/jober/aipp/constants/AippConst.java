@@ -784,7 +784,6 @@ public class AippConst {
      */
     public static final String MCP_SERVER_URL_KEY = "url";
 
-
     /**
      * mcp server type
      */

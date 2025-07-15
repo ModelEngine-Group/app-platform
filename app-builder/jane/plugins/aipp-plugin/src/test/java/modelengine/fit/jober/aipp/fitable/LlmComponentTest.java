@@ -395,8 +395,6 @@ public class LlmComponentTest {
         Assertions.assertEquals(mcpServerInfo, toolInfo.extensions().get(AippConst.MCP_SERVER_KEY));
     }
 
-
-
     private LlmComponent getLlmComponent(final AbstractAgent agent) {
         return new LlmComponent(this.flowInstanceService,
                 this.toolService,
