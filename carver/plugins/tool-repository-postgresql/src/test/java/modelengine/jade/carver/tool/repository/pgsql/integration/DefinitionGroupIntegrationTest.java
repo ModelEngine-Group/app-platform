@@ -10,8 +10,10 @@ import static modelengine.jade.carver.tool.repository.pgsql.ToolDataBuilder.mock
 import static org.assertj.core.api.Assertions.assertThat;
 
 import modelengine.fel.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.service.ToolChangedObserver;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
+import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.Spy;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.jade.carver.tool.repository.pgsql.mapper.DefinitionMapper;
@@ -33,7 +35,7 @@ import java.util.Set;
  * @since 2024-10-31
  */
 @IntegrationTest(scanPackages = "modelengine.jade.carver.tool")
-@Sql(before = {"sql/create/definition.sql", "sql/create/definition-group.sql"})
+@Sql(before = {"sql/create/definition.sql", "sql/create/definition-group.sql", "sql/create/tool.sql"})
 @DisplayName("Definition group 集成测试")
 public class DefinitionGroupIntegrationTest {
     private static final String GROUP_NAME1 = "depth-estimation-definition-group-name";
@@ -43,6 +45,9 @@ public class DefinitionGroupIntegrationTest {
 
     @Spy
     private DefinitionMapper definitionMapper;
+
+    @Mock
+    ToolChangedObserver toolChangedObserver;
 
     @Test
     @Sql(before = {"sql/create/definition.sql", "sql/create/definition-group.sql"})

@@ -12,6 +12,7 @@ import modelengine.fel.tool.Tool;
 import modelengine.fel.tool.model.ListResult;
 import modelengine.fel.tool.model.entity.ToolIdentifier;
 import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.ToolChangedObserver;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.exception.FitException;
@@ -38,16 +39,22 @@ public class DefaultToolService implements ToolService {
 
     private final ToolRepositoryInner toolRepo;
     private final DefinitionService definitionService;
+    private final ToolChangedObserver toolChangedObserver;
 
     /**
      * 通过持久层接口来初始化 {@link DefaultToolService} 的实例。
      *
      * @param toolRepo 表示持久层实例的 {@link ToolRepositoryInner}。
      * @param definitionService 表示定义服务的 {@link DefinitionService}。
+     * @param toolChangedObserver 表示工具变更监听服务的 {@link ToolChangedObserver}。
      */
-    public DefaultToolService(ToolRepositoryInner toolRepo, DefinitionService definitionService) {
+    public DefaultToolService(ToolRepositoryInner toolRepo, DefinitionService definitionService,
+            ToolChangedObserver toolChangedObserver) {
         this.toolRepo = toolRepo;
         this.definitionService = definitionService;
+        this.toolChangedObserver = toolChangedObserver;
+        List<Tool.Info> allTools = this.toolRepo.getAllTools();
+        allTools.forEach(this::onToolAdded);
     }
 
     @Override
@@ -57,6 +64,7 @@ public class DefaultToolService implements ToolService {
         ToolData.transform(toolData);
         Tool.Info info = ToolData.convertToInfo(toolData);
         this.toolRepo.addTool(info);
+        this.onToolAdded(info);
         return toolData.getUniqueName();
     }
 
@@ -69,6 +77,7 @@ public class DefaultToolService implements ToolService {
                 .map(ToolData::convertToInfo)
                 .collect(Collectors.toList());
         this.toolRepo.addTools(infos);
+        infos.forEach(this::onToolAdded);
     }
 
     @Override
@@ -80,6 +89,7 @@ public class DefaultToolService implements ToolService {
                 .map(ToolData::convertToInfo)
                 .collect(Collectors.toList());
         this.toolRepo.addTools(definitionGroupName, groupName, infos);
+        infos.forEach(this::onToolAdded);
     }
 
     @Override
@@ -87,6 +97,7 @@ public class DefaultToolService implements ToolService {
     @Transactional
     public String deleteTool(String toolUniqueName) {
         this.toolRepo.deleteTool(toolUniqueName);
+        this.onToolRemoved(toolUniqueName);
         return toolUniqueName;
     }
 
@@ -95,20 +106,25 @@ public class DefaultToolService implements ToolService {
     @Transactional
     public void deleteTools(List<String> uniqueNames) {
         this.toolRepo.deleteTools(uniqueNames);
+        uniqueNames.forEach(this::onToolRemoved);
     }
 
     @Override
     @Fitable(id = FITABLE_ID)
     @Transactional
     public void deleteTools(String definitionGroupName, String groupName) {
-        this.toolRepo.deleteTools(definitionGroupName, groupName);
+        List<Tool.Info> tools = this.toolRepo.getTools(definitionGroupName, groupName);
+        List<String> uniqueNames = tools.stream().map(Tool.Info::uniqueName).toList();
+        this.deleteTools(uniqueNames);
     }
 
     @Override
     @Fitable(id = FITABLE_ID)
     @Transactional
     public void deleteToolsByDefinitionGroupName(String definitionGroupName) {
-        this.toolRepo.deleteTools(definitionGroupName);
+        List<Tool.Info> tools = this.toolRepo.getTools(definitionGroupName);
+        List<String> uniqueNames = tools.stream().map(Tool.Info::uniqueName).toList();
+        this.deleteTools(uniqueNames);
     }
 
     @Override
@@ -116,15 +132,19 @@ public class DefaultToolService implements ToolService {
     @Transactional
     public String deleteToolByVersion(String uniqueName, String version) {
         this.toolRepo.deleteToolByVersion(uniqueName, version);
+        this.onToolRemoved(uniqueName);
         return uniqueName;
     }
 
     private void setLatest(String toolUniqueName, String version) {
         this.toolRepo.setLatest(toolUniqueName, version);
+        Optional<Tool.Info> info = this.toolRepo.getToolByVersion(toolUniqueName, version);
+        info.ifPresent(this::onToolAdded);
     }
 
     private void setNotLatest(String toolUniqueName) {
         this.toolRepo.setNotLatest(toolUniqueName);
+        this.onToolRemoved(toolUniqueName);
     }
 
     @Override
@@ -218,5 +238,19 @@ public class DefaultToolService implements ToolService {
 
     private List<ToolData> getToolDataList(List<Tool.Info> infos) {
         return infos.stream().map(ToolData::from).map(ToolData::transform).collect(Collectors.toList());
+    }
+
+    private void onToolAdded(Tool.Info toolInfo) {
+        if (this.toolChangedObserver == null) {
+            return;
+        }
+        this.toolChangedObserver.onToolAdded(toolInfo.uniqueName(), toolInfo.description(), toolInfo.parameters());
+    }
+
+    private void onToolRemoved(String toolUniqueName) {
+        if (this.toolChangedObserver == null) {
+            return;
+        }
+        this.toolChangedObserver.onToolRemoved(toolUniqueName);
     }
 }

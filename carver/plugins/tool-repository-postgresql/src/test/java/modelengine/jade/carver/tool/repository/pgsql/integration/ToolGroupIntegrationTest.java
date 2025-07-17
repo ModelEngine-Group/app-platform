@@ -12,9 +12,11 @@ import static org.mockito.Mockito.when;
 
 import modelengine.fel.tool.model.transfer.DefinitionData;
 import modelengine.fel.tool.model.transfer.ToolGroupData;
+import modelengine.fel.tool.service.ToolChangedObserver;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.test.annotation.IntegrationTest;
+import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.Spy;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.jade.carver.tool.repository.pgsql.ToolDataBuilder;
@@ -63,6 +65,9 @@ public class ToolGroupIntegrationTest {
 
     @Fit(alias = "json")
     private ObjectSerializer serializer;
+
+    @Mock
+    ToolChangedObserver toolChangedObserver;
 
     private void mockDefinitionInfo() {
         DefinitionData definitionData = ToolDataBuilder.mockDefinitionData();

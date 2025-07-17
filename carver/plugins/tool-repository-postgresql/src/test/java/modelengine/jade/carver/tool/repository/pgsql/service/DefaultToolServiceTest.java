@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
 import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.ToolChangedObserver;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.jade.carver.tool.repository.pgsql.model.entity.ToolDo;
@@ -48,6 +49,9 @@ public class DefaultToolServiceTest {
     @Mock
     private ToolRepositoryInner toolRepositoryInner;
 
+    @Mock
+    private ToolChangedObserver toolChangedObserver;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -64,8 +68,9 @@ public class DefaultToolServiceTest {
         toolData.setLatest(true);
         toolData.setRunnables(new HashMap<>());
         toolData.setExtensions(new HashMap<>());
-        toolData.setUniqueName("uniqueName");
+        toolData.setUniqueName("testUniqueName");
         toolData.setVersion("1.0.0");
+        toolData.setDescription("description");
         return toolData;
     }
 
@@ -88,16 +93,24 @@ public class DefaultToolServiceTest {
     @DisplayName("验证插入工具成功")
     void shouldSuccessWhenAddTool() {
         ToolData toolData = mockToolData();
+
         this.toolService.addTools(Collections.singletonList(toolData));
-        verify(toolRepositoryInner).addTools(Mockito.anyList());
+
+        verify(this.toolRepositoryInner).addTools(Mockito.anyList());
+        verify(this.toolChangedObserver).onToolAdded(toolData.getUniqueName(),
+                toolData.getDescription(),
+                toolData.getParameters());
     }
 
     @Test
     @DisplayName("验证删除工具列表成功")
     void shouldSuccessWhenDeleteTool() {
-        List<String> uniqueNames = new ArrayList<>();
+        List<String> uniqueNames = Collections.singletonList("tool1");
+
         this.toolService.deleteTools(uniqueNames);
+
         verify(toolRepositoryInner).deleteTools(uniqueNames);
+        verify(this.toolChangedObserver).onToolRemoved(uniqueNames.get(0));
     }
 
     @Test
@@ -125,8 +138,6 @@ public class DefaultToolServiceTest {
     @Test
     @DisplayName("验证升级工具成功")
     void shouldSuccessWhenUpgradeTool() {
-        String uniqueName = "testUniqueName";
-        String version = "version";
         ToolDo toolDo = mockToolDo();
         ToolData toolData = this.mockToolData();
         Mockito.when(this.toolRepositoryInner.getTool(toolData.getUniqueName()))
@@ -135,6 +146,14 @@ public class DefaultToolServiceTest {
         Mockito.when(this.toolRepositoryInner.getToolByVersion(toolData.getUniqueName(), toolData.getVersion()))
                 .thenReturn(Optional.of(ToolDo.do2Info(toolDo, this.serializer)));
         doNothing().when(this.toolRepositoryInner).addTool(any());
-        assertThat(this.toolService.upgradeTool(toolData)).isEqualTo(toolData.getUniqueName());
+
+        String result = this.toolService.upgradeTool(toolData);
+
+        assertThat(result).isEqualTo(toolData.getUniqueName());
+        assertThat(toolData.getUniqueName()).isEqualTo(toolData.getUniqueName());
+        verify(this.toolChangedObserver).onToolRemoved(toolData.getUniqueName());
+        verify(this.toolChangedObserver).onToolAdded(toolData.getUniqueName(),
+                toolData.getDescription(),
+                toolData.getParameters());
     }
 }

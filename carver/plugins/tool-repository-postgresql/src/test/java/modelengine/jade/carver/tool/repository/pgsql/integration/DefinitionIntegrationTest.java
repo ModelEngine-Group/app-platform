@@ -9,8 +9,10 @@ package modelengine.jade.carver.tool.repository.pgsql.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import modelengine.fel.tool.model.transfer.DefinitionData;
+import modelengine.fel.tool.service.ToolChangedObserver;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
+import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.Spy;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.jade.carver.tool.repository.pgsql.ToolDataBuilder;
@@ -42,6 +44,9 @@ public class DefinitionIntegrationTest {
 
     @Spy
     private DefinitionMapper definitionMapper;
+
+    @Mock
+    ToolChangedObserver toolChangedObserver;
 
     @Test
     @Sql(before = {"sql/create/definition.sql", "sql/create/tool.sql"})

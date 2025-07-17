@@ -152,4 +152,11 @@ public interface ToolRepositoryInner {
      * @return 表示工具详细信息列表的 {@link List}{@code <}{@link Tool.Info}{@code >}。
      */
     List<Tool.Info> getToolsByIdentifier(List<ToolIdentifier> toolIdentifiers);
+
+    /**
+     * 查询所有工具信息。
+     *
+     * @return 表示工具详细信息列表的 {@link List}{@code <}{@link Tool.Info}{@code >}。
+     */
+    List<Tool.Info> getAllTools();
 }

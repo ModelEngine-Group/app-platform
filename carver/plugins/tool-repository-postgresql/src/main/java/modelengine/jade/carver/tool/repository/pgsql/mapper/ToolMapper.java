@@ -141,4 +141,11 @@ public interface ToolMapper {
      * @return 表示工具信息的 {@link List}{@code <}{@link ToolDo}{@code >}。
      */
     List<ToolDo> getToolsByIdentifier(List<ToolIdentifier> toolIdentifiers);
+
+    /**
+     * 查询所有工具信息。
+     *
+     * @return 表示工具信息的 {@link List}{@code <}{@link ToolDo}{@code >}。
+     */
+    List<ToolDo> getAllTools();
 }

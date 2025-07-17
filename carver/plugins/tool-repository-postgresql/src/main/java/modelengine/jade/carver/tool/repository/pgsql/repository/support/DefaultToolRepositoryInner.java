@@ -160,4 +160,10 @@ public class DefaultToolRepositoryInner implements ToolRepositoryInner {
         List<ToolDo> toolDos = this.toolMapper.getToolsByIdentifier(toolIdentifiers);
         return toolDos.stream().map(toolDo -> ToolDo.do2Info(toolDo, this.serializer)).collect(Collectors.toList());
     }
+
+    @Override
+    public List<Tool.Info> getAllTools() {
+        List<ToolDo> toolDos = this.toolMapper.getAllTools();
+        return toolDos.stream().map(toolDo -> ToolDo.do2Info(toolDo, this.serializer)).collect(Collectors.toList());
+    }
 }
