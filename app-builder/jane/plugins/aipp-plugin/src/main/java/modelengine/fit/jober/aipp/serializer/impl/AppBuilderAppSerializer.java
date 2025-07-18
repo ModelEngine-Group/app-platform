@@ -6,12 +6,16 @@
 
 package modelengine.fit.jober.aipp.serializer.impl;
 
+import lombok.RequiredArgsConstructor;
+import modelengine.fit.jober.aipp.converters.IconConverter;
 import modelengine.fit.jober.aipp.domain.AppBuilderApp;
 import modelengine.fit.jober.aipp.po.AppBuilderAppPo;
 import modelengine.fit.jober.aipp.serializer.BaseSerializer;
 import modelengine.fit.jober.aipp.util.JsonUtils;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * 应用数据序列化与反序列化实现类
@@ -19,7 +23,10 @@ import java.util.Objects;
  * @author 邬涨财
  * @since 2024-04-17
  */
+@RequiredArgsConstructor
 public class AppBuilderAppSerializer implements BaseSerializer<AppBuilderApp, AppBuilderAppPo> {
+    private final IconConverter iconConverter;
+
     @Override
     public AppBuilderAppPo serialize(AppBuilderApp appBuilderApp) {
         if (appBuilderApp == null) {
@@ -35,7 +42,8 @@ public class AppBuilderAppSerializer implements BaseSerializer<AppBuilderApp, Ap
                 .flowGraphId(appBuilderApp.getFlowGraphId())
                 .type(appBuilderApp.getType())
                 .version(appBuilderApp.getVersion())
-                .attributes(JsonUtils.toJsonString(appBuilderApp.getAttributes()))
+                .attributes(JsonUtils.toJsonString(appBuilderApp.getAttributes()
+                        .computeIfPresent("icon", (k, v) -> this.iconConverter.toStorage(String.valueOf(v)))))
                 .path(appBuilderApp.getPath())
                 .state(appBuilderApp.getState())
                 .appType(appBuilderApp.getAppType())
@@ -54,9 +62,11 @@ public class AppBuilderAppSerializer implements BaseSerializer<AppBuilderApp, Ap
 
     @Override
     public AppBuilderApp deserialize(AppBuilderAppPo appBuilderAppPO) {
-        return Objects.isNull(appBuilderAppPO)
-                ? AppBuilderApp.builder().build()
-                : AppBuilderApp.builder()
+        if (appBuilderAppPO == null) {
+            return AppBuilderApp.builder().build();
+        }
+        Map<String, Object> attributes = this.modifyIconValue(appBuilderAppPO);
+        return AppBuilderApp.builder()
                         .id(appBuilderAppPO.getId())
                         .name(appBuilderAppPO.getName())
                         .appId(appBuilderAppPO.getAppId())
@@ -66,7 +76,7 @@ public class AppBuilderAppSerializer implements BaseSerializer<AppBuilderApp, Ap
                         .flowGraphId(appBuilderAppPO.getFlowGraphId())
                         .type(appBuilderAppPO.getType())
                         .version(appBuilderAppPO.getVersion())
-                        .attributes(JsonUtils.parseObject(appBuilderAppPO.getAttributes()))
+                        .attributes(attributes)
                         .path(appBuilderAppPO.getPath())
                         .state(appBuilderAppPO.getState())
                         .appType(appBuilderAppPO.getAppType())
@@ -81,5 +91,13 @@ public class AppBuilderAppSerializer implements BaseSerializer<AppBuilderApp, Ap
                         .uniqueName(appBuilderAppPO.getUniqueName())
                         .publishAt(appBuilderAppPO.getPublishAt())
                         .build();
+    }
+
+    private Map<String, Object> modifyIconValue(AppBuilderAppPo appBuilderAppPO) {
+        Map<String, Object> attributes = Optional.ofNullable(appBuilderAppPO.getAttributes())
+                .map(JsonUtils::parseObject)
+                .orElseGet(HashMap::new);
+        attributes.computeIfPresent("icon", (k, v) -> this.iconConverter.toFrontend(String.valueOf(v)));
+        return attributes;
     }
 }

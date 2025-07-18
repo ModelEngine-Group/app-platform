@@ -9,6 +9,8 @@ package modelengine.fit.jober.aipp.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import modelengine.fit.jober.aipp.condition.TemplateQueryCondition;
+import modelengine.fit.jober.aipp.converters.IconConverter;
+import modelengine.fit.jober.aipp.converters.impl.IconConverterImpl;
 import modelengine.fit.jober.aipp.domain.AppTemplate;
 import modelengine.fit.jober.aipp.mapper.AppTemplateMapper;
 import modelengine.fit.jober.aipp.repository.impl.AppTemplateRepositoryImpl;
@@ -35,9 +37,12 @@ public class AppTemplateRepositoryTest extends DatabaseBaseTest {
 
     private AppTemplateRepository templateRepository;
 
+    private IconConverter iconConverter;
+
     @BeforeEach
     void setup() {
-        this.templateRepository = new AppTemplateRepositoryImpl(this.templateMapper);
+        this.iconConverter = new IconConverterImpl("/api/jober");
+        this.templateRepository = new AppTemplateRepositoryImpl(this.templateMapper, this.iconConverter);
     }
 
     @Test

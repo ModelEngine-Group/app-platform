@@ -8,6 +8,7 @@ package modelengine.fit.jober.aipp.domains.appversion.repository.impl;
 
 import modelengine.fit.jane.common.enums.DirectionEnum;
 import modelengine.fit.jober.aipp.condition.AppQueryCondition;
+import modelengine.fit.jober.aipp.converters.IconConverter;
 import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
 import modelengine.fit.jober.aipp.domains.appversion.AppVersionFactory;
 import modelengine.fit.jober.aipp.domains.appversion.repository.AppVersionRepository;
@@ -33,9 +34,10 @@ public class AppVersionRepositoryImpl implements AppVersionRepository {
     private final AppBuilderAppMapper mapper;
     private final AppVersionSerializer serializer;
 
-    public AppVersionRepositoryImpl(AppBuilderAppMapper mapper, AppVersionFactory appVersionFactory) {
+    public AppVersionRepositoryImpl(AppBuilderAppMapper mapper, AppVersionFactory appVersionFactory,
+            IconConverter iconConverter) {
         this.mapper = mapper;
-        this.serializer = new AppVersionSerializer(appVersionFactory, this);
+        this.serializer = new AppVersionSerializer(appVersionFactory, this, iconConverter);
     }
 
     @Override

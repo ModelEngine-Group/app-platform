@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.domains.appversion;
 
+import modelengine.fit.jober.aipp.converters.IconConverter;
 import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jade.waterflow.AippFlowDefinitionService;
@@ -69,6 +70,7 @@ public class AppVersionFactory {
     private final Integer maxUserContextLen;
     private final KnowledgeCenterService knowledgeCenterService;
     private final String resourcePath;
+    private final IconConverter iconConverter;
 
     public AppVersionFactory(AppBuilderFormPropertyRepository formPropertyRepository, AppTaskService appTaskService,
             AppBuilderConfigRepository configRepository, AppBuilderFormRepository formRepository,
@@ -82,8 +84,8 @@ public class AppVersionFactory {
             FlowDefinitionService flowDefinitionService,
             @Value("${app-engine.question.max-length}") Integer maxQuestionLen,
             @Value("${app-engine.user-context.max-length}") Integer maxUserContextLen,
-            KnowledgeCenterService knowledgeCenterService,
-            @Value("${app-engine.resource.path}") String resourcePath) {
+            KnowledgeCenterService knowledgeCenterService, @Value("${app-engine.resource.path}") String resourcePath,
+            IconConverter iconConverter) {
         this.formPropertyRepository = formPropertyRepository;
         this.appTaskService = appTaskService;
         this.configRepository = configRepository;
@@ -109,6 +111,7 @@ public class AppVersionFactory {
         this.maxUserContextLen = maxUserContextLen != null ? maxUserContextLen : 500;
         this.knowledgeCenterService = knowledgeCenterService;
         this.resourcePath = resourcePath;
+        this.iconConverter = iconConverter;
     }
 
     /**
@@ -146,6 +149,7 @@ public class AppVersionFactory {
                 .maxUserContextLen(this.maxUserContextLen)
                 .knowledgeCenterService(this.knowledgeCenterService)
                 .resourcePath(this.resourcePath)
+                .iconConverter(this.iconConverter)
                 .build());
     }
 }

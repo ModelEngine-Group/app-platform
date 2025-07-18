@@ -33,6 +33,7 @@ import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
 import modelengine.fit.jober.aipp.condition.AppQueryCondition;
+import modelengine.fit.jober.aipp.converters.IconConverter;
 import modelengine.fit.jober.aipp.domain.AppBuilderConfig;
 import modelengine.fit.jober.aipp.domain.AppBuilderFlowGraph;
 import modelengine.fit.jober.aipp.domain.AppTemplate;
@@ -101,13 +102,16 @@ public class AppVersionServiceTest {
     private AppTaskService appTaskService;
     private AppVersionFactory appVersionFactory;
     private AppBuilderAppMapper appBuilderAppMapper;
+    private IconConverter iconConverter;
 
 
     @BeforeEach
     public void setUp() {
         this.appVersionFactory = mock(AppVersionFactory.class);
         this.appBuilderAppMapper = mock(AppBuilderAppMapper.class);
-        this.appVersionRepository = new AppVersionRepositoryImpl(this.appBuilderAppMapper, this.appVersionFactory);
+        this.iconConverter = mock(IconConverter.class);
+        this.appVersionRepository =
+                new AppVersionRepositoryImpl(this.appBuilderAppMapper, this.appVersionFactory, this.iconConverter);
         this.appChatRepository = mock(AppChatRepository.class);
         this.appTaskInstanceService = mock(AppTaskInstanceService.class);
         this.uploadedFileManageService = mock(UploadedFileManageService.class);

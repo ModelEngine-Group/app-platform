@@ -31,7 +31,6 @@ import static modelengine.fitframework.util.ObjectUtils.cast;
 import com.alibaba.fastjson.JSON;
 
 import lombok.Getter;
-import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.dto.ModelListDto;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
@@ -47,13 +46,14 @@ import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.common.exception.AippParamException;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.converters.ConverterFactory;
+import modelengine.fit.jober.aipp.converters.IconConverter;
 import modelengine.fit.jober.aipp.domain.AppBuilderConfig;
 import modelengine.fit.jober.aipp.domain.AppBuilderFlowGraph;
 import modelengine.fit.jober.aipp.domain.AppBuilderForm;
 import modelengine.fit.jober.aipp.domain.AppBuilderFormProperty;
 import modelengine.fit.jober.aipp.domain.AppTemplate;
-import modelengine.fit.jober.aipp.domains.appversion.publish.FormProperyPublisher;
 import modelengine.fit.jober.aipp.domains.appversion.publish.FlowPublisher;
+import modelengine.fit.jober.aipp.domains.appversion.publish.FormProperyPublisher;
 import modelengine.fit.jober.aipp.domains.appversion.publish.GraphPublisher;
 import modelengine.fit.jober.aipp.domains.appversion.publish.Publisher;
 import modelengine.fit.jober.aipp.domains.appversion.publish.StorePublisher;
@@ -124,6 +124,7 @@ import modelengine.jade.knowledge.KnowledgeCenterService;
 import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.store.service.AppService;
 import modelengine.jade.store.service.PluginService;
+import modelengine.jade.store.service.ToolService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -185,6 +186,7 @@ public class AppVersion {
     private final LocaleService localeService;
     private final AippModelCenter aippModelCenter;
     private final ConverterFactory converterFactory;
+    private final IconConverter iconConverter;
 
     // 加载属性.
     private List<AppBuilderFormProperty> formProperties;
@@ -202,6 +204,8 @@ public class AppVersion {
         this.attributes = StringUtils.isBlank(data.getAttributes())
                 ? new HashMap<>()
                 : JsonUtils.parseObject(data.getAttributes());
+        this.iconConverter = dependencies.getIconConverter();
+        processIconPath();
         this.formPropertyRepository = dependencies.getFormPropertyRepository();
         this.appTaskService = dependencies.getAppTaskService();
         this.configRepository = dependencies.getConfigRepository();
@@ -897,6 +901,7 @@ public class AppVersion {
         this.data.setName(newName);
 
         this.attributes = AppImExportUtil.resetAppAttributes(JsonUtils.parseObject(this.data.getAttributes()));
+        processIconPath();
         this.config = AppImExportUtil.convertToAppBuilderConfig(appDto.getConfig(), context);
         this.flowGraph = AppImExportUtil.convertToAppBuilderFlowGraph(appDto.getFlowGraph(), context);
         this.formProperties = AppImExportUtil.getFormProperties(this.config.getConfigProperties());
@@ -1102,6 +1107,17 @@ public class AppVersion {
             default:
                 return new AippException(context, AippErrCode.INVALID_FLOW_CONFIG);
         }
+    }
+
+    private void processIconPath() {
+        if (!this.attributes.containsKey("icon")) {
+            return;
+        }
+        Object iconObj = this.attributes.get("icon");
+        if (!(iconObj instanceof String originalPath)) {
+            return;
+        }
+        this.attributes.put("icon", this.iconConverter.toFrontend(originalPath));
     }
 
     /**

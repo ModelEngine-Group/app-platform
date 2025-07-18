@@ -7,6 +7,7 @@
 package modelengine.fit.jober.aipp.repository.impl;
 
 import modelengine.fit.jober.aipp.condition.TemplateQueryCondition;
+import modelengine.fit.jober.aipp.converters.IconConverter;
 import modelengine.fit.jober.aipp.domain.AppTemplate;
 import modelengine.fit.jober.aipp.mapper.AppTemplateMapper;
 import modelengine.fit.jober.aipp.repository.AppTemplateRepository;
@@ -27,9 +28,9 @@ public class AppTemplateRepositoryImpl implements AppTemplateRepository {
     private final AppTemplateMapper appTemplateMapper;
     private final AppTemplateSerializer serializer;
 
-    public AppTemplateRepositoryImpl(AppTemplateMapper appTemplateMapper) {
+    public AppTemplateRepositoryImpl(AppTemplateMapper appTemplateMapper, IconConverter iconConverter) {
         this.appTemplateMapper = appTemplateMapper;
-        this.serializer = new AppTemplateSerializer();
+        this.serializer = new AppTemplateSerializer(iconConverter);
     }
 
     @Override

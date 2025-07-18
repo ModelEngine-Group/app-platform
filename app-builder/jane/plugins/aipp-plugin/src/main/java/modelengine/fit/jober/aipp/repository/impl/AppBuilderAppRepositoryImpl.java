@@ -7,6 +7,7 @@
 package modelengine.fit.jober.aipp.repository.impl;
 
 import modelengine.fit.jober.aipp.condition.AppQueryCondition;
+import modelengine.fit.jober.aipp.converters.IconConverter;
 import modelengine.fit.jober.aipp.domain.AppBuilderApp;
 import modelengine.fit.jober.aipp.mapper.AppBuilderAppMapper;
 import modelengine.fit.jober.aipp.po.AppBuilderAppPo;
@@ -29,9 +30,9 @@ public class AppBuilderAppRepositoryImpl implements AppBuilderAppRepository {
     private final AppBuilderAppMapper appBuilderAppMapper;
     private final AppBuilderAppSerializer serializer;
 
-    public AppBuilderAppRepositoryImpl(AppBuilderAppMapper appBuilderAppMapper) {
+    public AppBuilderAppRepositoryImpl(AppBuilderAppMapper appBuilderAppMapper, IconConverter iconConverter) {
         this.appBuilderAppMapper = appBuilderAppMapper;
-        this.serializer = new AppBuilderAppSerializer();
+        this.serializer = new AppBuilderAppSerializer(iconConverter);
     }
 
     @Override

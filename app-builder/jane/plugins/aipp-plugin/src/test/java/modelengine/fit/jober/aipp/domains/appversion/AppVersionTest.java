@@ -30,6 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import modelengine.fit.jober.aipp.converters.IconConverter;
 import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.dto.ModelListDto;
@@ -148,6 +149,7 @@ public class AppVersionTest {
     private AippFlowDefinitionService aippFlowDefinitionService;
     private FlowDefinitionService flowDefinitionService;
     private KnowledgeCenterService knowledgeCenterService;
+    private IconConverter iconConverter;
 
     @BeforeEach
     public void setUp() {
@@ -173,6 +175,7 @@ public class AppVersionTest {
         this.aippFlowDefinitionService = mock(AippFlowDefinitionService.class);
         this.flowDefinitionService = mock(FlowDefinitionService.class);
         this.knowledgeCenterService = mock(KnowledgeCenterService.class);
+        this.iconConverter = mock(IconConverter.class);
         ConverterFactory converterFactory = new ConverterFactory(
                 List.of(new AppExportToAppPoConverter(), new AppConfigToExportConfigConverter(),
                         new AppGraphToExportGraphConverter(), new AppVersionToExportAppConverter(),
@@ -197,7 +200,14 @@ public class AppVersionTest {
                 this.aippModelCenter,
                 converterFactory,
                 this.aippFlowDefinitionService,
-                this.flowDefinitionService, 20000, 300, this.knowledgeCenterService, "/var/share");
+                this.flowDefinitionService,
+                20000,
+                300,
+                this.knowledgeCenterService,
+                "/var/share",
+                this.iconConverter);
+        when(this.iconConverter.toFrontend(anyString())).thenReturn("/v1/api");
+        when(this.iconConverter.toStorage(anyString())).thenReturn("/v1/api");
     }
 
     /**
@@ -212,7 +222,7 @@ public class AppVersionTest {
             // given.
             AppBuilderAppPo data = new AppBuilderAppPo();
             data.setAttributes(JsonUtils.toJsonString(MapBuilder.get()
-                    .put("icon", "icon_1")
+                    .put("icon", "/api/jober/v1/api")
                     .put("description", "description_1")
                     .put("greeting", "你好啊")
                     .put("app_type", "写作助手")
@@ -221,7 +231,7 @@ public class AppVersionTest {
 
             // when.
             // then.
-            assertEquals("icon_1", appVersion.getIcon());
+            assertEquals("/v1/api", appVersion.getIcon());
             assertEquals("description_1", appVersion.getDescription());
             assertEquals("你好啊", appVersion.getGreeting());
             assertEquals("写作助手", appVersion.getClassification());
@@ -988,7 +998,7 @@ public class AppVersionTest {
                     .name("模板1")
                     .appType(NORMAL.name())
                     .description("description_2")
-                    .icon("/icon.png")
+                    .icon("/api/v1/icon.png")
                     .build(), operationContext);
 
             // then.
@@ -997,7 +1007,7 @@ public class AppVersionTest {
             assertEquals(AppCategory.APP.getCategory(), templateInfoDto.getCategory());
             assertEquals("description_2", templateInfoDto.getDescription());
             assertEquals(NORMAL.name(), templateInfoDto.getAppType());
-            assertEquals("./copiedIcon.png", templateInfoDto.getIcon());
+            assertEquals("/v1/api", templateInfoDto.getIcon());
             assertEquals("zy z00xxxx", templateInfoDto.getCreator());
         }
     }

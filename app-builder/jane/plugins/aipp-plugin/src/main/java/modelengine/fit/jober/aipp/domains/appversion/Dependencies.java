@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.domains.appversion;
 
+import modelengine.fit.jober.aipp.converters.IconConverter;
 import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jade.waterflow.AippFlowDefinitionService;
@@ -68,4 +69,5 @@ public class Dependencies {
     private Integer maxUserContextLen;
     private KnowledgeCenterService knowledgeCenterService;
     private String resourcePath;
+    private IconConverter iconConverter;
 }

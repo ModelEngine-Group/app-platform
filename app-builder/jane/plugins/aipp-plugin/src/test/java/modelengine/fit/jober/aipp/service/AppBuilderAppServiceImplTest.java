@@ -354,7 +354,8 @@ public class AppBuilderAppServiceImplTest {
                 20000,
                 300,
                 null,
-                "/var/share");
+                "/var/share",
+                null);
         if (StringUtils.isBlank(appPo.getConfigId())) {
             appPo.setConfigId("defaultConfigId");
         }
