@@ -9,15 +9,14 @@ package modelengine.jade.app.engine.task.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 
-import modelengine.jade.app.engine.task.dto.EvalRecordQueryParam;
-import modelengine.jade.app.engine.task.entity.EvalRecordEntity;
-import modelengine.jade.app.engine.task.po.EvalRecordPo;
-
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.MybatisTest;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.fitframework.test.domain.db.DatabaseModel;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.jade.app.engine.task.dto.EvalRecordQueryParam;
+import modelengine.jade.app.engine.task.entity.EvalRecordEntity;
+import modelengine.jade.app.engine.task.po.EvalRecordPo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,7 @@ import java.util.List;
  * @since 2024-08-13
  */
 @MybatisTest(classes = {EvalRecordMapper.class}, model = DatabaseModel.POSTGRESQL)
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 @DisplayName("测试 EvalTaskCaseResultMapper")
 public class EvalRecordMapperTest {
     private static final List<String> INPUTS =
@@ -44,6 +43,7 @@ public class EvalRecordMapperTest {
     private EvalRecordMapper mapper;
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("插入单个评估记录后，回填主键成功")
     void shouldOkWhenInsertSingleEvalRecord() {
         EvalRecordPo resultPo = new EvalRecordPo();
@@ -58,6 +58,7 @@ public class EvalRecordMapperTest {
     }
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("插入评估记录后，回填主键成功")
     void shouldOkWhenInsertEvalRecord() {
         EvalRecordPo recordPo1 = new EvalRecordPo();
@@ -80,7 +81,7 @@ public class EvalRecordMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_record.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_record.sql"})
     @DisplayName("分页查询评估任务用例结果成功")
     void shouldOkWhenQueryEvalRecord() {
         EvalRecordQueryParam queryParam = new EvalRecordQueryParam();
@@ -107,7 +108,7 @@ public class EvalRecordMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_record.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_record.sql"})
     @DisplayName("统计评估任务用例结果成功")
     void shouldOkWhenCountEvalRecord() {
         EvalRecordQueryParam queryParam = new EvalRecordQueryParam();
@@ -119,7 +120,7 @@ public class EvalRecordMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_data.sql"})
     @DisplayName("查询评估任务用例结果成功")
     void shouldOkWhenListEvalRecord() {
         List<EvalRecordEntity> recordEntities = this.mapper.getEntityByCaseIds(Collections.singletonList(1L));

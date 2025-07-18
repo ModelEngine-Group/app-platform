@@ -15,6 +15,17 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
+import modelengine.fit.http.client.HttpClassicClientResponse;
+import modelengine.fitframework.annotation.Fit;
+import modelengine.fitframework.test.annotation.IntegrationTest;
+import modelengine.fitframework.test.annotation.Mock;
+import modelengine.fitframework.test.annotation.Spy;
+import modelengine.fitframework.test.annotation.Sql;
+import modelengine.fitframework.test.domain.mvc.MockMvc;
+import modelengine.fitframework.test.domain.mvc.request.MockMvcRequestBuilders;
+import modelengine.fitframework.test.domain.mvc.request.MockRequestBuilder;
+import modelengine.fitframework.util.ObjectUtils;
+import modelengine.fitframework.util.TypeUtils;
 import modelengine.jade.app.engine.eval.dto.EvalDataCreateDto;
 import modelengine.jade.app.engine.eval.dto.EvalDataUpdateDto;
 import modelengine.jade.app.engine.eval.entity.EvalDataEntity;
@@ -31,18 +42,6 @@ import modelengine.jade.common.globalization.LocaleService;
 import modelengine.jade.common.vo.PageVo;
 import modelengine.jade.common.vo.Result;
 import modelengine.jade.schema.SchemaValidator;
-
-import modelengine.fit.http.client.HttpClassicClientResponse;
-import modelengine.fitframework.annotation.Fit;
-import modelengine.fitframework.test.annotation.IntegrationTest;
-import modelengine.fitframework.test.annotation.Mock;
-import modelengine.fitframework.test.annotation.Spy;
-import modelengine.fitframework.test.annotation.Sql;
-import modelengine.fitframework.test.domain.mvc.MockMvc;
-import modelengine.fitframework.test.domain.mvc.request.MockMvcRequestBuilders;
-import modelengine.fitframework.test.domain.mvc.request.MockRequestBuilder;
-import modelengine.fitframework.util.ObjectUtils;
-import modelengine.fitframework.util.TypeUtils;
 
 import org.apache.ibatis.session.SqlSessionException;
 import org.junit.jupiter.api.AfterEach;
@@ -67,7 +66,7 @@ import java.util.Locale;
 @IntegrationTest(scanPackages = {
         "modelengine.jade.app.engine.eval", "modelengine.jade.common.filter", "modelengine.jade.common.audit"
 })
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 @Disabled
 @DisplayName("评估数据集成测试")
 public class EvalDataIntegrationTest {
@@ -118,7 +117,7 @@ public class EvalDataIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("创建评估数据接口成功")
     void shouldOkWhenCreateEvalData() {
         EvalDataCreateDto evalDataCreateDto = new EvalDataCreateDto();
@@ -137,6 +136,7 @@ public class EvalDataIntegrationTest {
     }
 
     @Test
+    @Sql(before = {"sql/test_create_table.sql"})
     @DisplayName("不合格数据创建评估数据接口失败")
     void shouldFailWhenCreateEvalDataWithInvalidDataId() {
         EvalDataCreateDto evalDataCreateDto = new EvalDataCreateDto();
@@ -154,7 +154,7 @@ public class EvalDataIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("删除评估数据接口成功")
     void shouldOkWhenDeleteEvalData() {
         EvalDataQueryParam queryParam = new EvalDataQueryParam();
@@ -170,7 +170,7 @@ public class EvalDataIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("修改评估数据接口成功")
     public void shouldOkWhenUpdateEvalData() {
         when(this.versionGenerator.getUid()).thenReturn(3L);
@@ -205,7 +205,7 @@ public class EvalDataIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("分页查询评估数据接口成功")
     void shouldOkWhenQueryEvalData() {
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/eval/data")
@@ -226,7 +226,7 @@ public class EvalDataIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("分页查询多页评估数据接口成功")
     void shouldOkWhenQueryPagedEvalData() {
         for (int i = 0; i <= 1; i++) {
@@ -241,8 +241,7 @@ public class EvalDataIntegrationTest {
             this.response = this.mockMvc.perform(requestBuilder);
             assertThat(this.response.statusCode()).isEqualTo(200);
             assertThat(this.response.objectEntity()).isPresent();
-            Result<PageVo<EvalDataEntity>> rawTarget =
-                    ObjectUtils.cast(this.response.objectEntity().get().object());
+            Result<PageVo<EvalDataEntity>> rawTarget = ObjectUtils.cast(this.response.objectEntity().get().object());
             PageVo<EvalDataEntity> target = rawTarget.getData();
             assertThat(target.getTotal()).isEqualTo(5);
             assertThat(target.getItems()).isNotEmpty()
@@ -254,7 +253,7 @@ public class EvalDataIntegrationTest {
 
     @Disabled("测试使用的 h2 数据库不支持方法级事务回滚")
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("修改评估数据失败，数据已被删除，事务回滚成功")
     void shouldRollbackWhenUpdateFailed() {
         when(this.evalDatasetVersionManager.applyVersion()).thenReturn(3L);
@@ -274,7 +273,7 @@ public class EvalDataIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("评估数据增删改查成功")
     void shouldOkWhenCrudData() throws IOException {
         // 初始化数据库后，数据集 id2 的数据量为 0。

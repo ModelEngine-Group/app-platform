@@ -10,6 +10,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 import modelengine.fit.waterflow.entity.FlowTransCompletionInfo;
+import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowTraceStatus;
+import modelengine.fitframework.annotation.Fit;
+import modelengine.fitframework.test.annotation.IntegrationTest;
+import modelengine.fitframework.test.annotation.Spy;
+import modelengine.fitframework.test.annotation.Sql;
 import modelengine.jade.app.engine.task.dto.EvalInstanceQueryParam;
 import modelengine.jade.app.engine.task.dto.EvalReportQueryParam;
 import modelengine.jade.app.engine.task.entity.EvalInstanceEntity;
@@ -19,12 +24,6 @@ import modelengine.jade.app.engine.task.mapper.EvalReportMapper;
 import modelengine.jade.app.engine.task.service.EvalReportService;
 import modelengine.jade.app.engine.task.vo.EvalReportVo;
 import modelengine.jade.common.vo.PageVo;
-
-import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowTraceStatus;
-import modelengine.fitframework.annotation.Fit;
-import modelengine.fitframework.test.annotation.IntegrationTest;
-import modelengine.fitframework.test.annotation.Spy;
-import modelengine.fitframework.test.annotation.Sql;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +39,7 @@ import java.util.List;
 @IntegrationTest(scanPackages = {
         "modelengine.jade.app.engine.task"
 })
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 public class EvalTaskUpdaterTest {
     @Spy
     private EvalTaskUpdater taskUpdater;
@@ -63,7 +62,7 @@ public class EvalTaskUpdaterTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_data.sql"})
     void shouldOkWhenFlowTransCompleted() {
         this.taskUpdater.callback(buildTestData("trace1"));
 
@@ -99,7 +98,7 @@ public class EvalTaskUpdaterTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_data.sql"})
     void shouldFailWhenFlowTransCompleted() {
         this.taskUpdater.callback(buildTestData("trace2"));
         EvalInstanceQueryParam instanceQueryParam = new EvalInstanceQueryParam();
@@ -108,7 +107,7 @@ public class EvalTaskUpdaterTest {
         instanceQueryParam.setPageIndex(1);
         List<EvalInstanceEntity> instanceEntities = this.evalInstanceMapper.listEvalInstance(instanceQueryParam);
         assertThat(instanceEntities.size()).isEqualTo(1);
-        assertThat(instanceEntities).extracting(EvalInstanceEntity::getId,
-                EvalInstanceEntity::getStatus).containsExactly(tuple(3L, EvalInstanceStatusEnum.FAILED));
+        assertThat(instanceEntities).extracting(EvalInstanceEntity::getId, EvalInstanceEntity::getStatus)
+                .containsExactly(tuple(3L, EvalInstanceStatusEnum.FAILED));
     }
 }

@@ -42,7 +42,7 @@ import java.util.Map;
  * @since 2024-09-18
  */
 @IntegrationTest(scanPackages = "modelengine.jade.store")
-@Sql(scripts = {"sql/create/tag.sql", "sql/create/tool.sql"})
+@Sql(before = {"sql/create/tag.sql", "sql/create/tool.sql"})
 @DisplayName("Tool 集成测试")
 public class ToolIntegrationTest {
     private static final String UNIQUE_NAME = "b2de879a-97af-4e94-b0ea-098f00ad5ae4";
@@ -71,7 +71,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tag.sql")
+    @Sql(before = {"sql/create/tag.sql", "sql/create/tool.sql", "sql/insert/tag.sql"})
     @DisplayName("测试查询单个工具")
     void shouldOkWhenGetTool() {
         StoreToolData tool = this.storeToolService.getTool(UNIQUE_NAME);
@@ -79,7 +79,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/tag.sql", "sql/insert/tool.sql"})
+    @Sql(before = {"sql/create/tag.sql", "sql/create/tool.sql", "sql/insert/tag.sql", "sql/insert/tool.sql"})
     @DisplayName("测试查询工具列表")
     void shouldOkWhenGetTools() {
         ToolQuery toolQuery = new ToolQuery();
@@ -89,7 +89,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/tag.sql", "sql/insert/tool.sql"})
+    @Sql(before = {"sql/create/tag.sql", "sql/create/tool.sql", "sql/insert/tag.sql", "sql/insert/tool.sql"})
     @DisplayName("测试模糊查询工具列表")
     void shouldOkWhenSearchTools() {
         ToolQuery toolQuery = new ToolQuery();
@@ -99,7 +99,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/tag.sql", "sql/insert/tool.sql"})
+    @Sql(before = {"sql/create/tag.sql", "sql/create/tool.sql", "sql/insert/tag.sql", "sql/insert/tool.sql"})
     @DisplayName("测试查询工具所有版本")
     void shouldOkWhenGetAllVersions() {
         ToolQuery toolQuery = new ToolQuery();
@@ -109,7 +109,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/tag.sql", "sql/insert/tool.sql"})
+    @Sql(before = {"sql/create/tag.sql", "sql/create/tool.sql", "sql/insert/tag.sql", "sql/insert/tool.sql"})
     @DisplayName("测试查询工具通过版本")
     void shouldOkWhenGetByVersion() {
         StoreToolData storeToolData = this.storeToolService.getToolByVersion(UNIQUE_NAME, "1.0.0");
@@ -117,7 +117,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/tag.sql", "sql/insert/tool.sql"})
+    @Sql(before = {"sql/create/tag.sql", "sql/create/tool.sql", "sql/insert/tag.sql", "sql/insert/tool.sql"})
     @DisplayName("测试查询已存在的定义组")
     void shouldOkWhenFindExistDefGroup() {
         ListResult<DefinitionGroupData> existDefGroups = this.storeToolService.findExistDefGroups(DEF_GROUP_LIST);

@@ -11,14 +11,13 @@ import static modelengine.jade.app.engine.task.entity.EvalInstanceStatusEnum.SUC
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 
-import modelengine.jade.app.engine.task.dto.EvalInstanceQueryParam;
-import modelengine.jade.app.engine.task.entity.EvalInstanceEntity;
-import modelengine.jade.app.engine.task.po.EvalInstancePo;
-
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.MybatisTest;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.fitframework.test.domain.db.DatabaseModel;
+import modelengine.jade.app.engine.task.dto.EvalInstanceQueryParam;
+import modelengine.jade.app.engine.task.entity.EvalInstanceEntity;
+import modelengine.jade.app.engine.task.po.EvalInstancePo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,13 +33,14 @@ import java.util.List;
  * @since 2024-08-12
  */
 @MybatisTest(classes = {EvalInstanceMapper.class}, model = DatabaseModel.POSTGRESQL)
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 @DisplayName("测试 EvalTaskInstanceMapper")
 public class EvalInstanceMapperTest {
     @Fit
     private EvalInstanceMapper mapper;
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("插入评估任务实例后，回填主键成功")
     void shouldOkWhenCreateEvalInstance() {
         EvalInstancePo po = new EvalInstancePo();
@@ -51,7 +51,7 @@ public class EvalInstanceMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_data.sql"})
     @DisplayName("根据工作流实例唯一标识查询评估任务实例成功")
     void shouldOkWhenGetEvalInstanceByTraceId() {
         List<Long> ids = this.mapper.getInstanceId("trace1");
@@ -59,7 +59,7 @@ public class EvalInstanceMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_eval_instance.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_eval_instance.sql"})
     @DisplayName("查询评估任务实例成功")
     void shouldOkWhenQueryEvalInstance() {
         EvalInstanceQueryParam queryParam = new EvalInstanceQueryParam();
@@ -68,18 +68,14 @@ public class EvalInstanceMapperTest {
         queryParam.setPageIndex(1);
         List<EvalInstanceEntity> entities = this.mapper.listEvalInstance(queryParam);
         assertThat(entities.size()).isEqualTo(2);
-        assertThat(entities).extracting(
-                EvalInstanceEntity::getStatus,
-                EvalInstanceEntity::getPassRate,
-                EvalInstanceEntity::getCreatedBy
-        ).containsExactly(
-                tuple(RUNNING, 76.0, "sky"),
-                tuple(SUCCESS, 95.0, "fang")
-        );
+        assertThat(entities).extracting(EvalInstanceEntity::getStatus,
+                        EvalInstanceEntity::getPassRate,
+                        EvalInstanceEntity::getCreatedBy)
+                .containsExactly(tuple(RUNNING, 76.0, "sky"), tuple(SUCCESS, 95.0, "fang"));
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_eval_instance.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_eval_instance.sql"})
     @DisplayName("统计评估任务实例成功")
     void shouldOkWhenCountEvalInstance() {
         EvalInstanceQueryParam queryParam = new EvalInstanceQueryParam();
@@ -91,7 +87,7 @@ public class EvalInstanceMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_eval_instance.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_eval_instance.sql"})
     @DisplayName("修改评估任务实例成功")
     void shouldOKWhenUpdateEvalDatasetDescAndName() {
         EvalInstanceQueryParam queryParam = new EvalInstanceQueryParam();
@@ -120,7 +116,7 @@ public class EvalInstanceMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_data.sql"})
     @DisplayName("查询评估任务最新实例")
     void shouldOkWhenQueryLatestEvalInstance() {
         List<EvalInstanceEntity> entities = this.mapper.findLatestInstances(Arrays.asList(1L, 2L));

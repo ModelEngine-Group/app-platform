@@ -27,14 +27,14 @@ import java.util.List;
  * @since 2024-09-14
  */
 @IntegrationTest(scanPackages = "modelengine.jade.store")
-@Sql(scripts = "sql/create/model.sql")
+@Sql(before = "sql/create/model.sql")
 @DisplayName("Model 集成测试")
 public class ModelIntegrationTest {
     @Fit
     private HuggingFaceModelService huggingFaceModelService;
 
     @Test
-    @Sql(scripts = "sql/insert/model.sql")
+    @Sql(before = {"sql/create/model.sql", "sql/insert/model.sql"})
     @DisplayName("测试查询模型列表")
     void shouldOkWhenGetModels() {
         ModelQuery modelQuery = new ModelQuery("fill-mask", null, null);

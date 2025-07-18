@@ -23,13 +23,14 @@ import org.junit.jupiter.api.Test;
  * @since 2024-07-29
  */
 @MybatisTest(classes = {IdGeneratorMapper.class}, model = DatabaseModel.POSTGRESQL)
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 @DisplayName("测试 WorkerGeneratorMapper")
 public class IdGeneratorMapperTest {
     @Fit
     private IdGeneratorMapper idGeneratorMapper;
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("获取机器ID成功")
     void shouldOkWhenGetWorkerId() {
         for (int i = 1; i <= 3; i++) {

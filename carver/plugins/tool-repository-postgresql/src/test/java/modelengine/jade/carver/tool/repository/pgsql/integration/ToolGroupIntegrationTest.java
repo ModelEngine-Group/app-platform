@@ -38,7 +38,7 @@ import java.util.List;
  * @since 2024-10-31
  */
 @IntegrationTest(scanPackages = "modelengine.jade.carver.tool")
-@Sql(scripts = {
+@Sql(before = {
         "sql/create/tool.sql", "sql/create/definition.sql", "sql/create/tool-group.sql",
         "sql/create/definition-group.sql"
 })
@@ -80,6 +80,10 @@ public class ToolGroupIntegrationTest {
     }
 
     @Test
+    @Sql(before = {
+            "sql/create/tool.sql", "sql/create/definition.sql", "sql/create/tool-group.sql",
+            "sql/create/definition-group.sql"
+    })
     @DisplayName("测试插入工具组")
     void shouldOkWhenAddToolGroup() {
         this.mockDefinitionInfo();
@@ -94,6 +98,10 @@ public class ToolGroupIntegrationTest {
     }
 
     @Test
+    @Sql(before = {
+            "sql/create/tool.sql", "sql/create/definition.sql", "sql/create/tool-group.sql",
+            "sql/create/definition-group.sql"
+    })
     @DisplayName("测试插入工具组列表")
     void shouldOkWhenAddToolGroupList() {
         this.mockDefinitionInfo();
@@ -108,7 +116,10 @@ public class ToolGroupIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/tool.sql", "sql/insert/tool-group.sql"})
+    @Sql(before = {
+            "sql/create/tool.sql", "sql/create/definition.sql", "sql/create/tool-group.sql",
+            "sql/create/definition-group.sql", "sql/insert/tool.sql", "sql/insert/tool-group.sql"
+    })
     @DisplayName("测试按工具组删除后，查询不到工具组数据")
     void shouldNullWhenDeleteByGroupName() {
         List<ToolGroupData> toolGroupDataList =
@@ -125,7 +136,10 @@ public class ToolGroupIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/tool.sql", "sql/insert/tool-group.sql"})
+    @Sql(before = {
+            "sql/create/tool.sql", "sql/create/definition.sql", "sql/create/tool-group.sql",
+            "sql/create/definition-group.sql", "sql/insert/tool.sql", "sql/insert/tool-group.sql"
+    })
     @DisplayName("测试按工具组删除后，查询不到工具组数据")
     void shouldNullWhenDeleteByDefinitionGroupName() {
         List<ToolGroupData> toolGroupDataList = this.toolGroupService.get(DEFINITION_GROUP_NAME1);

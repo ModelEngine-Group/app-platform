@@ -8,14 +8,13 @@ package modelengine.jade.app.engine.task.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import modelengine.jade.app.engine.task.dto.EvalCaseQueryParam;
-import modelengine.jade.app.engine.task.entity.EvalCaseEntity;
-import modelengine.jade.app.engine.task.po.EvalCasePo;
-
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.MybatisTest;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.fitframework.test.domain.db.DatabaseModel;
+import modelengine.jade.app.engine.task.dto.EvalCaseQueryParam;
+import modelengine.jade.app.engine.task.entity.EvalCaseEntity;
+import modelengine.jade.app.engine.task.po.EvalCasePo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,13 +28,14 @@ import java.util.List;
  * @since 2024-08-13
  */
 @MybatisTest(classes = {EvalCaseMapper.class}, model = DatabaseModel.POSTGRESQL)
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 @DisplayName("测试 EvalTaskCaseMapper")
 public class EvalCaseMapperTest {
     @Fit
     private EvalCaseMapper mapper;
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("插入评估任务用例后，回填主键成功")
     void shouldOkWhenCreateEvalTaskCase() {
         EvalCasePo evalCasePo = new EvalCasePo();
@@ -47,7 +47,7 @@ public class EvalCaseMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_data.sql"})
     @DisplayName("分页查询评估用例成功")
     void shouldOkWhenListEvalCase() {
         EvalCaseQueryParam queryParam = new EvalCaseQueryParam();
@@ -60,21 +60,17 @@ public class EvalCaseMapperTest {
         assertThat(this.mapper.countEvalCase(1L)).isEqualTo(1);
 
         EvalCaseEntity entity = caseEntities.get(0);
-        assertThat(entity).extracting(EvalCaseEntity::getId,
-                        EvalCaseEntity::getPass)
-                .containsExactly(1L, true);
+        assertThat(entity).extracting(EvalCaseEntity::getId, EvalCaseEntity::getPass).containsExactly(1L, true);
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_data.sql"})
     @DisplayName("查询评估用例成功")
     void shouldOkWhenListEvalCaseById() {
         List<EvalCaseEntity> caseEntities = this.mapper.getCaseByInstanceId(1L);
         assertThat(caseEntities.size()).isEqualTo(1);
 
         EvalCaseEntity entity = caseEntities.get(0);
-        assertThat(entity).extracting(EvalCaseEntity::getId,
-                        EvalCaseEntity::getPass)
-                .containsExactly(1L, true);
+        assertThat(entity).extracting(EvalCaseEntity::getId, EvalCaseEntity::getPass).containsExactly(1L, true);
     }
 }

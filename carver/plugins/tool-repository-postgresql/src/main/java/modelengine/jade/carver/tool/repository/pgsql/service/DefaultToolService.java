@@ -48,6 +48,7 @@ public class DefaultToolService implements ToolService {
     public DefaultToolService(ToolRepositoryInner toolRepo, DefinitionService definitionService) {
         this.toolRepo = toolRepo;
         this.definitionService = definitionService;
+        this.toolRepo.getTool("123");
     }
 
     @Override

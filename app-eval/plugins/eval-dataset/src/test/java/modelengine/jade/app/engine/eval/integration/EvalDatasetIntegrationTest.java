@@ -14,13 +14,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import modelengine.jade.app.engine.eval.dto.EvalDataCreateDto;
-import modelengine.jade.app.engine.eval.dto.EvalDatasetCreateDto;
-import modelengine.jade.app.engine.eval.dto.EvalDatasetUpdateDto;
-import modelengine.jade.app.engine.eval.entity.EvalDatasetQueryParam;
-import modelengine.jade.app.engine.eval.mapper.EvalDataMapper;
-import modelengine.jade.app.engine.eval.mapper.EvalDatasetMapper;
-import modelengine.jade.app.engine.eval.vo.EvalDatasetVo;
 import modelengine.fit.http.client.HttpClassicClientResponse;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
@@ -33,7 +26,14 @@ import modelengine.fitframework.test.domain.mvc.request.MockRequestBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.fitframework.util.TypeUtils;
+import modelengine.jade.app.engine.eval.dto.EvalDataCreateDto;
+import modelengine.jade.app.engine.eval.dto.EvalDatasetCreateDto;
+import modelengine.jade.app.engine.eval.dto.EvalDatasetUpdateDto;
 import modelengine.jade.app.engine.eval.entity.EvalDataQueryParam;
+import modelengine.jade.app.engine.eval.entity.EvalDatasetQueryParam;
+import modelengine.jade.app.engine.eval.mapper.EvalDataMapper;
+import modelengine.jade.app.engine.eval.mapper.EvalDatasetMapper;
+import modelengine.jade.app.engine.eval.vo.EvalDatasetVo;
 import modelengine.jade.app.engine.uid.UidGenerator;
 import modelengine.jade.authentication.AuthenticationService;
 import modelengine.jade.authentication.context.UserContext;
@@ -65,7 +65,7 @@ import java.util.List;
 @IntegrationTest(scanPackages = {
         "modelengine.jade.app.engine.eval", "modelengine.jade.common.filter", "modelengine.jade.common.audit"
 })
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 @DisplayName("评估数据集集成测试")
 @Disabled
 public class EvalDatasetIntegrationTest {
@@ -111,6 +111,7 @@ public class EvalDatasetIntegrationTest {
     }
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("创建评估数据集接口成功后，插入新数据成功")
     void shouldOkWhenCreateEvalDataset() throws IOException {
         // 创建评估数据集。
@@ -169,6 +170,7 @@ public class EvalDatasetIntegrationTest {
     }
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("创建评估数据集接口失败")
     void shouldNotOkWhenCreateEvalDatasetWithoutApplicationId() {
         EvalDatasetCreateDto evalDatasetCreateDto = new EvalDatasetCreateDto();
@@ -189,7 +191,7 @@ public class EvalDatasetIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("删除评估数据集接口成功")
     void shouldOkWhenDeleteEvalDataset() {
         EvalDatasetQueryParam datasetQueryParam = new EvalDatasetQueryParam();
@@ -216,7 +218,7 @@ public class EvalDatasetIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("修改数据集信息接口成功")
     void shouldOkWhenUpdateDataset() {
         EvalDatasetUpdateDto updateDto = new EvalDatasetUpdateDto();
@@ -244,7 +246,7 @@ public class EvalDatasetIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_dataset.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_dataset.sql"})
     @DisplayName("分页查询评估数据集接口成功")
     void shouldOkWhenQueryEvalDataset() {
         for (int i = 0; i < 3; i++) {
@@ -277,6 +279,7 @@ public class EvalDatasetIntegrationTest {
     }
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("评估数据集增删改查成功")
     void shouldOkWhenCrudEvalDataset() throws IOException {
         // 创建评估数据集。

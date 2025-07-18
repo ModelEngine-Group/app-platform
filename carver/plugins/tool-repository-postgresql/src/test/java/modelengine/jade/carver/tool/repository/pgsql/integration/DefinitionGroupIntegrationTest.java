@@ -33,7 +33,7 @@ import java.util.Set;
  * @since 2024-10-31
  */
 @IntegrationTest(scanPackages = "modelengine.jade.carver.tool")
-@Sql(scripts = {"sql/create/definition.sql", "sql/create/definition-group.sql"})
+@Sql(before = {"sql/create/definition.sql", "sql/create/definition-group.sql"})
 @DisplayName("Definition group 集成测试")
 public class DefinitionGroupIntegrationTest {
     private static final String GROUP_NAME1 = "depth-estimation-definition-group-name";
@@ -45,6 +45,7 @@ public class DefinitionGroupIntegrationTest {
     private DefinitionMapper definitionMapper;
 
     @Test
+    @Sql(before = {"sql/create/definition.sql", "sql/create/definition-group.sql"})
     @DisplayName("测试插入工具定义组")
     void shouldReturnDefinitionGroupWhenAddDefinitionGroupAndGet() {
         DefinitionGroupData definitionGroupData = mockDefinitionGroupData();
@@ -60,6 +61,7 @@ public class DefinitionGroupIntegrationTest {
     }
 
     @Test
+    @Sql(before = {"sql/create/definition.sql", "sql/create/definition-group.sql"})
     @DisplayName("测试插入工具定义组列表")
     void shouldReturnWhenAddDefinitionGroupAndGet() {
         DefinitionGroupData definitionGroupData = mockDefinitionGroupData();
@@ -74,7 +76,10 @@ public class DefinitionGroupIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/definition.sql", "sql/insert/definition-group.sql"})
+    @Sql(before = {
+            "sql/create/definition.sql", "sql/create/definition-group.sql", "sql/insert/definition.sql",
+            "sql/insert/definition-group.sql"
+    })
     @DisplayName("测试删除定义组后再查询，定义组是否存在")
     void shouldReturnNullWhenDeleteGivenDefinitionName() {
         DefinitionGroupData definitionGroupData = this.definitionGroupService.get(GROUP_NAME1);
@@ -86,7 +91,10 @@ public class DefinitionGroupIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/definition.sql", "sql/insert/definition-group.sql"})
+    @Sql(before = {
+            "sql/create/definition.sql", "sql/create/definition-group.sql", "sql/insert/definition.sql",
+            "sql/insert/definition-group.sql"
+    })
     @DisplayName("测试删除定义组列表后再查询，定义组是否存在")
     void shouldReturnNullWhenDeleteGivenGroupName() {
         // given

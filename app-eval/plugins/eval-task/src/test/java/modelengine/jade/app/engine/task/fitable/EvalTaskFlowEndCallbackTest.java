@@ -11,14 +11,6 @@ import static modelengine.jade.app.engine.task.code.EvalTaskRetCode.EVAL_TASK_IN
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import modelengine.jade.app.engine.task.entity.EvalCaseEntity;
-import modelengine.jade.app.engine.task.entity.EvalRecordEntity;
-import modelengine.jade.app.engine.task.exception.EvalTaskException;
-import modelengine.jade.app.engine.task.mapper.EvalCaseMapper;
-import modelengine.jade.app.engine.task.mapper.EvalRecordMapper;
-import modelengine.jade.app.engine.task.service.EvalCaseService;
-import modelengine.jade.app.engine.task.service.EvalInstanceService;
-
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.test.annotation.IntegrationTest;
@@ -26,6 +18,13 @@ import modelengine.fitframework.test.annotation.Spy;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.jade.app.engine.task.entity.EvalCaseEntity;
+import modelengine.jade.app.engine.task.entity.EvalRecordEntity;
+import modelengine.jade.app.engine.task.exception.EvalTaskException;
+import modelengine.jade.app.engine.task.mapper.EvalCaseMapper;
+import modelengine.jade.app.engine.task.mapper.EvalRecordMapper;
+import modelengine.jade.app.engine.task.service.EvalCaseService;
+import modelengine.jade.app.engine.task.service.EvalInstanceService;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +42,7 @@ import java.util.Map;
  * @since 2024-08-21
  */
 @IntegrationTest(scanPackages = {"modelengine.jade.app.engine.task", "modelengine.fitframework.serialization"})
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 public class EvalTaskFlowEndCallbackTest {
     private static final List<Map<String, String>> INPUTS = Arrays.asList(MapBuilder.<String, String>get()
                     .put("input", "1+1")
@@ -116,7 +115,7 @@ public class EvalTaskFlowEndCallbackTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_data.sql"})
     @DisplayName("流水线数据回调节点成功")
     void shouldOkWhenCallback() throws EvalTaskException {
         this.evalTaskFlowEndCallback.callback(buildTestData());
@@ -127,8 +126,7 @@ public class EvalTaskFlowEndCallbackTest {
         assertThat(recordEntities.size()).isEqualTo(2);
 
         EvalCaseEntity caseEntity = caseEntities.get(0);
-        assertThat(caseEntity).extracting(EvalCaseEntity::getId, EvalCaseEntity::getPass)
-                .containsExactly(2L, false);
+        assertThat(caseEntity).extracting(EvalCaseEntity::getId, EvalCaseEntity::getPass).containsExactly(2L, false);
         for (int i = 0; i < recordEntities.size(); i++) {
             EvalRecordEntity recordEntity = recordEntities.get(i);
             assertThat(recordEntity).extracting(EvalRecordEntity::getId,
@@ -145,7 +143,7 @@ public class EvalTaskFlowEndCallbackTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_data.sql"})
     @DisplayName("流水线数据回调节点失败")
     void shouldOkWhenCallbackWithDebugData() throws EvalTaskException {
         this.evalTaskFlowEndCallback.callback(buildDebugData());
@@ -157,6 +155,7 @@ public class EvalTaskFlowEndCallbackTest {
     }
 
     @Test
+    @Sql(before = {"sql/test_create_table.sql"})
     @DisplayName("流水线数据回调节点失败")
     void shouldFailWhenCallbackWithEmptyContext() throws EvalTaskException {
         EvalTaskException ex = assertThrows(EvalTaskException.class,
@@ -165,6 +164,7 @@ public class EvalTaskFlowEndCallbackTest {
     }
 
     @Test
+    @Sql(before = {"sql/test_create_table.sql"})
     @DisplayName("流水线数据不包含上下文信息时，回调节点失败")
     void shouldFailWhenCallbackWithoutBusinessData() throws EvalTaskException {
         EvalTaskException ex = assertThrows(EvalTaskException.class,
@@ -174,6 +174,7 @@ public class EvalTaskFlowEndCallbackTest {
     }
 
     @Test
+    @Sql(before = {"sql/test_create_table.sql"})
     @DisplayName("流水线数据不包含流水线 ID 时，回调节点失败")
     void shouldFailWhenCallbackWithoutTraceId() throws EvalTaskException {
         Map<String, Object> context = new HashMap<>();

@@ -10,14 +10,6 @@ import static modelengine.fitframework.util.IoUtils.content;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mockStatic;
 
-import modelengine.jade.app.engine.eval.entity.EvalDataEntity;
-import modelengine.jade.app.engine.eval.entity.EvalDataQueryParam;
-import modelengine.jade.app.engine.eval.entity.EvalVersionEntity;
-import modelengine.jade.app.engine.eval.po.EvalDataPo;
-import modelengine.jade.authentication.context.UserContext;
-import modelengine.jade.authentication.context.UserContextHolder;
-import modelengine.jade.common.audit.AuditInterceptor;
-
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.serialization.ObjectSerializer;
@@ -25,6 +17,13 @@ import modelengine.fitframework.test.annotation.MybatisTest;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.fitframework.test.domain.db.DatabaseModel;
 import modelengine.fitframework.util.TypeUtils;
+import modelengine.jade.app.engine.eval.entity.EvalDataEntity;
+import modelengine.jade.app.engine.eval.entity.EvalDataQueryParam;
+import modelengine.jade.app.engine.eval.entity.EvalVersionEntity;
+import modelengine.jade.app.engine.eval.po.EvalDataPo;
+import modelengine.jade.authentication.context.UserContext;
+import modelengine.jade.authentication.context.UserContextHolder;
+import modelengine.jade.common.audit.AuditInterceptor;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +50,7 @@ import java.util.stream.Stream;
  * @since 2024-07-22
  */
 @MybatisTest(classes = {EvalDataMapper.class, AuditInterceptor.class}, model = DatabaseModel.POSTGRESQL)
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 @DisplayName("测试 EvalDataMapper")
 public class EvalDataMapperTest {
     private final UserContext userContext = new UserContext("agent", "", "");
@@ -73,7 +72,7 @@ public class EvalDataMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("插入数据后，回填主键成功")
     void shouldOkWhenInsert() {
         EvalDataPo evalDataPo = new EvalDataPo();
@@ -104,7 +103,7 @@ public class EvalDataMapperTest {
     @ParameterizedTest
     @ArgumentsSource(QueryTestCaseProvider.class)
     @DisplayName("分页查询数据成功")
-    @Sql(scripts = "sql/insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/insert_data.sql"})
     void TestListEvalData(EvalDataQueryParam queryParam, int expectedSize, String expectedContent) {
         List<EvalDataEntity> response = this.evalDataMapper.listEvalData(queryParam);
         assertThat(response.get(0).getContent()).isEqualTo(expectedContent);
@@ -120,7 +119,7 @@ public class EvalDataMapperTest {
 
     @Test
     @DisplayName("统计评估数据数量成功")
-    @Sql(scripts = "sql/insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/insert_data.sql"})
     void TestCountEvalData() {
         EvalDataQueryParam queryParam = new EvalDataQueryParam();
         queryParam.setDatasetId(1L);
@@ -131,7 +130,7 @@ public class EvalDataMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("软删除指定数据后，更新过期时间成功")
     void shouldOkWhenSoftDelete() {
         int effectRows = this.evalDataMapper.updateExpiredVersion(Collections.singletonList(1L),
@@ -142,6 +141,7 @@ public class EvalDataMapperTest {
     }
 
     @Test
+    @Sql(before = {"sql/test_create_table.sql"})
     @DisplayName("软删除不存在数据时，更新行数为0")
     void shouldFailWhenSoftDeleteInvalidData() {
         int effectRows = this.evalDataMapper.updateExpiredVersion(Collections.singletonList(1L),
@@ -152,7 +152,7 @@ public class EvalDataMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("软删除已被删除数据数据时，更新行数为0")
     void shouldFailWhenSoftDeleteDeletedData() {
         int effectRows = this.evalDataMapper.updateExpiredVersion(Collections.singletonList(2L),
@@ -163,7 +163,7 @@ public class EvalDataMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("修改指定数据后，原更新过期时间成功，插入回填主键成功")
     void shouldOkWhenUpdate() {
         EvalDataPo evalDataPo = new EvalDataPo();
@@ -181,7 +181,7 @@ public class EvalDataMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("硬删除指定数据集全部数据成功")
     void shouldOkWhenHardDelete() {
         int effectRows = this.evalDataMapper.deleteAll(Collections.singletonList(1L));
@@ -189,7 +189,7 @@ public class EvalDataMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("硬删除指定数据集没有数据时，删除行数为 0")
     void shouldOkWhenHardDeleteWithNoRecord() {
         int effectRows = this.evalDataMapper.deleteAll(Collections.singletonList(2L));
@@ -197,7 +197,7 @@ public class EvalDataMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("查询数据集最新版本")
     void shouldOKWhenGetVersions() {
         EvalVersionEntity entity = this.evalDataMapper.getLatestVersion(1L);
@@ -206,7 +206,7 @@ public class EvalDataMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("插入数据时，自动插入用户信息")
     void shouldAutoUpdateWhenInsert() {
         EvalDataPo evalDataPo = new EvalDataPo();
@@ -228,7 +228,7 @@ public class EvalDataMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_insert_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_insert_data.sql"})
     @DisplayName("软删除指定数据时，自动插入用户信息")
     void shouldAutoUpdateWhenSoftDelete() {
         EvalDataQueryParam queryParam = new EvalDataQueryParam();

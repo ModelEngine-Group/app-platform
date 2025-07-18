@@ -41,7 +41,7 @@ import java.util.Map;
  * @since 2024-09-19
  */
 @IntegrationTest(scanPackages = "modelengine.jade.store")
-@Sql(scripts = {"sql/create/pluginTool.sql", "sql/create/tag.sql", "sql/create/plugin.sql"})
+@Sql(before = {"sql/create/pluginTool.sql", "sql/create/tag.sql", "sql/create/plugin.sql"})
 @DisplayName("PluginTool 集成测试")
 public class PluginToolIntegrationTest {
     @Fit
@@ -55,7 +55,10 @@ public class PluginToolIntegrationTest {
     private ToolGroupService toolGroupService;
 
     @Test
-    @Sql(scripts = {"sql/insert/pluginTool.sql", "sql/insert/tag.sql", "sql/insert/plugin.sql"})
+    @Sql(before = {
+            "sql/create/pluginTool.sql", "sql/create/tag.sql", "sql/create/plugin.sql", "sql/insert/pluginTool.sql",
+            "sql/insert/tag.sql", "sql/insert/plugin.sql"
+    })
     @DisplayName("测试插入插件工具")
     void shouldOkWhenAdd() {
         when(this.toolService.getTool(any())).thenReturn(this.mockPluginToolData());
@@ -70,7 +73,10 @@ public class PluginToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/pluginTool.sql", "sql/insert/tag.sql", "sql/insert/plugin.sql"})
+    @Sql(before = {
+            "sql/create/pluginTool.sql", "sql/create/tag.sql", "sql/create/plugin.sql", "sql/insert/pluginTool.sql",
+            "sql/insert/tag.sql", "sql/insert/plugin.sql"
+    })
     @DisplayName("测试插入插件工具集合")
     void shouldOkWhenAdds() {
         when(this.toolService.getTool(any())).thenReturn(this.mockPluginToolData());
@@ -88,7 +94,10 @@ public class PluginToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/pluginTool.sql", "sql/insert/tag.sql", "sql/insert/plugin.sql"})
+    @Sql(before = {
+            "sql/create/pluginTool.sql", "sql/create/tag.sql", "sql/create/plugin.sql", "sql/insert/pluginTool.sql",
+            "sql/insert/tag.sql", "sql/insert/plugin.sql"
+    })
     @DisplayName("测试获取插件工具集合通过查询")
     void shouldOkWhenGetByQuery() {
         when(this.toolService.getTool(any())).thenReturn(this.mockPluginToolData());
@@ -98,7 +107,10 @@ public class PluginToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/pluginTool.sql", "sql/insert/tag.sql", "sql/insert/plugin.sql"})
+    @Sql(before = {
+            "sql/create/pluginTool.sql", "sql/create/tag.sql", "sql/create/plugin.sql", "sql/insert/pluginTool.sql",
+            "sql/insert/tag.sql", "sql/insert/plugin.sql"
+    })
     @DisplayName("测试插入插件工具结合通过插件唯一标识")
     void shouldOkWhenGetByPluginId() {
         when(this.toolService.getTool(any())).thenReturn(this.mockPluginToolData());
@@ -110,7 +122,10 @@ public class PluginToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/pluginTool.sql", "sql/insert/tag.sql", "sql/insert/plugin.sql"})
+    @Sql(before = {
+            "sql/create/pluginTool.sql", "sql/create/tag.sql", "sql/create/plugin.sql", "sql/insert/pluginTool.sql",
+            "sql/insert/tag.sql", "sql/insert/plugin.sql"
+    })
     @DisplayName("测试插入插件工具结合通过工具唯一标识")
     void shouldOkWhenGetByUniqueName() {
         PluginToolData mockPluginToolData = this.mockPluginToolData();
@@ -123,7 +138,10 @@ public class PluginToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/pluginTool.sql", "sql/insert/tag.sql", "sql/insert/plugin.sql"})
+    @Sql(before = {
+            "sql/create/pluginTool.sql", "sql/create/tag.sql", "sql/create/plugin.sql", "sql/insert/pluginTool.sql",
+            "sql/insert/tag.sql", "sql/insert/plugin.sql"
+    })
     @DisplayName("测试删除插件工具")
     void shouldOkWhenDelete() {
         PluginToolQuery pluginToolQuery = new PluginToolQuery();

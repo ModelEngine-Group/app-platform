@@ -47,7 +47,7 @@
             <plugin>
                 <groupId>org.fitframework</groupId>
                 <artifactId>fit-build-maven-plugin</artifactId>
-                <version>3.5.0-M4</version>
+                <version>3.5.0-M5</version>
                 <executions>
                     <execution>
                         <id>build-plugin</id>
@@ -66,7 +66,7 @@
             <plugin>
                 <groupId>org.fitframework.fel</groupId>
                 <artifactId>tool-maven-plugin</artifactId>
-                <version>3.5.0-M4</version>
+                <version>3.5.0-M5</version>
                 <executions>
                     <execution>
                         <id>build-tool</id>

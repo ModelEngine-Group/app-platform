@@ -13,17 +13,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import modelengine.fel.tool.model.transfer.ToolData;
-import modelengine.fel.tool.service.ToolExecuteService;
-import modelengine.jade.store.service.ToolService;
-import modelengine.jade.voice.service.VoiceService;
-
 import modelengine.fel.core.chat.ChatMessage;
 import modelengine.fel.core.chat.ChatModel;
 import modelengine.fel.core.chat.support.AiMessage;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.ToolExecuteService;
 import modelengine.fitframework.flowable.Choir;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 import modelengine.fitframework.test.annotation.Mock;
+import modelengine.jade.store.service.ToolService;
+import modelengine.jade.voice.service.VoiceService;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,8 +37,7 @@ import java.util.Map;
  * @author 兰宇晨
  * @since 2025-01-16
  */
-@FitTestWithJunit(
-        includeClasses = {BaseExtractor.class, AudioExtractor.class, ImageExtractor.class, TextExtractor.class})
+@FitTestWithJunit(includeClasses = {AudioExtractor.class, ImageExtractor.class, TextExtractor.class})
 public class ExtractorTest {
     private BaseExtractor baseExtractor;
 

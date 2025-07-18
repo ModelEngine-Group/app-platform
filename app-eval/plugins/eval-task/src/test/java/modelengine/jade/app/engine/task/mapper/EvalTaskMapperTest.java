@@ -9,15 +9,14 @@ package modelengine.jade.app.engine.task.mapper;
 import static modelengine.jade.app.engine.task.entity.EvalTaskStatusEnum.PUBLISHED;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import modelengine.jade.app.engine.task.dto.EvalTaskQueryParam;
-import modelengine.jade.app.engine.task.entity.EvalTaskEntity;
-import modelengine.jade.app.engine.task.po.EvalTaskPo;
-
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.MybatisTest;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.fitframework.test.domain.db.DatabaseModel;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.jade.app.engine.task.dto.EvalTaskQueryParam;
+import modelengine.jade.app.engine.task.entity.EvalTaskEntity;
+import modelengine.jade.app.engine.task.po.EvalTaskPo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ import java.util.List;
  * @since 2024-08-09
  */
 @MybatisTest(classes = {EvalTaskMapper.class}, model = DatabaseModel.POSTGRESQL)
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 @DisplayName("测试 EvalTaskMapper")
 public class EvalTaskMapperTest {
     @Fit
@@ -53,7 +52,7 @@ public class EvalTaskMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_data.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_data.sql"})
     @DisplayName("分页查询数据集元数据成功")
     void shouldOkWhenListEvalTask() {
         EvalTaskQueryParam queryParam = new EvalTaskQueryParam();
@@ -85,7 +84,7 @@ public class EvalTaskMapperTest {
     }
 
     @Test
-    @Sql(scripts = "sql/test_create_task.sql")
+    @Sql(before = {"sql/test_create_table.sql", "sql/test_create_task.sql"})
     @DisplayName("软删除指定评估任务后，更新评估任务成功。")
     void shouldOkWhenSoftDelete() {
         List<Long> taskIds = Arrays.asList(2L, 3L);
