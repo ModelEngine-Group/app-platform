@@ -4,12 +4,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-package modelengine.jade.app.engine.schema;
+package modelengine.jade.common.schema.validator;
 
 import static modelengine.fitframework.util.IoUtils.content;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
+import modelengine.jade.app.engine.schema.SchemaValidatorImplTestCaseParam;
 import modelengine.jade.common.schema.validator.SchemaValidatorImpl;
 import modelengine.jade.schema.SchemaValidator;
 import modelengine.jade.schema.exception.JsonContentInvalidException;
@@ -64,7 +64,7 @@ public class SchemaValidatorImplTest {
             String jsonContent = content(ValidateTestCaseProvider.class, resourceName);
 
             List<SchemaValidatorImplTestCaseParam> testCase = objectSerializer.deserialize(jsonContent,
-                    TypeUtils.parameterized(List.class, new Type[] {SchemaValidatorImplTestCaseParam.class}));
+                    TypeUtils.parameterized(List.class, new Type[] {modelengine.jade.app.engine.schema.SchemaValidatorImplTestCaseParam.class}));
 
             return testCase.stream().map(test -> Arguments.of(test.getSchema(), test.getContent()));
         }
