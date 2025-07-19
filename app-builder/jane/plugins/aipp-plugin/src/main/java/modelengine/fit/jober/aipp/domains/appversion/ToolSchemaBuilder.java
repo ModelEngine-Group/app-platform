@@ -104,7 +104,7 @@ public class ToolSchemaBuilder {
             List<Map<String, Object>> inputParams = f.getInputParamsByName("input");
             inputParams.forEach(ip -> {
                 String name = ip.getOrDefault("name", StringUtils.EMPTY).toString();
-                String type = ip.getOrDefault("type", StringUtils.EMPTY).toString();
+                String type = ObjectUtils.<String>cast(ip.getOrDefault("type", StringUtils.EMPTY)).toLowerCase();
                 String description = ip.getOrDefault("description", StringUtils.EMPTY).toString();
                 propertiesMapOfInputParam.put(name,
                         MapBuilder.get().put("type", type).put("description", description).build());
