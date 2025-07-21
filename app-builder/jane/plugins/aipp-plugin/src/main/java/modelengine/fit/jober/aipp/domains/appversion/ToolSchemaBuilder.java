@@ -84,7 +84,7 @@ public class ToolSchemaBuilder {
                 MapBuilder.get()
                         .put("type", "string")
                         .put("description", "the aipp id of the waterFlow tool")
-                        .put("default", this.context.getPublishData().getId())
+                        .put("default", this.context.getPublishData().getAippId())
                         .build());
         propertiesMap.put("version",
                 MapBuilder.get()
