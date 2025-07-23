@@ -184,8 +184,8 @@ public class PluginUploadServiceImplTest {
     @DisplayName("当选择部分工具上传时，成功")
     void shouldOkWhenValidateSelectTools() {
         List<String> selectTools = Arrays.asList(
-                "defGroup-weather-Rain.implGroup-weather-Rain-A.rain_today.a_rain_today",
-                "defGroup-weather-Rain.implGroup-weather-Rain-A.rain_tomorrow.a_rain_today");
+                "defGroup_weather_Rain.implGroup_weather_rain_city_a.rain_today.city_a_rain_tomorrow",
+                "defGroup_weather_Rain.implGroup_weather_rain_city_b.rain_tomorrow.city_b_rain_tomorrow");
         ToolProcessor toolProcessor = new ToolProcessor(this.serializer);
         DefinitionProcessor defProcessor = new DefinitionProcessor(this.serializer);
         ToolJsonEntity toolJsonEntity = getFileInfo(new File(NEW_TOOL_JSON), serializer, ToolJsonEntity.class);

@@ -25,7 +25,6 @@ import static modelengine.fitframework.inspection.Validation.notBlank;
 import static modelengine.fitframework.inspection.Validation.notNull;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildBlankParserException;
-import static modelengine.jade.store.tool.upload.support.BasicValidator.buildEmptyParserException;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildNullParserException;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildParserException;
 
@@ -134,14 +133,14 @@ public abstract class Processor {
         if (!param.getType().equals(OBJECT)) {
             throw buildParserException("The type of the field 'parameters' in 'tools.json' must is: 'object'.");
         }
-        this.validateProperties(param.getProperties());
-        this.validateRequired(param, fileName);
+        Map<String, Object> properties = param.getProperties();
+        if (MapUtils.isNotEmpty(properties)) {
+            this.validateProperties(properties);
+            this.validateRequired(param, fileName);
+        }
     }
 
     private void validateProperties(Map<String, Object> properties) {
-        if (MapUtils.isEmpty(properties)) {
-            throw buildEmptyParserException(TOOLS_JSON, SCHEMA + DOT + PARAMETERS);
-        }
         properties.forEach((key, value) -> validateProperty(cast(value), PARAMETERS, key));
     }
 

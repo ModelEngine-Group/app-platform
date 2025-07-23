@@ -213,7 +213,7 @@ public class BasicValidatorTest {
         @Test
         @DisplayName("当定义组存在重复时，删除定义组")
         void shouldExWhenDefGroupRepeat() {
-            when(this.defGroupService.findExistDefGroups(anySet())).thenReturn(Arrays.asList("defGroup-weather-Rain"));
+            when(this.defGroupService.findExistDefGroups(anySet())).thenReturn(Arrays.asList("defGroup_weather_Rain"));
             int size = this.defGroups.size();
             validateDefAndToolRepeat(this.defGroups, this.toolGroups, this.toolGroupService, this.defGroupService);
             assertThat(this.defGroups.size()).isEqualTo(size - 1);
@@ -243,7 +243,7 @@ public class BasicValidatorTest {
                 validateDefAndToolRepeat(this.defGroups, this.toolGroups, this.toolGroupService, this.defGroupService);
             }).isInstanceOf(ModelEngineException.class)
                     .hasMessageContaining("The current operation has duplicate property. [property='toolName', "
-                            + "value='implGroup-weather-Rain-A.a_rain_today']");
+                            + "value='implGroup_weather_rain_city_a.city_a_rain_today']");
         }
 
         @Test
