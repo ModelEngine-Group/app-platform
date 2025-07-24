@@ -67,7 +67,7 @@ public class ToolIntegrationTest {
     private ObjectSerializer serializer;
 
     @Mock
-    ToolChangedObserver toolChangedObserver;
+    private ToolChangedObserver toolChangedObserver;
 
     private void mockDefinitionInfo() {
         DefinitionData definitionData = ToolDataBuilder.mockDefinitionData();

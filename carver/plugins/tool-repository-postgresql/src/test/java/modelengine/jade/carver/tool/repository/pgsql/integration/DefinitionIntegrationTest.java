@@ -46,7 +46,7 @@ public class DefinitionIntegrationTest {
     private DefinitionMapper definitionMapper;
 
     @Mock
-    ToolChangedObserver toolChangedObserver;
+    private ToolChangedObserver toolChangedObserver;
 
     @Test
     @Sql(before = {"sql/create/definition.sql", "sql/create/tool.sql"})

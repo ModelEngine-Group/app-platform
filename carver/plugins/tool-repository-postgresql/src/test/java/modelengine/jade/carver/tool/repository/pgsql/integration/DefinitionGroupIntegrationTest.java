@@ -47,7 +47,7 @@ public class DefinitionGroupIntegrationTest {
     private DefinitionMapper definitionMapper;
 
     @Mock
-    ToolChangedObserver toolChangedObserver;
+    private ToolChangedObserver toolChangedObserver;
 
     @Test
     @Sql(before = {"sql/create/definition.sql", "sql/create/definition-group.sql"})
