@@ -469,7 +469,7 @@ export const apiListData = {
             type: 'boolean',
           },
           dimensionId: {
-            description: 'id信息',
+            description: '产品的id信息',
             examples: [''],
             type: 'string',
           },
@@ -480,9 +480,11 @@ export const apiListData = {
           },
           userContext: {
             $ref: '#/components/schemas/java.util.Map_of_java.lang.String_and_java.lang.Object',
+            description: '用户自定义对话字段的输入信息，与开始节点配置对应',
+            type: 'object',
           },
           dimension: {
-            description: '信息',
+            description: '产品的信息',
             examples: [''],
             type: 'string',
           },
@@ -682,11 +684,242 @@ export const apiListData = {
             },
           },
         },
+      'modelengine.fit.jane.common.response.Rsp_of_java.util.List_of_modelengine.fit.jober.aipp.dto.aipplog.AippInstLogData': {
+        type: 'object',
+        properties: {
+          msg: {
+            description: '状态信息',
+            examples: [
+              'success'
+            ],
+            type: 'string'
+          },
+          OK_CODE: {
+            format: 'int32',
+            type: 'integer'
+          },
+          OK_MSG: {
+            type: 'string'
+          },
+          code: {
+            format: 'int32',
+            description: '状态码',
+            examples: [
+              '0'
+            ],
+            type: 'integer'
+          },
+          data: {
+            description: '数据',
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/modelengine.fit.jober.aipp.dto.aipplog.AippInstLogData'
+            }
+          }
+        }
+      },
+      'modelengine.fit.jober.aipp.dto.aipplog.AippInstLogData': {
+        type: 'object',
+        properties: {
+          instanceLogBodies: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/modelengine.fit.jober.aipp.dto.aipplog.AippInstLogData$AippInstLogBody'
+            }
+          },
+          aippId: {
+            type: 'string'
+          },
+          appIcon: {
+            type: 'string'
+          },
+          instanceId: {
+            type: 'string'
+          },
+          question: {
+            $ref: '#/components/schemas/modelengine.fit.jober.aipp.dto.aipplog.AippInstLogData$AippInstLogBody'
+          },
+          appName: {
+            type: 'string'
+          },
+          version: {
+            type: 'string'
+          },
+          createAt: {
+            format: 'date-time',
+            type: 'string'
+          },
+          status: {
+            type: 'string'
+          }
+        }
+      },
+      'modelengine.fit.jober.aipp.dto.aipplog.AippInstLogData$AippInstLogBody': {
+        type: 'object',
+        properties: {
+          logType: {
+            type: 'string'
+          },
+          createUserAccount: {
+            type: 'string'
+          },
+          logData: {
+            type: 'string'
+          },
+          logId: {
+            format: 'int64',
+            type: 'integer'
+          },
+          createAt: {
+            format: 'date-time',
+            type: 'string'
+          }
+        }
+      },
+      'modelengine.jade.app.engine.base.dto.UsrFeedbackDto': {
+        type: 'object',
+        properties: {
+          instanceId: {
+            description: '实例id',
+            examples: [
+              ''
+            ],
+            type: 'string'
+          },
+          usrFeedback: {
+            format: 'int32',
+            description: '用户反馈 -1 未反馈 0 点赞 1 点踩',
+            examples: [
+              ''
+            ],
+            type: 'integer'
+          },
+          usrFeedbackText: {
+            description: '用户反馈文本',
+            examples: [
+              ''
+            ],
+            type: 'string'
+          },
+          id: {
+            format: 'int64',
+            description: '反馈记录 id',
+            examples: [
+              ''
+            ],
+            type: 'integer'
+          }
+        }
+      },
+      'modelengine.fit.jane.common.response.Rsp_of_modelengine.jade.app.engine.base.dto.UsrFeedbackDto': {
+        type: 'object',
+        properties: {
+          msg: {
+            description: '状态信息',
+            examples: [
+              'success'
+            ],
+            type: 'string'
+          },
+          OK_CODE: {
+            format: 'int32',
+            type: 'integer'
+          },
+          OK_MSG: {
+            type: 'string'
+          },
+          code: {
+            format: 'int32',
+            description: '状态码',
+            examples: [
+              '0'
+            ],
+            type: 'integer'
+          },
+          data: {
+            $ref: '#/components/schemas/modelengine.jade.app.engine.base.dto.UsrFeedbackDto'
+          }
+        }
+      },
+      'modelengine.fit.jober.aipp.dto.chat.CreateAppChatRequest': {
+        type: 'object',
+        properties: {
+          chat_id: {
+            description: '选填 当前对话的 id，在第一次对话后生成，后续可用该 id 连续对话',
+            examples: [
+              ''
+            ],
+            type: 'string'
+          },
+          question: {
+            description: '向大模型询问的问题',
+            examples: [
+              ''
+            ],
+            type: 'string'
+          },
+          app_id: {
+            description: '用于对话的 app 的 id',
+            examples: [
+              ''
+            ],
+            type: 'string'
+          },
+          context: {
+            $ref: '#/components/schemas/modelengine.fit.jober.aipp.dto.chat.CreateAppChatRequest$Context'
+          }
+        }
+      },
+      'modelengine.fit.jober.aipp.dto.chat.CreateAppChatRequest$Context': {
+        type: 'object',
+        properties: {
+          use_memory: {
+            description: '对话时是否使用历史对话记录，开启后历史对话的数据会影响到大模型的回答',
+            examples: [
+              ''
+            ],
+            type: 'boolean'
+          },
+          dimension_id: {
+            description: '产品的id信息',
+            examples: [
+              ''
+            ],
+            type: 'string'
+          },
+          at_chat_id: {
+            description: '引用其他应用对话',
+            examples: [
+              ''
+            ],
+            type: 'string'
+          },
+          user_context: {
+            $ref: '#/components/schemas/java.util.Map_of_java.lang.String_and_java.lang.Object',
+            description: '用户自定义对话字段的输入信息，与开始节点配置对应',
+            type: 'object',
+          },
+          dimension: {
+            description: '产品的信息',
+            examples: [
+              ''
+            ],
+            type: 'string'
+          },
+          at_app_id: {
+            description: '引用其他应用',
+            examples: [
+              ''
+            ],
+            type: 'string'
+          }
+        }
+      },
     },
   },
   openapi: '3.1.0',
   paths: {
-    '/v1/tenants/{tenantId}/chats/instances/{currentInstanceId}': {
+    '/api/app/v1/tenants/{tenantId}/chats/instances/{currentInstanceId}': {
       post: {
         summary: '重新对话API',
         requestBody: {
@@ -700,11 +933,11 @@ export const apiListData = {
             },
           },
         },
-        operationId: 'POST /v1/tenants/{tenantId}/chats/instances/{currentInstanceId}',
+        operationId: 'POST /api/app/v1/tenants/{tenantId}/chats/instances/{currentInstanceId}',
         description:
           '该接口可以重新发起指定会话，需要指定需要重新发起会话的实例id，同时可添加附加信息',
         responses: {
-          '205': {
+          '200': {
             description: '',
             content: {
               'application/json': {
@@ -742,10 +975,10 @@ export const apiListData = {
         tags: ['应用对话管理接口'],
       },
     },
-    '/v1/tenants/{tenantId}/apps/{appId}/config': {
+    '/api/app/v1/tenants/{tenantId}/apps/{appId}/config': {
       get: {
         summary: '查询应用配置详情',
-        operationId: 'GET /v1/tenants/{tenantId}/apps/{appId}/config',
+        operationId: 'GET /api/app/v1/tenants/{tenantId}/apps/{appId}/config',
         description: '该接口可以通过待查询应用的唯一标识符来查询指定应用的配置详情。',
         responses: {
           '200': {
@@ -786,10 +1019,10 @@ export const apiListData = {
         tags: ['应用信息管理接口'],
       },
     },
-    '/v1/tenants/{tenantId}/file': {
+    '/api/app/v1/tenants/{tenantId}/file': {
       post: {
         summary: '上传文件',
-        operationId: 'POST /v1/tenants/{tenantId}/file',
+        operationId: 'POST /api/app/v1/tenants/{tenantId}/file',
         description: '该接口可以往指定应用上传文件。',
         responses: {
           '201': {
@@ -826,7 +1059,7 @@ export const apiListData = {
         tags: ['文件上传接口'],
       },
     },
-    '/v1/tenants/{tenantId}/chats/apps/{appId}': {
+    '/api/app/v1/tenants/{tenantId}/chats/apps/{appId}': {
       post: {
         summary: '新开会话API',
         requestBody: {
@@ -840,7 +1073,7 @@ export const apiListData = {
             },
           },
         },
-        operationId: 'POST /v1/tenants/{tenantId}/chats/apps/{appId}',
+        operationId: 'POST /api/app/v1/tenants/{tenantId}/chats/apps/{appId}',
         description:
           '该接口向大模型发送一个问题信息，并开启一个对话。支持 SSE 和 Websocket 两种流式调用方式。',
         responses: {
@@ -882,11 +1115,11 @@ export const apiListData = {
         tags: ['应用对话管理接口'],
       },
     },
-    '/v1/tenants/{tenantId}/apps/{appId}/prompt/categories/{categoryId}/inspirations': {
+    '/api/app/v1/tenants/{tenantId}/apps/{appId}/prompt/categories/{categoryId}/inspirations': {
       get: {
         summary: '获取灵感',
         operationId:
-          'GET /v1/tenants/{tenantId}/apps/{appId}/prompt/categories/{categoryId}/inspirations',
+          'GET /api/app/v1/tenants/{tenantId}/apps/{appId}/prompt/categories/{categoryId}/inspirations',
         description: '该接口可以获取指定应用的某一灵感类别下的所有灵感。',
         responses: {
           '200': {
@@ -938,10 +1171,10 @@ export const apiListData = {
         tags: ['灵感大全管理接口'],
       },
     },
-    '/v1/tenants/{tenantId}/translation/audio': {
+    '/api/app/v1/tenants/{tenantId}/translation/audio': {
       get: {
         summary: '文字转语音',
-        operationId: 'GET /v1/tenants/{tenantId}/translation/audio',
+        operationId: 'GET /api/app/v1/tenants/{tenantId}/translation/audio',
         description: '该接口可以将输入的文本转换为指定音色的语音。',
         responses: {
           '200': {
@@ -983,10 +1216,10 @@ export const apiListData = {
         tags: ['语音文字互转接口'],
       },
     },
-    '/v1/tenants/{tenantId}/translation/text': {
+    '/api/app/v1/tenants/{tenantId}/translation/text': {
       get: {
         summary: '语音转文字',
-        operationId: 'GET /v1/tenants/{tenantId}/translation/text',
+        operationId: 'GET /api/app/v1/tenants/{tenantId}/translation/text',
         description: '该接口可以将输入的语音文件转换为文字。',
         responses: {
           '200': {
@@ -1027,10 +1260,10 @@ export const apiListData = {
         tags: ['语音文字互转接口'],
       },
     },
-    '/v1/tenants/{tenantId}/chats': {
+    '/api/app/v1/tenants/{tenantId}/chats': {
       get: {
         summary: '查询会话历史',
-        operationId: 'GET /v1/tenants/{tenantId}/chats',
+        operationId: 'GET /api/app/v1/tenants/{tenantId}/chats',
         description: '该接口用于查询指定租户的会话历史，并通过指定条件进行筛选。',
         responses: {
           '200': {
@@ -1159,10 +1392,10 @@ export const apiListData = {
         tags: ['应用对话管理接口'],
       },
     },
-    '/v1/tenants/{tenantId}/apps/{appId}/prompt/categories': {
+    '/api/app/v1/tenants/{tenantId}/apps/{appId}/prompt/categories': {
       get: {
         summary: '获取灵感类别',
-        operationId: 'GET /v1/tenants/{tenantId}/apps/{appId}/prompt/categories',
+        operationId: 'GET /api/app/v1/tenants/{tenantId}/apps/{appId}/prompt/categories',
         description: '该接口可以通过应用的唯一标识符获取该应用下的所有灵感类别。',
         responses: {
           '200': {
@@ -1203,10 +1436,10 @@ export const apiListData = {
         tags: ['灵感大全管理接口'],
       },
     },
-    '/v1/tenants/{tenantId}/apps': {
+    '/api/app/v1/tenants/{tenantId}/apps': {
       get: {
         summary: '查询用户应用列表',
-        operationId: 'GET /v1/tenants/{tenantId}/apps',
+        operationId: 'GET /api/app/v1/tenants/{tenantId}/apps',
         description: '该接口可以使用指定条件筛选用户应用列表，如应用id、查询的应用名字和状态等.',
         responses: {
           '200': {
@@ -1243,7 +1476,7 @@ export const apiListData = {
             },
             in: 'query',
             deprecated: false,
-            name: 'appIds',
+            name: 'ids',
             description: '查询的id列表',
             required: false,
           },
@@ -1322,6 +1555,207 @@ export const apiListData = {
         ],
         tags: ['应用信息管理接口'],
       },
+    },
+    '/api/app/v1/tenants/{tenant_id}/log/app/{app_id}/chat/{chat_id}': {
+      get: {
+        summary: '查询会话历史记录',
+        operationId: 'GET /api/app/v1/tenants/{tenant_id}/log/app/{app_id}/chat/{chat_id}',
+        description: '指定chatId查询实例历史记录（查询最近10个实例）。',
+        responses: {
+          '200': {
+            description: '',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/modelengine.fit.jane.common.response.Rsp_of_java.util.List_of_modelengine.fit.jober.aipp.dto.aipplog.AippInstLogData'
+                }
+              }
+            }
+          }
+        },
+        parameters: [
+          {
+            schema: {
+              'type': 'string'
+            },
+            name: 'tenant_id',
+            in: 'path',
+            required: true,
+            deprecated: false
+          },
+          {
+            schema: {
+              'type': 'string'
+            },
+            name: 'app_id',
+            in: 'path',
+            required: true,
+            deprecated: false
+          },
+          {
+            schema: {
+              'type': 'string'
+            },
+            name: 'chat_id',
+            in: 'path',
+            required: true,
+            deprecated: false
+          }
+        ],
+        tags: [
+          'aipp 实例日志管理北向接口'
+        ]
+      }
+    },
+    '/api/app/v1/aipp/user/feedback': {
+      post: {
+        summary: '创建用户反馈记录',
+        operationId: 'POST /api/app/v1/aipp/user/feedback',
+        description: '该接口用于创建用户对一个对话实例的反馈记录。',
+        responses: {
+          '200': {
+            description: '',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/modelengine.fit.jane.common.response.Rsp_of_java.lang.Void'
+                }
+              }
+            }
+          }
+        },
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/modelengine.jade.app.engine.base.dto.UsrFeedbackDto'
+              }
+            }
+          }
+        },
+        tags: [
+          'modelengine.fit.jade.aipp.northbound.controller.UserFeedbackController'
+        ]
+      }
+    },
+    '/api/app/v1/aipp/user/feedback/{instanceId}': {
+      patch: {
+        summary: '更新用户反馈记录',
+        operationId: 'PATCH /api/app/v1/aipp/user/feedback/{instanceId}',
+        description: '该接口用于更新用户对一个对话实例反馈记录。',
+        responses: {
+          '200': {
+            description: '',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/modelengine.fit.jane.common.response.Rsp_of_java.lang.Void'
+                }
+              }
+            }
+          }
+        },
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/modelengine.jade.app.engine.base.dto.UsrFeedbackDto'
+              }
+            }
+          }
+        },
+        parameters: [
+          {
+            schema: {
+              'type': 'string'
+            },
+            name: 'instanceId',
+            in: 'path',
+            required: true,
+            deprecated: false
+          }
+        ],
+        tags: [
+          'modelengine.fit.jade.aipp.northbound.controller.UserFeedbackController'
+        ]
+      },
+      get: {
+        summary: '查询用户反馈记录',
+        operationId: 'GET /api/app/v1/aipp/user/feedback/{instanceId}',
+        description: '该接口可以通过待查询实例的唯一标识符来查询实例的反馈记录。',
+        responses: {
+          '200': {
+            description: '',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/modelengine.fit.jane.common.response.Rsp_of_modelengine.jade.app.engine.base.dto.UsrFeedbackDto'
+                }
+              }
+            }
+          }
+        },
+        parameters: [
+          {
+            schema: {
+              'type': 'string'
+            },
+            name: 'instanceId',
+            in: 'path',
+            required: true,
+            deprecated: false
+          }
+        ],
+        tags: [
+          'modelengine.fit.jade.aipp.northbound.controller.UserFeedbackController'
+        ]
+      }
+    },
+    '/agent/v1/api/{tenant_id}/app_chat':{
+      post: {
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/modelengine.fit.jober.aipp.dto.chat.CreateAppChatRequest'
+              }
+            }
+          }
+        },
+        operationId: 'POST /agent/v1/api/{tenant_id}/app_chat',
+        description: '会话接口，传递会话信息',
+        summary: '旧版会话接口',
+        responses: {
+          200: {
+            description: "",
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/modelengine.fitframework.flowable.Choir_of_java.lang.Object'
+                }
+              }
+            }
+          }
+        },
+        parameters: [
+          {
+            schema: {
+              type: 'string',
+            },
+            name: 'tenant_id',
+            description: '租户的唯一标识符',
+            in: 'path',
+            required: true,
+            deprecated: false
+          }
+        ],
+        tags: [
+          'app对话管理接口'
+        ]
+      }
     },
   },
   info: {
@@ -1467,6 +1901,12 @@ export const apiListData = {
     {
       name: 'app对话管理接口',
     },
+    {
+      name: 'aipp实例日志管理北向接口',
+    },
+    {
+      name: 'modelengine.fit.jade.aipp.northbound.controller.UserFeedbackController'
+    }
   ],
 };
 
@@ -1478,7 +1918,7 @@ export const wssAPIData = {
   },
   servers: [
     {
-      url: '/ws',
+      url: '/api/app/v1/chat',
       description: '用于聊天应用的 WebSocket 服务器',
     },
   ],
@@ -1635,6 +2075,249 @@ export const wssAPIData = {
       },
     },
   },
+};
+
+export const oldWssAPIData = {
+  info: {
+    title: 'WebSocket 聊天',
+    description: '一个实时 WebSocket 聊天服务，允许用户发送和接收消息。',
+    version: '1.0.0',
+  },
+  servers: [
+    {
+      url: '/agent/v1/api/{tenant_id}/ws',
+      description: '用于聊天应用的 WebSocket 服务器',
+    },
+  ],
+  paths: {
+    '/chat': {
+      summary: '发送对话消息。',
+      description:
+        '该接口向大模型发送一个问题消息，并开启一个对话。支持 SSE 和 Websocket 两种流式调用方式。',
+      'First Request': {
+        summary: '建立WebSocket连接',
+      },
+      'Websocket Request': {
+        summary: '发送聊天消息请求',
+        description: '用于建立 websocket 连接后，通过 websocket 的 session 发送对话请求并接收对话的响应。',
+        requestBody: {
+          description: 'websocket 连接建立后，通过响应结构的 message 发送对话请求。',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  requestId: {
+                    type: 'string',
+                    description: '请求的唯一标识符用于表示请求的唯一 id，websocket 的返回的流中都会带有 requestId，用于在复用 session 的情况下区分返回的流式消息属于哪一次请求。',
+                    required: true,
+                  },
+                  method: {
+                    type: 'string',
+                    description: '需要使用 websocket 请求的方法的名称。当前 method 仅支持 appChat。',
+                    required: true,
+                  },
+                  params: {
+                    type: 'object',
+                    properties: {
+                      data: {
+                        type: 'object',
+                        properties: {
+                          app_id: {
+                            type: 'string',
+                            description: '用于对话的 app 的 id',
+                            required: true,
+                          },
+                          chat_id: {
+                            type: 'string',
+                            description: '当前对话的 id，在第一次对话后生成，后续可用该 id 连续对话',
+                            required: false,
+                          },
+                          question: {
+                            type: 'string',
+                            description: '向大模型询问的问题',
+                            required: true,
+                          },
+                          context: {
+                            type: 'object',
+                            description: '会话信息，包含创建会话所需的数据',
+                            properties: {
+                              use_memory: {
+                                type: 'boolean',
+                                description: '对话时是否使用历史对话记录，开启后历史对话的数据会影响到大模型的回答',
+                                required: false,
+                              },
+                              user_context: {
+                                type: 'object',
+                                description: '用户的上下文信息，例如用户偏好或历史记录',
+                                additionalProperties: true,
+                                required: false,
+                              },
+                              at_app_id: {
+                                type: 'string',
+                                description: '引用其他应用',
+                                required: false,
+                              },
+                              at_chat_id: {
+                                type: 'string',
+                                description: '引用其他应用对话',
+                                required: false,
+                              }
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      'Websocket responses': {
+        description:
+          '请求成功，返回大模型处理后的结果，该结果是多个数据流消息，最后生成完整的数据流内容。',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                requestId: {
+                  type: 'string',
+                  description: '用于表示请求的唯一 id，websocket 的返回的流中都会带有 requestId，用于在复用 session 的情况下区分返回的流式消息属于哪一次请求'
+                },
+                code: {
+                  type: 'number',
+                  description: '表示请求结果的状态码，正常状态为0，出现异常时返回异常状态码'
+                },
+                msg: {
+                  type: 'string',
+                  description: '表示接口执行失败时的错误信息，code 为 0 时，msg 为 null'
+                },
+                data: {
+                  type: 'object',
+                  description: '表示接口流式返回的数据，具体结构需要根据调用的不同的接口进行区分；在 websocket 的失败或者完成响应中，data 为 null',
+                  properties: {
+                    status: {
+                      type: 'string',
+                      description: '当前消息的状态',
+                    },
+                    answer: {
+                      type: 'array',
+                      description: '消息的数组',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          content: {
+                            type: 'object',
+                            description: '消息的内容',
+                            properties: {
+                              content: {
+                                type: 'string',
+                                description: '表示对话大模型响应结果的对象，其内容与 type 字段的值相关。app_chat 流式响应返回的第一个流式数据块中，content 表示输入的问题的定义，除此以外，content 表示大模型的输出',
+                              },
+                              type: {
+                                type: 'string',
+                                description: '表示响应的流式块中 answer 字段的 content 的类型。type 的值为 QUESTION 或者 MSG，分别表示提问和大模型的回答',
+                              },
+                              msgId: {
+                                type: 'string',
+                                description: '表示大模型响应消息的 id',
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    chat_id: {
+                      type: 'string',
+                      description: '表示当前对话轮的 id。带有相同 chat_id 的问答都属于同一对话轮次，同一对话轮次内先进行的问答会成为之后问答的历史，在开启了 use_memory 后，会对后续大模型的回答产生影响',
+                    },
+                    at_chat_id: {
+                      type: 'string',
+                      description: '表示引用的对话轮次的 id',
+                    },
+                    instance_id: {
+                      type: 'string',
+                      description: '表示当前问答实例的 id。一个 instance_id 通常会对应一问一答',
+                    },
+                    log_id: {
+                      type: 'string',
+                      description: '表示当前问答记录的 id，用户提问和大模型的回答都会对应唯一的、递增的 logId',
+                    },
+                  }
+                },
+                completed: {
+                  type: 'boolean',
+                  description: '表示流式响应是否结束的字段，在 websocket 的失败或者结束的响应中，completed 为 true'
+                }
+              },
+            },
+          },
+        },
+      },
+      parameters: [
+        {
+          schema: {
+            type: 'string',
+            description: '租户的唯一标识符',
+          },
+          in: 'path',
+          deprecated: false,
+          name: 'tenant_id',
+          description: '租户的唯一标识符',
+          required: true,
+        }
+      ],
+    },
+  },
+};
+
+export const oldSseAPIData = {
+  properties: {
+    status: {
+      type: 'string',
+      description: '表示大模型响应的状态，响应的状态可以是READY，RUNNING 和 ARCHIVED 三种状态之一。READY 状态表示大模型接收到对话问题；RUNNING 状态表示对话正在进行的状态，此状态下会流式地返回对话模型的输出结果；ARCHIVED 状态表示流式响应结束，返回的数据中会包含完整的大模型输出。'
+    },
+    answer: {
+      type: 'array',
+      description: '大模型的回答',
+      items: {
+        type: 'object',
+        properties: {
+          content: {
+            type: 'string',
+            description: '表示对话大模型响应结果的对象，其内容与 type 字段的值相关。app_chat 流式响应返回的第一个流式数据块中，content 表示输入的问题的定义，除此以外，content 表示大模型的输出',
+          },
+          type: {
+            type: 'string',
+            description: '表示响应的流式块中 answer 字段的 content 的类型。type 的值为 QUESTION 或者 MSG，分别表示提问和大模型的回答',
+          },
+          msgId: {
+            type: 'string',
+            description: '表示大模型响应消息的 id',
+          },
+        },
+      },
+    },
+    chat_id: {
+      type: 'string',
+      description: '表示当前对话轮的 id。带有相同 chat_id 的问答都属于同一对话轮次，同一对话轮次内先进行的问答会成为之后问答的历史，在开启了 use_memory 后，会对后续大模型的回答产生影响',
+    },
+    at_chat_id: {
+      type: 'string',
+      description: '表示引用的对话轮次的 id',
+    },
+    instance_id: {
+      type: 'string',
+      description: '表示当前问答实例的 id。一个 instance_id 通常会对应一问一答',
+    },
+    log_id: {
+      type: 'string',
+      description: '表示当前问答记录的 id，用户提问和大模型的回答都会对应唯一的、递增的 logId',
+    },
+  }
 };
 
 export const errorCodeData = [
@@ -2006,18 +2689,108 @@ export const resWssData = [
   },
 ];
 
+export const reqOldWssData = [
+  {
+    requestId: '8b7135e902ed45009c95c7880e8a2e66',
+    method: 'appChat',
+    params: {
+      data: {
+        app_id: '1bcc1c297c434691832ee0e91af9a793',
+        question: '中国四大名著是什么？',
+        context: {
+          use_memory: true,
+          user_context: {},
+        },
+      },
+    },
+  },
+];
+
+export const resOldWssData = [
+  {
+    requestId: '8b7135e902ed45009c95c7880e8a2e67',
+    code: 0,
+    msg: null,
+    data: {
+      status: 'ARCHIVED',
+      answer: [
+        {
+          content: '中国四大名著指的是《红楼梦》、《西游记》、《水浒传》和《三国演义》。它们是中国古代文学的经典之作，被广泛地传颂和阅读。这四部小说都具有深刻的思想内涵和丰富的人物形象，是中国文学史上的重要里程碑。',
+            type: 'MSG',
+            msgId: null
+        }
+      ],
+      chat_id: 'e4cff2d2eb1949efb43b64802c8750ce',
+      at_chat_id: null,
+      instance_id: 'a302c335a50148c2b44460ba183a07b5',
+      log_id: '72'
+    },
+    completed: false
+  }
+];
+
+export const resOldSseData = [
+  {
+    status: 'RUNNING',
+    answer: [{
+      content: {
+        formId: null,
+        formVersion: null,
+        formArgs: null,
+        msg: '你好',
+        formAppearance: null,
+        formData: null
+      },
+      type: 'QUESTION',
+      msgId: null
+    }
+    ],
+    chat_id: '287cb0ba6d6d4569a3d46f610b9e6b66',
+    at_chat_id: null,
+    instance_id: '908931206040447989f605eccad62919',
+    log_id: '1334'
+  },
+  {
+    status: 'READY',
+    answer: null,
+    chat_id: '97c2ceb8099648bbbf2d61d44dbf1000',
+    at_chat_id: null,
+    instance_id: '1e18331c3bfd4a68aec21ea2c2d65037',
+    log_id: null
+  },
+  {
+    status: 'ARCHIVED',
+    answer: [{
+      content: '你好！很高兴为你提供帮助。请告诉我你有什么问题或需要什么信息，我会尽力协助你。',
+      type: 'MSG',
+      msgId: null
+    }
+    ],
+    chat_id: '287cb0ba6d6d4569a3d46f610b9e6b66',
+    at_chat_id: null,
+    instance_id: '908931206040447989f605eccad62919',
+    log_id: '1335'
+  }
+];
 export const urlMap = {
-  chatsApps: '/v1/tenants/{tenantId}/chats/apps/{appId}',
-  chats: '/v1/tenants/{tenantId}/chats',
-  instances: '/v1/tenants/{tenantId}/chats/instances/{currentInstanceId}',
-  categories: '/v1/tenants/{tenantId}/apps/{appId}/prompt/categories',
-  inspirations: '/v1/tenants/{tenantId}/apps/{appId}/prompt/categories/{categoryId}/inspirations',
-  translationAudio: '/v1/tenants/{tenantId}/translation/audio',
-  file: '/v1/tenants/{tenantId}/file',
-  translationText: '/v1/tenants/{tenantId}/translation/text',
-  apps: '/v1/tenants/{tenantId}/apps',
-  appsConfig: '/v1/tenants/{tenantId}/apps/{appId}/config',
+  chatsApps: '/api/app/v1/tenants/{tenantId}/chats/apps/{appId}',
+  chats: '/api/app/v1/tenants/{tenantId}/chats',
+  instances: '/api/app/v1/tenants/{tenantId}/chats/instances/{currentInstanceId}',
+  categories: '/api/app/v1/tenants/{tenantId}/apps/{appId}/prompt/categories',
+  inspirations: '/api/app/v1/tenants/{tenantId}/apps/{appId}/prompt/categories/{categoryId}/inspirations',
+  // translationAudio: '/api/app/v1/tenants/{tenantId}/translation/audio',
+  file: '/api/app/v1/tenants/{tenantId}/file',
+  // translationText: '/api/app/v1/tenants/{tenantId}/translation/text',
+  apps: '/api/app/v1/tenants/{tenantId}/apps',
+  appsConfig: '/api/app/v1/tenants/{tenantId}/apps/{appId}/config',
+  chatLogs: '/api/app/v1/tenants/{tenant_id}/log/app/{app_id}/chat/{chat_id}',
+  createFeedback: '/api/app/v1/aipp/user/feedback',
+  updateFeedback: '/api/app/v1/aipp/user/feedback/{instanceId}',
 };
+
+export const oldUrlMap = {
+  chatsOld: '/agent/v1/api/{tenant_id}/app_chat'
+}
 
 export const HTTPMap = {
   http: 'http',

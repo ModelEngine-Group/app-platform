@@ -50,7 +50,8 @@ public class AippLogController extends AbstractController {
      * @param appId 表示应用 id 的 {@link String}。
      * @return 表示会话历史记录的 {@link Rsp}{@code <}{@link List}{@code <}{@link AippInstLogData}{@code >>}。
      */
-    @GetMapping(path = "/app/{app_id}/chat/{chat_id}", description = "指定chatId查询实例历史记录（查询最近10个实例）")
+    @GetMapping(path = "/app/{app_id}/chat/{chat_id}", summary = "查询会话历史记录",
+            description = "指定 chatId 查询实例历史记录（查询最近 10 个实例）。")
     public Rsp<List<AippInstLogData>> queryChatRecentChatLog(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId,
             @PathVariable("chat_id") String chatId) {

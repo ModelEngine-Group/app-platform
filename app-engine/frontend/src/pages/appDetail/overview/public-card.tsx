@@ -13,7 +13,6 @@ import { useTranslation } from 'react-i18next';
 import Empty from '@/components/empty/empty-item';
 import IframeModal from './iframe-modal';
 import DocumentDrawer from './apiDocument';
-import DocumentOmsDrawer from './apiOmsDocument';
 import SecretKeyIcon from '@/assets/images/ai/secret_key.png';
 import DocumentIcon from '@/assets/images/ai/document.png';
 
@@ -32,7 +31,9 @@ const PublicCard = ({ type, url, detail, auth = false }) => {
   // 设置公开访问URL
   const setPreviewUrl = (url) => {
     let origin = window.location.origin;
-    return type === 'URL' ? `${origin}${process.env.PACKAGE_MODE === 'common' ? '/#' : '/appengine'}${url}` : `${origin}${url}`;
+    return type === 'URL'
+      ? `${origin}${process.env.PACKAGE_MODE === 'common' ? '/#' : '/appengine'}${url}`
+      : `${origin}${url}`;
   };
 
   // 复制
@@ -92,10 +93,13 @@ const PublicCard = ({ type, url, detail, auth = false }) => {
             </div>
           ) : detail.attributes?.latest_version || detail.state === 'active' ? (
             <div className='item-bottom'>
-              <Button size='small' disabled={auth} onClick={openKey}>
-                <img src={SecretKeyIcon} alt='' />
-                <span>{t('ApiKey')}</span>
-              </Button>
+              {process.env.PACKAGE_MODE === 'spa' && (
+                <Button size='small' disabled={auth} onClick={openKey}>
+                  <img src={SecretKeyIcon} alt='' />
+                  <span>{t('ApiKey')}</span>
+                </Button>
+              )}
+
               <Button size='small' onClick={() => openDocumentation(url)}>
                 <img src={DocumentIcon} alt='' />
                 <span>{t('ApiDocumentation')}</span>
@@ -117,17 +121,11 @@ const PublicCard = ({ type, url, detail, auth = false }) => {
           <Empty iconType='url' text={t('notReleasedYetTip')} />
         </div>
       )}
-      { process.env.PACKAGE_MODE === 'spa' ? 
-      <DocumentOmsDrawer
-        drawerOpen={drawerOpen}
-        url={setPreviewUrl(url)}
-        setDrawerOpen={setDrawerOpen}
-      /> : 
       <DocumentDrawer
         drawerOpen={drawerOpen}
         url={setPreviewUrl(url)}
         setDrawerOpen={setDrawerOpen}
-      /> }
+      />
       <IframeModal deleteOpen={deleteOpen} setDeleteOpen={setDeleteOpen} url={setPreviewUrl(url)} />
     </div>
   );

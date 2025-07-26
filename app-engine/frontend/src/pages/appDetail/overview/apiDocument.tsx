@@ -16,12 +16,18 @@ import {
   apiListData,
   urlMap,
   wssAPIData,
+  oldWssAPIData,
   errorCodeData,
   resCode,
   resOKCode,
   reqWssData,
   resWssData,
   HTTPMap,
+  reqOldWssData,
+  resOldWssData,
+  resOldSseData,
+  oldSseAPIData,
+  oldUrlMap,
 } from '../overview/common/config';
 import { v4 as uuidv4 } from 'uuid';
 import './styles/api.scss';
@@ -43,11 +49,15 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
   const [currentNav, setCurrentNav] = useState('');
   const [getErrorData, setGetErrorData] = useState<any>([]);
   const [tabsKey, setTabsKey] = useState('1');
+  const [oldTabsKey, setOldTabsKey] = useState('1');
   const documentRef = useRef<any>(null);
-  let httpStr = 'http://' || 'https://';
   let websocketUrl = [
-    '<font color=#d0cdcd>/v1/tenants/{tenantId}/chats/apps/{appId}</font>',
-    '<font color=#d0cdcd>/ws</font>',
+    '<font color=#d0cdcd>/api/app/v1/tenants/{tenantId}/chats/apps/{appId}</font>',
+    '<font color=#d0cdcd>/api/app/v1/chat</font>',
+  ];
+  let oldWebsocketUrl = [
+    '<font color=#d0cdcd>/agent/v1/api/{tenant_id}/app_chat</font>',
+    '<font color=#d0cdcd>/agent/v1/api/{tenant_id}/ws</font>',
   ];
   let data: any = [];
   let wssData: any = [];
@@ -56,18 +66,28 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
   let errorCodeInfo: any = [];
   let wssReq: any = '';
   let wssRes: any = '';
+  let oldWssReq: any = '';
+  let oldWssRes: any = '';
   let reqCodes: any = '';
   let resCodes: any = '';
+  let oldReqCodes: any = '';
+  let oldResCodes: any = '';
   let fitlerRes = ['Request Body', 'Response Body', 'Websocket responses', 'Websocket Request'];
   let dataList: any = [];
+  let oldWssData: any = [];
+  const wssList = [`${t('newSession')}API`, '旧版会话接口'];
+  const needWssResList = [`${t('newSession')}API`, `${t('reconversation')}API`];
 
   // 转换代码格式
   const tranlateCode = (content) => {
     const regex = /<code>(.*?)<\/code>/g;
-    return content.replace(regex, `<div class='inner-code'>
+    return content.replace(
+      regex,
+      `<div class='inner-code'>
       <div class='inner-code-title'>Code</div>
       <div class='inner-code-content'>$1</div>
-    </div>`);
+    </div>`
+    );
   };
 
   // 展示当前appId
@@ -167,21 +187,31 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
 
   // 打开抽屉初始化数据
   const getInitData = () => {
-    processWssData();
+    processWssData(wssAPIData, true);
+    processWssData(oldWssAPIData, false);
     processSSEData();
   };
 
   // 组装SSE数据
-  const processSSEData = ()=>{
-    let resRefField  = '';
+  const processSSEData = () => {
+    let resRefField = '';
     let reqRefField = '';
-    const urlList = Object.values(urlMap);
+    let urls = urlMap;
+    if (process.env.PACKAGE_MODE === 'spa') {
+      Object.assign(urls, oldUrlMap);
+    }
+    const urlList = Object.values(urls);
     urlList.forEach((item: any, index: number) => {
       let apiDataPaths = (apiListData.paths as any)[item];
       Object.keys(apiDataPaths).forEach((method: any) => {
         let obj: any = {};
         let methods = apiDataPaths[method];
-        obj.id = index === 0 ? `_${index}` : `_${uuidv4()}`;
+        obj.id =
+          methods.summary === `${t('newSession')}API`
+            ? '_0'
+            : methods.summary === '旧版会话接口'
+              ? '_1'
+              : `_${uuidv4()}`;
         obj.method = methods.operationId.split(' ')[0];
         obj.url = `<font color=#d0cdcd>${methods.operationId.split(' ')[1]}</font>`;
         obj.title = methods.summary;
@@ -189,32 +219,45 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
         obj.operationId = methods.operationId;
         obj.children = [];
         obj.codes = [];
-        processSseData(obj, methods, resRefField , reqRefField);
+        processSseData(obj, methods, resRefField, reqRefField);
       });
     });
-  }
+  };
 
   // 组装wss数据
-  const processWssData = () => {
+  const processWssData = (apiData, isNew) => {
     let wssObj: any = {};
-    wssObj.title = wssAPIData.info.title;
-    wssObj.url = `<font color=#d0cdcd>${wssAPIData.servers[0].url}</font>`;
-    wssObj.method = 'GET';
-    wssObj.id = `_${0}`;
-    wssObj.content = wssAPIData.paths['/chat'].description;
+    wssObj.title = apiData.info.title;
+    wssObj.url = `<font color=#d0cdcd>${apiData.servers[0].url}</font>`;
+    wssObj.method = 'WSS';
+    wssObj.id = `_${isNew ? 0 : 1}`;
+    wssObj.content = apiData.paths['/chat'].description;
     wssObj.children = [];
     wssObj.codes = [];
     wssObj.children.push({
       title: 'First Request',
-      content: wssAPIData.paths['/chat']['First Request'].summary,
+      content: apiData.paths['/chat']['First Request'].summary,
     });
-    processWssObj(wssObj);
-    wssData.push(wssObj);
+    if (!isNew) {
+      const getRequestInfo = getRequest(
+        oldWssAPIData.paths['/chat'].parameters || [],
+        oldWssAPIData.servers[0].url
+      );
+      wssObj.children.push({ title: 'Request', children: getRequestInfo });
+    }
+    processWssObj(
+      wssObj,
+      apiData,
+      isNew ? reqWssData : reqOldWssData,
+      isNew ? resWssData : resOldWssData,
+      isNew
+    );
+    isNew ? wssData.push(wssObj) : oldWssData.push(wssObj);
   };
 
   // 处理SSE的children以及codes数据
-  const processSseData = (obj: any, methods: any, resRefField : string, reqRefField: string) => {
-    const getRequestInfo = getRequest(methods.parameters, methods.operationId);
+  const processSseData = (obj: any, methods: any, resRefField: string, reqRefField: string) => {
+    const getRequestInfo = getRequest(methods.parameters || [], methods.operationId);
     obj.children.push({ title: 'Request', children: getRequestInfo });
     if (methods.requestBody) {
       let requestDescription = `${obj.method} ${methods.operationId.split(' ')[1]}`;
@@ -230,15 +273,34 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
       let statusCode = Object.keys(methods.responses).join('');
       let application = Object.keys(methods.responses[statusCode].content).join('');
       let responses = methods.responses[statusCode].content[application].schema.$ref;
-      resRefField  = responses.substring(responses.lastIndexOf('/') + 1);
+      resRefField = responses.substring(responses.lastIndexOf('/') + 1);
       errorCodeInfo.push(statusCode);
-      const res = processSseCodes(resRefField );
-      const getResponseCode = obj.title === `${t('newSession')}API`? resCodes : obj.title === `${t('reconversation')}API` ? resCodes : res;
+      const res = processSseCodes(resRefField);
+      let getResponseCode;
+      if (needWssResList.includes(obj.title)) {
+        getResponseCode = resCodes;
+      } else if (obj.title === '旧版会话接口') {
+        getResponseCode = processWssCodes(resOldSseData);
+      } else {
+        getResponseCode = res;
+      }
       obj.codes.push({ title: 'Response', code: getResponseCode });
     }
-    const getRes = processSseRequestAndResponse(resRefField );
-    const getDatas = [...wssRes, ...getRes];
-    const getArr = obj.title === `${t('newSession')}API` ? getDatas : obj.title === `${t('reconversation')}API` ? getDatas : getRes;
+    const getRes = processSseRequestAndResponse(resRefField);
+    const getDatas = [
+      ...(obj.title === '旧版会话接口'
+        ? oldTabsKey === '1'
+          ? processWssRequestAndResponse(oldSseAPIData)
+          : oldWssRes
+        : wssRes),
+      ...getRes,
+    ];
+    let getArr;
+    if (needWssResList.includes(obj.title) || obj.title === '旧版会话接口') {
+      getArr = getDatas;
+    } else {
+      getArr = getRes;
+    }
     obj.children.push({ title: 'Response', children: [processStatusCodes(errorCodeInfo)] });
     obj.children.push({ title: 'Response Body', children: getArr });
     dataList.push(obj);
@@ -248,10 +310,14 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
 
   // 切换SSE、WSS替换数据
   const toggleSseWssData = (el: any) => {
-    if (el.title !== `${t('newSession')}API`) {
-      return el
+    if (!wssList.includes(el.title)) {
+      return el;
     }
-    return tabsKey === '1' ? el :wssData[0];
+    if (el.title === '旧版会话接口') {
+      return oldTabsKey === '1' ? el : oldWssData[0];
+    } else {
+      return tabsKey === '1' ? el : wssData[0];
+    }
   };
 
   // 处理SSE中的request数据
@@ -461,10 +527,15 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
     setTabsKey(key);
   };
 
+  // 老版接口SSE、Websocket切换
+  const onOldChangeTabs = (key: string) => {
+    setOldTabsKey(key);
+  };
+
   // 组装wss中children以及codes数据
-  const processWssObj = (obj: any) => {
+  const processWssObj = (obj: any, apiData: any, reqData: any, resData: any, isNew: boolean) => {
     let filterField = ['summary', 'description'];
-    const pathsData: any = wssAPIData.paths['/chat'];
+    const pathsData: any = apiData.paths['/chat'];
     const res = Object.keys(pathsData).filter((key) => !filterField.includes(key));
     res.forEach((item) => {
       let wssObj: any = {};
@@ -480,12 +551,14 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
         let appReqJson = Object.keys(pathsReqInfo.content).join('');
         let schemaReq = Object.keys(pathsReqInfo.content[appReqJson]).join('');
         let recursionData = pathsReqInfo.content[appReqJson][schemaReq];
-        wssReq = processWssRequestAndResponse(recursionData || {});
-        reqCodes = processWssCodes(reqWssData);
+        isNew
+          ? (wssReq = processWssRequestAndResponse(recursionData || {}))
+          : (oldWssReq = processWssRequestAndResponse(recursionData || {}));
+        isNew ? (reqCodes = processWssCodes(reqData)) : (oldReqCodes = processWssCodes(reqData));
         obj.children.push({
           title: 'Websocket Request',
           content: pathsData[item]['description'],
-          children: wssReq,
+          children: isNew ? wssReq : oldWssReq,
         });
         obj.codes.push({
           title: 'Websocket Request',
@@ -497,17 +570,19 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
         let pathsResData = pathsData[item]['content'];
         let appResJson = Object.keys(pathsResData).join('');
         let schemaRes = Object.keys(pathsResData[appResJson]).join('');
-        let resData = pathsResData[appResJson][schemaRes];
-        wssRes = processWssRequestAndResponse(resData);
-        resCodes = processWssCodes(resWssData);
+        let wssResData = pathsResData[appResJson][schemaRes];
+        isNew
+          ? (wssRes = processWssRequestAndResponse(wssResData))
+          : (oldWssRes = processWssRequestAndResponse(wssResData));
+        isNew ? (resCodes = processWssCodes(resData)) : (oldResCodes = processWssCodes(resData));
         obj.children.push({
           title: 'Websocket responses',
           content: pathsData[item]['description'],
-          children: wssRes,
+          children: isNew ? wssRes : oldWssRes,
         });
         obj.codes.push({
           title: 'Websocket responses',
-          code: resCodes.join(''),
+          code: isNew ? resCodes.join('') : oldResCodes.join(''),
         });
       }
     });
@@ -568,29 +643,31 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
 
   // 递归wss中codes字符拼接的内容
   const buildWssCodesString = (e: any, deep = 0) => {
-    let wssCodes = ['object', 'array'];
-    let statusType = Object.prototype.toString.call(e) === '[object Array]'
-    let childKey = e[0] || e;
-    let str = statusType && deep === 0 ? '[{\n' : '{\n';
-    Object.keys(childKey).forEach((item, index) => {
-      let val = '';
-      let space = String.fromCharCode(160);
-      if (wssCodes.includes(typeof childKey[item]) && childKey[item]) {
-        if (Object.keys(childKey[item]).length === 0) {
-          val = '{}';
-        } else {
-          val = buildWssCodesString([childKey[item]], deep + 1);
-        }
-      } else {
-        val = childKey[item];
-      }
-      let newVal = !wssCodes.includes(typeof childKey[item]) ? `"${val}"` : val;
-      str += `${space.repeat(6 + deep * 2)}"${item}": ${newVal},\n`;
-      if (index === Object.keys(childKey).length - 1) {
-        str += `${String.fromCharCode(160).repeat(4 + deep * 2)}${statusType && deep === 0 ? '}]' : '}'}`;
-      }
-    });
-    return str;
+    const space = (n: number) => String.fromCharCode(160).repeat(n);
+    if (Array.isArray(e)) {
+      let str = '[\n';
+      e.forEach((item, idx) => {
+        str += space(4 + deep * 2) + buildWssCodesString(item, deep + 1);
+        if (idx < e.length - 1) str += ',\n';
+      });
+      str += '\n' + space(deep * 2) + ']';
+      return str;
+    } else if (typeof e === 'object' && e !== null) {
+      let str = '{\n';
+      const keys = Object.keys(e);
+      if (keys.length === 0) return '{}';
+      keys.forEach((key, idx) => {
+        let val = e[key];
+        let valStr =
+          typeof val === 'object' && val !== null ? buildWssCodesString(val, deep + 1) : `"${val}"`;
+        str += space(4 + deep * 2) + `"${key}": ${valStr}`;
+        if (idx < keys.length - 1) str += ',\n';
+      });
+      str += '\n' + space(deep * 2) + '}';
+      return str;
+    } else {
+      return `"${e}"`;
+    }
   };
 
   // 关闭抽屉
@@ -619,7 +696,7 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
     } else {
       setDocumentContent([]);
     }
-  }, [drawerOpen, tabsKey]);
+  }, [drawerOpen, tabsKey, oldTabsKey]);
 
   useEffect(() => {
     return () => {
@@ -648,13 +725,15 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
         >
           {t('basic')}URL
         </div>
-        <div
-          id='header-link'
-          className={`nav-item ${currentNav === '#header' ? 'current-nav' : ''}`}
-          onClick={(e) => handleAnchorClick(e, '#header')}
-        >
-          {t('auth')}
-        </div>
+        {process.env.PACKAGE_MODE === 'spa' && (
+          <div
+            id='header-link'
+            className={`nav-item ${currentNav === '#header' ? 'current-nav' : ''}`}
+            onClick={(e) => handleAnchorClick(e, '#header')}
+          >
+            {t('auth')}
+          </div>
+        )}
         <div className='nav-item'>API{t('list')}</div>
         {documentContentData.map((item: any) => {
           return (
@@ -703,12 +782,14 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
             </div>
           </div>
         </div>
-        <div id='header'>
-          <div className='content-title'>{t('auth')}</div>
-          <div
-            dangerouslySetInnerHTML={{ __html: markedProcess(tranlateCode(t('authTips'))) }}
-          ></div>
-        </div>
+        {process.env.PACKAGE_MODE === 'spa' && (
+          <div id='header'>
+            <div className='content-title'>{t('auth')}</div>
+            <div
+              dangerouslySetInnerHTML={{ __html: markedProcess(tranlateCode(t('authTips'))) }}
+            ></div>
+          </div>
+        )}
         <div>
           <div className='content-title'>{t('appInformation')}</div>
           <div>
@@ -737,7 +818,22 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
               ></div>
               {websocketUrl.includes(item.url) && (
                 <div>
-                  <Tabs defaultActiveKey='1' onChange={onChangeTabs} items={items} />
+                  <Tabs
+                    defaultActiveKey='1'
+                    onChange={onChangeTabs}
+                    items={items}
+                    activeKey={tabsKey}
+                  />
+                </div>
+              )}
+              {oldWebsocketUrl.includes(item.url) && (
+                <div>
+                  <Tabs
+                    defaultActiveKey='1'
+                    onChange={onOldChangeTabs}
+                    items={items}
+                    activeKey={oldTabsKey}
+                  />
                 </div>
               )}
               {item.method && (
@@ -764,7 +860,7 @@ const DocumentDrawer = ({ drawerOpen, url, setDrawerOpen }) => {
                         {body.children?.length > 0 &&
                           (body.isError
                             ? buildErrorCodeHtml(body.children)
-                            :  buildParamsContentHtml(body.children))}
+                            : buildParamsContentHtml(body.children))}
                       </div>
                       {res && (
                         <div key={i} style={{ width: '50%' }}>

@@ -63,7 +63,7 @@ public class AppChatController extends AbstractController {
      * @throws AippTaskNotFoundException 任务不存在异常
      */
     @CarverSpan(value = "operation.appChat.app.chat")
-    @PostMapping(value = "/app_chat", description = "会话接口，传递会话信息")
+    @PostMapping(value = "/app_chat", description = "会话接口，传递会话信息", summary = "会话接口")
     public Choir<Object> chat(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
             @RequestBody CreateAppChatRequest body) throws AippTaskNotFoundException {
         // todo 等多版本整改上线，在app domain结构中获取多模态的配置信息 当前临时方案是放在请求的headers里
