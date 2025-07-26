@@ -45,7 +45,7 @@ public class WaterFlowInvoke implements WaterFlowService {
      */
     public WaterFlowInvoke(@Fit AppSyncInvokerService appSyncInvokerService,
             @Fit(alias = "json") ObjectSerializer objectSerializer,
-            @Value("${tool-waterflow.app.timeout:300}") long timeout) {
+            @Value("${app-engine.app.store.timeout:300}") long timeout) {
         this.appSyncInvokerService = appSyncInvokerService;
         this.objectSerializer = objectSerializer;
         this.timeout = TimeUnit.SECONDS.toMillis(Validation.greaterThan(timeout, 0, "The timeout should > 0."));
