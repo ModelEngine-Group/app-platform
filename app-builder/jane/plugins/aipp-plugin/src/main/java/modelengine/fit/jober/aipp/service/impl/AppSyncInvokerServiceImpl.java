@@ -8,7 +8,7 @@ package modelengine.fit.jober.aipp.service.impl;
 
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.constants.AippConst;
-import modelengine.fit.jober.aipp.dto.AppCoordinate;
+import modelengine.fit.jober.aipp.dto.AppIdentifier;
 import modelengine.fit.jober.aipp.genericable.AippRunTimeService;
 import modelengine.fit.jober.aipp.service.AppSyncInvokerService;
 import modelengine.fit.jober.aipp.util.UUIDUtil;
@@ -63,11 +63,10 @@ public class AppSyncInvokerServiceImpl implements FlowCallbackService, FlowExcep
     }
 
     @Override
-    public Object invoke(AppCoordinate appCoordinate, Map<String, Object> initContext, long timeout,
+    public Object invoke(AppIdentifier appIdentifier, Map<String, Object> initContext, long timeout,
             OperationContext operationContext) {
         String requestId = UUIDUtil.uuid();
-        Request request = new Request(this.aippRunTimeService,
-                appCoordinate,
+        Request request = new Request(this.aippRunTimeService, appIdentifier,
                 this.addDynamicParams(requestId, initContext),
                 operationContext);
         this.requests.put(requestId, request);
@@ -157,7 +156,7 @@ public class AppSyncInvokerServiceImpl implements FlowCallbackService, FlowExcep
      */
     private class Request {
         private final AippRunTimeService aippRunTimeService;
-        private final AppCoordinate appCoordinate;
+        private final AppIdentifier appIdentifier;
         private final Map<String, Object> initContext;
         private final OperationContext operationContext;
         private final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -169,14 +168,14 @@ public class AppSyncInvokerServiceImpl implements FlowCallbackService, FlowExcep
          * 绑定调用信息的构造方法。
          *
          * @param aippRunTimeService 表示应用运行服务的 {@link AippRunTimeService}。
-         * @param appCoordinate 表表示应用坐标的 {@link AppCoordinate}。
+         * @param appIdentifier 表表示应用标识的 {@link AppIdentifier}。
          * @param initContext 表示应用启动上下文的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
          * @param operationContext 表示操作上下文的 {@link OperationContext}。
          */
-        public Request(AippRunTimeService aippRunTimeService, AppCoordinate appCoordinate,
+        public Request(AippRunTimeService aippRunTimeService, AppIdentifier appIdentifier,
                 Map<String, Object> initContext, OperationContext operationContext) {
             this.aippRunTimeService = aippRunTimeService;
-            this.appCoordinate = appCoordinate;
+            this.appIdentifier = appIdentifier;
             this.initContext = initContext;
             this.operationContext = operationContext;
         }
@@ -185,8 +184,8 @@ public class AppSyncInvokerServiceImpl implements FlowCallbackService, FlowExcep
          * 发起请求。
          */
         public void post() {
-            this.aippRunTimeService.createAippInstance(this.appCoordinate.getAippId(),
-                    this.appCoordinate.getVersion(),
+            this.aippRunTimeService.createAippInstance(this.appIdentifier.getAippId(),
+                    this.appIdentifier.getVersion(),
                     initContext,
                     this.operationContext);
         }
@@ -206,8 +205,8 @@ public class AppSyncInvokerServiceImpl implements FlowCallbackService, FlowExcep
             }
             if (!isWaited) {
                 throw new TimeoutException(StringUtils.format("Invocation timeout. [aippId={0}, version={1}]",
-                        this.appCoordinate.getAippId(),
-                        this.appCoordinate.getVersion()));
+                        this.appIdentifier.getAippId(),
+                        this.appIdentifier.getVersion()));
             }
             if (this.error != null) {
                 throw new FitException(this.error.getErrorCode(), this.error.getErrorMessage());

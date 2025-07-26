@@ -9,7 +9,7 @@ package modelengine.fit.jober.aipp.fitable;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.WaterFlowService;
 import modelengine.fit.jober.aipp.constants.AippConst;
-import modelengine.fit.jober.aipp.dto.AppCoordinate;
+import modelengine.fit.jober.aipp.dto.AppIdentifier;
 import modelengine.fit.jober.aipp.service.AppSyncInvokerService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
@@ -41,7 +41,7 @@ public class WaterFlowInvoke implements WaterFlowService {
      *
      * @param appSyncInvokerService 表示应用同步执行服务的 {@link AppSyncInvokerService}。
      * @param objectSerializer 表示序列化器的 {@link ObjectSerializer}。
-     * @param timeout 表示执行超时时间的 {@code long}，单位秒。
+     * @param timeout 表示执行超时时间（单位秒）的 {@code long}。
      */
     public WaterFlowInvoke(@Fit AppSyncInvokerService appSyncInvokerService,
             @Fit(alias = "json") ObjectSerializer objectSerializer,
@@ -54,7 +54,7 @@ public class WaterFlowInvoke implements WaterFlowService {
     @Override
     @Fitable(id = "water.flow.invoke")
     public String invoke(String tenantId, String aippId, String version, Map<String, Object> inputParams) {
-        return this.objectSerializer.serialize(this.appSyncInvokerService.invoke(new AppCoordinate(tenantId,
+        return this.objectSerializer.serialize(this.appSyncInvokerService.invoke(new AppIdentifier(tenantId,
                         aippId,
                         version),
                 this.buildInitContext(inputParams),

@@ -10,7 +10,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.constants.AippConst;
-import modelengine.fit.jober.aipp.dto.AppCoordinate;
+import modelengine.fit.jober.aipp.dto.AppIdentifier;
 import modelengine.fit.jober.aipp.genericable.AippRunTimeService;
 import modelengine.fit.jober.common.FlowDataConstant;
 import modelengine.fit.waterflow.entity.FlowErrorInfo;
@@ -39,7 +39,7 @@ import java.util.Map;
  */
 @ExtendWith(MockitoExtension.class)
 class AppSyncInvokerServiceImplTest {
-    private final AppCoordinate appCoordinate = new AppCoordinate("tenantId1", "aippId1", "1.0.0");
+    private final AppIdentifier appIdentifier = new AppIdentifier("tenantId1", "aippId1", "1.0.0");
     private final OperationContext operationContext = new OperationContext();
 
     @Mock
@@ -57,8 +57,8 @@ class AppSyncInvokerServiceImplTest {
 
         Map<String, Object> initContext =
                 MapBuilder.<String, Object>get().put(AippConst.BS_INIT_CONTEXT_KEY, new HashMap<>()).build();
-        Mockito.when(this.aippRunTimeService.createAippInstance(this.appCoordinate.getAippId(),
-                this.appCoordinate.getVersion(),
+        Mockito.when(this.aippRunTimeService.createAippInstance(this.appIdentifier.getAippId(),
+                this.appIdentifier.getVersion(),
                 initContext,
                 this.operationContext)).thenAnswer(invocation -> {
             Map<String, Object> inputInitContext = invocation.getArgument(2);
@@ -68,7 +68,7 @@ class AppSyncInvokerServiceImplTest {
             return "subInstanceId";
         });
 
-        Object result = this.appSyncInvokerService.invoke(this.appCoordinate, initContext, 1, this.operationContext);
+        Object result = this.appSyncInvokerService.invoke(this.appIdentifier, initContext, 1, this.operationContext);
 
         Assertions.assertEquals(expectResult, result);
     }
@@ -79,8 +79,8 @@ class AppSyncInvokerServiceImplTest {
         String errorMessage = "test error";
         Map<String, Object> initContext =
                 MapBuilder.<String, Object>get().put(AippConst.BS_INIT_CONTEXT_KEY, new HashMap<>()).build();
-        Mockito.when(this.aippRunTimeService.createAippInstance(this.appCoordinate.getAippId(),
-                this.appCoordinate.getVersion(),
+        Mockito.when(this.aippRunTimeService.createAippInstance(this.appIdentifier.getAippId(),
+                this.appIdentifier.getVersion(),
                 initContext,
                 this.operationContext)).thenAnswer(invocation -> {
             Map<String, Object> inputInitContext = invocation.getArgument(2);
@@ -93,7 +93,7 @@ class AppSyncInvokerServiceImplTest {
             return "subInstanceId";
         });
 
-        assertThatThrownBy(() -> this.appSyncInvokerService.invoke(this.appCoordinate,
+        assertThatThrownBy(() -> this.appSyncInvokerService.invoke(this.appIdentifier,
                 initContext,
                 1,
                 this.operationContext)).isInstanceOf(FitException.class).hasMessage(errorMessage);
@@ -103,8 +103,8 @@ class AppSyncInvokerServiceImplTest {
     void shouldThrowExceptionWhenInvokeGivenNoResponse() {
         Map<String, Object> initContext =
                 MapBuilder.<String, Object>get().put(AippConst.BS_INIT_CONTEXT_KEY, new HashMap<>()).build();
-        Mockito.when(this.aippRunTimeService.createAippInstance(appCoordinate.getAippId(),
-                appCoordinate.getVersion(),
+        Mockito.when(this.aippRunTimeService.createAippInstance(appIdentifier.getAippId(),
+                appIdentifier.getVersion(),
                 initContext,
                 operationContext)).thenAnswer(invocation -> {
             Map<String, Object> inputInitContext = invocation.getArgument(2);
@@ -114,7 +114,7 @@ class AppSyncInvokerServiceImplTest {
             return "subInstanceId";
         });
 
-        assertThatThrownBy(() -> this.appSyncInvokerService.invoke(this.appCoordinate,
+        assertThatThrownBy(() -> this.appSyncInvokerService.invoke(this.appIdentifier,
                 initContext,
                 1,
                 this.operationContext)).isInstanceOf(FitException.class).hasMessage("No response");
