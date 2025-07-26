@@ -18,7 +18,7 @@ import modelengine.fel.core.tool.ToolInfo;
 import modelengine.fel.engine.flows.AiProcessFlow;
 import modelengine.fel.tool.mcp.client.McpClient;
 import modelengine.fel.tool.mcp.client.McpClientFactory;
-import modelengine.fit.jade.tool.SyncToolCall;
+import modelengine.fel.tool.service.ToolExecuteService;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fitframework.flowable.Choir;
 import modelengine.fitframework.util.MapBuilder;
@@ -52,7 +52,7 @@ class WaterFlowAgentTest {
     private static final String TOOL_CALL_STEP = "toolCallStep";
 
     @Mock
-    private SyncToolCall syncToolCall;
+    private ToolExecuteService toolExecuteService;
     @Mock
     private ChatModel chatModel;
     @Mock
@@ -60,7 +60,8 @@ class WaterFlowAgentTest {
 
     @Test
     void shouldGetResultWhenRunFlowGivenNoToolCall() {
-        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.syncToolCall, this.chatModel, this.mcpClientFactory);
+        WaterFlowAgent waterFlowAgent =
+                new WaterFlowAgent(this.toolExecuteService, this.chatModel, this.mcpClientFactory);
 
         String expectResult = "0123";
         doAnswer(invocation -> Choir.create(emitter -> {
@@ -80,7 +81,7 @@ class WaterFlowAgentTest {
 
     @Test
     void shouldGetResultWhenRunFlowGivenStoreToolCall() {
-        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.syncToolCall, this.chatModel, this.mcpClientFactory);
+        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel, this.mcpClientFactory);
 
         String expectResult = "tool result:0123";
         String realName = "realName";
@@ -95,7 +96,7 @@ class WaterFlowAgentTest {
             return result;
         }).when(chatModel).generate(any(), any());
         Map<String, Object> toolContext = MapBuilder.<String, Object>get().put("key", "value").build();
-        when(this.syncToolCall.call(realName, toolCall.arguments(), toolContext)).thenReturn("tool result:");
+        when(this.toolExecuteService.execute(realName, toolCall.arguments())).thenReturn("tool result:");
 
         AiProcessFlow<Prompt, ChatMessage> flow = waterFlowAgent.buildFlow();
         ChatMessage result = flow.converse()
@@ -110,7 +111,7 @@ class WaterFlowAgentTest {
 
     @Test
     void shouldGetResultWhenRunFlowGivenMcpToolCall() {
-        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.syncToolCall, this.chatModel, this.mcpClientFactory);
+        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel, this.mcpClientFactory);
 
         String expectResult = "\"tool result:\"0123";
         String realName = "realName";
@@ -138,7 +139,7 @@ class WaterFlowAgentTest {
                 .bind(AippConst.TOOLS_KEY, Collections.singletonList(toolInfo))
                 .offer(ChatMessages.from(new HumanMessage("hi"))).await();
 
-        verify(this.syncToolCall, times(0)).call(any(), any(), any());
+        verify(this.toolExecuteService, times(0)).execute(any(String.class), any(String.class));
         assertEquals(expectResult, result.text());
     }
 

@@ -22,6 +22,7 @@ import modelengine.fel.tool.mcp.client.McpClient;
 import modelengine.fel.tool.mcp.client.McpClientFactory;
 import modelengine.fel.tool.mcp.entity.Tool;
 import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.ToolExecuteService;
 import modelengine.fit.jade.aipp.formatter.OutputFormatterChain;
 import modelengine.fit.jade.aipp.model.dto.ModelListDto;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
@@ -30,7 +31,6 @@ import modelengine.fit.jade.aipp.prompt.PromptMessage;
 import modelengine.fit.jade.aipp.prompt.PromptStrategy;
 import modelengine.fit.jade.aipp.prompt.UserAdvice;
 import modelengine.fit.jade.aipp.prompt.repository.PromptBuilderChain;
-import modelengine.fit.jade.tool.SyncToolCall;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jade.waterflow.FlowInstanceService;
 import modelengine.fit.jober.aipp.TestUtils;
@@ -59,7 +59,6 @@ import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.ObjectUtils;
-import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.store.service.ToolService;
 
 import org.junit.jupiter.api.Assertions;
@@ -92,7 +91,7 @@ public class LlmComponentTest {
     @Mock
     private ToolService toolService;
     @Mock
-    private SyncToolCall syncToolCall;
+    private ToolExecuteService toolExecuteService;
     @Mock
     private AippLogService aippLogService;
     @Mock
@@ -169,7 +168,7 @@ public class LlmComponentTest {
     }
 
     private AbstractAgent getWaterFlowAgent(ChatModel model) {
-        return new WaterFlowAgent(this.syncToolCall, model, this.mcpClientFactory);
+        return new WaterFlowAgent(this.toolExecuteService, model, this.mcpClientFactory);
     }
 
     private ChatModel buildChatStreamModel(String exceptionMsg) {
