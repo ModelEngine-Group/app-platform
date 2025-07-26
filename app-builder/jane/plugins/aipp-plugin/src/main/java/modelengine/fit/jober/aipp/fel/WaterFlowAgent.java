@@ -24,7 +24,7 @@ import modelengine.fel.engine.operators.models.ChatFlowModel;
 import modelengine.fel.engine.operators.patterns.AbstractAgent;
 import modelengine.fel.tool.mcp.client.McpClient;
 import modelengine.fel.tool.mcp.client.McpClientFactory;
-import modelengine.fit.jade.tool.SyncToolCall;
+import modelengine.fel.tool.service.ToolExecuteService;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.constants.AippConst;
@@ -53,20 +53,20 @@ public class WaterFlowAgent extends AbstractAgent {
     private static final String GOTO_NODE_ID = "ahead_llm_node";
 
     private final String agentMsgKey;
-    private final SyncToolCall syncToolCall;
+    private final ToolExecuteService toolExecuteService;
     private final McpClientFactory mcpClientFactory;
 
     /**
      * {@link WaterFlowAgent} 的构造方法。
      *
-     * @param syncToolCall 表示工具调用服务的 {@link SyncToolCall}。
+     * @param toolExecuteService 表示工具调用服务的 {@link ToolExecuteService}。
      * @param chatStreamModel 表示流式对话大模型的 {@link ChatModel}。
      * @param mcpClientFactory 表示大模型上下文客户端工厂的 {@link McpClientFactory}。
      */
-    public WaterFlowAgent(@Fit SyncToolCall syncToolCall, ChatModel chatStreamModel,
+    public WaterFlowAgent(@Fit ToolExecuteService toolExecuteService, ChatModel chatStreamModel,
             McpClientFactory mcpClientFactory) {
         super(new ChatFlowModel(chatStreamModel, null));
-        this.syncToolCall = Validation.notNull(syncToolCall, "The tool sync tool call cannot be null.");
+        this.toolExecuteService = Validation.notNull(toolExecuteService, "The tool execute service cannot be null.");
         this.mcpClientFactory = Validation.notNull(mcpClientFactory, "The mcp client factory cannot be null.");
         this.agentMsgKey = AGENT_MSG_KEY;
     }
@@ -145,7 +145,7 @@ public class WaterFlowAgent extends AbstractAgent {
                 throw new AippException(AippErrCode.CALL_MCP_SERVER_FAILED, exception.getMessage());
             }
         }
-        return new ToolMessage(toolCall.id(), this.syncToolCall.call(toolRealName, toolCall.arguments(), toolContext));
+        return new ToolMessage(toolCall.id(), this.toolExecuteService.execute(toolRealName, toolCall.arguments()));
     }
 
     private ChatMessages getAgentMsg(ChatMessage input, StateContext ctx) {

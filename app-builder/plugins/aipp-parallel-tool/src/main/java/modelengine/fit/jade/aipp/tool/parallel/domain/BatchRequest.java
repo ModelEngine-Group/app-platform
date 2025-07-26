@@ -13,16 +13,15 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-import modelengine.fit.jade.aipp.tool.parallel.entities.Argument;
+import modelengine.fel.tool.service.ToolExecuteService;
 import modelengine.fit.jade.aipp.tool.parallel.entities.Config;
 import modelengine.fit.jade.aipp.tool.parallel.entities.ToolCall;
 import modelengine.fit.jade.aipp.tool.parallel.support.AippInstanceStatus;
 import modelengine.fit.jade.aipp.tool.parallel.support.TaskExecutor;
-import modelengine.fit.jade.tool.SyncToolCall;
+import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.StringUtils;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,24 +46,40 @@ public class BatchRequest {
     private final Map<Integer, ToolCallTask> doingToolCallTasks = new ConcurrentHashMap<>();
     @Getter
     private final Map<String, Object> results = new LinkedHashMap<>();
-    private volatile int waitOutputCount;
-    private volatile Throwable exception = null;
-    private volatile ToolCallTask exceptionToolCallTask = null;
     private final Config config;
-    private final SyncToolCall syncToolCall;
+    private final ToolExecuteService toolExecuteService;
     private final TaskExecutor taskExecutor;
     private final CountDownLatch countDownLatch = new CountDownLatch(1);
     private final AippInstanceStatus aippInstanceStatus;
     private final Map<String, Object> context;
 
-    public BatchRequest(List<ToolCall> toolCalls, Config config, SyncToolCall syncToolCall, TaskExecutor taskExecutor,
-            AippInstanceStatus aippInstanceStatus, Map<String, Object> context) {
+    private volatile int waitOutputCount;
+    private volatile Throwable exception = null;
+    private volatile ToolCallTask exceptionToolCallTask = null;
+
+    /**
+     * 批量执行工具的请求的构造方法。
+     *
+     * @param toolCalls 表示目标调用工具列表的 {@link List}{@code <}{@link ToolCall}{@code >}。
+     * @param config 表示批量调用配置的 {@link Config}。
+     * @param toolExecuteService 表示工具执行服务的 {@link ToolExecuteService}。
+     * @param taskExecutor 表示任务执行器的 {@link TaskExecutor}。
+     * @param aippInstanceStatus 表示对话实例状态服务的 {@link AippInstanceStatus}。
+     * @param context 表示对话执行上下文的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
+     */
+    public BatchRequest(List<ToolCall> toolCalls, Config config, ToolExecuteService toolExecuteService,
+            TaskExecutor taskExecutor, AippInstanceStatus aippInstanceStatus, Map<String, Object> context) {
+        Validation.notEmpty(toolCalls, "The tool call list should not be empty.");
+        Validation.notNull(toolExecuteService, "The tool execute service should not be null.");
+        Validation.notNull(taskExecutor, "The task executor should not be null.");
+        Validation.notNull(aippInstanceStatus, "The instance status service should not be null.");
+        Validation.notNull(context, "The context should not be null.");
         toolCalls.forEach(toolCall -> undoToolCallTasks.add(ToolCallTask.builder()
                 .index(this.undoToolCallTasks.size())
                 .toolCall(toolCall)
                 .build()));
         this.waitOutputCount = this.undoToolCallTasks.size();
-        this.syncToolCall = syncToolCall;
+        this.toolExecuteService = toolExecuteService;
         this.config = config;
         this.taskExecutor = taskExecutor;
         this.aippInstanceStatus = aippInstanceStatus;
@@ -127,9 +142,7 @@ public class BatchRequest {
                 String jsonArgs = JSONObject.toJSONString(task.getToolCall().getArgs(),
                         SerializerFeature.WriteMapNullValue);
                 this.complete(task,
-                        JSONArray.parse(this.syncToolCall.call(task.getToolCall().getUniqueName(),
-                                jsonArgs,
-                                new HashMap<>())));
+                        JSONArray.parse(this.toolExecuteService.execute(task.getToolCall().getUniqueName(), jsonArgs)));
             } catch (Throwable ex) {
                 this.setException(task, ex);
             } finally {
