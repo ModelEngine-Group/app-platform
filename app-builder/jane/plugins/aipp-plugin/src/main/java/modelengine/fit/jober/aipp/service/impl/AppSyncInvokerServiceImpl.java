@@ -48,6 +48,7 @@ public class AppSyncInvokerServiceImpl implements FlowCallbackService, FlowExcep
     private static final String APP_REQUEST_ID = "appRequestId";
 
     private final AippRunTimeService aippRunTimeService;
+
     /**
      * 记录调用未完成的请求。其中 key 为请求标识。
      */
@@ -152,7 +153,7 @@ public class AppSyncInvokerServiceImpl implements FlowCallbackService, FlowExcep
      * 调用应用的请求的封装。
      *
      * @author 宋永坦
-     * @since 2025/07/23
+     * @since 2025-07-23
      */
     private class Request {
         private final AippRunTimeService aippRunTimeService;
