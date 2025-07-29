@@ -13,17 +13,34 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>aipp-classify-question</module>
         <module>aipp-code</module>
         <module>aipp-extractor</module>
+        <module>aipp-genericable</module>
+        <module>aipp-http-call</module>
         <module>aipp-memory</module>
         <module>aipp-model-center</module>
         <module>aipp-output-formatter</module>
-        <module>aipp-rewriter</module>
-        <module>aipp-classify-question</module>
         <module>aipp-prompt-builder</module>
-        <module>aipp-http-call</module>
+        <module>aipp-rewriter</module>
+        <module>aipp-service</module>
         <module>aipp-variable-aggregation</module>
+        <module>app-base</module>
+        <module>dynamic-form-genericable</module>
+        <module>eval-dataset</module>
+        <module>flow-graph</module>
+        <module>image-generator</module>
+        <module>jane-common</module>
+        <module>jane-common-component</module>
+        <module>jober-genericable</module>
+        <module>jober-multiversion-genericable</module>
+        <module>knowledge-base</module>
+        <module>knowledge-service</module>
+        <module>metrics</module>
         <module>sync-tool-call</module>
+        <module>task</module>
+        <module>uid-generator</module>
+        <module>voice-service</module>
         <module>waterflow-appfactory-service</module>
         <module>waterflow-graph-service</module>
     </modules>

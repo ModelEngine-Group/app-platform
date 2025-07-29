@@ -17,7 +17,6 @@
         <module>components</module>
         <module>plugins</module>
         <module>services</module>
-        <module>jane</module>
         <module>waterflow/java</module>
     </modules>
 </project>

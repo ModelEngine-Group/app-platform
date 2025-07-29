@@ -10,10 +10,6 @@
 
     <modules>
         <module>app-builder</module>
-        <module>app-engine</module>
-        <module>app-eval</module>
-        <module>app-image</module>
-        <module>app-knowledge</module>
         <module>carver</module>
         <module>common</module>
         <module>store</module>
