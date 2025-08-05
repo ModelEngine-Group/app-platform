@@ -29,7 +29,7 @@
 
 ### Windows 系统
 
-- 下载并安装 [PostgresSQL](https://www.postgresql.org/download/)
+- 下载并安装 [PostgresSQL](https://www.postgresql.org/download/) （**支持版本 ≥ 14**）
 - 初始化数据。进入 `shell` 目录，使用 `bash` 工具执行 `build_win.sh`（当前不支持 `cmd` 执行，待规划）：
 
 ```
