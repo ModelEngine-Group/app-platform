@@ -178,15 +178,15 @@ npm run start
 
 在对话中使用大模型功能，需要对模型进行配置，包括大模型的地址和鉴权信息。
 首先在首页的`应用市场`一栏中找到 `模型配置应用`，并点击该应用。点击右上角`创意灵感` 的`开始配置`，如下图所示：
-![image-20250508203127410](doc\images\readme\model_config_inspiration.png)
+![image-20250508203127410](doc/images/readme/model_config_inspiration.png)
 然后点击回答的 `添加模型` 按钮，输入模型名称、API Key 和模型地址，并点击确认。此时模型添加成功。
 
 **应用创建**
 
 在首页的`应用开发`一栏中点击`创建空白应用`。如下所示：
-![image-20250508204618312](doc\images\readme\app_create.png)
+![image-20250508204618312](doc/images/readme/app_create.png)
 输入所要创建的应用名称和简介，并点击 `创建`按钮，即可创建 AI 应用。接着在跳转后的应用配置页面上，在 `大模型` 一栏中选择自定义配置的模型。此时即可在对话框进行对话。如下所示：
-![image-20250508205124203](doc\images\readme\app_chat.png)
+![image-20250508205124203](doc/images/readme/app_chat.png)
 
 ## 文档
 
