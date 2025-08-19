@@ -16,6 +16,7 @@ import modelengine.fit.http.annotation.GetMapping;
 import modelengine.fit.http.annotation.PathVariable;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.annotation.RequestQuery;
+import modelengine.fit.jade.aipp.domain.division.annotation.GetSource;
 import modelengine.fitframework.annotation.Component;
 import modelengine.jade.carver.ListResult;
 import modelengine.jade.common.Result;
@@ -98,6 +99,7 @@ public class PluginController {
      * @return 表示格式化的返回消息的 {@link Result}{@code <}{@link List}{@code <}{@link PluginToolData}{@code >}{@code >}。
      */
     @GetMapping("/tools/search")
+    @GetSource
     public Result<List<PluginToolData>> getPluginTools(@RequestQuery(value = "name", required = false) String name,
             @RequestQuery(value = "includeTags", required = false) List<String> includeTags,
             @RequestQuery(value = "excludeTags", required = false) List<String> excludeTags,
@@ -159,6 +161,7 @@ public class PluginController {
      * @return 表示格式化的返回消息的 {@link Result}{@code <}{@link List}{@code <}{@link PluginToolData}{@code >}{@code >}。
      */
     @GetMapping("/search")
+    @GetSource
     public Result<List<PluginData>> getPlugins(@RequestQuery(value = "name", required = false) String name,
             @RequestQuery(value = "includeTags", required = false) List<String> includeTags,
             @RequestQuery(value = "excludeTags", required = false) List<String> excludeTags,

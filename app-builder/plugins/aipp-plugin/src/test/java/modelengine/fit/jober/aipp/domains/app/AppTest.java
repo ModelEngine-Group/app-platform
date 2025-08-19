@@ -18,6 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
@@ -65,6 +66,7 @@ public class AppTest {
     private AppVersionFactory appVersionFactory;
     private PluginToolService pluginToolService;
     private PluginService pluginService;
+    private DomainDivisionService domainDivisionService;
 
     @BeforeEach
     public void setUp() {
@@ -79,6 +81,7 @@ public class AppTest {
         this.appVersionFactory = mock(AppVersionFactory.class);
         this.pluginToolService = mock(PluginToolService.class);
         this.pluginService = mock(PluginService.class);
+        this.domainDivisionService = mock(DomainDivisionService.class);
 
         this.factory = new AppFactory(this.appVersionService, this.appBuilderConfigRepository,
                 this.appBuilderFlowGraphRepository, this.formPropertyRepository, this.aippLogMapper, this.appService,
@@ -87,7 +90,9 @@ public class AppTest {
                 this.appVersionFactory,
                 new HashMap<>(),
                 this.pluginToolService,
-                this.pluginService);
+                this.pluginService,
+                this.domainDivisionService,
+                true);
     }
 
     @Test

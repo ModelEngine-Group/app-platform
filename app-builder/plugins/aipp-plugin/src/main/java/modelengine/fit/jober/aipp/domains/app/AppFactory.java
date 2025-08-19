@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.domains.app;
 
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
 import modelengine.fit.jober.aipp.domains.appversion.AppVersionFactory;
 import modelengine.fit.jober.aipp.domains.appversion.repository.AppVersionRepository;
@@ -44,13 +45,16 @@ public class AppFactory {
     private final Map<String, String> exportMeta;
     private final PluginToolService pluginToolService;
     private final PluginService pluginService;
+    private final DomainDivisionService domainDivisionService;
+    private final boolean isEnableDomainDivision;
 
     public AppFactory(AppVersionService appVersionService, AppBuilderConfigRepository configRepository,
             AppBuilderFlowGraphRepository flowGraphRepository, AppBuilderFormPropertyRepository formPropertyRepository,
             AippLogMapper aippLogMapper, AppService appService, AippChatMapper aippChatMapper,
             AppVersionRepository appVersionRepository, AppVersionFactory appVersionFactory,
             @Value("${export-meta}") Map<String, String> exportMeta, PluginToolService pluginToolService,
-            PluginService pluginService) {
+            PluginService pluginService, DomainDivisionService domainDivisionService,
+            @Value("${domain-division.isEnable}") boolean isEnableDomainDivision) {
         this.appVersionService = appVersionService;
         this.configRepository = configRepository;
         this.flowGraphRepository = flowGraphRepository;
@@ -63,6 +67,8 @@ public class AppFactory {
         this.exportMeta = exportMeta;
         this.pluginToolService = pluginToolService;
         this.pluginService = pluginService;
+        this.domainDivisionService = domainDivisionService;
+        this.isEnableDomainDivision = isEnableDomainDivision;
     }
 
     /**
@@ -84,6 +90,8 @@ public class AppFactory {
                 this.appVersionFactory,
                 this.exportMeta,
                 this.pluginToolService,
-                this.pluginService);
+                this.pluginService,
+                this.domainDivisionService,
+                this.isEnableDomainDivision);
     }
 }

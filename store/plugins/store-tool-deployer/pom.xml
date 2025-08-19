@@ -44,6 +44,10 @@
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>modelengine.jade.service</groupId>
+            <artifactId>aipp-domain-division-service</artifactId>
+        </dependency>
 
         <!-- Component -->
         <dependency>

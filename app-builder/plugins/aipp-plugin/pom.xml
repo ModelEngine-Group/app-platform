@@ -229,6 +229,10 @@
             <artifactId>common-service</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>modelengine.jade.service</groupId>
+            <artifactId>aipp-domain-division-service</artifactId>
+        </dependency>
 
         <!-- Test -->
         <dependency>

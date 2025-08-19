@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
 import modelengine.fitframework.test.annotation.Mock;
@@ -53,10 +54,15 @@ public class AppIntegrationTest {
 
     @Mock
     private ToolService toolService;
+
     @Mock
     private ToolGroupService toolGroupService;
+
     @Mock
     private DefinitionGroupService defGroupService;
+
+    @Mock
+    private DomainDivisionService domainDivisionService;
 
     @Test
     @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql", "sql/insert/tag.sql"})
@@ -112,6 +118,7 @@ public class AppIntegrationTest {
     void shouldOkWhenGetApps() {
         AppQuery appQuery = new AppQuery.Builder().appCategory("chatbot").build();
         when(this.toolService.getTool(any())).thenReturn(this.mockAppPublishData());
+        when(this.domainDivisionService.getUserGroupId()).thenReturn("g1");
         ListResult<AppPublishData> apps = this.appService.getApps(appQuery);
         assertThat(apps.getCount()).isEqualTo(2);
         assertThat(apps.getData().get(1).getTags()).isEqualTo(new HashSet<>(Arrays.asList("HUGGINGFACE", "FIT")));

@@ -63,11 +63,11 @@ public class StorePublisher implements Publisher {
         }
         if (appData.getUniqueName() == null) {
             AppData.fillAppData(appData);
-            this.pluginService.addPlugin(this.buildPluginData(appData));
+            this.pluginService.addPlugin(this.buildPluginData(context, appData));
             return appData.getUniqueName();
         }
         AppData.fillAppData(appData);
-        PluginData pluginData = this.buildPluginData(appData);
+        PluginData pluginData = this.buildPluginData(context, appData);
         return this.toolService.upgradeTool(pluginData.getPluginToolDataList().get(0));
     }
 
@@ -105,7 +105,7 @@ public class StorePublisher implements Publisher {
         return runnablesMap;
     }
 
-    private PluginData buildPluginData(AppData appData) {
+    private PluginData buildPluginData(PublishContext context, AppData appData) {
         PluginData pluginData = new PluginData();
         pluginData.setDeployStatus(DeployStatus.RELEASED.name());
         pluginData.setCreator(appData.getCreator());
@@ -114,9 +114,11 @@ public class StorePublisher implements Publisher {
         pluginData.setExtension(new HashMap<>());
         pluginData.setPluginId(Entities.generateId() + Entities.generateId());
         PluginToolData pluginToolData = this.buildPluginToolData(appData, pluginData);
+        pluginToolData.setUserGroupId(context.getPublishData().getUserGroupId());
         pluginData.setPluginToolDataList(Collections.singletonList(pluginToolData));
         pluginData.setDefinitionGroupDataList(List.of(AppData.toDefGroup(appData)));
         pluginData.setToolGroupDataList(List.of(AppData.toToolGroup(appData)));
+        pluginData.setUserGroupId(context.getPublishData().getUserGroupId());
         return pluginData;
     }
 

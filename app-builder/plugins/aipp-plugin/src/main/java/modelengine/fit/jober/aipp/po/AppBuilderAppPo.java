@@ -53,4 +53,5 @@ public class AppBuilderAppPo {
     private String status;
     private String uniqueName;
     private LocalDateTime publishAt;
+    private String userGroupId;
 }

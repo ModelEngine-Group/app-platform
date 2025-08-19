@@ -65,6 +65,11 @@ public class PluginDo extends CommonDo {
     private String icon;
 
     /**
+     * 表示用户组 id。
+     */
+    private String userGroupId;
+
+    /**
      * 用传输层的插件数据 {@link PluginData} 构造 {@link PluginDo}。
      *
      * @param pluginData 表示传输层的插件数据的 {@link PluginData}。
@@ -83,6 +88,7 @@ public class PluginDo extends CommonDo {
         pluginDo.setExtension(serializer.serialize(pluginData.getExtension()));
         pluginDo.setDeployStatus(DeployStatus.from(pluginData.getDeployStatus()));
         pluginDo.setSource(pluginData.getSource());
+        pluginDo.setUserGroupId(pluginData.getUserGroupId());
         if (pluginData.getIcon() != null) {
             pluginDo.setIcon(pluginData.getIcon());
         }
@@ -117,6 +123,8 @@ public class PluginDo extends CommonDo {
             pluginData.setIcon(pluginDo.getIcon());
         }
         pluginData.setPluginToolDataList(pluginToolDataList);
+        pluginData.setUserGroupId(pluginDo.getUserGroupId());
+        pluginData.setModifiable(true);
         return pluginData;
     }
 }

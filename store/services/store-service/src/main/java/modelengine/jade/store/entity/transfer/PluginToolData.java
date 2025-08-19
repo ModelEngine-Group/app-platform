@@ -29,6 +29,11 @@ public class PluginToolData extends StoreToolData {
     private String pluginId;
 
     /**
+     * 表示用户组的唯一标识。
+     */
+    private String userGroupId;
+
+    /**
      * 获取插件工具点赞数量。
      *
      * @return 表示插件工具点赞数量的 {@link String}。
@@ -80,5 +85,23 @@ public class PluginToolData extends StoreToolData {
      */
     public void setPluginId(String pluginId) {
         this.pluginId = pluginId;
+    }
+
+    /**
+     * 获取用户组的唯一标识。
+     *
+     * @return 表示用户组的唯一标识的 {@link String}。
+     */
+    public String getUserGroupId() {
+        return this.userGroupId;
+    }
+
+    /**
+     * 设置用户组的唯一标识。
+     *
+     * @return 表示用户组的唯一标识的 {@link String}。
+     */
+    public void setUserGroupId(String userGroupId) {
+        this.userGroupId = userGroupId;
     }
 }

@@ -35,4 +35,5 @@ public class AppBuilderFormPo {
     private LocalDateTime updateAt;
     private String version;
     private String formSuiteId;
+    private String userGroupId;
 }

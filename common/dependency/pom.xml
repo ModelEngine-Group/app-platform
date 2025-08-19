@@ -357,6 +357,11 @@
             </dependency>
             <dependency>
                 <groupId>modelengine.jade.service</groupId>
+                <artifactId>aipp-domain-division-service</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>modelengine.jade.service</groupId>
                 <artifactId>aipp-output-formatter-service</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
