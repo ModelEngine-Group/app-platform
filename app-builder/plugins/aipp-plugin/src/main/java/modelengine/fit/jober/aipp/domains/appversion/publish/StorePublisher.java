@@ -86,6 +86,7 @@ public class StorePublisher implements Publisher {
         itemData.setSource(appCategory.getSource());
         itemData.setTags(Set.of(appCategory.getTag()));
         itemData.setRunnables(this.buildRunnables(context, appVersion));
+        itemData.setUserGroupId(context.getPublishData().getUserGroupId());
         return itemData;
     }
 
@@ -114,9 +115,11 @@ public class StorePublisher implements Publisher {
         pluginData.setExtension(new HashMap<>());
         pluginData.setPluginId(Entities.generateId() + Entities.generateId());
         PluginToolData pluginToolData = this.buildPluginToolData(appData, pluginData);
+        pluginToolData.setUserGroupId(appData.getUserGroupId());
         pluginData.setPluginToolDataList(Collections.singletonList(pluginToolData));
         pluginData.setDefinitionGroupDataList(List.of(AppData.toDefGroup(appData)));
         pluginData.setToolGroupDataList(List.of(AppData.toToolGroup(appData)));
+        pluginData.setUserGroupId(appData.getUserGroupId());
         return pluginData;
     }
 

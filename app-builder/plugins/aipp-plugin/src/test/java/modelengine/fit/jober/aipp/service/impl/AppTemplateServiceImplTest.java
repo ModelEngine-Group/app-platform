@@ -16,6 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.condition.TemplateQueryCondition;
 import modelengine.fit.jober.aipp.converters.ConverterFactory;
@@ -104,6 +105,8 @@ public class AppTemplateServiceImplTest {
 
     private ConverterFactory converterFactory;
 
+    private DomainDivisionService domainDivisionService;
+
     @BeforeEach
     void setup() {
         AppTemplateFactory templateFactory = new AppTemplateFactory(this.flowGraphRepository,
@@ -118,8 +121,7 @@ public class AppTemplateServiceImplTest {
                 this.uploadedFileManageService,
                 null,
                 this.appVersionService,
-                null,
-                null, this.converterFactory, null);
+                null, null, this.converterFactory, null, this.domainDivisionService, true);
         this.templateService = new AppTemplateServiceImpl(this.appService, this.templateRepository);
     }
 

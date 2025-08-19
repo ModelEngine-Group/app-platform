@@ -9,6 +9,10 @@ package modelengine.fit.jober.aipp.domains.appversion.service.impl;
 import static modelengine.fit.jober.aipp.service.impl.UploadedFileMangeServiceImpl.IRREMOVABLE;
 import static modelengine.fit.jober.aipp.service.impl.UploadedFileMangeServiceImpl.REMOVABLE;
 
+import com.alibaba.fastjson.JSONObject;
+
+import io.opentelemetry.api.trace.Span;
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.enums.DirectionEnum;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
@@ -48,11 +52,6 @@ import modelengine.fit.jober.aipp.service.UploadedFileManageService;
 import modelengine.fit.jober.aipp.util.AippFileUtils;
 import modelengine.fit.jober.aipp.util.TemplateUtils;
 import modelengine.fit.jober.common.RangedResultSet;
-import modelengine.jade.common.locale.LocaleUtil;
-
-import com.alibaba.fastjson.JSONObject;
-
-import io.opentelemetry.api.trace.Span;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.flowable.Choir;
@@ -60,6 +59,7 @@ import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.transaction.Transactional;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.jade.common.locale.LocaleUtil;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -90,6 +90,8 @@ public class AppVersionServiceImpl implements AppVersionService {
     private final AppBuilderConfigPropertyRepository configPropertyRepository;
     private final AppTaskService appTaskService;
     private final AppVersionFactory appVersionFactory;
+    private final DomainDivisionService domainDivisionService;
+    private final boolean isEnableDomainDivision;
     private final int nameLengthMaximum;
 
     public AppVersionServiceImpl(AppVersionRepository repository, AppChatRepository appChatRepository,
@@ -97,8 +99,9 @@ public class AppVersionServiceImpl implements AppVersionService {
             AppBuilderConfigRepository configRepository, AppBuilderFlowGraphRepository flowGraphRepository,
             AppBuilderFormPropertyRepository formPropertyRepository,
             AppBuilderConfigPropertyRepository configPropertyRepository, AppTaskService appTaskService,
-            AppVersionFactory appVersionFactory,
-            @Value("${validation.task.name.length.maximum:64}") int nameLengthMaximum) {
+            AppVersionFactory appVersionFactory, DomainDivisionService domainDivisionService,
+            @Value("${validation.task.name.length.maximum:64}") int nameLengthMaximum,
+            @Value("${domain-division.isEnable}") boolean isEnableDomainDivision) {
         this.repository = repository;
         this.appChatRepository = appChatRepository;
         this.appTaskInstanceService = appTaskInstanceService;
@@ -110,6 +113,8 @@ public class AppVersionServiceImpl implements AppVersionService {
         this.appTaskService = appTaskService;
         this.appVersionFactory = appVersionFactory;
         this.nameLengthMaximum = nameLengthMaximum;
+        this.domainDivisionService = domainDivisionService;
+        this.isEnableDomainDivision = isEnableDomainDivision;
     }
 
     @Override
@@ -210,6 +215,9 @@ public class AppVersionServiceImpl implements AppVersionService {
         AppVersion template = this.retrieval(templateId);
         template.create();
         template.cloneVersion(dto, DEFAULT_APP_VERSION, AppTypeEnum.APP.name(), context);
+        if (this.isEnableDomainDivision) {
+            template.getData().setUserGroupId(this.domainDivisionService.getUserGroupId());
+        }
         this.save(template);
         return template;
     }
@@ -245,6 +253,9 @@ public class AppVersionServiceImpl implements AppVersionService {
         appVersion.cloneVersion(TemplateUtils.toAppCreateDTO(template), DEFAULT_APP_VERSION, AppTypeEnum.APP.name(),
                 context);
         appVersion.getData().setState(AppState.INACTIVE.getName());
+        if (this.isEnableDomainDivision) {
+            appVersion.getData().setUserGroupId(this.domainDivisionService.getUserGroupId());
+        }
         this.save(appVersion);
         return appVersion;
     }

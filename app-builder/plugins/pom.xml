@@ -15,6 +15,7 @@
     <modules>
         <module>aipp-classify-question</module>
         <module>aipp-code</module>
+        <module>aipp-domain-division</module>
         <module>aipp-custom-model-center</module>
         <module>aipp-document-extract-node</module>
         <module>aipp-extractor</module>
@@ -34,7 +35,6 @@
         <module>app-base</module>
         <module>app-metrics</module>
         <module>app-metrics-influxdb</module>
-        <module>edm-knowledge</module>
         <module>eval-dataset</module>
         <module>eval-task</module>
         <module>flow-graph-db-driver</module>

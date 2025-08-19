@@ -57,6 +57,12 @@ public class ToolQuery extends CommonQuery {
     private String appCategory;
 
     /**
+     * 表示用户组唯一标识。
+     * <p>构造条件时按需传入。</p>
+     */
+    private String userGroupId;
+
+    /**
      * {@link ToolQuery} 的构建器。
      */
     public static class Builder<B extends Builder<B>> {
@@ -99,6 +105,11 @@ public class ToolQuery extends CommonQuery {
          * 表示应用类型。
          */
         protected String appCategory;
+
+        /**
+         * 表示用户组唯一标识。
+         */
+        protected String userGroupId;
 
         /**
          * 返回当前构建器的实例。
@@ -198,6 +209,17 @@ public class ToolQuery extends CommonQuery {
         }
 
         /**
+         * 向当前构建器中设置用户组唯一标识。
+         *
+         * @param userGroupId 表示用户组唯一标识的 {@link String}。
+         * @return 表示当前构建器的 {@link B}。
+         */
+        public B userGroupId(String userGroupId) {
+            this.userGroupId = userGroupId;
+            return this.self();
+        }
+
+        /**
          * 构建对象。
          *
          * @return 表示构建出来的对象的 {@link ToolQuery}。
@@ -211,6 +233,7 @@ public class ToolQuery extends CommonQuery {
             toolQuery.setOffset(this.offset);
             toolQuery.setLimit(this.limit);
             toolQuery.setVersion(this.version);
+            toolQuery.setUserGroupId(this.userGroupId);
             return toolQuery;
         }
     }
@@ -321,6 +344,24 @@ public class ToolQuery extends CommonQuery {
      */
     public void setAppCategory(String appCategory) {
         this.appCategory = appCategory;
+    }
+
+    /**
+     * 获取用户组的唯一标识。
+     *
+     * @return 表示用户组的唯一标识的 {@link String}。
+     */
+    public String getUserGroupId() {
+        return this.userGroupId;
+    }
+
+    /**
+     * 设置用户组的唯一标识。
+     *
+     * @return 表示用户组的唯一标识的 {@link String}。
+     */
+    public void setUserGroupId(String userGroupId) {
+        this.userGroupId = userGroupId;
     }
 
     /**

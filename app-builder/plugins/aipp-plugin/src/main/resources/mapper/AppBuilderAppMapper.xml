@@ -24,10 +24,12 @@
         <result column="unique_name" property="uniqueName"/>
         <result column="publish_at" property="publishAt"/>
         <result column="app_id" property="appId"/>
+        <result column="user_group_id" property="userGroupId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, app_id, app_suite_id, config_id, flow_graph_id, tenant_id, type, version, attributes, path, state, app_built_type, app_category, create_by, create_at, update_by, update_at, is_active, status, unique_name, publish_at, app_type
+        id
+        , name, app_id, app_suite_id, config_id, flow_graph_id, tenant_id, type, version, attributes, path, state, app_built_type, app_category, create_by, create_at, update_by, update_at, is_active, status, unique_name, publish_at, app_type, user_group_id
     </sql>
 
     <sql id="appTypeCondition">
@@ -121,8 +123,8 @@
                     #{excludeName}
                 </foreach>
             </if>
-            <if test="cond.createBy != null">
-                and create_by = #{cond.createBy}
+            <if test='cond.userGroupId != null'>
+                and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
             </if>
             ORDER BY
                 "name", update_at DESC
@@ -200,8 +202,8 @@
         <if test="cond.appCategory != null">
             and app_category = #{cond.appCategory}
         </if>
-        <if test="cond.createBy != null">
-            and create_by = #{cond.createBy}
+        <if test='cond.userGroupId != null'>
+            and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
         </if>
         ) as latest_records WHERE <include refid="appTypeCondition"/>;
     </select>
@@ -211,7 +213,7 @@
         <include refid="Base_Column_List"/>
         )
         values (#{id}, #{name}, #{appId}, #{appSuiteId}, #{configId}, #{flowGraphId}, #{tenantId}, #{type}, #{version}, #{attributes}::jsonb,
-        #{path}, #{state}, #{appBuiltType}, #{appCategory}, #{createBy}, #{createAt}, #{updateBy}, #{updateAt}, #{isActive}, #{status}, #{uniqueName}, #{publishAt}, #{appType})
+        #{path}, #{state}, #{appBuiltType}, #{appCategory}, #{createBy}, #{createAt}, #{updateBy}, #{updateAt}, #{isActive}, #{status}, #{uniqueName}, #{publishAt}, #{appType}, #{userGroupId})
     </insert>
 
     <update id="updateOne" parameterType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">

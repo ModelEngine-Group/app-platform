@@ -32,4 +32,5 @@ public class FormQueryCondition {
     private String id;
     private String createBy;
     private List<String> excludeNames;
+    private String userGroupId;
 }

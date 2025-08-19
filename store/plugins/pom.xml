@@ -17,5 +17,6 @@
         <module>store-repository-postgresql</module>
         <module>store-tool-deployer</module>
         <module>store-tool-uploader</module>
+        <module>store-common</module>
     </modules>
 </project>

@@ -9,8 +9,10 @@ package modelengine.jade.store.repository.pgsql.service;
 import static modelengine.fitframework.inspection.Validation.notNull;
 
 import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
+import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.exception.FitException;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.transaction.Transactional;
@@ -49,6 +51,8 @@ public class DefaultPluginToolService implements PluginToolService {
     private final DefinitionGroupService defGroupService;
     private final ToolGroupService toolGroupService;
     private final PluginToolRepository pluginToolRepository;
+    private final DomainDivisionService domainDivisionService;
+    private final boolean isEnableDomainDivision;
 
     /**
      * 通过工具服务接口来初始化 {@link DefaultPluginToolService} 的实例。
@@ -61,12 +65,15 @@ public class DefaultPluginToolService implements PluginToolService {
      */
     public DefaultPluginToolService(ToolService toolService, TagService tagService,
             DefinitionGroupService defGroupService, ToolGroupService toolGroupService,
-            PluginToolRepository pluginToolRepository) {
+            PluginToolRepository pluginToolRepository, DomainDivisionService domainDivisionService,
+            @Value("${domain-division.isEnable}") boolean isEnableDomainDivision) {
         this.toolService = notNull(toolService, "The tool service cannot be null.");
         this.pluginToolRepository = notNull(pluginToolRepository, "The plugin tool repository cannot be null.");
         this.defGroupService = notNull(defGroupService, "The definition group service cannot be null.");
         this.toolGroupService = notNull(toolGroupService, "The tool group service cannot be null.");
         this.tagService = notNull(tagService, "The tag service cannot be null.");
+        this.domainDivisionService = notNull(domainDivisionService, "The domain division service cannot be null.");
+        this.isEnableDomainDivision = isEnableDomainDivision;
     }
 
     @Deprecated
@@ -125,6 +132,9 @@ public class DefaultPluginToolService implements PluginToolService {
         if (pluginToolQuery == null || QueryUtils.isPageInvalid(pluginToolQuery.getOffset(),
                 pluginToolQuery.getLimit())) {
             return ListResult.empty();
+        }
+        if (this.isEnableDomainDivision) {
+            pluginToolQuery.setUserGroupId(this.domainDivisionService.getUserGroupId());
         }
         PluginToolQuery.toUpperCase(pluginToolQuery);
         List<PluginToolData> data =

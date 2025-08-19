@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.controller;
 
+import modelengine.fit.jade.aipp.domain.division.annotation.CreateSource;
 import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
@@ -83,6 +84,7 @@ public class AppTemplateController extends AbstractController {
      */
     @PostMapping(value = "/create", description = "根据应用模板创建应用")
     @CarverSpan(value = "operation.appTemplate.create")
+    @CreateSource
     public Rsp<AppBuilderAppDto> create(HttpClassicServerRequest request, @PathVariable("tenant_id") String tenantId,
             @RequestBody @SpanAttr("name:$.name") TemplateAppCreateDto createDto) {
         return Rsp.ok(this.appTemplateService.createAppByTemplate(createDto, this.contextOf(request, tenantId)));

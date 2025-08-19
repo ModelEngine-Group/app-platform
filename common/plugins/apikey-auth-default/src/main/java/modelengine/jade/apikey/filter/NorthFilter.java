@@ -17,6 +17,7 @@ import modelengine.fitframework.annotation.Scope;
 import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.log.Logger;
+import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.apikey.ApikeyAuthService;
 import modelengine.jade.authentication.context.HttpRequestUtils;
 import modelengine.jade.authentication.context.UserContext;
@@ -37,20 +38,16 @@ public class NorthFilter implements HttpServerFilter {
 
     private final ApikeyAuthService apikeyAuthService;
     private final String apikey;
-    private final String userName;
 
     /**
      * 用 apikey 鉴权服务 {@link ApikeyAuthService} 构造 {@link NorthFilter}。
      *
      * @param apikeyAuthService 表示 apikey 鉴权服务的 {@link ApikeyAuthService}。
      * @param apikey 表示默认 apikey 的 {@link String}。
-     * @param userName 表示默认用户名的 {@link String}。
      */
-    public NorthFilter(ApikeyAuthService apikeyAuthService, @Value("${apikey}") String apikey,
-            @Value("${userName}") String userName) {
+    public NorthFilter(ApikeyAuthService apikeyAuthService, @Value("${apikey}") String apikey) {
         this.apikeyAuthService = Validation.notNull(apikeyAuthService, "The auth service cannot be null.");
         this.apikey = apikey;
-        this.userName = userName;
     }
 
     @Override
@@ -76,16 +73,15 @@ public class NorthFilter implements HttpServerFilter {
     @Override
     public void doFilter(HttpClassicServerRequest request, HttpClassicServerResponse response,
             HttpServerFilterChain chain) {
-
-        if (!this.apikeyAuthService.authApikeyInfo(this.apikey)) {
+        String userName = this.apikeyAuthService.authApikeyInfo(this.apikey);
+        if (StringUtils.isEmpty(userName)) {
             // 认证失败，返回 401 错误
             response.statusCode(HttpResponseStatus.UNAUTHORIZED.statusCode());
             log.error("Authentication failed: Token is null or invalid.");
             response.send();
             return;
         }
-
-        UserContext operationContext = new UserContext(this.userName,
+        UserContext operationContext = new UserContext(userName,
                 HttpRequestUtils.getUserIp(request),
                 HttpRequestUtils.getAcceptLanguages(request));
         UserContextHolder.apply(operationContext, () -> chain.doFilter(request, response));
