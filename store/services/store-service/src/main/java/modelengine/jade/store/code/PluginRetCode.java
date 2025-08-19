@@ -92,6 +92,16 @@ public enum PluginRetCode implements RetCode {
     UNZIP_FILE_ERROR(130901015, "Failed to unzip plugin file. [file={0}]"),
 
     /**
+     * 没有权限操作该应用。
+     */
+    NO_PERMISSION_OPERATE_PLUGIN(130901016, "No permission to operate this plugin."),
+
+    /**
+     * 没有权限部署插件。
+     */
+    NO_PERMISSION_DEPLOY_PLUGIN(130901017, "No permission to deploy plugins."),
+
+    /**
      * 查询插件工具个数超过限制。
      */
     PLUGIN_TOOL_COUNT_EXCEEDED_LIMIT(130901020, "Query plugin tools amount exceeds limit.");

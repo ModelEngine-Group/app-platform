@@ -13,10 +13,11 @@
         <result column="update_at" property="updateAt"/>
         <result column="version" property="version"/>
         <result column="form_suite_id" property="formSuiteId"/>
+        <result column="user_group_id" property="userGroupId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, tenant_id, appearance, type, create_by, create_at, update_by, update_at, version, form_suite_id
+        id, name, tenant_id, appearance, type, create_by, create_at, update_by, update_at, version, form_suite_id, user_group_id
     </sql>
 
     <select id="selectWithId" resultMap="BaseResultMap"
@@ -37,7 +38,8 @@
 
     <insert id="insertOne" parameterType="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
         insert into app_builder_form( <include refid="Base_Column_List"/> )
-        values (#{id}, #{name}, #{tenantId}, #{appearance}::jsonb, #{type}, #{createBy}, #{createAt}, #{updateBy}, #{updateAt}, #{version}, #{formSuiteId})
+        values (#{id}, #{name}, #{tenantId}, #{appearance}::jsonb, #{type}, #{createBy}, #{createAt}, #{updateBy},
+        #{updateAt}, #{version}, #{formSuiteId}, #{userGroupId})
     </insert>
 
     <update id="updateOne" parameterType="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
@@ -97,8 +99,8 @@
         <if test="cond.tenantId != null">
             and tenant_id = #{cond.tenantId}
         </if>
-        <if test="cond.createBy != null">
-            and create_by = #{cond.createBy}
+        <if test='cond.userGroupId != null'>
+            and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
         </if>
         <if test="cond.type != null">
             and type = #{cond.type}
@@ -127,8 +129,8 @@
         <if test="cond.tenantId != null">
             and tenant_id = #{cond.tenantId}
         </if>
-        <if test="cond.createBy != null">
-            and create_by = #{cond.createBy}
+        <if test='cond.userGroupId != null'>
+            and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
         </if>
         <if test="cond.type != null">
             and type = #{cond.type}

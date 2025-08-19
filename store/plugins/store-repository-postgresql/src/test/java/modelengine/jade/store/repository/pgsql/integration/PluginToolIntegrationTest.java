@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
 import modelengine.fitframework.test.annotation.Mock;
@@ -49,10 +50,15 @@ public class PluginToolIntegrationTest {
 
     @Mock
     private ToolService toolService;
+
     @Mock
     private DefinitionGroupService deGroupService;
+
     @Mock
     private ToolGroupService toolGroupService;
+
+    @Mock
+    private DomainDivisionService domainDivisionService;
 
     @Test
     @Sql(before = {
@@ -67,6 +73,7 @@ public class PluginToolIntegrationTest {
 
         PluginToolData mockPluginToolData = this.mockPluginToolData();
         when(this.toolService.addTool(any())).thenReturn(null);
+        when(this.domainDivisionService.getUserGroupId()).thenReturn("g1");
 
         this.pluginToolService.addPluginTool(mockPluginToolData);
         assertThat(this.pluginToolService.getPluginTools(pluginToolQuery).getCount()).isEqualTo(4);
@@ -88,6 +95,7 @@ public class PluginToolIntegrationTest {
         PluginToolData mockPluginToolData2 = this.mockPluginToolData();
         mockPluginToolData2.setUniqueName("uname2");
         doNothing().when(this.toolService).addTools(any());
+        when(this.domainDivisionService.getUserGroupId()).thenReturn("g1");
         List<String> unames =
                 this.pluginToolService.addPluginTools(Arrays.asList(mockPluginToolData1, mockPluginToolData2));
         assertThat(this.pluginToolService.getPluginTools(pluginToolQuery).getCount()).isEqualTo(5);
@@ -178,6 +186,7 @@ public class PluginToolIntegrationTest {
         pluginToolData.setExtensions(new HashMap<>());
         pluginToolData.setVersion("1.0.0");
         pluginToolData.setLatest(true);
+        pluginToolData.setUserGroupId("g1");
         return pluginToolData;
     }
 }

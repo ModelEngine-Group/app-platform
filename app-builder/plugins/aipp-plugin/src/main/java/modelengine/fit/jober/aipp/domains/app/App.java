@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.domains.app;
 
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
@@ -63,6 +64,8 @@ public class App {
     private final Map<String, String> exportMeta;
     private final PluginToolService pluginToolService;
     private final PluginService pluginService;
+    private final DomainDivisionService domainDivisionService;
+    private final boolean isEnableDomainDivision;
 
     // 懒加载数据.
     private List<AppVersion> appVersionList;
@@ -71,7 +74,8 @@ public class App {
             AppBuilderFlowGraphRepository flowGraphRepository, AppBuilderFormPropertyRepository formPropertyRepository,
             AippLogMapper aippLogMapper, AppService appService, AippChatMapper aippChatMapper,
             AppVersionRepository appVersionRepository, AppVersionFactory appVersionFactory,
-            Map<String, String> exportMeta, PluginToolService pluginToolService, PluginService pluginService) {
+            Map<String, String> exportMeta, PluginToolService pluginToolService, PluginService pluginService,
+            DomainDivisionService domainDivisionService, boolean isEnableDomainDivision) {
         this.appSuiteId = appSuiteId;
         this.appVersionService = appVersionService;
         this.configRepository = configRepository;
@@ -85,6 +89,8 @@ public class App {
         this.exportMeta = exportMeta;
         this.pluginToolService = pluginToolService;
         this.pluginService = pluginService;
+        this.domainDivisionService = domainDivisionService;
+        this.isEnableDomainDivision = isEnableDomainDivision;
     }
 
     /**
@@ -126,6 +132,9 @@ public class App {
     public AppVersion importData(AppExportDto appDto, String contextRoot, OperationContext context) {
         AppVersion appVersion = this.appVersionFactory.create(new AppBuilderAppPo(), this.appVersionRepository);
         appVersion.importData(appDto, this.appSuiteId, contextRoot, context, this.exportMeta);
+        if (this.isEnableDomainDivision) {
+            appVersion.getData().setUserGroupId(this.domainDivisionService.getUserGroupId());
+        }
         this.appVersionService.validateAppName(appVersion.getData().getName(), context);
         this.appVersionService.save(appVersion);
         return appVersion;

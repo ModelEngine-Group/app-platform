@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.jade.store.entity.query.PluginQuery;
@@ -47,6 +48,7 @@ public class DefaultPluginServiceTest {
     private PluginToolService pluginToolService;
     private ToolGroupService toolGroupService;
     private DefinitionGroupService defGroupService;
+    private DomainDivisionService domainDivisionService;
 
     @BeforeEach
     void setUp() {
@@ -54,11 +56,13 @@ public class DefaultPluginServiceTest {
         this.pluginToolService = mock(PluginToolService.class);
         this.toolGroupService = mock(ToolGroupService.class);
         this.defGroupService = mock(DefinitionGroupService.class);
+        this.domainDivisionService = mock(DomainDivisionService.class);
         this.pluginService = new DefaultPluginService(this.pluginRepository,
                 this.pluginToolService,
                 this.defGroupService,
                 this.toolGroupService,
-                this.serializer);
+                this.serializer,
+                this.domainDivisionService, true);
     }
 
     @Test

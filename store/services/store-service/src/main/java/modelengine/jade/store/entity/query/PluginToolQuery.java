@@ -143,6 +143,7 @@ public class PluginToolQuery extends ToolQuery {
             pluginToolQuery.setDeployed(this.isDeployed);
             pluginToolQuery.setCreator(this.creator);
             pluginToolQuery.setIsBuiltin(this.isBuiltin);
+            pluginToolQuery.setUserGroupId(this.userGroupId);
             return pluginToolQuery;
         }
     }

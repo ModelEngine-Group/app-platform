@@ -17,6 +17,7 @@ import modelengine.fitframework.inspection.Validation;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 可序列化的 {@link KnowledgeOption} 实现。
@@ -38,6 +39,8 @@ public class FlatKnowledgeOption implements KnowledgeOption {
 
     private Float similarityThreshold;
 
+    private Map<String, Object> extensions;
+
     /**
      * 使用 {@link KnowledgeOption} 初始化 {@link FlatKnowledgeOption} 对象。
      *
@@ -49,6 +52,7 @@ public class FlatKnowledgeOption implements KnowledgeOption {
         this.indexType = option.indexType();
         this.referenceLimit = option.referenceLimit();
         this.similarityThreshold = option.similarityThreshold();
+        this.extensions = option.extensions();
     }
 
     FlatKnowledgeOption(FlatKnowledgeOption.Builder builder) {
@@ -57,6 +61,7 @@ public class FlatKnowledgeOption implements KnowledgeOption {
         this.indexType = builder.indexType.value();
         this.referenceLimit = builder.referenceLimit;
         this.similarityThreshold = builder.similarityThreshold;
+        this.extensions = builder.extensions;
     }
 
     @Override
@@ -84,6 +89,11 @@ public class FlatKnowledgeOption implements KnowledgeOption {
         return this.referenceLimit;
     }
 
+    @Override
+    public Map<String, Object> extensions() {
+        return this.extensions;
+    }
+
     /**
      * {@link FlatKnowledgeOption} 的构建器。
      */
@@ -97,6 +107,8 @@ public class FlatKnowledgeOption implements KnowledgeOption {
         private ReferenceLimit referenceLimit;
 
         private Float similarityThreshold;
+
+        private Map<String, Object> extensions;
 
         @Override
         public KnowledgeOption.Builder query(String query) {
@@ -125,6 +137,12 @@ public class FlatKnowledgeOption implements KnowledgeOption {
         @Override
         public KnowledgeOption.Builder similarityThreshold(Float similarityThreshold) {
             this.similarityThreshold = similarityThreshold;
+            return this;
+        }
+
+        @Override
+        public KnowledgeOption.Builder extensions(Map<String, Object> extensions) {
+            this.extensions = extensions;
             return this;
         }
 

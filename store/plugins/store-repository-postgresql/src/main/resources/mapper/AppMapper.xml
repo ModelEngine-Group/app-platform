@@ -25,6 +25,7 @@
             <if test="source != null">"source",</if>
             <if test="icon != null">"icon",</if>
             <if test="appCategory != null">"app_category",</if>
+            <if test="userGroupId != null">"user_group_id",</if>
             "tool_name", "tool_unique_name",
         </trim>
         values
@@ -36,6 +37,7 @@
             <if test="source != null">#{source},</if>
             <if test="icon != null">#{icon},</if>
             <if test="appCategory != null">#{appCategory},</if>
+            <if test="userGroupId != null">#{userGroupId},</if>
             #{toolName}, #{toolUniqueName},
         </trim>
     </insert>
@@ -100,6 +102,9 @@
             <if test="appCategory != null and appCategory != ''">
                 and i."app_category" ilike '%\' || #{appCategory} || '%' ESCAPE '\'
             </if>
+            <if test='userGroupId != null and userGroupId != ""'>
+                and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            </if>
         </where>
         <include refid="sortAndLimit"/>
     </select>
@@ -112,6 +117,9 @@
             </if>
             <if test="appCategory != null and appCategory != ''">
                 and i."app_category" ilike '%\' || #{appCategory} || '%' ESCAPE '\'
+            </if>
+            <if test='userGroupId != null and userGroupId != ""'>
+                and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
             </if>
         </where>
     </select>

@@ -1,4 +1,0 @@
-edm:
-  url:
-    repo-list: '/knowledge-bases/v1/inner/list/query'
-    rag-search-url: '/knowledge-bases/v1/inner/rag/search'

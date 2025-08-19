@@ -22,10 +22,13 @@ import modelengine.fit.http.entity.FileEntity;
 import modelengine.fit.http.entity.PartitionedEntity;
 import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.http.server.HttpClassicServerResponse;
+import modelengine.fit.jade.aipp.domain.division.annotation.CreateSource;
+import modelengine.fit.jade.aipp.domain.division.annotation.GetSource;
 import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
+import modelengine.fit.jober.aipp.aop.AppValidation;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.condition.AppQueryCondition;
@@ -139,6 +142,7 @@ public class AppBuilderAppController extends AbstractController {
      * @return 查询结果列表。
      */
     @GetMapping(description = "查询 app 列表")
+    @GetSource
     public Rsp<RangedResultSet<AppBuilderAppMetadataDto>> list(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @RequestParam(value = "offset", defaultValue = "0") long offset,
             @RequestParam(value = "limit", defaultValue = "10") int limit, @RequestBean AppQueryCondition cond,
@@ -155,6 +159,7 @@ public class AppBuilderAppController extends AbstractController {
      * @return 表示查询app的最新可编排版本的DTO {@link Rsp}{@code <}{@link AppBuilderAppDto}{@code >}。
      */
     @GetMapping(value = "/{app_id}", description = "查询 app ")
+    @AppValidation
     public Rsp<AppBuilderAppDto> query(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId) {
         return Rsp.ok(this.appGenericable.query(appId, this.contextOf(httpRequest, tenantId)));
@@ -169,6 +174,7 @@ public class AppBuilderAppController extends AbstractController {
      * @return 表示查询app的最新可编排版本的DTO {@link Rsp}{@code <}{@link AppBuilderAppDto}{@code >}。
      */
     @GetMapping(value = "/{app_id}/latest_orchestration", description = "查询 app 最新可编排的版本")
+    @AppValidation
     public Rsp<AppBuilderAppDto> queryLatestOrchestration(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId) {
         return Rsp.ok(this.appGenericable.queryLatestOrchestration(appId, this.contextOf(httpRequest, tenantId)));
@@ -222,6 +228,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.template")
     @PostMapping(value = "/{app_id}", description = "根据模板创建aipp")
+    @CreateSource
     public Rsp<AppBuilderAppDto> create(HttpClassicServerRequest request, @PathVariable("app_id") String appId,
             @PathVariable("tenant_id") String tenantId,
             @RequestBody @Validated @SpanAttr("name:$.name") AppBuilderAppCreateDto dto) {
@@ -248,6 +255,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.config")
     @PutMapping(value = "/{app_id}/config", description = "通过config更新aipp")
+    @AppValidation
     public Rsp<AppBuilderAppDto> saveConfig(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId,
             @RequestBody @Validated AppBuilderSaveConfigDto appBuilderSaveConfigDto) {
@@ -265,6 +273,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.graph")
     @PutMapping(value = "/{app_id}/graph", description = "根据graph更新aipp")
+    @AppValidation
     public Rsp<AppBuilderAppDto> updateByGraph(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId,
             @RequestBody @Validated AppBuilderFlowGraphDto flowGraphDto) {
@@ -282,6 +291,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.update")
     @PutMapping(value = "/{app_id}", description = "更新 app")
+    @AppValidation
     public Rsp<AppBuilderAppDto> update(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId,
             @RequestBody @Validated @SpanAttr("name:$.name") AppBuilderAppDto appDto) {
@@ -298,7 +308,10 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.publish")
     @PostMapping(path = "/{app_id}/publish", description = "发布 app ")
+    @CreateSource
+    @AppValidation
     public Rsp<AippCreateDto> publish(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
+            @PathVariable("app_id") String appId,
             @RequestBody @Validated @SpanAttr("name:$.name, version:$.version") AppBuilderAppDto appDto) {
         return this.appService.publish(appDto, this.contextOf(httpRequest, tenantId));
     }
@@ -313,7 +326,9 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.debug")
     @PostMapping(path = "/{app_id}/debug", description = "调试 app ")
+    @AppValidation
     public Rsp<AippCreateDto> debug(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
+            @PathVariable("app_id") String appId,
             @RequestBody @Validated @SpanAttr("name:$.name") AppBuilderAppDto appDto) {
         return Rsp.ok(ConvertUtils.toAippCreateDto(this.appGenericable.debug(appDto,
                 this.contextOf(httpRequest, tenantId))));
@@ -328,6 +343,7 @@ public class AppBuilderAppController extends AbstractController {
      * @return 返回结果。
      */
     @GetMapping(path = "/{app_id}/latest_published", description = "获取 app 最新发布版本信息")
+    @AppValidation
     public Rsp<AippCreateDto> latestPublished(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId) {
         return Rsp.ok(ConvertUtils.toAippCreateDto(this.appGenericable.queryLatestPublished(appId,
@@ -344,7 +360,9 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.idea")
     @PostMapping(path = "/{app_id}/inspiration/department", description = "获取灵感大全的部门信息")
+    @AppValidation
     public Rsp<AippCreateDto> inspirations(HttpClassicServerRequest httpRequest,
+            @PathVariable("app_id") String appId,
             @PathVariable("tenant_id") String tenantId, @RequestBody @Validated AppBuilderAppDto appDto) {
         throw new UnsupportedOperationException();
     }
@@ -359,6 +377,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.delete")
     @DeleteMapping(path = "/{app_id}", description = "删除 app")
+    @AppValidation
     public Rsp<Void> delete(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
             @PathVariable("app_id") @SpanAttr("app_id") String appId) {
         this.appService.delete(appId, this.contextOf(httpRequest, tenantId));
@@ -376,6 +395,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.export")
     @GetMapping(path = "/export/{app_id}", description = "导出应用配置")
+    @AppValidation
     public FileEntity export(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
             @PathVariable("app_id") String appId, HttpClassicServerResponse response) {
         AppExportDto configDto = this.appDomainService.exportApp(appId, this.exportMeta,
@@ -414,6 +434,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.import")
     @PostMapping(path = "/import", description = "导入应用配置")
+    @CreateSource
     public Rsp<AppBuilderAppDto> importApp(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, PartitionedEntity appConfig) {
         this.fitRuntime.publisherOfEvents().publishEvent(new AppCreatingEvent(this));
@@ -449,6 +470,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.recoverApp")
     @PostMapping(path = "/{app_id}/recover")
+    @AppValidation
     public Rsp<AppBuilderAppDto> recoverApp(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId,
             @RequestBody String recoverAppId) {

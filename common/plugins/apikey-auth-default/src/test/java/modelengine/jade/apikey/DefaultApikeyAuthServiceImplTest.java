@@ -7,9 +7,9 @@
 package modelengine.jade.apikey;
 
 import modelengine.jade.apikey.impl.DefaultApikeyAuthServiceImpl;
-import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * 表示 {@link DefaultApikeyAuthServiceImpl} 的测试类。
@@ -20,10 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DefaultApikeyAuthServiceImplTest {
     @Test
     void testAuthApikeyInfo() {
-        DefaultApikeyAuthServiceImpl service = new DefaultApikeyAuthServiceImpl();
-        assertThat(service.authApikeyInfo(null)).isTrue();
-        assertThat(service.authApikeyInfo("")).isTrue();
-        assertThat(service.authApikeyInfo("any-string")).isTrue();
-        assertThat(service.authApikeyInfo("Bearer ME-sk-1234567890abcdef-abcdef1234567890abcdef1234567890")).isTrue();
+        String username = "Jade";
+        DefaultApikeyAuthServiceImpl service = new DefaultApikeyAuthServiceImpl(username);
+        Assertions.assertEquals(username, service.authApikeyInfo(null));
+        Assertions.assertEquals(username, service.authApikeyInfo(""));
+        Assertions.assertEquals(username, service.authApikeyInfo("any-string"));
+        Assertions.assertEquals(username, service.authApikeyInfo("Bearer ME-sk-1234567890abcdef-abcdef1234567890abcdef1234567890"));
     }
 }
