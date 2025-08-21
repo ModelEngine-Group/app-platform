@@ -69,6 +69,15 @@ build/
 
 需要将输出目录与 FIT 框架的编译产物结合。将输出目录的 `plugins` 目录下的所有文件复制到框架输出目录的 `plugins` 下，将 `shared` 目录下的所有文件复制到框架输出目录的 `shared` 下。
 
+另外，需要删除 `plugins` 目录中如下开头的文件（`app-platform` 仓扩展了这些机制，已经存在对应的实现。否则会由于存在冲突导致启动失败）
+
+```text
+fel-tool-discoverer
+fel-tool-executor
+fel-tool-repository-simple
+fel-tool-factory-repository
+```
+
 > 后端模块基于 [FIT](https://ModelEngine-Group/fit-framework) 框架，启动方式采用了 [FIT 动态插件](https://github.com/ModelEngine-Group/fit-framework/blob/main/docs/framework/fit/java/quick-start-guide/03.%20%E4%BD%BF%E7%94%A8%E6%8F%92%E4%BB%B6%E7%9A%84%E7%83%AD%E6%8F%92%E6%8B%94%E8%83%BD%E5%8A%9B.md) 方式。
 
 打开框架输出目录的 `conf/fitframework.yml` 文件，找到如下配置项
