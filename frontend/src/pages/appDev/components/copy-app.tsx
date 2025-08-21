@@ -36,17 +36,13 @@ const CopyApp = ({ copyRef }) => {
       openModal: (appInfo) => dataInit(appInfo),
     };
   });
-  
   // 初始化数据
   const dataInit = (appInfo) => {
     setAppInfo(appInfo);
     form.setFieldsValue({
       name: appInfo.name,
-      icon: appInfo.attributes?.icon,
+      icon: '',
     });
-    if (appInfo.attributes?.icon) {
-      setFilePath(appInfo.attributes.icon);
-    }
     setOpen(true);
   }
   // 复制应用
@@ -58,7 +54,7 @@ const CopyApp = ({ copyRef }) => {
       const copyParam = {
         name: formParams.name,
         description: attributes.description,
-        icon: '',
+        icon: filePath,
         app_type: attributes.app_type,
         app_built_type: appBuiltType,
         type,
@@ -98,9 +94,9 @@ const CopyApp = ({ copyRef }) => {
         <Form form={form} layout='vertical' autoComplete='off' className='edit-form-content'>
           <Form.Item label={t('icon')} name='icon'>
             <div className='avatar'>
-              <UploadImg 
+              <UploadImg
                 appId={appInfo.id}
-                icon={appInfo.attributes?.icon}
+                icon={filePath}
                 uploadSuccess={(path: string) => setFilePath(path)}
               />
             </div>
@@ -119,7 +115,7 @@ const CopyApp = ({ copyRef }) => {
           >
             <Input />
           </Form.Item>
-        </Form> 
+        </Form>
       </div>
     </Modal>
   </>
