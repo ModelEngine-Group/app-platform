@@ -409,7 +409,6 @@
   "codeCannotEmpty": "The code cannot be empty.",
   "code": "Code",
   "editInIde": "Edit in IDE",
-  "codePopover": "<p><strong>1. Function editing description: </strong>Compile the structure of a function by referring to the code example. </p>\n<p>You can directly use the variables in the input parameters and return an object, array, or other basic types of data as the output result. </p>\n<p>The method name must be main, and it cannot be asynchronous. Additionally, multiple functions cannot be compiled. </p>\n<p>By default, the system introduces dependencies including <strong>asyncio</strong>, <strong>json</strong>, <strong>numpy</strong>, and <strong>typing</strong>. </p>\n<p><strong>2. Shortcut key description: </strong>Press F1 on the keyboard to open the shortcut key description window.",
   "codeOutputPopover": "<p>Variable output after code execution. </p>\n<p>Ensure that the variable name and type defined here are the same as those in the return object of the code.</p>",
   "otherQuestion": "Other issues",
   "classificationInputPopover": "Enter the information that needs to be added to the prompt word template, which can be referenced by the prompt word template.",

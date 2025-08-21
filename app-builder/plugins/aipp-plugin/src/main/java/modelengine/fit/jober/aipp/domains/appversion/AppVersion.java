@@ -869,6 +869,9 @@ public class AppVersion {
      * 创建应用.
      */
     public void create() {
+        this.data.setPath(null);
+        this.data.setUniqueName(null);
+        this.data.setAppSuiteId(UUIDUtil.uuid());
         this.data.setState(AppState.INACTIVE.getName());
     }
 
