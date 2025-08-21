@@ -81,6 +81,21 @@ fit:
     - 'modelengine.fit'
 ```
 
+配置本地智能表单路径，首先创建目录`.\app-builder\smart_form` 此目录可根据实际情况修改，然后copy项目中的
+`example\app-demo\normal-form`及`smart-form`中的所有内容到上述目录，结果如下所示：
+```yml
+app-builder/
+├── smart_form/
+│   ├── 6befc536-7e6d-48b5-8dcb-1c4d04ca4e92
+│   ├── 17b732c9-5272-42a6-a79d-8d0334a8aa19
+│   ├── 7958d851-8062-49bd-b21e-d7372991c905
+│   ├── b6255699-2e4f-409f-a578-b87b7435e389
+│   ├── e85bd769-0212-4305-b56b-01e77faa14ff
+│   ├── temporary
+│   └── template.zip
+```
+
+
 加入数据库配置项，修改后的配置项如下所示：
 
 ```yml
@@ -102,6 +117,14 @@ fit:
               minIdle: ${midIdle} # 将 minIdle 替换为连接池的最小空闲连接数。
               maxActive: ${maxActive} # 将 maxActive 替换为数据库连接池的最大活动连接数。
               # 可根据具体需求，添加连接池所需配置项。
+app-engine:
+   resource:
+      path: ${localFormPath} # 配置本地的智能表单根路径，win下如 D:\\xxx\\xxx\\app-builder\\
+   form:
+      path-prefix: ${localFormPath} # 配置本地的智能表单根路径，win下如 D:\\xxx\\xxx\\app-builder\\
+
+
+
 ```
 
 **启动命令**
