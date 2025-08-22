@@ -25,9 +25,9 @@ fit:
           testOnBorrow: false
           testOnReturn: false
 domain-division:
+  host: 'http:////127.0.0.1:8004'
+  path: '//rpc//v1//{0}//user-resource-groups'
   all-group:
-    host: 'http:////127.0.0.1:8004'
-    path: '//rpc//v1//{0}//user-resource-groups'
     users:
       - 'admin'
     id: '*'

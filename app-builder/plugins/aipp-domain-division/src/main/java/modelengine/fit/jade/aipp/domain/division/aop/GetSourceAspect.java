@@ -35,8 +35,8 @@ public class GetSourceAspect extends SourceAspect {
 
     public GetSourceAspect(@Value("${domain-division.all-group.users}") final List<String> allGroupUsers,
             HttpClassicClientFactory httpClientFactory,
-            @Value("${domain-division.all-group.host}") final String allGroupHost,
-            @Value("${domain-division.all-group.path}") final String allGroupPath,
+            @Value("${domain-division.host}") final String allGroupHost,
+            @Value("${domain-division.path}") final String allGroupPath,
             @Value("${domain-division.isEnable}") boolean isEnableDomainDivision) {
         super(httpClientFactory, allGroupHost + allGroupPath);
         this.allGroupUsers = allGroupUsers;
