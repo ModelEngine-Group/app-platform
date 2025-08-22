@@ -30,3 +30,8 @@ mybatis:
 
 forest:
   interface-package: modelengine.fit.jane.external
+
+corsfilter:
+  priority: 50
+  patterns: "/**"
+  origin: ""
