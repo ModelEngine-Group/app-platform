@@ -82,7 +82,8 @@ fit:
 ```
 
 配置本地智能表单路径，首先创建目录`.\app-builder\smart_form` 此目录可根据实际情况修改，然后copy项目中的
-`example\app-demo\normal-form`及`smart-form`中的所有内容到上述目录，结果如下所示：
+`example\app-demo\normal-form`及`smart-form`中的所有内容到上述目录，打包`template`目录内容`template.zip`
+并复制到`smart-form` 结果如下所示：
 ```yml
 app-builder/
 ├── smart_form/

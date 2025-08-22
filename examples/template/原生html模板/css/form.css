@@ -1,0 +1,15 @@
+#element {
+  padding: 20px;
+}
+.form-group {
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+}
+.form-group label {
+  width: 120px;
+  flex-shrink: 0;
+}
+.form-group .btn {
+  margin-right: 12px;
+}
