@@ -120,9 +120,9 @@ fit:
               # 可根据具体需求，添加连接池所需配置项。
 app-engine:
    resource:
-      path: ${localFormPath} # 配置本地的智能表单根路径，win下如 D:\\xxx\\xxx\\app-builder\\
+      path: ${localFormPath} # 配置本地的智能表单根路径，win下如 D:\\app-builder\\
    form:
-      path-prefix: ${localFormPath} # 配置本地的智能表单根路径，win下如 D:\\xxx\\xxx\\app-builder\\
+      path-prefix: ${localFormPath} # 配置本地的智能表单根路径，win下如 D:\\app-builder\\
 
 
 
