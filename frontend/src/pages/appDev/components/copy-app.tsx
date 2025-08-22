@@ -13,7 +13,8 @@ import { Message } from '@/shared/utils/message';
 import { convertImgPath } from '@/common/util';
 import { TENANT_ID } from '@/pages/chatPreview/components/send-editor/common/config';
 import UploadImg from '@/components/file-upload';
-
+import serviceConfig from "@/shared/http/httpConfig";
+import { uploadChatFile } from '@/shared/http/aipp';
 /**
  * 复制应用
  *
@@ -21,7 +22,7 @@ import UploadImg from '@/components/file-upload';
  * @return {JSX.Element}
  * @constructor
  */
-
+const { AIPP_URL } = serviceConfig;
 const CopyApp = ({ copyRef }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -30,25 +31,43 @@ const CopyApp = ({ copyRef }) => {
   const [loading, setLoading] = useState(false);
   const [appInfo, setAppInfo] = useState({});
   const navigate = useHistory().push;
+  const tenantId = TENANT_ID;
 
   useImperativeHandle(copyRef, () => {
     return {
       openModal: (appInfo) => dataInit(appInfo),
     };
   });
-  
   // 初始化数据
   const dataInit = (appInfo) => {
     setAppInfo(appInfo);
     form.setFieldsValue({
       name: appInfo.name,
-      icon: appInfo.attributes?.icon,
+      icon: '',
     });
-    if (appInfo.attributes?.icon) {
-      setFilePath(appInfo.attributes.icon);
+
+    if (appInfo.attributes.icon) {
+       reuploadIcon(appInfo.attributes.icon)
     }
     setOpen(true);
+
   }
+  //重新上传图片
+  const reuploadIcon = async (iconUrl) => {
+    const res = await fetch(iconUrl);
+    const blob = await res.blob();
+    const file = new File([blob], "clone.png", { type: blob.type });
+    const formData = new FormData();
+    formData.append("file", file);
+    let uploadRes = await uploadChatFile(TENANT_ID, appInfo.id, formData, {
+      'attachment-filename': encodeURI(file.name),
+      'Content-Type': 'multipart/form-data',
+    });
+    if (uploadRes.code === 0) {
+      const realPath = uploadRes.data.file_path.replace(/^.*[\\/]/, "");
+      setFilePath(realPath); //存文件名
+    }
+  };
   // 复制应用
   const handleCopyApp = async () => {
     try {
@@ -58,7 +77,7 @@ const CopyApp = ({ copyRef }) => {
       const copyParam = {
         name: formParams.name,
         description: attributes.description,
-        icon: '',
+        icon: filePath,
         app_type: attributes.app_type,
         app_built_type: appBuiltType,
         type,
@@ -98,10 +117,13 @@ const CopyApp = ({ copyRef }) => {
         <Form form={form} layout='vertical' autoComplete='off' className='edit-form-content'>
           <Form.Item label={t('icon')} name='icon'>
             <div className='avatar'>
-              <UploadImg 
+              <UploadImg
                 appId={appInfo.id}
-                icon={appInfo.attributes?.icon}
-                uploadSuccess={(path: string) => setFilePath(path)}
+                icon={`${AIPP_URL}/${tenantId}/file?filePath=/var/share/${filePath}&fileName=${filePath}`}
+                uploadSuccess={(path: string) =>{
+                  const realPath = path.replace(/^.*[\\/]/, "");
+                  setFilePath(realPath);
+                }}
               />
             </div>
           </Form.Item>
@@ -119,7 +141,7 @@ const CopyApp = ({ copyRef }) => {
           >
             <Input />
           </Form.Item>
-        </Form> 
+        </Form>
       </div>
     </Modal>
   </>

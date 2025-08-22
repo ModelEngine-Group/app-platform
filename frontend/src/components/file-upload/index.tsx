@@ -58,7 +58,7 @@ const UploadImg = ({ appId = '', icon = '', uploadSuccess }) => {
       let res: any = await uploadChatFile(TENANT_ID, appId, formData, headers);
       if (res.code === 0) {
         const path = `${AIPP_URL}/${TENANT_ID}/file?filePath=${res.data.file_path}&fileName=${res.data.file_name}`;
-        uploadSuccess(path);
+        uploadSuccess(res.data.file_path);
         getImgPath(path);
       }
     } catch (err) {
