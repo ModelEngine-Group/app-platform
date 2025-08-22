@@ -13,7 +13,8 @@ import { Message } from '@/shared/utils/message';
 import { convertImgPath } from '@/common/util';
 import { TENANT_ID } from '@/pages/chatPreview/components/send-editor/common/config';
 import UploadImg from '@/components/file-upload';
-
+import serviceConfig from "@/shared/http/httpConfig";
+import { uploadChatFile } from '@/shared/http/aipp';
 /**
  * 复制应用
  *
@@ -21,7 +22,7 @@ import UploadImg from '@/components/file-upload';
  * @return {JSX.Element}
  * @constructor
  */
-
+const { AIPP_URL } = serviceConfig;
 const CopyApp = ({ copyRef }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -30,6 +31,7 @@ const CopyApp = ({ copyRef }) => {
   const [loading, setLoading] = useState(false);
   const [appInfo, setAppInfo] = useState({});
   const navigate = useHistory().push;
+  const tenantId = TENANT_ID;
 
   useImperativeHandle(copyRef, () => {
     return {
@@ -43,8 +45,29 @@ const CopyApp = ({ copyRef }) => {
       name: appInfo.name,
       icon: '',
     });
+
+    if (appInfo.attributes.icon) {
+       reuploadIcon(appInfo.attributes.icon)
+    }
     setOpen(true);
+
   }
+  //重新上传图片
+  const reuploadIcon = async (iconUrl) => {
+    const res = await fetch(iconUrl);
+    const blob = await res.blob();
+    const file = new File([blob], "clone.png", { type: blob.type });
+    const formData = new FormData();
+    formData.append("file", file);
+    let uploadRes = await uploadChatFile(TENANT_ID, appInfo.id, formData, {
+      'attachment-filename': encodeURI(file.name),
+      'Content-Type': 'multipart/form-data',
+    });
+    if (uploadRes.code === 0) {
+      const realPath = uploadRes.data.file_path.replace(/^.*[\\/]/, "");
+      setFilePath(realPath); //存文件名
+    }
+  };
   // 复制应用
   const handleCopyApp = async () => {
     try {
@@ -96,8 +119,11 @@ const CopyApp = ({ copyRef }) => {
             <div className='avatar'>
               <UploadImg
                 appId={appInfo.id}
-                icon={filePath}
-                uploadSuccess={(path: string) => setFilePath(path)}
+                icon={`${AIPP_URL}/${tenantId}/file?filePath=/var/share/${filePath}&fileName=${filePath}`}
+                uploadSuccess={(path: string) =>{
+                  const realPath = path.replace(/^.*[\\/]/, "");
+                  setFilePath(realPath);
+                }}
               />
             </div>
           </Form.Item>
