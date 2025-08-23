@@ -157,9 +157,15 @@ public class DefaultPluginService implements PluginService {
     }
 
     private Predicate<PluginData> isNotInUserGroup() {
-        return data -> data.getUserGroupId() != null && (
-                !StringUtils.equals(data.getUserGroupId(), this.domainDivisionService.getUserGroupId())
-                        || !StringUtils.equals(data.getUserGroupId(), "*"));
+        return data -> {
+            if (data.getUserGroupId() == null) {
+                return true;
+            }
+            String currentUserGroupId = this.domainDivisionService.getUserGroupId();
+            boolean isCurrentGroup = StringUtils.equals(data.getUserGroupId(), currentUserGroupId);
+            boolean isAllGroup = StringUtils.equals(data.getUserGroupId(), "*");
+            return !(isCurrentGroup || isAllGroup);
+        };
     }
 
     @Override

@@ -203,7 +203,7 @@
             and app_category = #{cond.appCategory}
         </if>
         <if test='cond.userGroupId != null'>
-            and user_group_id = #{cond.userGroupId}  or user_group_id = '*'
+            and (user_group_id = #{cond.userGroupId}  or user_group_id = '*')
         </if>
         ) as latest_records WHERE <include refid="appTypeCondition"/>;
     </select>

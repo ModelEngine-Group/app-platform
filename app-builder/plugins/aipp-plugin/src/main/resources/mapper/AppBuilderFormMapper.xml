@@ -100,7 +100,7 @@
             and tenant_id = #{cond.tenantId}
         </if>
         <if test='cond.userGroupId != null'>
-            and user_group_id = #{cond.userGroupId} or user_group_id = '*'
+            and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
         </if>
         <if test="cond.type != null">
             and type = #{cond.type}
@@ -130,7 +130,7 @@
             and tenant_id = #{cond.tenantId}
         </if>
         <if test='cond.userGroupId != null'>
-            and user_group_id = #{cond.userGroupId} or user_group_id = '*'
+            and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
         </if>
         <if test="cond.type != null">
             and type = #{cond.type}
