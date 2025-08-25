@@ -22,6 +22,8 @@ import modelengine.fit.http.entity.FileEntity;
 import modelengine.fit.http.entity.PartitionedEntity;
 import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.http.server.HttpClassicServerResponse;
+import modelengine.fit.jade.aipp.domain.division.annotation.CreateSource;
+import modelengine.fit.jade.aipp.domain.division.annotation.GetSource;
 import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
@@ -139,6 +141,7 @@ public class AppBuilderAppController extends AbstractController {
      * @return 查询结果列表。
      */
     @GetMapping(description = "查询 app 列表")
+    @GetSource
     public Rsp<RangedResultSet<AppBuilderAppMetadataDto>> list(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @RequestParam(value = "offset", defaultValue = "0") long offset,
             @RequestParam(value = "limit", defaultValue = "10") int limit, @RequestBean AppQueryCondition cond,
@@ -222,6 +225,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.template")
     @PostMapping(value = "/{app_id}", description = "根据模板创建aipp")
+    @CreateSource
     public Rsp<AppBuilderAppDto> create(HttpClassicServerRequest request, @PathVariable("app_id") String appId,
             @PathVariable("tenant_id") String tenantId,
             @RequestBody @Validated @SpanAttr("name:$.name") AppBuilderAppCreateDto dto) {
@@ -298,6 +302,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.publish")
     @PostMapping(path = "/{app_id}/publish", description = "发布 app ")
+    @CreateSource
     public Rsp<AippCreateDto> publish(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
             @RequestBody @Validated @SpanAttr("name:$.name, version:$.version") AppBuilderAppDto appDto) {
         return this.appService.publish(appDto, this.contextOf(httpRequest, tenantId));
@@ -414,6 +419,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @CarverSpan(value = "operation.appBuilderApp.import")
     @PostMapping(path = "/import", description = "导入应用配置")
+    @CreateSource
     public Rsp<AppBuilderAppDto> importApp(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, PartitionedEntity appConfig) {
         this.fitRuntime.publisherOfEvents().publishEvent(new AppCreatingEvent(this));

@@ -75,7 +75,8 @@ create table if not exists app_builder_app
     status varchar(16) NULL,
     unique_name varchar(64) NULL,
     publish_at timestamp(6) NULL,
-    app_id varchar(64) NULL
+    app_id varchar(64) NULL,
+    user_group_id varchar(64) NULL
     );
 
 create table if not exists app_builder_component
@@ -141,7 +142,8 @@ create table if not exists app_builder_form
     update_at  timestamp    not null default current_timestamp,
     is_deleted int2 DEFAULT 0,
     form_suite_id varchar(64) not null,
-    version varchar(64) not null
+    version varchar(64) not null,
+    user_group_id varchar(64) NULL
     );
 
 create table if not exists app_builder_form_property

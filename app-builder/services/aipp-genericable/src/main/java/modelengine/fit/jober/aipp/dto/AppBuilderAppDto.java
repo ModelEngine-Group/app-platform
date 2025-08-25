@@ -62,6 +62,7 @@ public class AppBuilderAppDto {
     private String chatUrl;
     private String appType;
     private String appBuiltType;
+    private String userGroupId;
 
     // 这块property转化能力暂时没有，等框架合入该能力，再加上value值
     @Property(description = "aipp id")

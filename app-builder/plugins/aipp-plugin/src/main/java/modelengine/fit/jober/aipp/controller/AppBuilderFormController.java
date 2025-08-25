@@ -6,6 +6,8 @@
 
 package modelengine.fit.jober.aipp.controller;
 
+import modelengine.fit.jade.aipp.domain.division.annotation.CreateSource;
+import modelengine.fit.jade.aipp.domain.division.annotation.GetSource;
 import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
@@ -74,6 +76,7 @@ public class AppBuilderFormController extends AbstractController {
      */
     @PostMapping(value = "/smart_form", description = "创建智能表单")
     @CarverSpan(value = "operation.create.smart.form")
+    @CreateSource
     public Rsp<AppBuilderFormDto> create(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @RequestBody AppBuilderFormDto appBuilderFormDto) {
         return Rsp.ok(this.formService.create(appBuilderFormDto, this.contextOf(httpRequest, tenantId)));
@@ -107,6 +110,7 @@ public class AppBuilderFormController extends AbstractController {
      * @return 表示查询结果的的 {@link RangedResultSet}{@code <}{@link AppBuilderFormDto}{@code >}。
      */
     @GetMapping(value = "/smart_form/", description = "查询智能表单")
+    @GetSource
     public Rsp<RangedResultSet<AppBuilderFormDto>> query(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId,
             @RequestParam(value = "pageNum", defaultValue = "0") long pageNum,

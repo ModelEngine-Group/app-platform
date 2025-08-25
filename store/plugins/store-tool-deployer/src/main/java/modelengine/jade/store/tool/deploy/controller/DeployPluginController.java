@@ -13,6 +13,7 @@ import modelengine.fit.http.annotation.PathVariable;
 import modelengine.fit.http.annotation.PostMapping;
 import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
+import modelengine.fit.jade.aipp.domain.division.annotation.GetSource;
 import modelengine.fitframework.annotation.Component;
 import modelengine.jade.common.Result;
 import modelengine.jade.store.entity.transfer.PluginData;
@@ -63,6 +64,7 @@ public class DeployPluginController {
      * @return 表示格式化之后的返回消息的 {@link Result}{@code <}{@link List}{@code <}{@link PluginData}{@code >}{@code >}。
      */
     @GetMapping(path = "/by-status/{deploy-status}", description = "查询部署中的插件")
+    @GetSource
     public Result<List<PluginData>> queryDeployingCount(@PathVariable("deploy-status") String status) {
         DeployStatus deployStatus = DeployStatus.from(status);
         return Result.ok(this.pluginDeployService.queryPluginsByDeployStatus(deployStatus),

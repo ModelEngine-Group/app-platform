@@ -21,6 +21,7 @@ import modelengine.fit.http.annotation.PostMapping;
 import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.annotation.RequestQuery;
+import modelengine.fit.jade.aipp.domain.division.annotation.GetSource;
 import modelengine.fitframework.annotation.Component;
 import modelengine.jade.carver.ListResult;
 import modelengine.jade.common.Result;
@@ -95,6 +96,7 @@ public class AppController {
      * @return 表示格式化之后的返回消息的 {@link Result}{@code <}{@link List}{@code <}{@link AppPublishData}{@code >}{@code >}。
      */
     @GetMapping("/search")
+    @GetSource
     public Result<List<AppPublishData>> searchApps(@RequestQuery(value = "name", required = false) String name,
             @RequestQuery(value = "includeTags", required = false) List<String> includeTags,
             @RequestQuery(value = "excludeTags", required = false) List<String> excludeTags,

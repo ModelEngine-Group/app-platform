@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
 import modelengine.fitframework.test.annotation.Mock;
@@ -51,10 +52,15 @@ public class PluginIntegrationTest {
 
     @Mock
     private ToolService toolService;
+
     @Mock
     private DefinitionGroupService deGroupService;
+
     @Mock
     private ToolGroupService toolGroupService;
+
+    @Mock
+    private DomainDivisionService domainDivisionService;
 
     @Test
     @Sql(before = {
@@ -69,6 +75,7 @@ public class PluginIntegrationTest {
 
         doNothing().when(this.toolService).addTools(any());
         when(this.toolService.getTool(any())).thenReturn(this.mockToolData());
+        when(this.domainDivisionService.getUserGroupId()).thenReturn("g1");
 
         assertThat(this.pluginService.getPlugins(pluginQuery).getCount()).isEqualTo(3);
         this.pluginService.addPlugin(pluginData);
@@ -183,6 +190,7 @@ public class PluginIntegrationTest {
         pluginData.setSource("mockSource");
         pluginData.setIcon("mockIcon");
         pluginData.setPluginToolDataList(Collections.EMPTY_LIST);
+        pluginData.setUserGroupId("g1");
         return pluginData;
     }
 
@@ -202,6 +210,7 @@ public class PluginIntegrationTest {
         toolData.setSource("builtin");
         toolData.setIcon("mockIcon");
         toolData.setTags(new HashSet<>(Arrays.asList("FIT")));
+        toolData.setUserGroupId("g1");
         return toolData;
     }
 }

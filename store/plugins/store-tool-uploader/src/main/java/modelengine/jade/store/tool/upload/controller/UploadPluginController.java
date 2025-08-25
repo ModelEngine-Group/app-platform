@@ -18,6 +18,7 @@ import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.annotation.RequestParam;
 import modelengine.fit.http.entity.NamedEntity;
 import modelengine.fit.http.entity.PartitionedEntity;
+import modelengine.fit.jade.aipp.domain.division.annotation.CreateSource;
 import modelengine.fitframework.annotation.Component;
 import modelengine.jade.common.Result;
 import modelengine.jade.common.exception.ModelEngineException;
@@ -58,6 +59,7 @@ public class UploadPluginController {
      */
     @CarverSpan("operation.store.plugin.upload")
     @PostMapping(path = "/save/plugins", description = "保存上传工具文件")
+    @CreateSource
     public Result<String> saveUploadFile(PartitionedEntity receivedFiles,
             @RequestParam("toolNames") @SpanAttr("toolNames") List<String> toolNames) {
         notNull(receivedFiles, "The file to be uploaded cannot be null.");
@@ -93,6 +95,7 @@ public class UploadPluginController {
      */
     @CarverSpan("operation.store.plugin.http")
     @PostMapping(path = "/save/http", description = "保存上传 http 工具")
+    @CreateSource
     public Result<String> saveUploadHttp(@RequestBody @SpanAttr("name:$.name") HttpJsonEntity httpEntity) {
         notNull(httpEntity, "The http plugin cannot be null.");
         this.pluginUploadService.uploadHttp(httpEntity);
