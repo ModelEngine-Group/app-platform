@@ -139,6 +139,8 @@ app-engine:
 
 **启动命令**
 
+在框架输出目录的 `bin` 目录下执行启动命令
+
 ```
 fit start -Dfit.profiles.active=prod
 ```
@@ -159,7 +161,7 @@ fit start -Dfit.profiles.active=prod
 
 **修改 ELSA 依赖地址**
 
-进入目录 `app-engine\frontend` ，搜索 `package.json` 文件的 ELSA 依赖地址：
+进入目录 `app-platform\frontend` ，搜索 `package.json` 文件的 ELSA 依赖地址：
 
 ```
 "dependencies": {
@@ -171,12 +173,12 @@ fit start -Dfit.profiles.active=prod
 
 **修改代理文件**
 
-修改 `AppPlatform/frontend` 目录下的 `proxy.config.json` 文件，可以修改需要访问的后端地址。如本地后端地址是 `http://127.0.0.1:8080` 。可以按照如下示例配置：
+修改 `app-platform/frontend` 目录下的 `proxy.config.json` 文件，可以修改需要访问的后端地址。如本地后端地址是 `http://127.0.0.1:8080` 。可以按照如下示例配置：
 
 ```json
 {
     "/api": {
-       "target": "http://127.0.0.1:5520",
+       "target": "http://127.0.0.1:8080",
        "secure": false,
        "changeOrigin": true,
        "pathRewrite": {
@@ -195,8 +197,10 @@ npm install
 
 **打包构建**
 
+在 `package.json` 中定义了多种打包脚本，这里以 `build:single` 为例：
+
 ```
-npm run build
+npm run build:single
 ```
 
 **启动命令**
