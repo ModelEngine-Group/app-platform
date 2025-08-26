@@ -161,7 +161,7 @@ fit start -Dfit.profiles.active=prod
 
 **修改 ELSA 依赖地址**
 
-进入目录 `app-platform\frontend` ，搜索 `package.json` 文件的 ELSA 依赖地址：
+进入目录 `app-platform/frontend` ，搜索 `package.json` 文件的 ELSA 依赖地址：
 
 ```
 "dependencies": {
@@ -191,7 +191,7 @@ fit start -Dfit.profiles.active=prod
 **依赖安装**
 
 ```
-cd app-engine/frontend/
+cd app-platform/frontend/
 npm install
 ```
 
