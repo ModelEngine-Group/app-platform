@@ -62,6 +62,7 @@ const Index = (props) => {
   const dispatch = useAppDispatch();
   const runningAippId = useRef();
   const runningVersion = useRef();
+  const chatIdRef = useRef<string | undefined>();
 
   // 关闭测试抽屉
   const handleCloseDebug = () => {
@@ -118,6 +119,9 @@ const Index = (props) => {
         'dimension': values.dimension
       }
     };
+    if (chatIdRef.current) {
+      chatParams['chat_id'] = chatIdRef.current;
+    }
     handleRun(chatParams);
   };
 
@@ -149,6 +153,7 @@ const Index = (props) => {
           if (!getReady && receiveData.status === 'ERROR') {
             setLoading(false);
             Message({ type: 'error', content: t('startDebugFail') });
+            chatIdRef.current = receiveData.chat_id;
             break;
           }
           if (receiveData.status === 'READY' && !getReady) {
@@ -192,6 +197,7 @@ const Index = (props) => {
           setChatConfig(obj);
           setOpen(true);
         }
+        chatIdRef.current = messageData.chat_id;
       });
     } catch (err) {
       console.info(err);
