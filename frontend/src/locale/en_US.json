@@ -1677,6 +1677,7 @@
       "90002965": "Parent node of form property does not exist.",
       "90002973": "Invalid path format.",
       "90002998": "License expired."
-    }
+    },
+    "guestMode": "Guest Mode"
   }
 }
