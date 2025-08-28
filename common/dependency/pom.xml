@@ -51,6 +51,7 @@
         <retrofit2.version>2.10.0</retrofit2.version>
         <poi.version>5.4.0</poi.version>
         <redisson.version>3.25.2</redisson.version>
+        <fastexcel.version>1.1.0</fastexcel.version>
         <caffeine.version>2.9.3</caffeine.version>
         <pdfbox.version>2.0.30</pdfbox.version>
         <opentelemetry.version>1.31.0</opentelemetry.version>
@@ -510,6 +511,11 @@
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
                 <version>${redisson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.idev.excel</groupId>
+                <artifactId>fastexcel</artifactId>
+                <version>${fastexcel.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
