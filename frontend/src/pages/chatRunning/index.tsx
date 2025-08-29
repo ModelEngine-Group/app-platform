@@ -166,8 +166,8 @@ const ChatRunning = () => {
 
   // 更新随机用户名
   const refreshUserName = (isGuest) => {
-    if (isGuest && !localStorage.getItem('guest-name')) {
-      localStorage.setItem('guest-name', generateUniqueName());
+    if (isGuest) {
+      !localStorage.getItem('guest-name') && localStorage.setItem('guest-name', generateUniqueName());
     } else {
       localStorage.removeItem('guest-name');
     }
