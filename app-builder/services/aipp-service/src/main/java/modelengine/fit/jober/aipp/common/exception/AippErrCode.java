@@ -762,6 +762,21 @@ public enum AippErrCode implements ErrorCode, RetCode {
     GENERATE_CONTENT_FAILED(90002140, "大模型生成{0}失败，请尝试更换默认模型，失败原因：{1}。"),
 
     /**
+     * 没有权限操作该应用。
+     */
+    NO_PERMISSION_OPERATE_APP(90002141, "没有权限操作该应用。"),
+
+    /**
+     * 表单不存在。
+     */
+    FORM_NOT_EXIST(90002142, "表单不存在。"),
+
+    /**
+     * 没有权限操作该表单。
+     */
+    NO_PERMISSION_OPERATE_FORM(90002143, "没有权限操作该表单。"),
+
+    /**
      * 错误码截止值
      */
     ERROR_CODE_BUTT(99999999, "Error code butt.");

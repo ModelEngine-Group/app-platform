@@ -61,6 +61,11 @@ public class AppDo extends CommonDo {
     private String appCategory;
 
     /**
+     * 用户组唯一标识。
+     */
+    private String userGroupId;
+
+    /**
      * 表示用 {@link AppPublishData} 构造 {@link AppDo}。
      *
      * @param appData 表示传输层应用的数据的 {@link AppPublishData}。
@@ -77,6 +82,7 @@ public class AppDo extends CommonDo {
         appDo.setCreator(appData.getCreator());
         appDo.setModifier(appData.getModifier());
         appDo.setAppCategory(appData.getAppCategory());
+        appDo.setUserGroupId(appData.getUserGroupId());
         return appDo;
     }
 

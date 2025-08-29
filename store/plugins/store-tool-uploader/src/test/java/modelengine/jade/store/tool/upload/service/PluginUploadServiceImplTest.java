@@ -21,6 +21,7 @@ import modelengine.fit.http.entity.Entity;
 import modelengine.fit.http.entity.FileEntity;
 import modelengine.fit.http.entity.NamedEntity;
 import modelengine.fit.http.entity.support.DefaultNamedEntity;
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.exception.FitException;
 import modelengine.fitframework.serialization.ObjectSerializer;
@@ -86,6 +87,8 @@ public class PluginUploadServiceImplTest {
     private ToolGroupService mockToolGroupService;
     private PluginUploadServiceImpl pluginUploadService;
     private PluginUploadConstraintConfig pluginUploadConstraintConfig;
+    @Mock
+    private DomainDivisionService domainDivisionService;
 
     private PluginData mockPluginData() {
         final PluginData pluginData = new PluginData();
@@ -130,7 +133,8 @@ public class PluginUploadServiceImplTest {
                 this.pluginUploadConstraintConfig,
                 this.mockProcessorFactory,
                 this.mockDefGroupService,
-                this.mockToolGroupService);
+                this.mockToolGroupService,
+                this.domainDivisionService, true);
         Path testPath = Paths.get("/var/");
         try {
             FileUtils.ensureDirectory(testPath.toFile());

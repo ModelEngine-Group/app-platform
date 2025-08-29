@@ -47,8 +47,10 @@ import modelengine.fel.tool.info.entity.ToolJsonEntity;
 import modelengine.fel.tool.model.transfer.DefinitionGroupData;
 import modelengine.fel.tool.model.transfer.ToolGroupData;
 import modelengine.fit.http.entity.NamedEntity;
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
+import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.util.FileUtils;
@@ -95,6 +97,8 @@ public class PluginUploadServiceImpl implements PluginUploadService {
     private final ObjectSerializer serializer;
     private final PluginUploadConstraintConfig pluginUploadConstraintConfig;
     private final ProcessorFactory processorFactory;
+    private final DomainDivisionService domainDivisionService;
+    private final boolean isEnableDomainDivision;
 
     /**
      * 通过插件服务来初始化 {@link PluginUploadServiceImpl} 的新实例。
@@ -105,10 +109,13 @@ public class PluginUploadServiceImpl implements PluginUploadService {
      * @param processorFactory 表示处理器工厂的 {@link ProcessorFactory}。
      * @param defGroupService 表示定义组服务的 {@link DefinitionGroupService}。
      * @param toolGroupService 表示工具组服务的 {@link ToolGroupService}。
+     * @param isEnableDomainDivision 表示是否启用分域功能的 {@code boolean}。
      */
     public PluginUploadServiceImpl(PluginService pluginService, @Fit(alias = "json") ObjectSerializer serializer,
             PluginUploadConstraintConfig pluginUploadConstraintConfig, ProcessorFactory processorFactory,
-            DefinitionGroupService defGroupService, ToolGroupService toolGroupService) {
+            DefinitionGroupService defGroupService, ToolGroupService toolGroupService,
+            DomainDivisionService domainDivisionService,
+            @Value("${domain-division.isEnable}") boolean isEnableDomainDivision) {
         this.pluginService = notNull(pluginService, "The plugin service cannot be null.");
         this.serializer = notNull(serializer, "The object serializer cannot be null.");
         this.pluginUploadConstraintConfig =
@@ -116,6 +123,8 @@ public class PluginUploadServiceImpl implements PluginUploadService {
         this.processorFactory = notNull(processorFactory, "The processor factory cannot be null.");
         this.defGroupService = notNull(defGroupService, "The definition group service cannot be null.");
         this.toolGroupService = notNull(toolGroupService, "The tool group service cannot be null.");
+        this.domainDivisionService = notNull(domainDivisionService, "The domain division service cannot be null.");
+        this.isEnableDomainDivision = isEnableDomainDivision;
     }
 
     @Override
@@ -158,7 +167,12 @@ public class PluginUploadServiceImpl implements PluginUploadService {
         validateDefAndToolRepeat(defGroupDatas, toolGroupDatas, this.toolGroupService, this.defGroupService);
         pluginData.setToolGroupDataList(toolGroupDatas);
         pluginData.setDefinitionGroupDataList(defGroupDatas);
-        pluginData.setPluginToolDataList(buildPluginToolDatas(toolGroupDatas, pluginData.getPluginId()));
+        String userGroupId = null;
+        if (this.isEnableDomainDivision) {
+            userGroupId = this.domainDivisionService.getUserGroupId();
+        }
+        pluginData.setPluginToolDataList(buildPluginToolDatas(toolGroupDatas, userGroupId, pluginData.getPluginId()));
+        pluginData.setUserGroupId(userGroupId);
         this.pluginService.addPlugin(pluginData);
         this.savePluginToPersistentPath(cast(getCompressedFile(tempDir)), pluginData);
         log.info("Save metadata to data base successfully.");
@@ -230,7 +244,11 @@ public class PluginUploadServiceImpl implements PluginUploadService {
                 cast(this.processorFactory.createInstance(TOOLS).process(httpEntity, new HashMap<>()));
         List<DefinitionGroupData> defGroups =
                 cast(this.processorFactory.createInstance(DEFINITIONS).process(httpEntity, new HashMap<>()));
-        PluginData pluginData = buildHttpPluginData(defGroups, toolGroups, httpEntity);
+        String userGroupId = null;
+        if (this.isEnableDomainDivision) {
+            userGroupId = this.domainDivisionService.getUserGroupId();
+        }
+        PluginData pluginData = buildHttpPluginData(defGroups, toolGroups, httpEntity, userGroupId);
         this.checkUniquePluginId(pluginData.getPluginId());
         Map<String, Map<String, Object>> defGroupMap = cast(buildDefGroupMap(defGroups));
         enhanceSchema(toolGroups, defGroupMap);

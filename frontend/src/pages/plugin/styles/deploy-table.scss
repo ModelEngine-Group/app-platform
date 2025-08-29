@@ -27,6 +27,14 @@
     overflow: auto;
     padding-right: 6px;
   }
+  .table-list.disabled-row {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .icon.disabled-icon {
+    cursor: not-allowed;
+    color: #999;
+  }
   .table-list {
     display: flex;
     border-bottom: 1px solid rgb(242, 242, 242);

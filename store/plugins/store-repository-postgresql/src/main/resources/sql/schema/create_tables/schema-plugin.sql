@@ -15,6 +15,7 @@ create table if not exists store_plugin
     "is_builtin"    boolean     default false             not null,
     "source"        varchar(16) default ''                not null,
     "icon"          text,
+    "user_group_id" varchar(64)                           not null,
     unique ("plugin_id")
 );
 create index if not exists query_plugin ON store_plugin ("is_builtin");
@@ -30,5 +31,6 @@ comment on column store_plugin.deploy_status is '插件的部署状态';
 comment on column store_plugin.is_builtin is '插件是否内置';
 comment on column store_plugin.source is '插件的来源';
 comment on column store_plugin.icon is '插件的图标';
+comment on column store_plugin.user_group_id is '插件的用户资源组';
 end
 $$;

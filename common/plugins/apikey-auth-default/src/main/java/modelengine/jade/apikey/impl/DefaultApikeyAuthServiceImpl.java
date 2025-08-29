@@ -7,6 +7,7 @@
 package modelengine.jade.apikey.impl;
 
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.annotation.Value;
 import modelengine.jade.apikey.ApikeyAuthService;
 
 /**
@@ -17,8 +18,14 @@ import modelengine.jade.apikey.ApikeyAuthService;
  */
 @Component
 public class DefaultApikeyAuthServiceImpl implements ApikeyAuthService {
+    private final String userName;
+
+    public DefaultApikeyAuthServiceImpl(@Value("${userName}") String userName) {
+        this.userName = userName;
+    }
+
     @Override
-    public boolean authApikeyInfo(String apikey) {
-        return true;
+    public String authApikeyInfo(String apikey) {
+        return this.userName;
     }
 }

@@ -15,6 +15,7 @@ create table if not exists store_app
     "app_category" varchar(16) default 'chatbot',
     "tool_name"        varchar(256)                          not null,
     "tool_unique_name" varchar(36)                           not null,
+    "user_group_id"    varchar(64)                           not null,
     unique("tool_unique_name")
     );
 create index if not exists fast_query_app on store_app ("tool_unique_name");
@@ -30,5 +31,6 @@ comment on column store_app.icon is '应用的图标';
 comment on column store_app.app_category is '应用的种类';
 comment on column store_app.tool_name is '工具及应用的统一名称';
 comment on column store_app.tool_unique_name is '应用的工具唯一标识';
+comment on column store_app.user_group_id is '应用的用户资源组';
 end
 $$;

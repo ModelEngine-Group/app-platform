@@ -18,12 +18,14 @@ import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.annotation.RequestParam;
 import modelengine.fit.http.entity.NamedEntity;
 import modelengine.fit.http.entity.PartitionedEntity;
+import modelengine.fit.jade.aipp.domain.division.annotation.CreateSource;
 import modelengine.fitframework.annotation.Component;
 import modelengine.jade.common.Result;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.service.annotations.CarverSpan;
 import modelengine.jade.service.annotations.SpanAttr;
 import modelengine.jade.store.code.PluginRetCode;
+import modelengine.jade.store.entity.aop.PluginValidation;
 import modelengine.jade.store.tool.upload.service.PluginUploadService;
 
 import java.util.List;
@@ -58,6 +60,7 @@ public class UploadPluginController {
      */
     @CarverSpan("operation.store.plugin.upload")
     @PostMapping(path = "/save/plugins", description = "保存上传工具文件")
+    @CreateSource
     public Result<String> saveUploadFile(PartitionedEntity receivedFiles,
             @RequestParam("toolNames") @SpanAttr("toolNames") List<String> toolNames) {
         notNull(receivedFiles, "The file to be uploaded cannot be null.");
@@ -79,6 +82,7 @@ public class UploadPluginController {
      */
     @CarverSpan("operation.store.plugin.delete")
     @DeleteMapping(value = "/delete/{pluginId}", description = "删除插件")
+    @PluginValidation
     public Result<String> deletePlugin(@PathVariable("pluginId") @SpanAttr("pluginId") String pluginId) {
         notBlank(pluginId, "The plugin id cannot be blank.");
         int deleteNum = this.pluginUploadService.deletePlugin(pluginId);
@@ -93,6 +97,7 @@ public class UploadPluginController {
      */
     @CarverSpan("operation.store.plugin.http")
     @PostMapping(path = "/save/http", description = "保存上传 http 工具")
+    @CreateSource
     public Result<String> saveUploadHttp(@RequestBody @SpanAttr("name:$.name") HttpJsonEntity httpEntity) {
         notNull(httpEntity, "The http plugin cannot be null.");
         this.pluginUploadService.uploadHttp(httpEntity);
