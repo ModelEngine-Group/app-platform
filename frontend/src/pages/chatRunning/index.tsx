@@ -21,7 +21,7 @@ import { setIsDebug } from '@/store/common/common';
 import { setInspirationOpen } from '@/store/chatStore/chatStore';
 import { storage } from '@/shared/storage';
 import { useTranslation } from 'react-i18next';
-import { findConfigValue, getAppConfig } from '@/shared/utils/common';
+import { findConfigValue, generateUniqueName, getAppConfig } from '@/shared/utils/common';
 import {
   getAppGuestIsOpen,
   getGuestModeAppInfo,
@@ -72,7 +72,7 @@ const ChatRunning = () => {
     }
   };
   // 获取公共访问详情
-  const getPreviewData = async () => {
+  const getPreviewData = async (isGuest: boolean) => {
     setLoading(true);
     const res: any = isGuest ? await getGuestModeAppInfo(uid) : await getPreviewAppInfo(uid);
     if (res && res.code === 0) {
@@ -164,6 +164,15 @@ const ChatRunning = () => {
     }
   };
 
+  // 更新随机用户名
+  const refreshUserName = (isGuest) => {
+    if (isGuest && !localStorage.getItem('guest-name')) {
+      localStorage.setItem('guest-name', generateUniqueName());
+    } else {
+      localStorage.removeItem('guest-name');
+    }
+  };
+
   useEffect(() => {
     const found = pluginList.find((item: any) => item.name === pluginName);
     setPlugin(found);
@@ -173,7 +182,10 @@ const ChatRunning = () => {
   useEffect(() => {
     if (uid) {
       getAppGuestIsOpen(uid).then((res) => {
-        dispatch(setIsGuest(res.data));
+        const isGuest = res.data;
+        dispatch(setIsGuest(isGuest));
+        refreshUserName(isGuest);
+        getPreviewData(isGuest);
       });
       setIsPreview(true);
     } else {
@@ -181,12 +193,6 @@ const ChatRunning = () => {
       setIsPreview(false);
     }
   }, []);
-
-  useEffect(() => {
-    if (uid) {
-      getPreviewData();
-    }
-  }, [isGuest, uid]);
 
   useEffect(() => {
     if (appInfo.id) {

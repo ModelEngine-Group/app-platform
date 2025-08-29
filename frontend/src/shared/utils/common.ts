@@ -6,6 +6,7 @@ import { createGraphOperator } from '@fit-elsa/elsa-react';
 import { storage } from '../storage';
 import i18n from '@/locale/i18n';
 import { getAppCategories } from "@/shared/http/aipp";
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * 获取url中status的类型
@@ -439,4 +440,13 @@ export const getAppConfig = (appInfo) => {
   const graphOperator = createGraphOperator(JSON.stringify(appInfo.flowGraph.appearance));
   const nodeList  = graphOperator.getShapeIdsByType('startNodeStart');
   return graphOperator.getConfig(nodeList).appConfig;
+}
+
+/**
+ * 生成随机用户名
+ *
+ * @return string 用户名
+ */
+export const generateUniqueName = () => {
+  return 'guest-' + uuidv4();
 }
