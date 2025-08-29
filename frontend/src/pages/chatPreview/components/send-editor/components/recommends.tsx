@@ -9,6 +9,7 @@ import { Spin } from 'antd';
 import { Message } from '@/shared/utils/message';
 import { InspirationIcon, RebotIcon } from '@/assets/icon';
 import { getRecommends } from '@/shared/http/chat';
+import { getGuestModeRecommends } from '@/shared/http/guest';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { setInspirationOpen } from '@/store/chatStore/chatStore';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +38,7 @@ const Recommends = (props) => {
   const inspirationOpen = useAppSelector((state) => state.chatCommonStore.inspirationOpen);
   const chatList = useAppSelector((state) => state.chatCommonStore.chatList);
   const chatRunning = useAppSelector((state) => state.chatCommonStore.chatRunning);
+  const isGuest = useAppSelector((state) => state.appStore.isGuest);
 
   // 猜你想问
   const recommendClick = (item) => {
@@ -68,7 +70,7 @@ const Recommends = (props) => {
     }
     recommendList.length > 0 && setLoading(true);
     try {
-      const res:any = await getRecommends(params);
+      const res:any = isGuest ? await getGuestModeRecommends(params) : await getRecommends(params);
       if (res.code === 0 && res.data.length > 0) {
         let list = shuffle(res.data);
         curRecommendList.current = list;

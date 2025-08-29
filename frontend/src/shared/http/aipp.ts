@@ -162,7 +162,6 @@ export function getLatestChatId(tenantId, params) {
 // 文件上传
 export function uploadChatFile(tenantId, appId = '', data, headers) {
   return post(`${AIPP_URL}/${tenantId}/file?aipp_id=${appId}`, data, { ...headers, 'Content-Type': 'multipart/form-data' });
-
 }
 // 多文件上传
 export function uploadMultipleFile(tenantId, appId, data) {

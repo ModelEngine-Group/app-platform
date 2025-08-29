@@ -10,6 +10,7 @@ import ReceiveBox from './receive-box/receive-box';
 import ChatDetail from './chat-details';
 import { ChatContext } from '../../aippIndex/context';
 import { queryFeedback } from '@/shared/http/chat';
+import { guestModeQueryFeedback } from '@/shared/http/guest';
 import { deepClone, scrollBottom } from '../utils/chat-process';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { setChatList } from '@/store/chatStore/chatStore';
@@ -20,6 +21,7 @@ const ChatMessage = (props) => {
   const chatList = useAppSelector((state) => state.chatCommonStore.chatList);
   const tenantId = useAppSelector((state) => state.appStore.tenantId);
   const loginStatus = useAppSelector((state) => state.chatCommonStore.loginStatus);
+  const isGuest = useAppSelector((state) => state.appStore.isGuest);
   const [list, setList] = useState([]);
   const [showMask, setShowMask] = useState(false);
   const chatBoxRef = useRef<any>(null);
@@ -39,13 +41,15 @@ const ChatMessage = (props) => {
     for (let i = 0; i < arr?.length; i++) {
       let item = arr[i]
       if (item.type === 'receive' && item?.instanceId && (id === 'all' || item?.instanceId === id)) {
-        await queryFeedback(item.instanceId).then((res) => {
-          if (!res) {
-            item.feedbackStatus = -1;
-          } else {
-            item.feedbackStatus = res.usrFeedback;
-          }
-        });
+        try {
+          const res = isGuest
+            ? await guestModeQueryFeedback(item.instanceId)
+            : await queryFeedback(item.instanceId);
+
+          item.feedbackStatus = res?.usrFeedback ?? -1;
+        } catch (error) {
+          item.feedbackStatus = -1;
+        }
       }
     }
     dispatch(setChatList(arr));
