@@ -6,22 +6,11 @@
 
 package modelengine.fit.jober.aipp.service.impl;
 
-import cn.idev.excel.ExcelReader;
-import cn.idev.excel.FastExcel;
-import cn.idev.excel.context.AnalysisContext;
-import cn.idev.excel.converters.Converter;
-import cn.idev.excel.enums.CellDataTypeEnum;
-import cn.idev.excel.metadata.GlobalConfiguration;
-import cn.idev.excel.metadata.data.DataFormatData;
-import cn.idev.excel.metadata.data.ReadCellData;
-import cn.idev.excel.metadata.property.ExcelContentProperty;
-import cn.idev.excel.read.listener.ReadListener;
-import cn.idev.excel.read.metadata.ReadSheet;
-import cn.idev.excel.util.DateUtils;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.service.LLMService;
 import modelengine.fit.jober.aipp.service.OperatorService;
+import modelengine.fit.jober.aipp.tool.FileExtractorContainer;
 import modelengine.fit.jober.aipp.util.AippFileUtils;
 import modelengine.fit.jober.aipp.util.AippStringUtils;
 import modelengine.fitframework.annotation.Component;
@@ -32,12 +21,7 @@ import modelengine.fitframework.util.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.poifs.filesystem.FileMagic;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -46,13 +30,10 @@ import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHdrFtr;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -99,7 +80,6 @@ public class OperatorServiceImpl implements OperatorService {
     private final LLMService llmService;
     private final BrokerClient client;
     private final Function<String, String> pdfExtractor = this::extractPdfFile;
-    private final Function<String, String> excelExtractor = this::extractExcelFile;
     private final Function<String, String> wordExtractor = this::extractWordFile;
     private final Function<String, String> textExtractor = this::extractTextFile;
     private final EnumMap<FileType, Function<File, String>> outlineOperatorMap =
@@ -109,45 +89,24 @@ public class OperatorServiceImpl implements OperatorService {
                 }
             };
 
-    private final EnumMap<FileType, Function<String, String>> fileOperatorMap
-            = new EnumMap<FileType, Function<String, String>>(FileType.class) {
-        {
-            put(FileType.PDF, pdfExtractor);
-            put(FileType.WORD, wordExtractor);
-            put(FileType.EXCEL, excelExtractor);
-            put(FileType.TXT, textExtractor);
-            put(FileType.HTML, textExtractor);
-            put(FileType.MARKDOWN, textExtractor);
-            put(FileType.CSV, textExtractor);
-        }
-    };
+    private final EnumMap<FileType, Function<String, String>> fileOperatorMap =
+            new EnumMap<FileType, Function<String, String>>(FileType.class) {
+                {
+                    put(FileType.PDF, pdfExtractor);
+                    put(FileType.WORD, wordExtractor);
+                    put(FileType.TXT, textExtractor);
+                    put(FileType.HTML, textExtractor);
+                    put(FileType.MARKDOWN, textExtractor);
+                    put(FileType.CSV, textExtractor);
+                }
+            };
+    private final FileExtractorContainer fileExtractorContainer;
 
-    public OperatorServiceImpl(LLMService llmService, BrokerClient client) {
+    public OperatorServiceImpl(LLMService llmService, BrokerClient client,
+            FileExtractorContainer fileExtractorContainer) {
         this.llmService = llmService;
         this.client = client;
-    }
-
-    private static String getCellValueAsString(ReadCellData<?> cell) {
-        switch (cell.getType()) {
-            case STRING:
-                return cell.getStringValue();
-            case NUMBER:
-                DataFormatData fmt = cell.getDataFormatData();
-                short formatIndex = fmt.getIndex();
-                String formatString = fmt.getFormat();
-                if (DateUtils.isADateFormat(formatIndex,formatString)) {
-                    double value = cell.getNumberValue().doubleValue();
-                    Date date = DateUtils.getJavaDate(value,true);
-                    return new SimpleDateFormat("yyyy-MM-dd").format(date);
-                } else {
-                    BigDecimal num = cell.getNumberValue();
-                    return num.stripTrailingZeros().toPlainString();
-                }
-            case BOOLEAN:
-                return Boolean.toString(cell.getBooleanValue());
-            default:
-                return "";
-        }
+        this.fileExtractorContainer = fileExtractorContainer;
     }
 
     private static String extractDocHandle(InputStream fis, String fileName) throws IOException {
@@ -250,59 +209,14 @@ public class OperatorServiceImpl implements OperatorService {
      */
     public String fileExtractor(String fileUrl, Optional<FileType> optionalFileType) {
         if (optionalFileType.isPresent()) {
+            String res = fileExtractorContainer.extract(fileUrl, optionalFileType.get());
+            if (!res.isEmpty()) {
+                return res;
+            }
             Function<String, String> function = this.fileOperatorMap.get(optionalFileType.get());
             return Optional.ofNullable(function).map(f -> f.apply(fileUrl)).orElse(StringUtils.EMPTY);
         }
         return this.extractTextFile(fileUrl);
-    }
-
-    /**
-     * 从指定路径的 Excel 文件中提取内容，并返回为字符串形式。
-     * 实现方式：
-     * 基于 fast-excel 包，使用流式读取（ReadListener）逐行解析，避免一次性加载整表造成的内存开销。
-     * 每行数据会被转换为以制表符（\t）分隔的文本，并在行末追加换行符。
-     * 支持多 sheet 解析，会依次读取工作簿中的每一个 sheet。
-     *
-     * @param fileUrl 表示文件路径的 {@link String}.
-     * @return 表示文件内容的 {@link String}。
-     * @throws RuntimeException 当文件读取或解析失败时抛出
-     */
-    private String extractExcelFile(String fileUrl) {
-        File file = Paths.get(fileUrl).toFile();
-        StringBuilder excelContent = new StringBuilder();
-        ReadListener<Map<Integer, String>> listener = new ReadListener<>() {
-            @Override
-            public void invoke(Map<Integer, String> data, AnalysisContext context) {
-                String line = data.entrySet().stream()
-                        .sorted(Map.Entry.comparingByKey())
-                        .map(e -> e.getValue() == null ? "" : e.getValue())
-                        .collect(Collectors.joining("\t"));
-                excelContent.append(line).append('\n');
-            }
-            @Override
-            public void doAfterAllAnalysed(AnalysisContext context) {
-            }
-        };
-        try (InputStream is = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
-            ExcelReader reader = FastExcel.read(is, listener)
-                    .registerConverter(new CustomCellStringConverter())
-                    .headRowNumber(0)
-                    .build();
-
-            List<ReadSheet> sheets = reader.excelExecutor().sheetList();
-            for (ReadSheet meta : sheets) {
-                excelContent.append("Sheet ").append(meta.getSheetNo() + 1).append(':').append('\n');
-                ReadSheet readSheet = FastExcel.readSheet(meta.getSheetNo())
-                        .headRowNumber(0)
-                        .build();
-                reader.read(readSheet);
-            }
-            excelContent.append('\n');
-            reader.finish(); // 关闭资源
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return excelContent.toString();
     }
 
     private String iterPdf(PDDocument doc) throws IOException {
@@ -359,25 +273,4 @@ public class OperatorServiceImpl implements OperatorService {
         }
     }
 
-    /**
-     * 自定义单元格数据转换器。
-     * 将 Excel 单元格数据统一转换为字符串，避免数值/日期等类型在读取时格式不一致的问题。
-     * 缺点：由于采用fast excel包,没有 FORMULA类,会将公式单元格自动计算为值
-     *
-     */
-    public static class CustomCellStringConverter implements Converter<String> {
-        @Override
-        public Class<String> supportJavaTypeKey() {
-            return String.class;
-        }
-        @Override
-        public CellDataTypeEnum supportExcelTypeKey() {
-            return null;
-        }
-        @Override
-        public String convertToJavaData(ReadCellData<?> cellData, ExcelContentProperty contentProperty,
-                                        GlobalConfiguration globalConfiguration) {
-            return getCellValueAsString(cellData);
-        }
-    }
 }

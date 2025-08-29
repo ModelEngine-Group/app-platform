@@ -6,9 +6,10 @@
 
 package modelengine.fit.jober.aipp.tool;
 
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
+import modelengine.fit.jober.aipp.service.OperatorService;
 import modelengine.fitframework.annotation.Genericable;
-
-import java.io.File;
 
 /**
  * 文件内容提取
@@ -16,6 +17,7 @@ import java.io.File;
  * @author 孙怡菲
  * @since 2024-06-08
  */
+@Group(name = "defGroup-aipp-file-extract-tool")
 public interface FileExtractor {
     /**
      * 文件提取genericable接口gid
@@ -25,9 +27,12 @@ public interface FileExtractor {
     /**
      * 提取文件内容
      *
-     * @param file 待提取的文件
+     * @param fileUrl 待提取的文件地址
      * @return 文件内容。
      */
+    @ToolMethod(name = "file_extract", description = "提取文件信息")
     @Genericable(FILE_EXTRACTOR_GID)
-    String extractFile(File file);
+    String extractFile(String fileUrl);
+
+    OperatorService.FileType supportedType();
 }

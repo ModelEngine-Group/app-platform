@@ -8,6 +8,7 @@ package modelengine.fit.jober.aipp.tool.impl;
 
 import static modelengine.fit.jober.aipp.constant.AippConstant.NAS_SHARE_DIR;
 
+import modelengine.fel.tool.annotation.Group;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.dto.audio.AudioSplitInfo;
@@ -16,6 +17,7 @@ import modelengine.fit.jober.aipp.dto.audio.SummarySection;
 import modelengine.fit.jober.aipp.entity.ffmpeg.FfmpegMeta;
 import modelengine.fit.jober.aipp.enums.LlmModelNameEnum;
 import modelengine.fit.jober.aipp.service.FfmpegService;
+import modelengine.fit.jober.aipp.service.OperatorService;
 import modelengine.fit.jober.aipp.tool.FileExtractor;
 import modelengine.fit.jober.aipp.util.AippFileUtils;
 import modelengine.fit.jober.aipp.util.JsonUtils;
@@ -55,7 +57,13 @@ import java.util.stream.Stream;
  * @since 2024/1/8
  */
 @Component
+@Group(name = "defGroup-aipp-file-extract-tool-audio")
 public class AudioExtractor implements FileExtractor {
+    @Override
+    public OperatorService.FileType supportedType() {
+        return OperatorService.FileType.AUDIO;
+    }
+
     private static final Logger log = Logger.get(AudioExtractor.class);
 
     private static final String PROMPT = "\nPerform the following actions:\n"
@@ -77,9 +85,8 @@ public class AudioExtractor implements FileExtractor {
     private final String pathPrefix;
     private final FfmpegService ffmpegService;
 
-    public AudioExtractor(FfmpegService ffmpegService, @Fit ChatModel openAiClient,
-                          @Fit VoiceService voiceService, @Value("${app-engine.endpoint}") String endpoint,
-                          @Value("${app-engine.pathPrefix}") String pathPrefix) {
+    public AudioExtractor(FfmpegService ffmpegService, @Fit ChatModel openAiClient, @Fit VoiceService voiceService,
+            @Value("${app-engine.endpoint}") String endpoint, @Value("${app-engine.pathPrefix}") String pathPrefix) {
         this.ffmpegService = ffmpegService;
         this.openAiClient = openAiClient;
         this.voiceService = voiceService;
@@ -97,12 +104,14 @@ public class AudioExtractor implements FileExtractor {
             SUMMARY_EXECUTOR.execute(() -> {
                 try {
                     File audio = audioList.get(id);
-                    String audioPath = AippFileUtils.getFileDownloadFilePath(
-                            endpoint, this.pathPrefix, audio.getPath());
+                    String audioPath =
+                            AippFileUtils.getFileDownloadFilePath(endpoint, this.pathPrefix, audio.getPath());
                     log.info("audio filePath: {}, audio fileName: {}", audioPath, audio.getName());
                     String text = voiceService.getText(audioPath + "&fileName=" + audio.getName());
-                    String summary = LLMUtils.askModelForSummary(openAiClient, String.format(PROMPT, text),
-                            LlmModelNameEnum.QWEN_72B, 16000);
+                    String summary = LLMUtils.askModelForSummary(openAiClient,
+                            String.format(PROMPT, text),
+                            LlmModelNameEnum.QWEN_72B,
+                            16000);
                     output.set(id, summary);
                 } catch (IOException e) {
                     output.set(id, "");
@@ -126,8 +135,10 @@ public class AudioExtractor implements FileExtractor {
         StringBuilder sb = new StringBuilder();
         summaryDto.getSectionList().forEach(sec -> sb.append(sec.getText()));
         try {
-            String llmOutput = LLMUtils.askModelForSummary(openAiClient, String.format(PROMPT, sb),
-                    LlmModelNameEnum.QWEN_72B, 16000);
+            String llmOutput = LLMUtils.askModelForSummary(openAiClient,
+                    String.format(PROMPT, sb),
+                    LlmModelNameEnum.QWEN_72B,
+                    16000);
             SummarySection section =
                     JsonUtils.parseObject(LLMUtils.tryFixLlmJsonString(llmOutput), SummarySection.class);
             summaryDto.setSummary(section.getText());
@@ -163,8 +174,9 @@ public class AudioExtractor implements FileExtractor {
 
     @Fitable("llmAudio2Summary")
     @Override
-    public String extractFile(File file) {
+    public String extractFile(String fileUrl) {
         // file -> audioDir 切分为多个音频文件，存在临时目录下
+        File file = Paths.get(fileUrl).toFile();
         String tmpDir = TMP_DIR_PREFIX + UUIDUtil.uuid();
         AudioSplitInfo audioSplitInfo;
         try {
