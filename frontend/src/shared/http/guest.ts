@@ -13,6 +13,11 @@ const withGuestHeaders = (options = {}) => {
     localStorage.setItem('guest-name', guestName);
   }
 
+  if (options.headers) {
+    options.headers['X-Guest-Username'] = guestName;
+    return options;
+  }
+
   return {
     ...options,
     headers: {
@@ -67,17 +72,16 @@ export function guestModeSseChat(
 ) {
   let url = `${AIPP_URL}/guest/${tenantId}/${isDebug ? 'app_chat_debug' : 'app_chat'}`;
   return new Promise((resolve, reject) => {
-    fetch(url, {
+    fetch(url, withGuestHeaders({
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Auto-Chat-On-Upload': isAuto,
         'X-Auth-Token': getCookie('__Host-X-Auth-Token'),
         'X-Csrf-Token': getCookie('__Host-X-Csrf-Token'),
-        'X-Guest-Username': localStorage.getItem('guest-name'),
       },
       body: JSON.stringify(params),
-    }).then((res) => {
+    })).then((res) => {
       sseError(res, resolve);
     });
   });
@@ -93,16 +97,15 @@ export function guestModeResumeChat(
 ) {
   let url = `${AIPP_URL}/guest/${tenantId}/app/instances/${instanceId}/log/${logId}?is_debug=${isDebug}`;
   return new Promise((resolve, reject) => {
-    fetch(url, {
+    fetch(url, withGuestHeaders({
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': getCookie('__Host-X-Auth-Token'),
         'X-Csrf-Token': getCookie('__Host-X-Csrf-Token'),
-        'X-Guest-Username': localStorage.getItem('guest-name'),
       },
       body: JSON.stringify(params),
-    }).then((res) => {
+    })).then((res) => {
       sseError(res, resolve);
     });
   });
@@ -112,16 +115,15 @@ export function guestModeResumeChat(
 export function guestModeRestartChat(tenantId: string, instanceId: string, params: any) {
   let url = `${AIPP_URL}/guest/${tenantId}/instances/${instanceId}`;
   return new Promise((resolve, reject) => {
-    fetch(url, {
+    fetch(url, withGuestHeaders({
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': getCookie('__Host-X-Auth-Token'),
         'X-Csrf-Token': getCookie('__Host-X-Csrf-Token'),
-        'X-Guest-Username': localStorage.getItem('guest-name'),
       },
       body: JSON.stringify(params),
-    }).then((res) => {
+    })).then((res) => {
       sseError(res, resolve);
     });
   });
