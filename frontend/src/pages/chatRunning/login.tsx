@@ -9,6 +9,7 @@ import { Button, Dropdown } from 'antd';
 import { userLogOut } from '@/shared/http/aipp';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '@/store/hook';
+import { useGuestName } from '@/shared/hooks/useGuestName';
 
 /**
  * 预览用户信息展示组件
@@ -19,10 +20,9 @@ import { useAppSelector } from '@/store/hook';
  */
 const Login = ({ login }) => {
   const { t } = useTranslation();
+  const guestName = useGuestName();
   const isGuest = useAppSelector((state) => state.appStore.isGuest);
-  const currentUser = isGuest
-    ? localStorage.getItem('guest-name')
-    : localStorage.getItem('currentUser') || '';
+  const currentUser = localStorage.getItem('currentUser') || '';
   const items = [
     {
       key: '1',
@@ -45,10 +45,10 @@ const Login = ({ login }) => {
       {
         login ? (
           isGuest ? (
-            <span style={{ cursor: 'default' }}>{currentUser}</span>
+            <span style={{ cursor: 'default' }}>{isGuest ? guestName : currentUser}</span>
           ) : (
             <Dropdown trigger='click' placement='bottomRight' menu={{ items, onClick: loginOut }}>
-              <span style={{ cursor: 'pointer' }}>{currentUser}</span>
+              <span style={{ cursor: 'pointer' }}>{isGuest ? guestName : currentUser}</span>
             </Dropdown>
           )
         ) : (

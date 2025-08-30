@@ -1,14 +1,17 @@
 import { del, get, post, put, patch } from './http';
 import serviceConfig from './httpConfig';
-import { getCookie } from '@/shared/utils/common';
+import { generateUniqueName, getCookie } from '@/shared/utils/common';
 import { sseError } from '@/shared/utils/chat';
 
 const { AIPP_URL, PLUGIN_URL } = serviceConfig;
 
 // 创建带guestName的headers
 const withGuestHeaders = (options = {}) => {
-  const guestName = localStorage.getItem('guest-name');
-  if (!guestName) return options;
+  let guestName = localStorage.getItem('guest-name');
+  if (!guestName) {
+    guestName = generateUniqueName();
+    localStorage.setItem('guest-name', guestName);
+  }
 
   return {
     ...options,
