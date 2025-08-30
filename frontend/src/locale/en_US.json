@@ -1678,6 +1678,7 @@
       "90002973": "Invalid path format.",
       "90002998": "License expired."
     },
-    "guestMode": "Guest Mode"
+    "guestMode": "Guest Mode",
+    "guestTips": "Guest mode has no access authentication, there are potential threats such as data leakage, please use with caution."
   }
 }

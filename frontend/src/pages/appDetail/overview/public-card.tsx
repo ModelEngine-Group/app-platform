@@ -5,7 +5,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Switch } from 'antd';
+import { Button, Input, Popover, Switch } from 'antd';
 import { AppIcons } from '@/components/icons/app';
 import { toClipboard } from '@/shared/utils/common';
 import { CopyUrlIcon } from '@/assets/icon';
@@ -67,7 +67,8 @@ const PublicCard = ({ type, url, detail, auth = false }) => {
       if (res.code === 0) {
         Message({ type: 'success', content: t('editSuccess') });
         setChecked(checked);
-      } else {}
+      } else {
+      }
     });
   };
 
@@ -105,7 +106,9 @@ const PublicCard = ({ type, url, detail, auth = false }) => {
               <div className='item-bottom'>
                 <div className='guest-contianer'>
                   <div className='guest-title'>{t('guestMode')}</div>
-                  <Switch onChange={onGuestChange} checked={checked} />
+                  <Popover content={t('guestTips')}>
+                    <Switch onChange={onGuestChange} checked={checked} />
+                  </Popover>
                 </div>
                 <Button size='small' onClick={() => openClick(setPreviewUrl(url))}>
                   <AppIcons.PreviewIcon />
