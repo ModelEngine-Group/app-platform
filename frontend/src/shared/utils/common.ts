@@ -6,7 +6,7 @@ import { createGraphOperator } from '@fit-elsa/elsa-react';
 import { storage } from '../storage';
 import i18n from '@/locale/i18n';
 import { getAppCategories } from "@/shared/http/aipp";
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from "nanoid";
 
 /**
  * 获取url中status的类型
@@ -448,5 +448,5 @@ export const getAppConfig = (appInfo) => {
  * @return string 用户名
  */
 export const generateUniqueName = () => {
-  return 'guest-' + uuidv4();
+  return 'guest-' + nanoid(16);
 }
