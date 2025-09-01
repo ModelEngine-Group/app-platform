@@ -20,10 +20,7 @@ const withGuestHeaders = (options = {}) => {
 
   return {
     ...options,
-    headers: {
-      ...(options.headers || {}),
-      'X-Guest-Username': guestName
-    }
+    'X-Guest-Username': guestName
   };
 };
 
