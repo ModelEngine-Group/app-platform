@@ -21,7 +21,7 @@
         <java.version>17</java.version>
 
         <!-- FIT version -->
-        <fit.version>3.5.0-M6</fit.version>
+        <fit.version>3.5.1</fit.version>
 
         <!-- Common service version -->
         <jade.version>1.0.0-SNAPSHOT</jade.version>

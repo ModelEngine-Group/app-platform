@@ -110,7 +110,7 @@
             <plugin>
                 <groupId>org.fitframework</groupId>
                 <artifactId>fit-build-maven-plugin</artifactId>
-                <version>3.5.0-M6</version>
+                <version>3.5.1</version>
                 <configuration>
                     <category>user</category>
                     <level>3</level>
@@ -133,7 +133,7 @@
             <plugin>
                 <groupId>org.fitframework</groupId>
                 <artifactId>fit-dependency-maven-plugin</artifactId>
-                <version>3.5.0-M6</version>
+                <version>3.5.1</version>
                 <executions>
                     <execution>
                         <id>dependency</id>
