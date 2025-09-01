@@ -47,6 +47,7 @@ import modelengine.fit.jober.aipp.dto.template.TemplateInfoDto;
 import modelengine.fit.jober.aipp.factory.AppTemplateFactory;
 import modelengine.fit.jober.aipp.factory.CheckerFactory;
 import modelengine.fit.jober.aipp.genericable.entity.AippCreate;
+import modelengine.fit.jober.aipp.repository.AppBuilderAppRepository;
 import modelengine.fit.jober.aipp.service.AppBuilderAppService;
 import modelengine.fit.jober.aipp.service.Checker;
 import modelengine.fit.jober.aipp.service.UploadedFileManageService;
@@ -93,6 +94,7 @@ public class AppBuilderAppServiceImpl
     private final AppFactory appDomainFactory;
     private final ConverterFactory converterFactory;
     private final KnowledgeCenterService knowledgeCenterService;
+    private final AppBuilderAppRepository appBuilderAppRepository;
 
     @Override
     @Fitable(id = "default")
@@ -374,5 +376,10 @@ public class AppBuilderAppServiceImpl
         currentApp.cloneVersion(resetApp);
         this.appVersionService.update(currentApp);
         return this.converterFactory.convert(currentApp, AppBuilderAppDto.class);
+    }
+
+    @Override
+    public void updateGuestMode(String path, Boolean isGuest) {
+        this.appBuilderAppRepository.updateGuestMode(path, isGuest);
     }
 }
