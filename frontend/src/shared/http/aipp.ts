@@ -225,3 +225,7 @@ export function getApiDocument() {
 export function resetApp(tenantId, appId, params, headers) {
   return post(`${AIPP_URL}/${tenantId}/app/${appId}/recover`, params, headers);
 }
+// 更新应用是否打开游客模式
+export function updateGuestConfig(tenantId, path, allowGuest) {
+  return put(`${AIPP_URL}/${tenantId}/app/guest/${path}?allow_guest=${allowGuest}`);
+}

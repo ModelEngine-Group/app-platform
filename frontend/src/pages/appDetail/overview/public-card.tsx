@@ -15,7 +15,7 @@ import IframeModal from './iframe-modal';
 import DocumentDrawer from './apiDocument';
 import SecretKeyIcon from '@/assets/images/ai/secret_key.png';
 import DocumentIcon from '@/assets/images/ai/document.png';
-import { updateAppInfo } from '@/shared/http/aipp';
+import { updateGuestConfig } from '@/shared/http/aipp';
 import { useParams } from 'react-router';
 import { Message } from '@/shared/utils/message';
 
@@ -62,14 +62,18 @@ const PublicCard = ({ type, url, detail, auth = false }) => {
 
   // 修改游客模式
   const onGuestChange = (checked: boolean) => {
-    detail.attributes.allow_guest = checked;
-    updateAppInfo(tenantId, appId, detail).then((res) => {
-      if (res.code === 0) {
-        Message({ type: 'success', content: t('editSuccess') });
-        setChecked(checked);
-      } else {
-      }
-    });
+    try {
+      updateGuestConfig(tenantId, url.split('/')[2], checked).then((res) => {
+        if (res.code === 0) {
+          Message({ type: 'success', content: t('editSuccess') });
+          setChecked(checked);
+        } else {
+          setChecked(!checked);
+        }
+      });
+    } catch (err) {
+      setChecked(!checked);
+    }
   };
 
   useEffect(() => {
