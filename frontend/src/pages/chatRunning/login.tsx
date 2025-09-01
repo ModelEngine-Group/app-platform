@@ -30,33 +30,29 @@ const Login = ({ login }) => {
         <span>{t('logout')}</span>
       ),
     },
-  ]
+  ];
   const loginOut = async () => {
     await userLogOut();
     let url = `${window.location.origin}/SSOSvr/logout`;
-    window.location.href = url
-  }
+    window.location.href = url;
+  };
   const loginClick = async () => {
     let url = `${window.location.origin}/SSOSvr/login`;
-    window.location.href = url
-  }
-  return(
+    window.location.href = url;
+  };
+  return (
     <div className='appengine-login'>
-      {
-        login ? (
-          isGuest ? (
-            <span style={{ cursor: 'default' }}>{isGuest ? guestName : currentUser}</span>
-          ) : (
-            <Dropdown trigger='click' placement='bottomRight' menu={{ items, onClick: loginOut }}>
-              <span style={{ cursor: 'pointer' }}>{isGuest ? guestName : currentUser}</span>
-            </Dropdown>
-          )
-        ) : (
-          <Button onClick={loginClick}>{t('login')}</Button>
-        )
-      }
+      {isGuest ? (
+        <></>
+      ) : login ? (
+        <Dropdown trigger='click' placement='bottomRight' menu={{ items, onClick: loginOut }}>
+          <span style={{ cursor: 'pointer' }}>{isGuest ? guestName : currentUser}</span>
+        </Dropdown>
+      ) : (
+        <Button onClick={loginClick}>{t('login')}</Button>
+      )}
     </div>
-  )
+  );
 };
 
 export default Login;
