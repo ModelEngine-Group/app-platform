@@ -227,5 +227,6 @@ public interface AppBuilderAppService {
      * @param path 表示应用的短标识的 {@link String}。
      * @param isGuest 表示访客状态的 {@link Boolean}。
      */
+    @Genericable(id = "modelengine.fit.jober.aipp.service.app.updateGuestMode")
     void updateGuestMode(String path, Boolean isGuest);
 }

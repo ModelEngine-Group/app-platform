@@ -379,6 +379,8 @@ public class AppBuilderAppServiceImpl
     }
 
     @Override
+    @Transactional
+    @Fitable(id = "default")
     public void updateGuestMode(String path, Boolean isGuest) {
         this.appBuilderAppRepository.updateGuestMode(path, isGuest);
     }
