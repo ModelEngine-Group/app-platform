@@ -47,12 +47,12 @@ const Feedbacks = ({ instanceId, feedbackStatus, refreshFeedbackStatus }) => {
   const likeClick = async () => {
     if (feedbackStatus === -1 || feedbackStatus === undefined) {
       let params = { usrFeedback: '0', usrFeedbackText: '', instanceId: instanceId };
-      await feedbacksRq(params);
+      isGuest ? await guestModeFeedbacksRq(params) : await feedbacksRq(params);
     } else if (feedbackStatus === 0) {
-      await deleteFeedback(instanceId);
+      isGuest ? await guestModeDeleteFeedback(instanceId) : await deleteFeedback(instanceId);
     } else {
       let data = { usrFeedback: '0', usrFeedbackText: '' };
-      await updateFeedback(instanceId, data);
+      isGuest ? await guestModeUpdateFeedback(instanceId, data) : await updateFeedback(instanceId, data);
     }
     refreshFeedbackStatus(instanceId);
   };

@@ -14,6 +14,7 @@ import { clearChatHistory, getChatList, queryFeedback } from '@/shared/http/chat
 import {
   clearGuestModeChatHistory,
   getGuestModeChatList,
+  getGuestModeChatRecentLog,
   guestModeQueryFeedback,
 } from '@/shared/http/guest';
 import { getChatRecentLog } from '@/shared/http/aipp';
@@ -147,7 +148,9 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({
     dispatch(setChatList([]));
     setLoading(true);
     try {
-      const chatListRes = await getChatRecentLog(tenantId, chat_id, appId);
+      const chatListRes = isGuest
+        ? await getGuestModeChatRecentLog(tenantId, chat_id, appId)
+        : await getChatRecentLog(tenantId, chat_id, appId);
       let chatItem = historyChatProcess(chatListRes);
       let chatArr = await Promise.all(
         chatItem.map(async (item) => {

@@ -128,25 +128,25 @@ export function guestModeRestartChat(tenantId: string, instanceId: string, param
 
 // 获取点赞点灭详情
 export function guestModeQueryFeedback(id) {
-  const url = `${PLUGIN_URL}/guest/feedback/${id}`;
+  const url = `${AIPP_URL}/guest/feedback/${id}`;
   return get(url, {}, withGuestHeaders());
 }
 
 // 点赞点灭
 export function guestModeFeedbacksRq(params) {
-  const url = `${PLUGIN_URL}/guest/feedback`;
+  const url = `${AIPP_URL}/guest/feedback`;
   return post(url, params, withGuestHeaders());
 }
 
 // 更新点赞点灭
 export function guestModeUpdateFeedback(id, data) {
-  const url = `${PLUGIN_URL}/guest/feedback/${id}`;
+  const url = `${AIPP_URL}/guest/feedback/${id}`;
   return patch(url, data, withGuestHeaders());
 }
 
 // 取消点赞点灭
 export function guestModeDeleteFeedback(id) {
-  const url = `${PLUGIN_URL}/guest/feedback/${id}`;
+  const url = `${AIPP_URL}/guest/feedback/${id}`;
   return del(url, {}, withGuestHeaders());
 }
 
