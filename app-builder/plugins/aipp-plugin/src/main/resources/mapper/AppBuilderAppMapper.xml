@@ -328,7 +328,7 @@
         SET attributes = jsonb_set(
         COALESCE(attributes::jsonb, '{}'::jsonb),
         '{allow_guest}',
-        #{isGuest}::jsonb,
+        to_jsonb(#{isGuest}),
         true
         )::json
         WHERE path = #{path}
