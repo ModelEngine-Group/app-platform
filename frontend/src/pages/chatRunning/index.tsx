@@ -83,14 +83,14 @@ const ChatRunning = () => {
       dispatch(setIsDebug(false));
       setNotice('');
       announcements(res.data);
-      getPreviewVersion(res.data.id);
+      getPreviewVersion(res.data.id, isGuest);
       dispatch(setInspirationOpen(true));
     } else {
       setLoading(false);
     }
   };
   // 预览界面获取aipp_id和aipp_version
-  const getPreviewVersion = async (id: string) => {
+  const getPreviewVersion = async (id: string, isGuest: boolean) => {
     try {
       const res: any = isGuest
         ? await getGuestModePublishAppId(TENANT_ID, id)
