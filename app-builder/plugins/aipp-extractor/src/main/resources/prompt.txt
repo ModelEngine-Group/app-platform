@@ -13,9 +13,7 @@
    - 约束：如果历史对话中有相关上下文，可适当引用
 2. **desc**:
    - 类型：string
-   - 描述：提取要求描述
-   - 约束：应说明要提取什么信息、以什么格式输出
-   - 示例："从客户投诉文本中提取投诉类型、严重程度、涉及产品等信息，以JSON对象格式输出"
+   - 描述：工具参数描述
 3. **outputSchema**:
    - 类型：string
    - 描述：输出结构描述
@@ -61,6 +59,85 @@
 ## 示例
 ### 示例1
 问题分类工具参数生成示例
+
+工具参数描述：
+{
+  "classifyQuestionParam": {
+    "type": "object",
+    "properties": {
+      "accessInfo": {
+        "type": "object",
+        "properties": {
+          "serviceName": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          }
+        }
+      },
+      "temperature": {
+        "type": "number"
+      },
+      "template": {
+        "type": "string"
+      },
+      "args": {
+        "type": "object"
+      },
+      "questionTypeList": {
+        "type": "array",
+        "item": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "questionTypeDesc": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "memoryConfig": {
+    "type": "object",
+    "properties": {
+      "windowAlg": {
+        "type": "string"
+        "enum": [
+          "buffer_window",
+          "token_window"
+        ]
+      },
+      "serializeAlg": {
+        "type": "string"
+        "enum": [
+          "full",
+          "question_only"
+        ]
+      },
+      "property": {
+        "type": "integer"
+      }
+    }
+  },
+  "histories": {
+    "type": "array",
+    "item": {
+      "type": "object",
+      "properties": {
+        "question": {
+          "type": "string"
+        },
+        "answer": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
 
 历史对话：
     - 用户：我想要一个客服系统的问题分类功能
@@ -118,42 +195,14 @@
    ]
  }
 
-### 示例2
-问题优化工具参数生成示例
-
-历史对话：
-  - 用户：我需要优化一下客户咨询的问题表达
-  - AI：好的，我可以帮您优化问题表达，让问题更加清晰准确
-
-当前用户输入：帮我优化这个问题："东西坏了怎么办"，让它更具体一些
-
-预期生成的工具参数：
-  {
-    "rewriteParam": {
-      "strategy": "builtin",
-      "args": {
-        "query": "东西坏了怎么办"
-      },
-      "template": "自定义模式",
-      "model": "Qwen/Qwen2.5-72B-Instruct",
-      "temperature": 0.3
-    },
-    "memoryConfig": {
-      "windowAlg": "buffer_window",
-      "serializeAlg": "full",
-      "property": 3
-    },√
-    "histories": [
-      {
-        "question": "我需要优化一下客户咨询的问题表达",
-        "answer": "好的，我可以帮您优化问题表达，让问题更加清晰准确"
-      }
-    ]
-  }
-
 ## 历史对话记录
 """
 {{histories}}
+"""
+
+## 工具参数描述
+"""
+{{desc}}
 """
 
 ## 本次用户输入内容
