@@ -32,6 +32,7 @@ import CommonChat from '../chatPreview/chatComminPage';
 import Login from './login';
 import NoAuth from './no-auth';
 import './index.scoped..scss';
+import { getOmsUser, getRole } from '@/pages/helper';
 
 /**
  * 聊天运行时组件
@@ -183,6 +184,10 @@ const ChatRunning = () => {
     if (uid) {
       getAppGuestIsOpen(uid).then((res) => {
         const isGuest = res.data;
+        if (!isGuest) {
+          getOmsUser();
+          getRole();
+        }
         dispatch(setIsGuest(isGuest));
         refreshUserName(isGuest);
         getPreviewData(isGuest);
