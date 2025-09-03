@@ -275,7 +275,6 @@
   "pluginName": "插件名称",
   "pluginTips": "取消已部署的插件，会导致正在运行的应用不可用，请谨慎操作",
   "selected": "已选",
-  "selectedOptions": "最多可部署20个插件",
   "uploadOptions": "最多可上传3000个插件",
   "noSelectedPlugin": "未选择部署插件",
   "pluginTips2": "部署可能需要一定时长，请关注部署状态，部署成功后插件内的工具将可以被使用",

@@ -167,7 +167,6 @@ const Deploy = ({ pluginRef }) => {
         <div className='table-title'>
           <span>{t('selected')}</span>
           <span className='num'>{pluginLength}</span>
-          <span className='tips'>{t('selectedOptions')}</span>
         </div>
         <div className='table-search'>
           <div className='table-list'>

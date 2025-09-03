@@ -186,7 +186,6 @@
   "pluginName": "Name",
   "details": "Details",
   "selected": "Selected",
-  "selectedOptions": "A maximum of 20 plugins can be deployed",
   "uploadOptions": "A maximum of 3000 plugins can be uploaded",
   "tool": "Tool",
   "toolDetails": "Tool Details",
