@@ -1679,6 +1679,8 @@
       "90002998": "License expired."
     },
     "guestMode": "Guest Mode",
-    "guestTips": "Guest mode has no access authentication, there are potential threats such as data leakage, please use with caution."
+    "guestTips": "Guest mode has no access authentication, there are potential threats such as data leakage, please use with caution.",
+    "wrongAddr": "Access address error",
+    "wrongAddrMsg": "Please visit the correct address"
   }
 }

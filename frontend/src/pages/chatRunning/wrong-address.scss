@@ -1,0 +1,35 @@
+
+.no-access-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.no-access-content {
+  text-align: center;
+  min-width: 500px;
+  padding: 30px;
+  border-radius: 8px;
+}
+
+.no-access-icon {
+  color: #dc3545;
+  margin-bottom: 20px;
+}
+
+.no-access-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 15px;
+}
+
+.no-access-message {
+  font-size: 16px;
+  color: #6c757d;
+  line-height: 1.5;
+  margin-bottom: 25px;
+}

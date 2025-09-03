@@ -33,6 +33,7 @@ import Login from './login';
 import NoAuth from './no-auth';
 import './index.scoped..scss';
 import { getOmsUser, getRole } from '@/pages/helper';
+import WrongAddress from '@/pages/chatRunning/wrong-address';
 
 /**
  * 聊天运行时组件
@@ -48,6 +49,7 @@ const ChatRunning = () => {
   const [isPreview, setIsPreview] = useState(false);
   const [login, setLogin] = useState(true);
   const [notice, setNotice] = useState('');
+  const [wrongAddress, setWrongAddress] = useState(false);
   const { appId, tenantId, uid } = useParams();
   const dispatch = useAppDispatch();
   const appInfo = useAppSelector((state) => state.appStore.appInfo);
@@ -168,10 +170,16 @@ const ChatRunning = () => {
   // 更新随机用户名
   const refreshUserName = (isGuest) => {
     if (isGuest) {
-      !localStorage.getItem('guest-name') && localStorage.setItem('guest-name', generateUniqueName());
+      !localStorage.getItem('guest-name') &&
+        localStorage.setItem('guest-name', generateUniqueName());
     } else {
       localStorage.removeItem('guest-name');
     }
+  };
+
+  // 校验公共访问页面地址是否访问合规
+  const validatePage = (isGuest) => {
+    return location.hash.includes('/guest/chat/') ? isGuest : !isGuest;
   };
 
   useEffect(() => {
@@ -184,7 +192,11 @@ const ChatRunning = () => {
     if (uid) {
       getAppGuestIsOpen(uid).then((res) => {
         const isGuest = res.data;
-        if (!isGuest) {
+        if (!validatePage(isGuest)) {
+          setWrongAddress(true);
+          return;
+        }
+        if (!isGuest && process.env.PACKAGE_MODE === 'spa') {
           getOmsUser();
           getRole();
         }
@@ -222,7 +234,9 @@ const ChatRunning = () => {
 
   return (
     <Spin spinning={loading}>
-      {noAuth && !isGuest ? (
+      {wrongAddress ? (
+        <WrongAddress />
+      ) : noAuth && !isGuest ? (
         <div className='appengine-no-auth'>
           <NoAuth />
         </div>
