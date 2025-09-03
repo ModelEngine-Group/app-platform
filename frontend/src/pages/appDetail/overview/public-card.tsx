@@ -39,8 +39,21 @@ const PublicCard = ({ type, url, detail, auth = false }) => {
     let origin = window.location.origin;
     const path = checked ? '/guest'+ url : url;
     return type === 'URL'
-      ? `${origin}${process.env.PACKAGE_MODE === 'common' ? '/#' : '/appengine'}${path}`
+      ? `${origin}${getPrefix()}${path}`
       : `${origin}${url}`;
+  };
+
+  // 获取公共访问URL前缀
+  const getPrefix = () => {
+    if (process.env.PACKAGE_MODE === 'common') {
+      return '/#';
+    } else {
+      if (checked) {
+        return '/appengine/#';
+      } else {
+        return '/appengine';
+      }
+    }
   };
 
   // 复制
