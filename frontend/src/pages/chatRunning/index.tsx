@@ -192,7 +192,7 @@ const ChatRunning = () => {
     if (uid) {
       getAppGuestIsOpen(uid).then((res) => {
         const isGuest = res.data;
-        if (!validatePage(isGuest)) {
+        if (process.env.PACKAGE_MODE === 'spa' && !validatePage(isGuest)) {
           setWrongAddress(true);
           return;
         }
