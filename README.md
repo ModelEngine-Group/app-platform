@@ -147,7 +147,6 @@ app-builder/
 │   └── template.zip
 ```
 
-
 加入数据库配置项，修改后的配置项如下所示：
 
 ```yml
@@ -182,12 +181,20 @@ app-engine:
 **启动命令**
 
 ```
-fit start -Dfit.profiles.active=prod
+fit start
 ```
 
 > 这里直接使用了 `fit` 命令，该命令请参考 `fit-framework` 项目的[指导手册](https://github.com/ModelEngine-Group/fit-framework/blob/main/docs/framework/fit/java/quick-start-guide/03.%20%E4%BD%BF%E7%94%A8%E6%8F%92%E4%BB%B6%E7%9A%84%E7%83%AD%E6%8F%92%E6%8B%94%E8%83%BD%E5%8A%9B.md)。
 > 
 > 当前，`app-platform` 使用了 `fit` 的 3.5.1 版本，因此，如果采用手动编译，需要在 `fit-framework` 仓库中切换到 `v3.5.1` 标签处进行编译构建操作。
+
+**调试命令**
+
+```
+fit debug
+```
+
+> 这里的调试命令背后使用了 Java 内置的远程调试命令，通过该技术，可以在进程启动之后，在 `IDEA` 中绑定启动端口进行远程调试。
 
 ---------
 
@@ -253,15 +260,15 @@ npm run start
 
 在对话中使用大模型功能，需要对模型进行配置，包括大模型的地址和鉴权信息。
 首先在首页的`应用市场`一栏中找到 `模型配置应用`，并点击该应用。点击右上角`创意灵感` 的`开始配置`，如下图所示：
-![image-20250508203127410](doc/images/readme/model_config_inspiration.png)
+![image_config_model](doc/images/readme/model_config_inspiration.png)
 然后点击回答的 `添加模型` 按钮，输入模型名称、API Key 和模型地址，并点击确认。此时模型添加成功。
 
 **应用创建**
 
 在首页的`应用开发`一栏中点击`创建空白应用`。如下所示：
-![image-20250508204618312](doc/images/readme/app_create.png)
+![image_create_app](doc/images/readme/app_create.png)
 输入所要创建的应用名称和简介，并点击 `创建`按钮，即可创建 AI 应用。接着在跳转后的应用配置页面上，在 `大模型` 一栏中选择自定义配置的模型。此时即可在对话框进行对话。如下所示：
-![image-20250508205124203](doc/images/readme/app_chat.png)
+![image_app_chat](doc/images/readme/app_chat.png)
 
 ## 文档
 
