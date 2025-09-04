@@ -452,7 +452,7 @@ public class AppBuilderGuestController extends AbstractController {
      * @param recommendDto 表示上次对话用户提问及模型回答的 {@link AppBuilderRecommendDto}。
      * @return 表示返回三个推荐问题列表的 {@link Rsp}{@code <}{@link List}{@code <}{@link String}{@code >>}。
      */
-    @PostMapping(path = "/v1/api/recommend")
+    @PostMapping(path = "/recommend")
     public Rsp<List<String>> queryRecommends(HttpClassicServerRequest request,
             @RequestBody AppBuilderRecommendDto recommendDto) {
         return Rsp.ok(recommendService.queryRecommends(recommendDto, this.contextOf(request, "")));
