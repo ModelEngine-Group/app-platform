@@ -179,7 +179,13 @@ const ChatRunning = () => {
 
   // 校验公共访问页面地址是否访问合规
   const validatePage = (isGuest) => {
-    return location.pathname.includes('/guest') ? isGuest : !isGuest;
+    if (process.env.PACKAGE_MODE === 'spa') {
+      return !isGuest;
+    } else if (location.pathname.includes('/guest')) {
+      return isGuest;
+    } else {
+      return true;
+    }
   };
 
   useEffect(() => {
@@ -192,7 +198,7 @@ const ChatRunning = () => {
     if (uid) {
       getAppGuestIsOpen(uid).then((res) => {
         const isGuest = res.data;
-        if (process.env.PACKAGE_MODE === 'spa' && !validatePage(isGuest)) {
+        if (!validatePage(isGuest)) {
           setWrongAddress(true);
           return;
         }
