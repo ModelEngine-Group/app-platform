@@ -179,7 +179,7 @@ const ChatRunning = () => {
 
   // 校验公共访问页面地址是否访问合规
   const validatePage = (isGuest) => {
-    return location.hash.includes('/guest/chat/') ? isGuest : !isGuest;
+    return location.pathname.includes('/guest') ? isGuest : !isGuest;
   };
 
   useEffect(() => {

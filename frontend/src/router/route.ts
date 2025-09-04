@@ -41,13 +41,6 @@ export const routeList: MenuItem[] = [
     hidden: true,
   },
   {
-    key: '/guest/chat/:uid',
-    icon: Icons.app({}),
-    label: i18n.t('applicationMarket'),
-    component: ChatRunning,
-    hidden: true,
-  },
-  {
     key: '/app',
     icon: Icons.app({}),
     label: i18n.t('applicationMarket'),

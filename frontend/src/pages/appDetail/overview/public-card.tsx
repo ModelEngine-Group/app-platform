@@ -18,7 +18,6 @@ import DocumentIcon from '@/assets/images/ai/document.png';
 import { updateGuestConfig } from '@/shared/http/aipp';
 import { useParams } from 'react-router';
 import { Message } from '@/shared/utils/message';
-import { useAppSelector } from '@/store/hook';
 
 /**
  * 公共访问URL和API卡片
@@ -37,9 +36,8 @@ const PublicCard = ({ type, url, detail, auth = false }) => {
   // 设置公开访问URL
   const setPreviewUrl = (url) => {
     let origin = window.location.origin;
-    const path = checked ? '/guest'+ url : url;
     return type === 'URL'
-      ? `${origin}${getPrefix()}${path}`
+      ? `${origin}${getPrefix()}${url}`
       : `${origin}${url}`;
   };
 
@@ -49,7 +47,7 @@ const PublicCard = ({ type, url, detail, auth = false }) => {
       return '/#';
     } else {
       if (checked) {
-        return '/appengine/#';
+        return '/appengine/guest/#';
       } else {
         return '/appengine';
       }
