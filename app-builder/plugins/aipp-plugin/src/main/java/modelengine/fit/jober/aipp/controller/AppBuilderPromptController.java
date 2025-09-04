@@ -9,6 +9,7 @@ package modelengine.fit.jober.aipp.controller;
 import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
+import modelengine.fit.jober.aipp.aop.AppValidation;
 import modelengine.fit.jober.aipp.dto.AppBuilderPromptCategoryDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderPromptDto;
 import modelengine.fit.jober.aipp.service.AppBuilderPromptService;
@@ -60,6 +61,7 @@ public class AppBuilderPromptController extends AbstractController {
      * @return 返回所有的灵感类别。
      */
     @GetMapping
+    @AppValidation
     public Rsp<List<AppBuilderPromptCategoryDto>> listCategories(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId,
             @RequestParam(value = "isDebug", defaultValue = "true", required = false) boolean isDebug) {
@@ -77,6 +79,7 @@ public class AppBuilderPromptController extends AbstractController {
      * @return 返回指定类别的所有灵感 {@link Rsp}{@code <}{@link AppBuilderPromptDto}{@code >}。
      */
     @GetMapping("/{category_id}")
+    @AppValidation
     public Rsp<AppBuilderPromptDto> queryInspirations(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId,
             @PathVariable("category_id") String categoryId,
@@ -96,6 +99,7 @@ public class AppBuilderPromptController extends AbstractController {
      */
     @CarverSpan(value = "operation.inspiration.addMy")
     @PostMapping("/{parent_id}")
+    @AppValidation
     public Rsp<Void> addMyInspiration(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
             @PathVariable("parent_id") String parentId, @SpanAttr("app_id") @PathVariable("app_id") String appId,
             @RequestBody AppBuilderPromptDto.AppBuilderInspirationDto inspirationDto) {
@@ -116,6 +120,7 @@ public class AppBuilderPromptController extends AbstractController {
      */
     @CarverSpan(value = "operation.inspiration.updateMy")
     @PutMapping("/{category_id}/inspiration/{inspiration_id}")
+    @AppValidation
     public Rsp<Void> updateMyInspiration(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("category_id") String categoryId,
             @SpanAttr("app_id") @PathVariable("app_id") String appId,
@@ -141,6 +146,7 @@ public class AppBuilderPromptController extends AbstractController {
      */
     @CarverSpan(value = "operation.inspiration.delete")
     @DeleteMapping("/{category_id}/inspiration/{inspiration_id}")
+    @AppValidation
     public Rsp<Void> deleteMyInspiration(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("category_id") String categoryId,
             @SpanAttr("app_id") @PathVariable("app_id") String appId,

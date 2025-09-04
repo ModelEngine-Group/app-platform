@@ -14,6 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.condition.FormQueryCondition;
@@ -58,6 +59,9 @@ public class AppBuilderFormServiceImplTest {
     @Mock
     private UploadedFileManageService uploadedFileManageService;
 
+    @Mock
+    private DomainDivisionService domainDivisionService;
+
     @BeforeAll
     static void beforeAll() {
         Map<String, Object> appearance = new HashMap<>();
@@ -75,7 +79,11 @@ public class AppBuilderFormServiceImplTest {
         this.aippFormCreateConfig = new AippFormCreateConfig();
         this.aippFormCreateConfig.setMaximumNum(400L);
         this.appBuilderFormService = new AppBuilderFormServiceImpl(this.appBuilderFormRepository,
-                this.aippFormCreateConfig, this.uploadedFileManageService, null);
+                this.aippFormCreateConfig,
+                this.uploadedFileManageService,
+                this.domainDivisionService,
+                null,
+                true);
     }
 
     @Test
@@ -90,6 +98,7 @@ public class AppBuilderFormServiceImplTest {
         appearance.put("schema", new HashMap<>());
         AppBuilderFormDto appBuilderFormDto = AppBuilderFormDto.builder().name("test").appearance(appearance).build();
         doNothing().when(this.appBuilderFormRepository).insertOne(any(AppBuilderForm.class));
+        when(this.domainDivisionService.getUserGroupId()).thenReturn("g1");
         AppBuilderFormDto result = this.appBuilderFormService.create(appBuilderFormDto, new OperationContext());
         verify(this.appBuilderFormRepository, times(1)).insertOne(any(AppBuilderForm.class));
         Assertions.assertEquals(result.getName(), "test");
@@ -309,6 +318,7 @@ public class AppBuilderFormServiceImplTest {
         when(this.appBuilderFormRepository.selectWithCondition(any(FormQueryCondition.class))).thenReturn(Arrays.asList(
                 appBuilderForm1,
                 appBuilderForm2));
+        when(this.domainDivisionService.getUserGroupId()).thenReturn("g1");
         RangedResultSet<AppBuilderFormDto> result =
                 this.appBuilderFormService.query(0L, 10, null, new OperationContext());
         List<AppBuilderFormDto> forms = result.getResults();

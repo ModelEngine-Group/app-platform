@@ -38,6 +38,29 @@ public class AppData extends StoreToolData {
     private Integer downloadCount;
 
     /**
+     * 用户组唯一标识。
+     */
+    private String userGroupId;
+
+    /**
+     * 设置用户组唯一标识。
+     *
+     * @param userGroupId 表示用户组唯一标识的 {@link String}。
+     */
+    public void setUserGroupId(String userGroupId) {
+        this.userGroupId = userGroupId;
+    }
+
+    /**
+     * 获取用户组唯一标识。
+     *
+     * @return 表示用户组唯一标识的 {@link String}。
+     */
+    public String getUserGroupId() {
+        return this.userGroupId;
+    }
+
+    /**
      * 获取应用点赞数量。
      *
      * @return 表示点赞数量的 {@link Integer}。

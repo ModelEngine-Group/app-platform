@@ -14,6 +14,7 @@
         <result column="is_builtin" property="isBuiltin"/>
         <result column="source" property="source"/>
         <result column="icon" property="icon"/>
+        <result column="user_group_id" property="userGroupId"/>
     </resultMap>
     <insert id="addPlugin" parameterType="modelengine.jade.store.repository.pgsql.entity.PluginDo">
         insert into store_plugin
@@ -26,6 +27,7 @@
             <if test="deployStatus != null">"deploy_status",</if>
             <if test="source != null">"source",</if>
             <if test="icon != null">"icon",</if>
+            <if test="userGroupId != null">"user_group_id",</if>
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -37,6 +39,7 @@
             <if test="deployStatus != null">#{deployStatus},</if>
             <if test="source != null">#{source},</if>
             <if test="icon != null">#{icon},</if>
+            <if test="userGroupId != null">#{userGroupId},</if>
         </trim>
     </insert>
     <sql id="getCount">
@@ -84,16 +87,16 @@
         </if>
     </sql>
     <select id="getPluginByPluginId" resultMap="Plugin">
-        select "creator", "modifier", "plugin_id", "plugin_name", "extension", "deploy_status", "is_builtin", "source", "icon"
+        select "creator", "modifier", "plugin_id", "plugin_name", "extension", "deploy_status", "is_builtin", "source", "icon", "user_group_id"
         from "store_plugin"
         where "plugin_id" = #{pluginId}
     </select>
     <select id="getPluginsByDeployStatus" resultMap="Plugin">
-        select "creator", "modifier", "plugin_id", "plugin_name", "extension", "deploy_status", "is_builtin", "source", "icon"
+        select "creator", "modifier", "plugin_id", "plugin_name", "extension", "deploy_status", "is_builtin", "source", "icon", "user_group_id"
         from "store_plugin"
         where "deploy_status" = #{deployStatus}
     </select>
-    <select id="getPluginsCountByDeployStatus">
+    <select id="getPluginsCountByDeployStatus"  parameterType="modelengine.jade.store.entity.query.DeployPluginQuery">
         select count("plugin_id")
         from "store_plugin"
         where "deploy_status" = #{deployStatus}
@@ -108,13 +111,25 @@
     </update>
     <select id="getPlugins" parameterType="modelengine.jade.store.entity.query.PluginQuery" resultMap="Plugin">
         select distinct i."updated_time", i."creator", i."modifier", i."plugin_id", i."plugin_name",
-        i."extension"::text, i."deploy_status", i."is_builtin", i."source", i."icon"
+        i."extension"::text, i."deploy_status", i."is_builtin", i."source", i."icon", i."user_group_id"
         from "store_plugin" i
         left join "store_plugin_tool" pt on i."plugin_id" = pt."plugin_id"
         left join (select t."tool_unique_name", string_agg(t."name", ',' order by t."name") as tags
         from "store_tag" t
         group by t."tool_unique_name") tg on tg."tool_unique_name" = pt."tool_unique_name"
         <where>
+            <if test='isBuiltin != null and isBuiltin and userGroupId != null and userGroupId != ""'>
+                and (i."is_builtin" = true or i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            </if>
+            <if test='isBuiltin != null and !isBuiltin and userGroupId != null and userGroupId != ""'>
+                and (i."is_builtin" = false and i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            </if>
+            <if test="isBuiltin != null and userGroupId == null">
+                and i."is_builtin" = #{isBuiltin}
+            </if>
+            <if test='isBuiltin == null and userGroupId != null and userGroupId != ""'>
+                and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            </if>
             <if test="isBuiltin != null and isBuiltin and creator != null and creator != ''">
                 and (i."is_builtin" = true or i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
             </if>
@@ -141,6 +156,18 @@
     <select id="getPluginsCount" parameterType="modelengine.jade.store.entity.query.PluginQuery">
         <include refid="getCount"/>
         <where>
+            <if test='isBuiltin != null and isBuiltin and userGroupId != null and userGroupId != ""'>
+                and (i."is_builtin" = true or i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            </if>
+            <if test='isBuiltin != null and !isBuiltin and userGroupId != null and userGroupId != ""'>
+                and (i."is_builtin" = false and i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            </if>
+            <if test="isBuiltin != null and userGroupId == null">
+                and i."is_builtin" = #{isBuiltin}
+            </if>
+            <if test='isBuiltin == null and userGroupId != null and userGroupId != ""'>
+                and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            </if>
             <if test="isBuiltin != null and isBuiltin and creator != null and creator != ''">
                 and (i."is_builtin" = true or i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
             </if>

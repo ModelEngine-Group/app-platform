@@ -24,7 +24,7 @@
         <fastjson.version>1.2.83</fastjson.version>
         <guava.version>32.0.1-jre</guava.version>
         <h2.version>2.2.224</h2.version>
-        <lombok.version>1.18.26</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <jackson.version>2.16.2</jackson.version>
         <mybatis.version>3.5.13</mybatis.version>
         <caffeine.version>2.9.3</caffeine.version>

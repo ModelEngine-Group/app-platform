@@ -12,6 +12,7 @@ import modelengine.fit.http.Cookie;
 import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.http.support.DefaultCookieCollection;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
+import modelengine.jade.authentication.impl.AuthenticationServiceImpl;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

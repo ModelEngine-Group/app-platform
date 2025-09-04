@@ -16,11 +16,13 @@ import modelengine.fit.http.annotation.GetMapping;
 import modelengine.fit.http.annotation.PathVariable;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.annotation.RequestQuery;
+import modelengine.fit.jade.aipp.domain.division.annotation.GetSource;
 import modelengine.fitframework.annotation.Component;
 import modelengine.jade.carver.ListResult;
 import modelengine.jade.common.Result;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.store.code.PluginRetCode;
+import modelengine.jade.store.entity.aop.PluginValidation;
 import modelengine.jade.store.entity.query.PluginQuery;
 import modelengine.jade.store.entity.query.PluginToolQuery;
 import modelengine.jade.store.entity.transfer.PluginData;
@@ -77,6 +79,7 @@ public class PluginController {
      * @return 格式化之后的返回消息的 {@link Result}{@code <}{@link PluginData}{@code >}。
      */
     @GetMapping("/{pluginId}")
+    @PluginValidation
     public Result<PluginData> getPluginByPluginId(@PathVariable("pluginId") String pluginId) {
         notBlank(pluginId, "The plugin id cannot be blank.");
         return Result.ok(this.pluginService.getPlugin(pluginId), 1);
@@ -98,6 +101,7 @@ public class PluginController {
      * @return 表示格式化的返回消息的 {@link Result}{@code <}{@link List}{@code <}{@link PluginToolData}{@code >}{@code >}。
      */
     @GetMapping("/tools/search")
+    @GetSource
     public Result<List<PluginToolData>> getPluginTools(@RequestQuery(value = "name", required = false) String name,
             @RequestQuery(value = "includeTags", required = false) List<String> includeTags,
             @RequestQuery(value = "excludeTags", required = false) List<String> excludeTags,
@@ -159,6 +163,7 @@ public class PluginController {
      * @return 表示格式化的返回消息的 {@link Result}{@code <}{@link List}{@code <}{@link PluginToolData}{@code >}{@code >}。
      */
     @GetMapping("/search")
+    @GetSource
     public Result<List<PluginData>> getPlugins(@RequestQuery(value = "name", required = false) String name,
             @RequestQuery(value = "includeTags", required = false) List<String> includeTags,
             @RequestQuery(value = "excludeTags", required = false) List<String> excludeTags,

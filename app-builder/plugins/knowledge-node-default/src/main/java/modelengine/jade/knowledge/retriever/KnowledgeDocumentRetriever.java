@@ -53,6 +53,7 @@ public class KnowledgeDocumentRetriever implements Retriever<String, MeasurableD
                 .repoIds(this.option.getRepoIds())
                 .referenceLimit(this.option.getReferenceLimit())
                 .indexType(IndexType.from(this.option.getIndexType().type()))
+                .extensions(this.option.getExtensions())
                 .build();
 
         List<KnowledgeDocument> documents = this.knowledgeServiceRouter.getInvoker(KnowledgeRepoService.class,

@@ -32,6 +32,7 @@ public class AppQuery extends ToolQuery {
             appQuery.setLimit(this.limit);
             appQuery.setVersion(this.version);
             appQuery.setAppCategory(this.appCategory);
+            appQuery.setUserGroupId(this.userGroupId);
             return appQuery;
         }
     }

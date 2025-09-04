@@ -12,6 +12,8 @@ import modelengine.jade.knowledge.support.FlatKnowledgeOption;
 import modelengine.fitframework.inspection.Nonnull;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * 知识检索参数实体。
@@ -58,6 +60,13 @@ public interface KnowledgeOption {
     ReferenceLimit referenceLimit();
 
     /**
+     * 获取扩展字段。
+     *
+     * @return 表示扩展字段的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
+     */
+    Map<String, Object> extensions();
+
+    /**
      * {@link KnowledgeOption} 的构建器。
      */
     interface Builder {
@@ -100,6 +109,14 @@ public interface KnowledgeOption {
          * @return 表示当前构建器的 {@link FilterConfig.Builder}。
          */
         Builder similarityThreshold(Float similarityThreshold);
+
+        /**
+         * 设置扩展字段。
+         *
+         * @param extensions 表示扩展字段的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
+         * @return 表示当前构建器的 {@link Builder}。
+         */
+        Builder extensions(Map<String, Object> extensions);
 
         /**
          * 构建对象。

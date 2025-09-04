@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.jade.store.entity.query.PluginToolQuery;
 import modelengine.jade.store.entity.transfer.PluginToolData;
 import modelengine.jade.store.repository.pgsql.entity.PluginToolDo;
@@ -46,6 +47,7 @@ public class DefaultPluginToolServiceTest {
     private DefinitionGroupService defGroupService;
     private ToolGroupService toolGroupService;
     private PluginToolRepository pluginToolRepository;
+    private DomainDivisionService domainDivisionService;
 
     @BeforeEach
     void setUp() {
@@ -54,11 +56,13 @@ public class DefaultPluginToolServiceTest {
         this.defGroupService = mock(DefinitionGroupService.class);
         this.toolGroupService = mock(ToolGroupService.class);
         this.pluginToolRepository = mock(PluginToolRepository.class);
+        this.domainDivisionService = mock(DomainDivisionService.class);
         this.pluginToolService = new DefaultPluginToolService(this.toolService,
                 this.tagService,
                 this.defGroupService,
                 this.toolGroupService,
-                this.pluginToolRepository);
+                this.pluginToolRepository,
+                this.domainDivisionService, true);
     }
 
     @Test

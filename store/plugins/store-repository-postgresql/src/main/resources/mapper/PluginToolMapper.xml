@@ -14,6 +14,7 @@
         <result column="tool_unique_name" property="toolUniqueName"/>
         <result column="source" property="source"/>
         <result column="icon" property="icon"/>
+        <result column="user_group_id" property="userGroupId"/>
     </resultMap>
     <insert id="addPluginTool" parameterType="modelengine.jade.store.repository.pgsql.entity.PluginToolDo">
         insert into store_plugin_tool
@@ -26,6 +27,7 @@
             <if test="pluginId != null">"plugin_id",</if>
             <if test="source != null">"source",</if>
             <if test="icon != null">"icon",</if>
+            <if test="userGroupId != null">"user_group_id",</if>
             "tool_unique_name",
         </trim>
         values
@@ -38,6 +40,7 @@
             <if test="pluginId != null">#{pluginId},</if>
             <if test="source != null">#{source},</if>
             <if test="icon != null">#{icon},</if>
+            <if test="userGroupId != null">#{userGroupId},</if>
             #{toolUniqueName},
         </trim>
     </insert>
@@ -53,6 +56,7 @@
             <if test="pluginToolDo.pluginId != null">"plugin_id",</if>
             <if test="pluginToolDo.source != null">"source",</if>
             <if test="pluginToolDo.icon != null">"icon",</if>
+            <if test="pluginToolDo.userGroupId != null">"user_group_id",</if>
             "tool_unique_name",
         </trim>
         values
@@ -65,6 +69,7 @@
             <if test="pluginToolDo.pluginId != null">#{pluginToolDo.pluginId},</if>
             <if test="pluginToolDo.source != null">#{pluginToolDo.source},</if>
             <if test="pluginToolDo.icon != null">#{pluginToolDo.icon},</if>
+            <if test="pluginToolDo.userGroupId != null">#{pluginToolDo.userGroupId},</if>
             #{pluginToolDo.toolUniqueName},
         </trim>
         </foreach>
@@ -120,7 +125,8 @@
     </select>
     <select id="getPluginTools" parameterType="modelengine.jade.store.entity.query.PluginToolQuery"
             resultMap="PluginTool">
-        select i."like_count", i."download_count", i."tool_name", i."plugin_id", i."tool_unique_name", i."source", i."icon", i."creator", i."modifier"
+        select i."like_count", i."download_count", i."tool_name", i."plugin_id", i."tool_unique_name", i."source",
+        i."icon", i."creator", i."modifier", i."user_group_id"
         from "store_plugin_tool" i
         left join "store_plugin" p on i."plugin_id" = p."plugin_id"
         left join (select t."tool_unique_name", string_agg(t."name", ',' order by t."name") as tags
@@ -130,16 +136,28 @@
             <if test="isDeployed != null and isDeployed">
                 and (p."deploy_status" = 'DEPLOYED' or p."deploy_status" = 'RELEASED')
             </if>
-            <if test="isBuiltin != null and isBuiltin and creator != null and creator != ''">
-                and (p."is_builtin" = true or i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+            <if test='isBuiltin != null and isBuiltin and userGroupId != null and userGroupId != ""'>
+                and (p."is_builtin" = true or i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
             </if>
-            <if test="isBuiltin != null and !isBuiltin and creator != null and creator != ''">
-                and (p."is_builtin" = false and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+            <if test='isBuiltin != null and !isBuiltin and userGroupId != null and userGroupId != ""'>
+                and (p."is_builtin" = false and i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
             </if>
-            <if test="isBuiltin != null and creator == null">
+            <if test="isBuiltin != null and userGroupId == null">
                 and p."is_builtin" = #{isBuiltin}
             </if>
-            <if test="isBuiltin == null and creator != null and creator != ''">
+            <if test='isBuiltin == null and userGroupId != null and userGroupId != ""'>
+                and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            </if>
+            <if test="isBuiltin != null and isBuiltin and creator != null and creator != '' and userGroupId == null">
+                and (p."is_builtin" = true or i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+            </if>
+            <if test="isBuiltin != null and !isBuiltin and creator != null and creator != '' and userGroupId == null">
+                and (p."is_builtin" = false and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+            </if>
+            <if test="isBuiltin != null and creator == null and userGroupId == null">
+                and p."is_builtin" = #{isBuiltin}
+            </if>
+            <if test="isBuiltin == null and creator != null and creator != '' and userGroupId == null">
                 and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\'
             </if>
             <include refid="getOrSearchConditions"/>
@@ -155,16 +173,28 @@
             <if test="isDeployed != null and isDeployed">
                 and (p."deploy_status" = 'DEPLOYED' or p."deploy_status" = 'RELEASED')
             </if>
-            <if test="isBuiltin != null and isBuiltin and creator != null and creator != ''">
-                and (p."is_builtin" = true or i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+            <if test='isBuiltin != null and isBuiltin and userGroupId != null and userGroupId != ""'>
+                and (p."is_builtin" = true or i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
             </if>
-            <if test="isBuiltin != null and !isBuiltin and creator != null and creator != ''">
-                and (p."is_builtin" = false and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+            <if test='isBuiltin != null and !isBuiltin and userGroupId != null and userGroupId != ""'>
+                and (p."is_builtin" = false and i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
             </if>
-            <if test="isBuiltin != null and creator == null">
+            <if test="isBuiltin != null and userGroupId == null">
                 and p."is_builtin" = #{isBuiltin}
             </if>
-            <if test="isBuiltin == null and creator != null and creator != ''">
+            <if test='isBuiltin == null and userGroupId != null and userGroupId != ""'>
+                and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            </if>
+            <if test="isBuiltin != null and isBuiltin and creator != null and creator != '' and userGroupId == null">
+                and (p."is_builtin" = true or i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+            </if>
+            <if test="isBuiltin != null and !isBuiltin and creator != null and creator != '' and userGroupId == null">
+                and (p."is_builtin" = false and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+            </if>
+            <if test="isBuiltin != null and creator == null and userGroupId == null">
+                and p."is_builtin" = #{isBuiltin}
+            </if>
+            <if test="isBuiltin == null and creator != null and creator != '' and userGroupId == null">
                 and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\'
             </if>
             <include refid="getOrSearchConditions"/>
