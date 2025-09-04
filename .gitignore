@@ -8,3 +8,9 @@
 # Common
 target/
 build/
+
+# docker
+docker/appengine
+docker/.env
+docker/sql/init/data/tr_init_models.sql
+docker/sql/init/data/tr_init_models.sql'.bak'
