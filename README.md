@@ -25,9 +25,33 @@
 
 ---------
 
-## 安装数据库
+## 快速启动
 
-### Windows 系统
+### 1. 前置条件
+
+| 名称     | 规格                         |
+|--------|----------------------------|
+| CPU    | 2+ 核心                      |
+| CPU 架构 | x86                        |
+| 内存     | 4+ GB                      |
+| 软件     | 安装 Docker & Docker Compose |
+
+### 2. Docker Compose 启动
+克隆项目并进入项目根目录，执行以下命令：/ Clone the repository and enter the project root directory, then run the following commands:
+```shell
+# 用户按需配置环境变量，例如模型名称、基础 URL 和 APIKEY等 / Configure environment variables as needed, including model name, base URL and APIKEY
+cp docker/.env.example docker/.env
+bash docker/deploy.sh
+```
+> 容器全部 Running 后，浏览器打开 http://localhost:8001 体验
+
+> 如需修改数据库密码，二次启动前需要删除`docker/app-platform-tmp`目录
+
+## 源码编译启动
+
+### 安装数据库
+
+#### Windows 系统
 
 - 下载并安装 [PostgresSQL](https://www.postgresql.org/download/) （**支持版本 ≥ 14**）
 - 初始化数据。进入 `shell` 目录，使用 `bash` 工具执行 `build_win.sh`（当前不支持 `cmd` 执行，待规划）：
@@ -39,11 +63,11 @@ sh build_win.sh ${ip} ${port} ${username} ${password}
 
 其中参数 ip、port、username、password 分别指的是数据库主机地址、数据库端口、数据用户名、数据库密码。该文件会初始化数据库内置数据，以及人工表单功能所需的数据。
 
-### Linux 系统
+#### Linux 系统
 
 待规划
 
-## 后端环境配置
+### 后端环境配置
 
 开发环境配置
 
@@ -149,7 +173,7 @@ fit start -Dfit.profiles.active=prod
 
 ---------
 
-## 前端环境配置
+### 前端环境配置
 
 - 开发环境：`WebStorm`、`Visual Studio Code`
 
