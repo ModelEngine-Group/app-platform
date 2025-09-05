@@ -18,6 +18,8 @@
         <module>aipp-custom-model-center</module>
         <module>aipp-document-extract-node</module>
         <module>aipp-extractor</module>
+        <module>aipp-file-extract-excel</module>
+        <module>aipp-file-extract-service</module>
         <module>aipp-http-call</module>
         <module>aipp-loop-tool</module>
         <module>aipp-memory</module>

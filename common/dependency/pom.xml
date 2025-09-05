@@ -36,6 +36,7 @@
         <app-image.version>1.0.0-SNAPSHOT</app-image.version>
         <app-knowledge.version>1.0.0-SNAPSHOT</app-knowledge.version>
         <app-file.version>1.0.0-SNAPSHOT</app-file.version>
+        <aipp-file-extract.version>1.0.0-SNAPSHOT</aipp-file-extract.version>
 
         <!-- Third-party versions -->
         <bytebuddy.version>1.14.12</bytebuddy.version>
@@ -58,6 +59,7 @@
         <influxdb.version>2.24</influxdb.version>
         <aws.version>1.12.468</aws.version>
         <opencsv.version>5.7.1</opencsv.version>
+        <fastexcel.version>1.1.0</fastexcel.version>
 
         <!-- Test framework versions -->
         <assertj.version>3.22.0</assertj.version>
@@ -392,6 +394,16 @@
                 <artifactId>app-engine-metrics-base-service</artifactId>
                 <version>${app-engine.version}</version>
             </dependency>
+            <dependency>
+                <groupId>modelengine.fit.jade</groupId>
+                <artifactId>aipp-file-extract-service</artifactId>
+                <version>${aipp-file-extract.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>modelengine.fit.jade</groupId>
+                <artifactId>aipp-file-extract-excel</artifactId>
+                <version>${aipp-file-extract.version}</version>
+            </dependency>
 
             <!-- App-eval -->
             <dependency>
@@ -558,6 +570,11 @@
                 <groupId>com.opencsv</groupId>
                 <artifactId>opencsv</artifactId>
                 <version>${opencsv.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.idev.excel</groupId>
+                <artifactId>fastexcel</artifactId>
+                <version>${fastexcel.version}</version>
             </dependency>
 
             <!-- Not Necessary -->
