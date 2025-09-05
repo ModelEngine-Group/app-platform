@@ -528,7 +528,7 @@ public class AppBuilderGuestController extends AbstractController {
      * @return 表示返回流式回复的 {@link Choir}{@code <}{@link Object}{@code >}。
      */
     @CarverSpan(value = "operation.appRuntime.updateResume")
-    @PutMapping(path = "/{tenant_id}/app/instances/{current_instance_id}/log/{log_id}",
+    @PutMapping(path = "/{tenant_id}/app/instances/{instance_id}/log/{log_id}",
             description = "更新表单数据，并恢复实例任务执行")
     public Choir<Object> resumeAndUpdateAippInstance(HttpClassicServerRequest httpRequest,
             @RequestBean ResumeAippDto resumeAippDto,
