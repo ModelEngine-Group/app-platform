@@ -8,6 +8,7 @@ package modelengine.fit.jade.aipp.file.extract;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import modelengine.fit.jober.aipp.service.OperatorService;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 
@@ -17,6 +18,12 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+/**
+ * 表示{@link ExcelFileExtractor}的测试集
+ *
+ * @author jsbjfkbsjk
+ * @since 2025-9-6
+ */
 @FitTestWithJunit(includeClasses = ExcelFileExtractor.class)
 @Disabled
 class ExcelFileExtractorTest {
@@ -26,7 +33,7 @@ class ExcelFileExtractorTest {
     @Test
     @DisplayName("测试获取支持文件类型")
     void supportedFileType() {
-        assertThat(this.excelFileExtractor.supportedFileType()).isEqualTo(FileTypeConstant.FileType.EXCEL);
+        assertThat(this.excelFileExtractor.supportedFileType()).isEqualTo(OperatorService.FileType.EXCEL);
     }
 
     @Test

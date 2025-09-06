@@ -149,8 +149,9 @@
             <artifactId>aipp-file-extract-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>modelengine.fit.jade</groupId>
+            <groupId>modelengine.fit.jade.plugin</groupId>
             <artifactId>aipp-file-extract-excel</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -9,6 +8,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>modelengine.fit.jade.plugin</groupId>
     <artifactId>aipp-file-extract-excel</artifactId>
 
     <dependencies>
@@ -22,14 +22,6 @@
             <artifactId>fit-util</artifactId>
         </dependency>
         <dependency>
-            <groupId>cn.idev.excel</groupId>
-            <artifactId>fastexcel</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>modelengine.fit.jade</groupId>
-            <artifactId>aipp-file-extract-service</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
         </dependency>
@@ -40,6 +32,22 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+        </dependency>
+
+        <!-- fast excel -->
+        <dependency>
+            <groupId>cn.idev.excel</groupId>
+            <artifactId>fastexcel</artifactId>
+        </dependency>
+
+        <!-- Services -->
+        <dependency>
+            <groupId>modelengine.fit.jade</groupId>
+            <artifactId>aipp-file-extract-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>modelengine.fit.jade</groupId>
+            <artifactId>aipp-service</artifactId>
         </dependency>
     </dependencies>
 
@@ -85,5 +93,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
