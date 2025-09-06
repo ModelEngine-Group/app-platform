@@ -6,13 +6,13 @@
 
 package modelengine.fit.jade.aipp.tool.parallel.service.impl;
 
+import modelengine.fel.tool.service.ToolExecuteService;
 import modelengine.fit.jade.aipp.tool.parallel.domain.BatchRequest;
 import modelengine.fit.jade.aipp.tool.parallel.entities.Config;
 import modelengine.fit.jade.aipp.tool.parallel.entities.ToolCall;
 import modelengine.fit.jade.aipp.tool.parallel.service.ParallelToolService;
 import modelengine.fit.jade.aipp.tool.parallel.support.AippInstanceStatus;
 import modelengine.fit.jade.aipp.tool.parallel.support.TaskExecutor;
-import modelengine.fit.jade.tool.SyncToolCall;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
@@ -43,14 +43,14 @@ public class ParallelToolServiceImpl implements ParallelToolService {
     private static final int MIN_CONCURRENCY = 1;
     private static final int MAX_CONCURRENCY = 32;
 
-    private final SyncToolCall syncToolCall;
+    private final ToolExecuteService toolExecuteService;
     private final TaskExecutor taskExecutor;
     private final Config defaultConfig;
     private final AippInstanceStatus aippInstanceStatus;
 
-    public ParallelToolServiceImpl(@Fit SyncToolCall syncToolCall, TaskExecutor taskExecutor,
+    public ParallelToolServiceImpl(@Fit ToolExecuteService toolExecuteService, TaskExecutor taskExecutor,
             @Value("${parallel-tool.concurrency:8}") int defaultConcurrency, AippInstanceStatus aippInstanceStatus) {
-        this.syncToolCall = syncToolCall;
+        this.toolExecuteService = toolExecuteService;
         this.taskExecutor = taskExecutor;
         this.defaultConfig = Config.builder()
                 .concurrency(Validation.between(defaultConcurrency,
@@ -75,7 +75,7 @@ public class ParallelToolServiceImpl implements ParallelToolService {
 
         BatchRequest batchRequest = new BatchRequest(toolCalls,
                 this.getConfig(config),
-                this.syncToolCall,
+                this.toolExecuteService,
                 this.taskExecutor,
                 this.aippInstanceStatus,
                 context);

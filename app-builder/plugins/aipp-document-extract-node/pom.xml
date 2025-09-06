@@ -15,7 +15,7 @@
     <dependencies>
         <!-- Service -->
         <dependency>
-            <groupId>modelengine.fit.jane</groupId>
+            <groupId>modelengine.fit.jade</groupId>
             <artifactId>aipp-service</artifactId>
         </dependency>
         <dependency>

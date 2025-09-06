@@ -42,7 +42,7 @@ import java.util.Map;
  * @since 2024-09-19
  */
 @IntegrationTest(scanPackages = "modelengine.jade.store")
-@Sql(scripts = {"sql/create/app.sql", "sql/create/tag.sql"})
+@Sql(before = {"sql/create/app.sql", "sql/create/tag.sql"})
 @DisplayName("App 集成测试")
 public class AppIntegrationTest {
     @Fit
@@ -59,7 +59,7 @@ public class AppIntegrationTest {
     private DefinitionGroupService defGroupService;
 
     @Test
-    @Sql(scripts = {"sql/insert/app.sql", "sql/insert/tag.sql"})
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql", "sql/insert/tag.sql"})
     @DisplayName("测试添加应用-添加")
     void shouldOkWhenAddAppByAdd() {
         AppQuery appQuery = new AppQuery.Builder().appCategory("chatbot").build();
@@ -78,7 +78,7 @@ public class AppIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/app.sql", "sql/insert/tag.sql"})
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql", "sql/insert/tag.sql"})
     @DisplayName("测试添加应用-更新")
     void shouldOkWhenAddAppByUpdate() {
         AppQuery appQuery = new AppQuery.Builder().appCategory("chatbot").build();
@@ -96,7 +96,7 @@ public class AppIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/app.sql", "sql/insert/tag.sql"})
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql", "sql/insert/tag.sql"})
     @DisplayName("测试获取应用")
     void shouldOkWhenGetApp() {
         AppPublishData appData = this.mockAppPublishData();
@@ -107,7 +107,7 @@ public class AppIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/app.sql", "sql/insert/tag.sql"})
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql", "sql/insert/tag.sql"})
     @DisplayName("测试获取应用集合")
     void shouldOkWhenGetApps() {
         AppQuery appQuery = new AppQuery.Builder().appCategory("chatbot").build();
@@ -118,7 +118,7 @@ public class AppIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/app.sql")
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql"})
     @DisplayName("测试删除应用")
     void shouldOkWhenDeleteApp() {
         AppQuery appQuery = new AppQuery.Builder().appCategory("chatbot").build();

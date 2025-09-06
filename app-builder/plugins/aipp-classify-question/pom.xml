@@ -43,7 +43,7 @@
             <artifactId>aipp-classify-question-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>modelengine.fit.jane</groupId>
+            <groupId>modelengine.fit.jade</groupId>
             <artifactId>aipp-service</artifactId>
         </dependency>
 
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>org.fitframework.plugin</groupId>
             <artifactId>fit-message-serializer-json-jackson</artifactId>
-            <version>3.5.0-M4</version>
+            <version>3.5.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

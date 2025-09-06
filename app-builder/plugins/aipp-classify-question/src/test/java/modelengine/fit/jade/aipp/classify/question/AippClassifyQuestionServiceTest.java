@@ -17,6 +17,7 @@ import modelengine.fit.jade.aipp.classify.question.command.ClassifyQuestionComma
 import modelengine.fit.jade.aipp.classify.question.command.ClassifyQuestionCommandHandler;
 import modelengine.fit.jade.aipp.classify.question.utils.TestUtils;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
+import modelengine.fit.jade.aipp.model.enums.ModelType;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -63,7 +64,8 @@ public class AippClassifyQuestionServiceTest {
             param.setTemplate(command.getTemplate());
             param.setArgs(command.getArgs());
             param.setQuestionTypeList(command.getQuestionTypes());
-            param.setAccessInfo(new ModelAccessInfo(command.getModel(), command.getModelTag(), null, null));
+            param.setAccessInfo(new ModelAccessInfo(command.getModel(),
+                    command.getModelTag(), null, null, ModelType.CHAT_COMPLETIONS.value()));
             param.setTemperature(command.getTemperature());
             String result = this.classifyQuestionService.classifyQuestion(param, command.getMemoryConfig(),
                     command.getHistories());

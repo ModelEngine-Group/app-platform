@@ -25,25 +25,28 @@ public interface UserModelMapper {
      * 根据用户标识获取用户模型关系列表。
      *
      * @param userId 表示用户标识的 {@link String}。
+     * @param type 表示模型类型的 {@link String}，传入null时将不会使用该字段。
      * @return 用户模型关系列表的 {@link List}{@code <}{@link UserModelPo}{@code >}。
      */
-    List<UserModelPo> listUserModels(String userId);
+    List<UserModelPo> listUserModels(String userId, String type);
 
     /**
      * 根据用户标识获取默认用户模型关系。
      *
      * @param userId 表示用户标识的 {@link String}。
+     * @param type 表示模型类型的 {@link String}，传入null时将不会使用该字段。
      * @return 默认的用户模型关系的 {@link UserModelPo}。
      */
-    UserModelPo getDefault(String userId);
+    UserModelPo getDefault(String userId, String type);
 
     /**
      * 判断指定用户是否已绑定默认模型。
      *
      * @param userId 表示用户标识的 {@link String}。
+     * @param type 表示模型类型的 {@link String}，传入null时将不会使用该字段。
      * @return 若已绑定默认模型则返回 {@code true}，否则返回 {@code false}。
      */
-    boolean hasDefaultModel(String userId);
+    boolean hasDefaultModel(String userId, String type);
 
     /**
      * 插入用户模型绑定关系。

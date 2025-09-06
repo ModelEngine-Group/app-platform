@@ -122,6 +122,11 @@ public class DefaultPluginDeployService implements PluginDeployService, FitRunti
 
     @Override
     public void deployPlugins(List<String> toDeployPluginIds) {
+        if (toDeployPluginIds.size() > this.pluginDeployQueryConfig.getMaxToolSize()) {
+            throw new ModelEngineException(PluginRetCode.PLUGIN_DEPLOY_FAILED,
+                    StringUtils.format("The number of plugin deployments exceeds the limit'. [number={0}]",
+                            this.pluginDeployQueryConfig.getMaxToolSize()));
+        }
         this.validatePluginIds(toDeployPluginIds);
         List<PluginData> deployedPlugins = this.pluginService.getPlugins(DeployStatus.DEPLOYED);
         List<String> deployedPluginIds = deployedPlugins.stream()

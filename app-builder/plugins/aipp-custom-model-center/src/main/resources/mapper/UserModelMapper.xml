@@ -14,27 +14,52 @@
         created_at, user_id, model_id, api_key, is_default
     </sql>
 
-    <select id="listUserModels" resultType="modelengine.fit.jade.aipp.model.po.UserModelPo" resultMap="BaseResultMap">
+    <select id="listUserModels" resultMap="BaseResultMap">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM t_app_engine_user_model
-        WHERE user_id = #{userId}
+            u.id, u.created_at, u.user_id, u.model_id, u.api_key, u.is_default
+        FROM
+            t_app_engine_user_model u
+        JOIN
+            t_app_engine_model m ON u.model_id = m.model_id
+        WHERE
+            u.user_id = #{userId}
+            <if test="type != null">
+                AND m.type = #{type}
+            </if>
     </select>
 
-    <select id="getDefault" resultType="modelengine.fit.jade.aipp.model.po.UserModelPo" resultMap="BaseResultMap">
+    <select id="getDefault" resultMap="BaseResultMap">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM t_app_engine_user_model
-        WHERE user_id = #{userId}
-        AND is_default = 1
+            u.created_at,
+            u.user_id,
+            u.model_id,
+            u.api_key,
+            u.is_default
+        FROM
+            t_app_engine_user_model u
+        JOIN
+            t_app_engine_model m ON u.model_id = m.model_id
+        WHERE
+            u.user_id = #{userId}
+            AND u.is_default = 1
+            <if test="type != null">
+                AND m.type = #{type}
+            </if>
     </select>
 
     <select id="hasDefaultModel" resultType="boolean">
         SELECT EXISTS (
             SELECT 1
-            FROM t_app_engine_user_model
-            WHERE user_id = #{userId}
-              AND is_default = 1
+            FROM
+                t_app_engine_user_model u
+                JOIN
+                t_app_engine_model m ON u.model_id = m.model_id
+            WHERE
+                u.user_id = #{userId}
+                AND u.is_default = 1
+                <if test="type != null">
+                    AND m.type = #{type}
+                </if>
         )
     </select>
 

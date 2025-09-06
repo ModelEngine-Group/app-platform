@@ -78,7 +78,7 @@ public class AppChatController extends AbstractController {
      * @return 表示会话的 sse 流的 {@link Choir}。
      */
     @CarverSpan(value = "operation.appChat.app.chat")
-    @PostMapping(value = "/apps/{appId}", summary = "发送对话消息",
+    @PostMapping(path = "/apps/{appId}", summary = "发送对话消息",
             description = "该接口向大模型发送一个问题信息，并开启一个对话。支持 SSE 和 Websocket 两种流式调用方式。")
     public Choir<Object> chat(HttpClassicServerRequest httpRequest,
             @PathVariable("tenantId") @Property(description = "租户的唯一标识符") String tenantId,

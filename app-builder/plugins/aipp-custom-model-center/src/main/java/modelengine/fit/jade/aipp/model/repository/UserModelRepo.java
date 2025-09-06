@@ -23,9 +23,10 @@ public interface UserModelRepo {
      * 根据用户标识来查询该用户可用的模型列表。
      *
      * @param userId 表示用户标识的 {@link String}。
+     * @param type 表示模型类型的 {@link String}，传入null时将不会使用该字段。
      * @return 该用户可用的模型列表的 {@link List}{@code <}{@link ModelPo}{@code >}。
      */
-    List<ModelPo> listModelsByUserId(String userId);
+    List<ModelPo> listModelsByUserId(String userId, String type);
 
     /**
      * 查询特定的模型访问信息。
@@ -41,9 +42,10 @@ public interface UserModelRepo {
      * 获取一个用户的默认模型。
      *
      * @param userId 表示用户标识的 {@link String}。
+     * @param type 表示模型类型的 {@link String}，传入null时将不会使用该字段。
      * @return 模型信息的 {@link ModelPo}。
      */
-    ModelPo getDefaultModel(String userId);
+    ModelPo getDefaultModel(String userId, String type);
 
     /**
      * 根据用户标识来查询该用户可用的用户模型列表。
@@ -65,9 +67,10 @@ public interface UserModelRepo {
      * 查询该用户是否存在默认模型。
      *
      * @param userId 表示用户标识的 {@link String}。
+     * @param type 表示模型类型的 {@link String}，传入null时将不会使用该字段。
      * @return 是否存在默认模型的 {@code boolean}。
      */
-    boolean hasDefaultModel(String userId);
+    boolean hasDefaultModel(String userId, String type);
 
     /**
      * 插入一条模型信息。

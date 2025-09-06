@@ -31,12 +31,13 @@ import java.util.Collections;
  */
 @DisplayName("测试 AuditInterceptor")
 @MybatisTest(classes = {TestMapper.class, AuditInterceptor.class})
-@Sql(scripts = "sql/test_create_table.sql")
+@Sql(before = "sql/test_create_table.sql")
 public class AuditInterceptorTest {
     @Fit
     private TestMapper testMapper;
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("测试插入单条数据，自动审计生效")
     void shouldOkWhenInsertSingleEntity() {
         UserContext userContext = new UserContext("sky", "", "");
@@ -46,6 +47,7 @@ public class AuditInterceptorTest {
     }
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("测试批量插入数据，自动审计生效")
     void shouldOkWhenInsertCollection() {
         UserContext userContext = new UserContext("sky", "", "");
@@ -55,6 +57,7 @@ public class AuditInterceptorTest {
     }
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("测试多个参数时，自动审计生效")
     void shouldOkWhenInsertMap() {
         UserContext userContext = new UserContext("sky", "", "");
@@ -64,6 +67,7 @@ public class AuditInterceptorTest {
     }
 
     @Test
+    @Sql(before = "sql/test_create_table.sql")
     @DisplayName("测试用户上下文为空时，插入数据失败")
     void shouldFailWhenUserContextMissing() {
         assertThatThrownBy(() -> testMapper.insert(new TestPo())).isInstanceOf(DataAccessException.class);

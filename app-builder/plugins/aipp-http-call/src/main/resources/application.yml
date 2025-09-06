@@ -2,3 +2,6 @@ fit:
   beans:
     packages:
       - 'modelengine.fit.jade.aipp.http.call'
+
+blacklist:
+  httpEndpoints: []

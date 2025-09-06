@@ -53,4 +53,9 @@ public class UserModelDetailDto {
      * 表示是否为默认模型（1表示默认，0表示非默认）。
      */
     private int isDefault;
+
+    /**
+     * 表示模型类型。
+     */
+    private String type;
 }

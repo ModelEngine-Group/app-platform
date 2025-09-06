@@ -1,4 +1,7 @@
 fit:
   beans:
     packages:
-      - 'modelengine.jade.apikey.impl'
+      - 'modelengine.jade.apikey'
+
+apikey: 'Jade'
+userName: 'Jade'

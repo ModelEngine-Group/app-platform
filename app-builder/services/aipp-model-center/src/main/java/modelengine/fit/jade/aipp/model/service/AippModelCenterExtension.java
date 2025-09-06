@@ -20,7 +20,7 @@ public interface AippModelCenterExtension {
     /**
      * 查询接入的模型服务的列表。
      *
-     * @param type 标识模型类型的 {@link String}。
+     * @param type 表示模型类型的 {@link String}。
      * @param scene 标识模型适用场景的 {@link String}。
      * @param context 调用者的上下文数据的 {@link OperationContext}。
      * @return 表示模型服务列表的 {@link ModelListDto}，如果发生异常，返回空列表。
@@ -40,7 +40,7 @@ public interface AippModelCenterExtension {
     /**
      * 获取默认使用的模型服务信息。
      *
-     * @param type 标识模型类型的 {@link String}。
+     * @param type 表示模型类型的 {@link String}。
      * @param context 调用者的上下文数据的 {@link OperationContext}。
      * @return 表示模型服务信息的 {@link ModelAccessInfo}。
      */

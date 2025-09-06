@@ -15,9 +15,11 @@ import modelengine.fel.tool.model.ListResult;
 import modelengine.fel.tool.model.entity.ToolIdentifier;
 import modelengine.fel.tool.model.transfer.DefinitionData;
 import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.ToolChangedObserver;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.test.annotation.IntegrationTest;
+import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.Spy;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.jade.carver.tool.repository.pgsql.ToolDataBuilder;
@@ -41,7 +43,7 @@ import java.util.List;
  * @since 2024-09-18
  */
 @IntegrationTest(scanPackages = "modelengine.jade.carver.tool")
-@Sql(scripts = {"sql/create/tool.sql", "sql/create/definition.sql"})
+@Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql"})
 @DisplayName("Tool 集成测试")
 public class ToolIntegrationTest {
     private static final String UNIQUE_NAME_1 = "3d222474-5eeb-4721-a30d-4f6563ddbbfe";
@@ -64,6 +66,9 @@ public class ToolIntegrationTest {
     @Fit(alias = "json")
     private ObjectSerializer serializer;
 
+    @Mock
+    private ToolChangedObserver toolChangedObserver;
+
     private void mockDefinitionInfo() {
         DefinitionData definitionData = ToolDataBuilder.mockDefinitionData();
         this.definitionService.delete(definitionData.getGroupName(), definitionData.getName());
@@ -80,6 +85,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql"})
     @DisplayName("测试插入工具")
     void shouldOkWhenAddTool() {
         this.mockDefinitionInfo();
@@ -92,7 +98,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tool.sql")
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql", "sql/insert/tool.sql"})
     @DisplayName("测试插入工具重复时，报错")
     void shouldExWhenAddToolRepeat() {
         assertThatThrownBy(() -> {
@@ -107,6 +113,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql"})
     @DisplayName("测试插入工具列表")
     void shouldOkWhenAddTools() {
         this.mockDefinitionInfo();
@@ -118,6 +125,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql"})
     @DisplayName("测试插入工具列表")
     void shouldReturnDoWhenAddAndGetByGroupAndName() {
         this.mockDefinitionInfo();
@@ -129,7 +137,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tool.sql")
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql", "sql/insert/tool.sql"})
     @DisplayName("测试根据唯一标识删除工具")
     void shouldOkWhenDeleteByUniqueName() {
         ToolData oriTool = this.toolService.getTool(UNIQUE_NAME_1);
@@ -140,7 +148,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tool.sql")
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql", "sql/insert/tool.sql"})
     @DisplayName("测试根据唯一标识删除工具列表")
     void shouldOkWhenDeleteByUniqueNameList() {
         ToolData oriTool1 = this.toolService.getTool(UNIQUE_NAME_1);
@@ -155,7 +163,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tool.sql")
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql", "sql/insert/tool.sql"})
     @DisplayName("测试根据唯一标识和版本删除工具")
     void shouldOkWhenDeleteByUniqueNameVersion() {
         ToolData oriTool1 = this.toolService.getTool(UNIQUE_NAME_1);
@@ -169,7 +177,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tool.sql")
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql", "sql/insert/tool.sql"})
     @DisplayName("测试查询工具通过唯一标识")
     void shouldOkWhenGetTool() {
         ToolData oriTool1 = this.toolService.getTool(UNIQUE_NAME_1);
@@ -177,7 +185,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tool.sql")
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql", "sql/insert/tool.sql"})
     @DisplayName("测试查询工具通过唯一标识和版本")
     void shouldOkWhenGetToolByVersion() {
         ToolData oriTool1 = this.toolService.getToolByVersion(UNIQUE_NAME_1, "1.0.0");
@@ -185,7 +193,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tool.sql")
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql", "sql/insert/tool.sql"})
     @DisplayName("测试查询工具的所有版本")
     void shouldOkWhenGetToolAllVersions() {
         ListResult<ToolData> toolDataList = this.toolService.getAllToolVersions(UNIQUE_NAME_1);
@@ -193,7 +201,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tool.sql")
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql", "sql/insert/tool.sql"})
     @DisplayName("测试查询工具通过组合标识")
     void shouldOkWhenGetToolByIdentifier() {
         ToolIdentifier toolIdentifier1 = new ToolIdentifier(UNIQUE_NAME_1, "1.0.0");
@@ -204,7 +212,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tool.sql")
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql", "sql/insert/tool.sql"})
     @DisplayName("测试按照实现组删除后无法查询到")
     void shouldReturnNullWhenGetToolByDefGroupNameAndGroupName() {
         List<ToolData> toolDataList = this.toolService.getTools(DEFINITION_GROUP_NAME1, GROUP_NAME1);
@@ -216,7 +224,7 @@ public class ToolIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/tool.sql")
+    @Sql(before = {"sql/create/tool.sql", "sql/create/definition.sql", "sql/insert/tool.sql"})
     @DisplayName("测试按照定义组删除后无法查询到")
     void shouldReturnNullWhenGetToolByDefGroupName() {
         List<ToolData> toolDataList = this.toolService.getTools(DEFINITION_GROUP_NAME1);

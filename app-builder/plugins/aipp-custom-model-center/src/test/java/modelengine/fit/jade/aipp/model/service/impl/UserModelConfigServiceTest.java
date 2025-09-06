@@ -9,6 +9,7 @@ package modelengine.fit.jade.aipp.model.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import modelengine.fit.jade.aipp.model.dto.UserModelDetailDto;
+import modelengine.fit.jade.aipp.model.enums.ModelType;
 import modelengine.fit.jade.aipp.model.po.ModelPo;
 import modelengine.fit.jade.aipp.model.po.UserModelPo;
 import modelengine.fit.jade.aipp.model.repository.UserModelRepo;
@@ -77,9 +78,10 @@ public class UserModelConfigServiceTest {
         String modelName = "gpt";
         String baseUrl = "http://testUrl";
 
-        Mockito.when(userModelRepo.hasDefaultModel(userId)).thenReturn(Boolean.TRUE);
+        Mockito.when(userModelRepo.hasDefaultModel(userId, null)).thenReturn(Boolean.TRUE);
 
-        String result = userModelConfigService.addUserModel(userId, apiKey, modelName, baseUrl);
+        String result = userModelConfigService.addUserModel(userId, apiKey, modelName,
+                baseUrl, ModelType.CHAT_COMPLETIONS.value());
         assertEquals("添加模型成功。", result);
         Mockito.verify(userModelRepo, Mockito.times(1)).insertModel(ArgumentMatchers.any(ModelPo.class));
         Mockito.verify(userModelRepo, Mockito.times(1)).insertUserModel(ArgumentMatchers.any(UserModelPo.class));

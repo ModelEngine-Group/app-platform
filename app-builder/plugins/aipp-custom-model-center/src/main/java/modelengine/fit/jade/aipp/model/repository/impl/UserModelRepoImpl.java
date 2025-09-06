@@ -37,8 +37,8 @@ public class UserModelRepoImpl implements UserModelRepo {
     }
 
     @Override
-    public List<ModelPo> listModelsByUserId(String userId) {
-        return this.getModelPos(this.userModelMapper.listUserModels(userId));
+    public List<ModelPo> listModelsByUserId(String userId, String type) {
+        return this.getModelPos(this.userModelMapper.listUserModels(userId, type));
     }
 
     private List<ModelPo> getModelPos(List<UserModelPo> userModelPos) {
@@ -52,7 +52,7 @@ public class UserModelRepoImpl implements UserModelRepo {
 
     @Override
     public ModelAccessPo getModelAccessInfo(String userId, String tag, String name) {
-        List<UserModelPo> userModelPos = this.userModelMapper.listUserModels(userId);
+        List<UserModelPo> userModelPos = this.userModelMapper.listUserModels(userId, null);
         ModelPo modelPo = this.getModelPos(userModelPos)
                 .stream()
                 .filter(mp -> Objects.equals(mp.getTag(), tag) && Objects.equals(mp.getName(), name))
@@ -70,8 +70,8 @@ public class UserModelRepoImpl implements UserModelRepo {
     }
 
     @Override
-    public ModelPo getDefaultModel(String userId) {
-        UserModelPo defaultModel = this.userModelMapper.getDefault(userId);
+    public ModelPo getDefaultModel(String userId, String type) {
+        UserModelPo defaultModel = this.userModelMapper.getDefault(userId, type);
         if (defaultModel == null) {
             return null;
         }
@@ -80,7 +80,7 @@ public class UserModelRepoImpl implements UserModelRepo {
 
     @Override
     public List<UserModelPo> listUserModelsByUserId(String userId) {
-        return this.userModelMapper.listUserModels(userId);
+        return this.userModelMapper.listUserModels(userId, null);
     }
 
     @Override
@@ -89,8 +89,8 @@ public class UserModelRepoImpl implements UserModelRepo {
     }
 
     @Override
-    public boolean hasDefaultModel(String userId) {
-        return this.userModelMapper.hasDefaultModel(userId);
+    public boolean hasDefaultModel(String userId, String type) {
+        return this.userModelMapper.hasDefaultModel(userId, type);
     }
 
     @Override

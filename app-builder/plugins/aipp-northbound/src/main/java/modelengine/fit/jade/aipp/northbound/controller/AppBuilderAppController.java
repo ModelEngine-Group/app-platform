@@ -88,7 +88,7 @@ public class AppBuilderAppController extends AbstractController {
      * @param appId 表示待查询应用的唯一标识符的 {@link String}。
      * @return 表示应用配置详情的 {@link Rsp}{@code <}{@link AppBuilderAppDto}{@code >}。
      */
-    @GetMapping(value = "/{appId}/config", summary = "查询应用配置详情",
+    @GetMapping(path = "/{appId}/config", summary = "查询应用配置详情",
             description = "该接口可以通过待查询应用的唯一标识符来查询指定应用的配置详情。")
     public Rsp<AppBuilderAppDto> query(HttpClassicServerRequest httpRequest,
             @PathVariable("tenantId") @Property(description = "租户的唯一标识符") String tenantId,

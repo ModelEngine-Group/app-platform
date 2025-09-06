@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - 'main'
-      - 'develop'
+      - '[0-9]+.[0-9]+.x'  # 匹配 x.x.x 格式且最后一位为 x（如 1.2.x、22.1.x）
     paths:
       - 'app-builder/**'
       - '!app-builder/fel/python/**'
@@ -18,7 +18,7 @@ on:
   pull_request:
     branches:
       - 'main'
-      - 'develop'
+      - '[0-9]+.[0-9]+.x'  # 匹配 x.x.x 格式且最后一位为 x（如 1.2.x、22.1.x）
     paths:
       - 'app-builder/**'
       - '!app-builder/fel/python/**'

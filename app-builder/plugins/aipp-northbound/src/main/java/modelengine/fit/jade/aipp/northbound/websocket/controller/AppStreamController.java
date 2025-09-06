@@ -49,7 +49,7 @@ import java.util.function.BiFunction;
  * @author 曹嘉美
  * @since 2024-07-23
  */
-@WebSocketEndpoint(path = "/v1/chat")
+@WebSocketEndpoint(path = "/api/app/v1/chat")
 @Component
 public class AppStreamController extends AbstractController {
     private static final String METHOD = "appChat";

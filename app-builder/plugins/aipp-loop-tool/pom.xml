@@ -33,7 +33,7 @@
             <artifactId>sync-tool-call-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>modelengine.fit.jane</groupId>
+            <groupId>modelengine.fit.jade</groupId>
             <artifactId>aipp-genericable</artifactId>
         </dependency>
         <dependency>
@@ -101,7 +101,7 @@
             <plugin>
                 <groupId>org.fitframework.fel</groupId>
                 <artifactId>tool-maven-plugin</artifactId>
-                <version>3.5.0-M4</version>
+                <version>3.5.1</version>
                 <executions>
                     <execution>
                         <id>build-tool</id>

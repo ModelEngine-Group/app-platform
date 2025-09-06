@@ -1,0 +1,32 @@
+{
+  "schema": {
+    "parameters": {
+      "type": "object",
+      "required": [
+        "a",
+        "b"
+      ],
+      "properties": {
+        "a": {
+          "type": "string",
+          "default": "haha"
+        },
+        "b": {
+          "type": "string",
+          "default": "heihei"
+        }
+      }
+    },
+    "return": {
+      "type": "object",
+      "properties": {
+        "a": {
+          "type": "string"
+        },
+        "b": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

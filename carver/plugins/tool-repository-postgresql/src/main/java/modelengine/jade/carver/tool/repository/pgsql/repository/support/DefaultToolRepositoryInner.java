@@ -15,6 +15,7 @@ import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.transaction.Transactional;
+import modelengine.fitframework.util.CollectionUtils;
 import modelengine.jade.carver.tool.repository.pgsql.mapper.ToolMapper;
 import modelengine.jade.carver.tool.repository.pgsql.model.entity.ToolDo;
 import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepositoryInner;
@@ -81,6 +82,9 @@ public class DefaultToolRepositoryInner implements ToolRepositoryInner {
     @Override
     @Transactional
     public void deleteTools(List<String> uniqueNames) {
+        if (CollectionUtils.isEmpty(uniqueNames)) {
+            return;
+        }
         this.toolMapper.deleteTools(uniqueNames);
     }
 
@@ -158,6 +162,12 @@ public class DefaultToolRepositoryInner implements ToolRepositoryInner {
     @Override
     public List<Tool.Info> getToolsByIdentifier(List<ToolIdentifier> toolIdentifiers) {
         List<ToolDo> toolDos = this.toolMapper.getToolsByIdentifier(toolIdentifiers);
+        return toolDos.stream().map(toolDo -> ToolDo.do2Info(toolDo, this.serializer)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Tool.Info> getAllTools() {
+        List<ToolDo> toolDos = this.toolMapper.getAllTools();
         return toolDos.stream().map(toolDo -> ToolDo.do2Info(toolDo, this.serializer)).collect(Collectors.toList());
     }
 }

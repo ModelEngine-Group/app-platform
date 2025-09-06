@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
+import modelengine.fit.jade.aipp.model.enums.ModelType;
 import modelengine.fit.jade.aipp.rewrite.RewriteQueryParam;
 import modelengine.fit.jade.aipp.rewrite.RewriteService;
 import modelengine.fit.jade.aipp.rewrite.command.RewriteCommandHandler;
@@ -62,12 +63,7 @@ public class PortsTest {
             List<String> expect = Arrays.asList("1", "2", "3");
             when(this.commandService.handle(any())).thenReturn(expect);
             RewriteQueryCommand testCommand = getQueryCommand();
-            RewriteQueryParam queryParam = new RewriteQueryParam();
-            queryParam.setStrategy("builtin");
-            queryParam.setArgs(testCommand.getArgs());
-            queryParam.setTemplate(testCommand.getTemplate());
-            queryParam.setAccessInfo(new ModelAccessInfo(testCommand.getModel(), testCommand.getModelTag(), null, null));
-            queryParam.setTemperature(testCommand.getTemperature());
+            RewriteQueryParam queryParam = constructRewriteQueryParam(testCommand);
             List<String> result = this.rewriteService.rewriteQuery(queryParam,
                     testCommand.getMemoryConfig(),
                     testCommand.getHistories());
@@ -75,6 +71,17 @@ public class PortsTest {
             ArgumentCaptor<RewriteQueryCommand> argument = ArgumentCaptor.forClass(RewriteQueryCommand.class);
             verify(this.commandService).handle(argument.capture());
             assertThat(argument.getValue()).isEqualTo(testCommand);
+        }
+
+        private static RewriteQueryParam constructRewriteQueryParam(RewriteQueryCommand testCommand) {
+            RewriteQueryParam queryParam = new RewriteQueryParam();
+            queryParam.setStrategy("builtin");
+            queryParam.setArgs(testCommand.getArgs());
+            queryParam.setTemplate(testCommand.getTemplate());
+            queryParam.setAccessInfo(new ModelAccessInfo(testCommand.getModel(),
+                    testCommand.getModelTag(), null, null, ModelType.CHAT_COMPLETIONS.value()));
+            queryParam.setTemperature(testCommand.getTemperature());
+            return queryParam;
         }
     }
 }

@@ -166,4 +166,7 @@
             (i."unique_name" = #{toolIdentifier.uniqueName} AND i."version" = #{toolIdentifier.version})
         </foreach>
     </select>
+    <select id="getAllTools" parameterType="List" resultMap="Tool">
+        <include refid="selectToolColumns"/>
+    </select>
 </mapper>

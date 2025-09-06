@@ -19,6 +19,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 /**
  * {@link AippHttpCallService}测试集。
  *
@@ -33,7 +35,7 @@ public class AippHttpCallServiceTest {
     @BeforeEach
     void setUp() {
         this.handler = mock(HttpCallCommandHandler.class);
-        this.httpCallService = new AippHttpCallService(this.handler);
+        this.httpCallService = new AippHttpCallService(this.handler, List.of("blacklist.com"));
     }
 
     @Test
@@ -44,16 +46,35 @@ public class AippHttpCallServiceTest {
         when(this.handler.handle(any())).thenReturn(httpResult);
         when(httpResult.getStatus()).thenReturn(200);
 
-        HttpRequest request = new HttpRequest();
-        request.setHttpMethod("GET");
-        request.setUrl("http://examples.com");
-        request.setTimeout(1000);
-        request.setArgs(MapBuilder.<String, Object>get().put("111", "2222").build());
+        HttpRequest request = constructHttpRequest("http://examples.com");
 
         // when
         HttpResult result = this.httpCallService.httpCall(request);
 
         // then
         Assertions.assertEquals(200, result.getStatus());
+    }
+
+    @Test
+    @DisplayName("黑名单网站调用失败")
+    void blackListShouldBeBlocked() {
+        // given
+        HttpRequest request = constructHttpRequest("http://blacklist.com");
+
+        // when
+        HttpResult result = this.httpCallService.httpCall(request);
+
+        // then
+        Assertions.assertEquals(-1, result.getStatus());
+        Assertions.assertEquals("Invalid request.", result.getErrorMsg());
+    }
+
+    private static HttpRequest constructHttpRequest(String url) {
+        HttpRequest request = new HttpRequest();
+        request.setHttpMethod("GET");
+        request.setUrl(url);
+        request.setTimeout(1000);
+        request.setArgs(MapBuilder.<String, Object>get().put("111", "2222").build());
+        return request;
     }
 }

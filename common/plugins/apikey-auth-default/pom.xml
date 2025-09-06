@@ -24,8 +24,16 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>modelengine.fit.jade.service</groupId>
+            <artifactId>authentication-service</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.fitframework</groupId>
             <artifactId>fit-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fitframework.service</groupId>
+            <artifactId>fit-http-classic</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

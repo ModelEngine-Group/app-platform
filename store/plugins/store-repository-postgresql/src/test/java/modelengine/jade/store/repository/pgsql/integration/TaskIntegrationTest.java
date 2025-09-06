@@ -27,14 +27,14 @@ import java.util.List;
  * @since 2024-09-18
  */
 @IntegrationTest(scanPackages = "modelengine.jade.store")
-@Sql(scripts = "sql/create/task.sql")
+@Sql(before = "sql/create/task.sql")
 @DisplayName("Task 集成测试")
 public class TaskIntegrationTest {
     @Fit
     private EcoTaskService ecoTaskService;
 
     @Test
-    @Sql(scripts = "sql/insert/task.sql")
+    @Sql(before = {"sql/create/task.sql", "sql/insert/task.sql"})
     @DisplayName("测试查询单个任务")
     void shouldOkWhenGetTask() {
         TaskData task = this.ecoTaskService.getTask("depth-estimation");
@@ -42,7 +42,7 @@ public class TaskIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/task.sql")
+    @Sql(before = {"sql/create/task.sql", "sql/insert/task.sql"})
     @DisplayName("测试查询任务列表")
     void shouldOkWhenGetTasks() {
         TaskQuery taskQuery = new TaskQuery("name2", null, null);

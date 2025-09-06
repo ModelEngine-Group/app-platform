@@ -16,7 +16,7 @@ const SmartForm: React.FC = () => {
     const { data, resumingClick } = useContext(DataContext);
     const [modelList, setModelList] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [newModel, setNewModel] = useState({ modelName: '', baseUrl: '', apiKey: '' });
+    const [newModel, setNewModel] = useState({ modelName: '', baseUrl: '', apiKey: '', type: '' });
 
     const buildOutputInfo = (partial: Partial<{
         modelName: string;
@@ -25,13 +25,15 @@ const SmartForm: React.FC = () => {
         userId: string;
         isDefault: number;
         apiKey: string;
+        type: string;
     }>) => ({
         modelName: partial.modelName || '',
         modelId: partial.modelId || '',
         baseUrl: partial.baseUrl || '',
         userId: partial.userId || '',
         isDefault: partial.isDefault ?? 0,
-        apiKey: partial.apiKey || ''
+        apiKey: partial.apiKey || '',
+        type: partial.type || ''
     });
 
     useEffect(() => {
@@ -48,8 +50,8 @@ const SmartForm: React.FC = () => {
     const handleAddCancel = () => setIsModalVisible(false);
 
     const handleAddConfirm = () => {
-        const { modelName, baseUrl, apiKey } = newModel;
-        if (!modelName.trim() || !baseUrl.trim() || !apiKey.trim()) {
+        const { modelName, baseUrl, apiKey, type } = newModel;
+        if (!modelName.trim() || !baseUrl.trim() || !apiKey.trim() || !type.trim()) {
             message.warning('请填写完整模型信息');
             return;
         }
@@ -60,6 +62,7 @@ const SmartForm: React.FC = () => {
             userId,
             modelName,
             baseUrl,
+            type,
             apiKey
         });
 
@@ -71,7 +74,7 @@ const SmartForm: React.FC = () => {
         });
 
         setIsModalVisible(false);
-        setNewModel({ modelName: '', baseUrl: '', apiKey: '' });
+        setNewModel({ modelName: '', baseUrl: '', apiKey: '', type: '' });
     };
 
     const handleDelete = (record: any) => {
@@ -185,6 +188,27 @@ const SmartForm: React.FC = () => {
             ),
         },
         {
+            title: '类型',
+            dataIndex: 'type',
+            key: 'type',
+            align: 'center',
+            render: (text: string) => (
+                <Tooltip title={text}>
+                    <div
+                        style={{
+                            maxWidth: '100px',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            margin: '0 auto',
+                        }}
+                    >
+                        {text}
+                    </div>
+                </Tooltip>
+            ),
+        },
+        {
             title: '是否默认',
             dataIndex: 'isDefault',
             key: 'isDefault',
@@ -258,7 +282,7 @@ const SmartForm: React.FC = () => {
                         maxLength={100}
                         showCount
                         value={newModel.modelName}
-                        onChange={(e) => setNewModel({ ...newModel, modelName: e.target.value })}
+                        onChange={(e) => setNewModel({ ...newModel, modelName: e.target.value.trim() })}
                         placeholder="请输入模型名称"
                     />
                 </div>
@@ -266,7 +290,7 @@ const SmartForm: React.FC = () => {
                     <label>API Key：</label>
                     <Input
                         value={newModel.apiKey}
-                        onChange={(e) => setNewModel({ ...newModel, apiKey: e.target.value })}
+                        onChange={(e) => setNewModel({ ...newModel, apiKey: e.target.value.trim() })}
                         placeholder="请输入 API Key"
                     />
                 </div>
@@ -276,8 +300,18 @@ const SmartForm: React.FC = () => {
                         maxLength={200}
                         showCount
                         value={newModel.baseUrl}
-                        onChange={(e) => setNewModel({ ...newModel, baseUrl: e.target.value })}
+                        onChange={(e) => setNewModel({ ...newModel, baseUrl: e.target.value.trim() })}
                         placeholder="请输入 Base URL"
+                    />
+                </div>
+                <div>
+                    <label>类型：</label>
+                    <Input
+                        maxLength={50}
+                        showCount
+                        value={newModel.type}
+                        onChange={(e) => setNewModel({ ...newModel, type: e.target.value.trim() })}
+                        placeholder="请输入模型类型 e.g. chat_completions, embeddings, rerank, etc."
                     />
                 </div>
             </Modal>

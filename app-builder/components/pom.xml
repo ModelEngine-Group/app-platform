@@ -14,6 +14,8 @@
 
     <modules>
         <module>app-builder-security</module>
+        <module>jober-common</module>
+        <module>jober-exception-handler</module>
     </modules>
 
 </project>

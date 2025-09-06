@@ -12,9 +12,11 @@ import static org.mockito.Mockito.when;
 
 import modelengine.fel.tool.model.transfer.DefinitionData;
 import modelengine.fel.tool.model.transfer.ToolGroupData;
+import modelengine.fel.tool.service.ToolChangedObserver;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.test.annotation.IntegrationTest;
+import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.Spy;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.jade.carver.tool.repository.pgsql.ToolDataBuilder;
@@ -38,7 +40,7 @@ import java.util.List;
  * @since 2024-10-31
  */
 @IntegrationTest(scanPackages = "modelengine.jade.carver.tool")
-@Sql(scripts = {
+@Sql(before = {
         "sql/create/tool.sql", "sql/create/definition.sql", "sql/create/tool-group.sql",
         "sql/create/definition-group.sql"
 })
@@ -64,6 +66,9 @@ public class ToolGroupIntegrationTest {
     @Fit(alias = "json")
     private ObjectSerializer serializer;
 
+    @Mock
+    private ToolChangedObserver toolChangedObserver;
+
     private void mockDefinitionInfo() {
         DefinitionData definitionData = ToolDataBuilder.mockDefinitionData();
         this.definitionService.delete(definitionData.getGroupName(), definitionData.getName());
@@ -80,6 +85,10 @@ public class ToolGroupIntegrationTest {
     }
 
     @Test
+    @Sql(before = {
+            "sql/create/tool.sql", "sql/create/definition.sql", "sql/create/tool-group.sql",
+            "sql/create/definition-group.sql"
+    })
     @DisplayName("测试插入工具组")
     void shouldOkWhenAddToolGroup() {
         this.mockDefinitionInfo();
@@ -94,6 +103,10 @@ public class ToolGroupIntegrationTest {
     }
 
     @Test
+    @Sql(before = {
+            "sql/create/tool.sql", "sql/create/definition.sql", "sql/create/tool-group.sql",
+            "sql/create/definition-group.sql"
+    })
     @DisplayName("测试插入工具组列表")
     void shouldOkWhenAddToolGroupList() {
         this.mockDefinitionInfo();
@@ -108,7 +121,10 @@ public class ToolGroupIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/tool.sql", "sql/insert/tool-group.sql"})
+    @Sql(before = {
+            "sql/create/tool.sql", "sql/create/definition.sql", "sql/create/tool-group.sql",
+            "sql/create/definition-group.sql", "sql/insert/tool.sql", "sql/insert/tool-group.sql"
+    })
     @DisplayName("测试按工具组删除后，查询不到工具组数据")
     void shouldNullWhenDeleteByGroupName() {
         List<ToolGroupData> toolGroupDataList =
@@ -125,7 +141,10 @@ public class ToolGroupIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/tool.sql", "sql/insert/tool-group.sql"})
+    @Sql(before = {
+            "sql/create/tool.sql", "sql/create/definition.sql", "sql/create/tool-group.sql",
+            "sql/create/definition-group.sql", "sql/insert/tool.sql", "sql/insert/tool-group.sql"
+    })
     @DisplayName("测试按工具组删除后，查询不到工具组数据")
     void shouldNullWhenDeleteByDefinitionGroupName() {
         List<ToolGroupData> toolGroupDataList = this.toolGroupService.get(DEFINITION_GROUP_NAME1);

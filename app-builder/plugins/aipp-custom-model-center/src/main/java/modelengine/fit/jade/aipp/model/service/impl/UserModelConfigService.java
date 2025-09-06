@@ -8,6 +8,7 @@ package modelengine.fit.jade.aipp.model.service.impl;
 
 import modelengine.fit.jade.aipp.model.dto.UserModelDetailDto;
 
+import modelengine.fit.jade.aipp.model.enums.ModelType;
 import modelengine.fit.jade.aipp.model.po.ModelPo;
 import modelengine.fit.jade.aipp.model.po.UserModelPo;
 import modelengine.fit.jade.aipp.model.repository.UserModelRepo;
@@ -40,7 +41,6 @@ import java.util.stream.Collectors;
 public class UserModelConfigService implements UserModelConfig {
     private static final Logger log = Logger.get(UserModelConfig.class);
     private static final String FITABLE_ID = "aipp.model.service.impl";
-    private static final String DEFAULT_MODEL_TYPE = "chat_completions";
     private final UserModelRepo userModelRepo;
 
     /**
@@ -84,6 +84,7 @@ public class UserModelConfigService implements UserModelConfig {
                     .modelName(model != null ? model.getName() : null)
                     .baseUrl(model != null ? model.getBaseUrl() : null)
                     .isDefault(userModel.getIsDefault())
+                    .type(model != null ? model.getType() : null)
                     .build();
         }).collect(Collectors.toList());
     }
@@ -94,17 +95,18 @@ public class UserModelConfigService implements UserModelConfig {
             @Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "MODEL")
     })
     @Property(description = "为用户添加可用的模型信息")
-    public String addUserModel(String userId, String apiKey, String modelName, String baseUrl) {
+    public String addUserModel(String userId, String apiKey, String modelName, String baseUrl, String type) {
         log.info("start add user model for {}.", userId);
         String modelId = UUID.randomUUID().toString().replace("-", "");
-        boolean hasDefault = this.userModelRepo.hasDefaultModel(userId);
+        // 当前只保持全局只有一个默认模型的设定，当除对话类型以外使用地方需要有默认模型时，考虑改为每种类型有单独的默认模型
+        boolean hasDefault = this.userModelRepo.hasDefaultModel(userId, null);
 
         ModelPo modelPo = ModelPo.builder()
                 .modelId(modelId)
                 .name(modelName)
                 .tag(modelId)
                 .baseUrl(baseUrl)
-                .type(DEFAULT_MODEL_TYPE)
+                .type(ModelType.from(type).value())
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();

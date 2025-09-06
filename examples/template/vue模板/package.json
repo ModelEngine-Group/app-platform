@@ -1,0 +1,27 @@
+{
+  "name": "vue3template",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite --port 4000",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "element-plus": "^2.8.1",
+    "unplugin-auto-import": "^0.8.7",
+    "unplugin-vue-components": "^0.26.0",
+    "vite-plugin-html": "^3.2.2",
+    "vue": "^3.2.45",
+    "vue-router": "^4.4.4"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.1.4",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vue/eslint-config-prettier": "^7.0.0",
+    "eslint": "^8.22.0",
+    "eslint-plugin-vue": "^9.3.0",
+    "prettier": "^2.7.1",
+    "sass": "^1.57.1",
+    "vite": "^4.0.0"
+  }
+}

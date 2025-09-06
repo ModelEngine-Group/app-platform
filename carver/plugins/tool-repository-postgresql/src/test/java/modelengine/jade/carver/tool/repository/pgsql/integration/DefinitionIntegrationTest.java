@@ -9,8 +9,10 @@ package modelengine.jade.carver.tool.repository.pgsql.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import modelengine.fel.tool.model.transfer.DefinitionData;
+import modelengine.fel.tool.service.ToolChangedObserver;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
+import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.Spy;
 import modelengine.fitframework.test.annotation.Sql;
 import modelengine.jade.carver.tool.repository.pgsql.ToolDataBuilder;
@@ -31,7 +33,7 @@ import java.util.List;
  * @since 2024-10-31
  */
 @IntegrationTest(scanPackages = "modelengine.jade.carver.tool")
-@Sql(scripts = "sql/create/definition.sql")
+@Sql(before = {"sql/create/definition.sql", "sql/create/tool.sql"})
 @DisplayName("Definition 集成测试")
 public class DefinitionIntegrationTest {
     private static final String DEFINITION_NAME1 = "depth-estimation";
@@ -43,7 +45,11 @@ public class DefinitionIntegrationTest {
     @Spy
     private DefinitionMapper definitionMapper;
 
+    @Mock
+    private ToolChangedObserver toolChangedObserver;
+
     @Test
+    @Sql(before = {"sql/create/definition.sql", "sql/create/tool.sql"})
     @DisplayName("测试插入工具定义")
     void shouldReturnWhenAddDefinitionAndGet() {
         DefinitionData definitionData = ToolDataBuilder.mockDefinitionData();
@@ -60,6 +66,7 @@ public class DefinitionIntegrationTest {
     }
 
     @Test
+    @Sql(before = {"sql/create/definition.sql", "sql/create/tool.sql"})
     @DisplayName("测试插入工具定义列表")
     void shouldReturnDoWhenAddListAndGet() {
         DefinitionData definitionData = ToolDataBuilder.mockDefinitionData();
@@ -75,7 +82,7 @@ public class DefinitionIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/definition.sql")
+    @Sql(before = {"sql/create/definition.sql", "sql/create/tool.sql", "sql/insert/definition.sql"})
     @DisplayName("测试根据定义名删除定义")
     void shouldReturnNullWhenDeleteGivenDefinitionName() {
         DefinitionData definitionData = this.definitionService.get(GROUP_NAME1, DEFINITION_NAME1);
@@ -87,7 +94,7 @@ public class DefinitionIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = "sql/insert/definition.sql")
+    @Sql(before = {"sql/create/definition.sql", "sql/create/tool.sql", "sql/insert/definition.sql"})
     @DisplayName("测试根据定义组名删除定义列表")
     void shouldReturnNullWhenDeleteGivenGroupName() {
         List<DefinitionData> definitionDataList = this.definitionService.get(GROUP_NAME1);

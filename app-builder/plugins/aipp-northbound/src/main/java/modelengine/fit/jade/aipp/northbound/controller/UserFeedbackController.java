@@ -13,6 +13,7 @@ import modelengine.fit.http.annotation.PostMapping;
 import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.jane.common.controller.AbstractController;
+import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fitframework.annotation.Component;
 import modelengine.jade.app.engine.base.dto.UsrFeedbackDto;
@@ -45,9 +46,11 @@ public class UserFeedbackController extends AbstractController {
      *
      * @param usrFeedbackDto 表示用户反馈消息体的 {@link UsrFeedbackDto}。
      */
-    @PostMapping("/feedback")
-    public void createUsrFeedback(@RequestBody UsrFeedbackDto usrFeedbackDto) {
-        usrFeedbackService.create(usrFeedbackDto);
+    @PostMapping(path = "/feedback", summary = "创建用户反馈记录",
+            description = "该接口用于创建用户对一个对话实例的反馈记录。")
+    public Rsp<Void> createUsrFeedback(@RequestBody UsrFeedbackDto usrFeedbackDto) {
+        this.usrFeedbackService.create(usrFeedbackDto);
+        return Rsp.ok();
     }
 
     /**
@@ -56,20 +59,23 @@ public class UserFeedbackController extends AbstractController {
      * @param usrFeedbackDto 表示用户反馈消息体的 {@link UsrFeedbackDto}。
      * @param instanceId 表示对话实例 Id 的 {@link String}。
      */
-    @PatchMapping("/feedback/{instanceId}")
-    public void updateUsrFeedback(@PathVariable("instanceId") String instanceId,
+    @PatchMapping(path = "/feedback/{instanceId}", summary = "更新用户反馈记录",
+            description = "该接口用于更新用户对一个对话实例反馈记录。")
+    public Rsp<Void> updateUsrFeedback(@PathVariable("instanceId") String instanceId,
             @RequestBody UsrFeedbackDto usrFeedbackDto) {
-        usrFeedbackService.updateOne(instanceId, usrFeedbackDto);
+        this.usrFeedbackService.updateOne(instanceId, usrFeedbackDto);
+        return Rsp.ok();
     }
 
     /**
-     * 通过 LogId 获取对话信息列表。
+     * 通过 logId 查询用户反馈记录
      *
      * @param instanceId 表示对话实例 Id 的 {@link String}。
-     * @return 表示对话信息的 {@link UsrFeedbackDto}。
+     * @return 表示反馈记录的 {@link UsrFeedbackDto}。
      */
-    @GetMapping("/feedback/{instanceId}")
-    public UsrFeedbackDto getAllAnswerByInstanceId(@PathVariable("instanceId") String instanceId) {
-        return usrFeedbackService.getUsrFeedbackByInstanceId(instanceId);
+    @GetMapping(path = "/feedback/{instanceId}", summary = "查询用户反馈记录",
+            description = "该接口可以通过待查询实例的唯一标识符来查询实例的反馈记录。")
+    public Rsp<UsrFeedbackDto> getAllAnswerByInstanceId(@PathVariable("instanceId") String instanceId) {
+        return Rsp.ok(this.usrFeedbackService.getUsrFeedbackByInstanceId(instanceId));
     }
 }

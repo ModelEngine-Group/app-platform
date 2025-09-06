@@ -18,6 +18,7 @@ import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,8 +51,11 @@ public class CustomAippModelCenter implements AippModelCenterExtension {
     @Override
     public ModelListDto fetchModelList(String type, String scene, OperationContext context) {
         LOG.info("[Custom][fetchModelList] operator={}, type={}, scene={}.", context.getOperator(), type, scene);
-        List<ModelPo> modelList = this.userModelRepo.listModelsByUserId(context.getOperator());
+        List<ModelPo> modelList = this.userModelRepo.listModelsByUserId(context.getOperator(), type);
         if (CollectionUtils.isEmpty(modelList)) {
+            if (this.defaultModelCenter == null) {
+                return ModelListDto.builder().models(Collections.emptyList()).total(0).build();
+            }
             return this.defaultModelCenter.fetchModelList(type, scene, context);
         }
         // 这里自定义按照用户分类返回数据的tag需要特殊处理，tag中额外存入用户信息，先快速打通功能，赶上320。格式："tag,userId"
@@ -60,6 +64,7 @@ public class CustomAippModelCenter implements AippModelCenterExtension {
                         .serviceName(po.getName())
                         .baseUrl(po.getBaseUrl())
                         .tag(CustomTag.pack(context, po))
+                        .type(po.getType())
                         .build())
                 .collect(Collectors.toList());
         return ModelListDto.builder().models(modelDtoList).total(modelDtoList.size()).build();
@@ -89,7 +94,7 @@ public class CustomAippModelCenter implements AippModelCenterExtension {
     @Override
     public ModelAccessInfo getDefaultModel(String type, OperationContext context) {
         LOG.info("[Custom][getDefaultModel] operator={}, type={}.", context.getOperator(), type);
-        ModelPo defaultModel = this.userModelRepo.getDefaultModel(context.getOperator());
+        ModelPo defaultModel = this.userModelRepo.getDefaultModel(context.getOperator(), type);
         if (defaultModel == null) {
             return this.defaultModelCenter.getDefaultModel(type, context);
         }
@@ -97,6 +102,7 @@ public class CustomAippModelCenter implements AippModelCenterExtension {
                 .serviceName(defaultModel.getName())
                 .baseUrl(defaultModel.getBaseUrl())
                 .tag(CustomTag.pack(context, defaultModel))
+                .type(defaultModel.getType())
                 .build();
     }
 

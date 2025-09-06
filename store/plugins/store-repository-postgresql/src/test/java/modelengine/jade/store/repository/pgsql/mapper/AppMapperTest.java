@@ -26,14 +26,14 @@ import java.util.List;
  * @since 2025-07-07
  */
 @MybatisTest(classes = {AppMapper.class})
-@Sql(scripts = {"sql/create/app.sql", "sql/create/tag.sql"})
+@Sql(before = {"sql/create/app.sql", "sql/create/tag.sql"})
 @DisplayName("测试 AppMapper")
 public class AppMapperTest {
     @Fit
     private AppMapper appMapper;
 
     @Test
-    @Sql(scripts = {"sql/insert/app.sql", "sql/insert/tag.sql"})
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql", "sql/insert/tag.sql"})
     @DisplayName("测试查询 app 列表")
     void shouldReturnSystemCreatedAppFirst() {
         AppQuery appQuery = new AppQuery.Builder().appCategory("chatbot").build();

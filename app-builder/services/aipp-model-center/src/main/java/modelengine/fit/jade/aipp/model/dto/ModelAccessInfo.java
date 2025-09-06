@@ -26,6 +26,7 @@ public class ModelAccessInfo {
     private String tag;
     private String baseUrl;
     private String accessKey;
+    private String type;
 
     /**
      * 获取是否是系统模型，系统模型需要不一样的 http 调用安全参数。

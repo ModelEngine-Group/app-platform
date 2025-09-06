@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import modelengine.fel.tool.Tool;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.util.MapUtils;
+import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 
 import java.util.Collections;
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ToolDo {
+    public static final String SCHEMA_PARAMETERS_KEY = "parameters";
+    public static final String SCHEMA_DESCRIPTION_KEY = "description";
     /**
      * 表示工具的名字。
      */
@@ -114,13 +117,14 @@ public class ToolDo {
      * @return 领域类的 {@link Tool.Info}。
      */
     public static Tool.Info do2Info(ToolDo toolDo, ObjectSerializer serializer) {
+        Map<String, Object> schema = ObjectUtils.nullIf(json2obj(toolDo.getSchema(), serializer), new HashMap<>());
         return Tool.Info.custom()
                 .namespace("")
                 .name(toolDo.getName())
-                .description("")
-                .schema(json2obj(toolDo.getSchema(), serializer))
+                .description(ObjectUtils.cast(schema.getOrDefault(SCHEMA_DESCRIPTION_KEY, StringUtils.EMPTY)))
+                .schema(schema)
                 .runnables(upperKeys(json2obj(toolDo.getRunnables(), serializer)))
-                .parameters(new HashMap<>())
+                .parameters(ObjectUtils.cast(schema.getOrDefault(SCHEMA_PARAMETERS_KEY, new HashMap<>())))
                 .extensions(json2obj(toolDo.getExtensions(), serializer))
                 .uniqueName(toolDo.getUniqueName())
                 .version(toolDo.getVersion())

@@ -118,7 +118,7 @@ public class FormatFileUtilsTest {
     void shouldOkWhenBuildDefGroupMap() {
         ToolJsonEntity toolJsonEntity = getFileInfo(new File(NEW_TOOL_JSON), serializer, ToolJsonEntity.class);
         Map<String, Object> defGroupMap = buildDefGroupMap(toolJsonEntity);
-        assertThat(defGroupMap.size()).isEqualTo(2);
+        assertThat(defGroupMap.size()).isEqualTo(1);
     }
 
     @Test

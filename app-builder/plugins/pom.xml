@@ -15,24 +15,44 @@
     <modules>
         <module>aipp-classify-question</module>
         <module>aipp-code</module>
-        <module>aipp-extractor</module>
+        <module>aipp-custom-model-center</module>
         <module>aipp-document-extract-node</module>
+        <module>aipp-extractor</module>
         <module>aipp-http-call</module>
         <module>aipp-loop-tool</module>
         <module>aipp-memory</module>
+        <module>aipp-model-center-proxy</module>
         <module>aipp-northbound</module>
         <module>aipp-output-formatter</module>
+        <module>aipp-parallel-tool</module>
+        <module>aipp-plugin</module>
         <module>aipp-prompt-builder</module>
         <module>aipp-rewriter</module>
         <module>aipp-variable-aggregation</module>
+        <module>aipp-websocket-plugin</module>
+        <module>app-announcement</module>
+        <module>app-base</module>
+        <module>app-metrics</module>
+        <module>app-metrics-influxdb</module>
+        <module>edm-knowledge</module>
+        <module>eval-dataset</module>
+        <module>eval-task</module>
+        <module>flow-graph-db-driver</module>
+        <module>image-generator</module>
+        <module>knowledge-base</module>
+        <module>knowledge-i18n</module>
+        <module>knowledge-manager</module>
+        <module>knowledge-node-default</module>
         <module>plugins-show-case-parent</module>
+        <module>qianfan-knowledge</module>
+        <module>simple-uid-generator</module>
+        <module>task-default-driver-jade</module>
+        <module>task-new</module>
         <module>tool-waterflow</module>
+        <module>voice-text-adapter</module>
         <module>waterflow-appfactory</module>
         <module>waterflow-biz-common</module>
         <module>waterflow-graph</module>
         <module>waterflow-task-event-handler</module>
-        <module>aipp-custom-model-center</module>
-        <module>aipp-model-center-proxy</module>
-        <module>aipp-parallel-tool</module>
     </modules>
 </project>

@@ -40,6 +40,7 @@ public interface UserModelConfig {
      * @param apiKey 表示该用户访问模型所需的 API Key 的 {@link String}。
      * @param modelName 表示模型名称的 {@link String}。
      * @param baseUrl 表示模型访问的地址的 {@link String}。
+     * @param type 表示模型类型的 {@link String}。
      * @return 添加结果提示信息的 {@link String}。
      */
     @ToolMethod(name = "add_user_model", description = "为用户添加可用的模型信息")
@@ -47,7 +48,8 @@ public interface UserModelConfig {
     String addUserModel(@Property(description = "用户id", required = true) String userId,
             @Property(description = "模型访问的 API Key", required = true) String apiKey,
             @Property(description = "模型名称", required = true) String modelName,
-            @Property(description = "模型访问地址", required = true) String baseUrl);
+            @Property(description = "模型访问地址", required = true) String baseUrl,
+            @Property(description = "模型类型", required = true) String type);
 
     /**
      * 删除用户绑定的模型信息。
