@@ -8,7 +8,9 @@ package modelengine.fit.jober.aipp.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import modelengine.fit.jade.aipp.file.extract.ExcelFileExtractor;
 import modelengine.fit.jober.aipp.service.impl.OperatorServiceImpl;
+import modelengine.fit.jober.aipp.tool.FileExtractorContainer;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 import modelengine.fitframework.test.annotation.Mock;
@@ -26,7 +28,7 @@ import java.util.Optional;
  * @author 兰宇晨
  * @since 2025-01-15
  */
-@FitTestWithJunit(includeClasses = OperatorServiceImpl.class)
+@FitTestWithJunit(includeClasses = {OperatorServiceImpl.class, FileExtractorContainer.class, ExcelFileExtractor.class})
 @Disabled
 public class OperatorServiceImplTest {
     @Fit
@@ -64,8 +66,7 @@ public class OperatorServiceImplTest {
     }
 
     private String getContent(String filePath, OperatorService.FileType fileType) {
-        String fileUrl = "/path/mockurl.mock";
         File file = new File(this.getClass().getClassLoader().getResource(filePath).getFile());
-        return this.operatorService.fileExtractor(fileUrl, Optional.of(fileType));
+        return this.operatorService.fileExtractor(file.getAbsolutePath(), Optional.of(fileType));
     }
 }

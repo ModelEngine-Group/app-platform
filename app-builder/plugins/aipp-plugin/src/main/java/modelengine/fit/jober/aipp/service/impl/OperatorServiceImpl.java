@@ -10,6 +10,7 @@ import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.service.LLMService;
 import modelengine.fit.jober.aipp.service.OperatorService;
+import modelengine.fit.jober.aipp.tool.FileExtractorContainer;
 import modelengine.fit.jober.aipp.util.AippFileUtils;
 import modelengine.fit.jober.aipp.util.AippStringUtils;
 import modelengine.fitframework.annotation.Component;
@@ -20,12 +21,6 @@ import modelengine.fitframework.util.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.poifs.filesystem.FileMagic;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -41,13 +36,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -97,8 +89,8 @@ public class OperatorServiceImpl implements OperatorService {
 
     private final LLMService llmService;
     private final BrokerClient client;
+    private final FileExtractorContainer fileExtractorContainer;
     private final Function<String, String> pdfExtractor = this::extractPdfFile;
-    private final Function<String, String> excelExtractor = this::extractExcelFile;
     private final Function<String, String> wordExtractor = this::extractWordFile;
     private final Function<String, String> textExtractor = this::extractTextFile;
     private final EnumMap<FileType, Function<File, String>> outlineOperatorMap =
@@ -113,7 +105,6 @@ public class OperatorServiceImpl implements OperatorService {
         {
             put(FileType.PDF, pdfExtractor);
             put(FileType.WORD, wordExtractor);
-            put(FileType.EXCEL, excelExtractor);
             put(FileType.TXT, textExtractor);
             put(FileType.HTML, textExtractor);
             put(FileType.MARKDOWN, textExtractor);
@@ -121,30 +112,11 @@ public class OperatorServiceImpl implements OperatorService {
         }
     };
 
-    public OperatorServiceImpl(LLMService llmService, BrokerClient client) {
+    public OperatorServiceImpl(LLMService llmService, BrokerClient client,
+            FileExtractorContainer fileExtractorContainer) {
         this.llmService = llmService;
         this.client = client;
-    }
-
-    private static String getCellValueAsString(Cell cell) {
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    Date dateCellValue = cell.getDateCellValue();
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    return dateFormat.format(dateCellValue);
-                } else {
-                    return Double.toString(cell.getNumericCellValue());
-                }
-            case BOOLEAN:
-                return Boolean.toString(cell.getBooleanCellValue());
-            case FORMULA:
-                return cell.getCellFormula();
-            default:
-                return "";
-        }
+        this.fileExtractorContainer = fileExtractorContainer;
     }
 
     private static String extractDocHandle(InputStream fis, String fileName) throws IOException {
@@ -248,42 +220,12 @@ public class OperatorServiceImpl implements OperatorService {
     public String fileExtractor(String fileUrl, Optional<FileType> optionalFileType) {
         if (optionalFileType.isPresent()) {
             Function<String, String> function = this.fileOperatorMap.get(optionalFileType.get());
-            return Optional.ofNullable(function).map(f -> f.apply(fileUrl)).orElse(StringUtils.EMPTY);
+            return fileExtractorContainer.extract(fileUrl, optionalFileType.get())
+                    .or(() -> Optional.ofNullable(function).map(f -> f.apply(fileUrl)))
+                    .orElse(StringUtils.EMPTY);
+
         }
         return this.extractTextFile(fileUrl);
-    }
-
-    private String iterExcel(Workbook workbook) {
-        StringBuilder excelContent = new StringBuilder();
-        for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
-            Sheet sheet = workbook.getSheetAt(sheetIndex);
-            StringBuilder sheetContent = new StringBuilder();
-            for (Row row : sheet) {
-                StringBuilder rowContent = new StringBuilder();
-                Iterator<Cell> cellIterator = row.cellIterator();
-                while (cellIterator.hasNext()) {
-                    Cell cell = cellIterator.next();
-                    String cellValue = getCellValueAsString(cell);
-                    rowContent.append(cellValue).append("\t");
-                }
-                sheetContent.append(rowContent.toString().trim()).append("\n");
-            }
-            excelContent.append("Sheet ").append(sheetIndex + 1).append(":\n").append(sheetContent).append("\n");
-        }
-        return excelContent.toString();
-    }
-
-    private String extractExcelFile(String fileUrl) {
-        File file = Paths.get(fileUrl).toFile();
-        String excelContent = "";
-        try (InputStream fis = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
-            Workbook workbook = new XSSFWorkbook(fis);
-            excelContent = this.iterExcel(workbook);
-        } catch (IOException e) {
-            log.error("read excel fail.", e);
-            throw new AippException(AippErrCode.EXTRACT_FILE_FAILED);
-        }
-        return excelContent;
     }
 
     private String iterPdf(PDDocument doc) throws IOException {

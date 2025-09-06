@@ -58,6 +58,7 @@
         <influxdb.version>2.24</influxdb.version>
         <aws.version>1.12.468</aws.version>
         <opencsv.version>5.7.1</opencsv.version>
+        <fastexcel.version>1.1.0</fastexcel.version>
 
         <!-- Test framework versions -->
         <assertj.version>3.22.0</assertj.version>
@@ -370,6 +371,11 @@
                 <artifactId>aipp-extractor-service</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>modelengine.fit.jade</groupId>
+                <artifactId>aipp-file-extract-service</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
 
             <!-- App-engine -->
             <dependency>
@@ -558,6 +564,11 @@
                 <groupId>com.opencsv</groupId>
                 <artifactId>opencsv</artifactId>
                 <version>${opencsv.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.idev.excel</groupId>
+                <artifactId>fastexcel</artifactId>
+                <version>${fastexcel.version}</version>
             </dependency>
 
             <!-- Not Necessary -->
