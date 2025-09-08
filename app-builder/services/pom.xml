@@ -15,6 +15,7 @@
     <modules>
         <module>aipp-classify-question</module>
         <module>aipp-code</module>
+        <module>aipp-domain-division</module>
         <module>aipp-extractor</module>
         <module>aipp-genericable</module>
         <module>aipp-http-call</module>

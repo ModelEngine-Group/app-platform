@@ -182,7 +182,11 @@ const Deploy = ({ pluginRef }) => {
           </div>
         </div>
         <div className='table-content'>
-          {pluginData.length > 0 && pluginData.map(item => <div className='table-list' key={item.pluginId}>
+          {pluginData.length > 0 && pluginData.map(item => (
+            <div
+              className={`table-list ${!item.isModifiable ? 'disabled-row' : ''}`}
+              key={item.pluginId}
+            >
             <div className='left'>
               <span className='name' title={item.pluginName}>{item.pluginName}</span>
               <span className={['plugin-tag', PluginStatusTypeE[item.deployStatus]].join(' ')}>
@@ -191,17 +195,23 @@ const Deploy = ({ pluginRef }) => {
             </div>
             <div className='right'>
               <span className='desc' title={item.extension?.description}>{item.extension?.description}</span>
-              <span className='icon' onClick={() => onChange(false, item)}>
-                {item.deployStatus === 'deployed' ? <Tooltip
+                <span
+                  className={`icon ${!item.isModifiable ? 'disabled-icon' : ''}`}
+                  onClick={() => !item.isModifiable || onChange(false, item)} // 条件执行点击事件
+                >
+                {item.deployStatus === 'deployed' ? (
+                  <Tooltip
                   placement='left'
-                  title={t('pluginTips')}
+                  title={!item.isModifiable ? t('cannotEditTips') : t('pluginTips')}
                   color='#ffffff'
                   overlayInnerStyle={{ color: '#333333' }}>
                   <CloseOutlined />
-                </Tooltip> : <CloseOutlined />}
+                </Tooltip> ) : (
+                  <CloseOutlined />
+                )}
               </span>
             </div>
-          </div>)}
+          </div>))}
           {pluginData.length === 0 && <Empty
             imageStyle={{ height: 60, margin: '100px 0' }}
             description={<span>{t('noData')}</span>} />}

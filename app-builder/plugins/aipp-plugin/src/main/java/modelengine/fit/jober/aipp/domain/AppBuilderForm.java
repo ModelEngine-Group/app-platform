@@ -36,6 +36,7 @@ public class AppBuilderForm extends BaseDomain {
     private String version;
     private String formSuiteId;
     private AppBuilderFormPropertyRepository formPropertyRepository;
+    private String userGroupId;
 
     public AppBuilderForm(AppBuilderFormPropertyRepository formPropertyRepository) {
         this.formPropertyRepository = formPropertyRepository;

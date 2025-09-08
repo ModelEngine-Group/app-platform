@@ -161,17 +161,19 @@ public class PluginProcessor extends Processor {
      * @param defGroups 表示定义组的 {@link List}{@code <}{@link DefinitionGroupData}{@code >}。
      * @param toolGroups 表示工具组的 {@link List}{@code <}{@link ToolGroupData}{@code >}。
      * @param httpEntity 表示 http json 实体的 {@link HttpJsonEntity}。
+     * @param userGroupId 表示用户组 id 的 {@link String}。
      * @return 表示创建的插件实例的 {@link PluginData}。
      */
     public static PluginData buildHttpPluginData(List<DefinitionGroupData> defGroups, List<ToolGroupData> toolGroups,
-            HttpJsonEntity httpEntity) {
+            HttpJsonEntity httpEntity, String userGroupId) {
         if (toolGroups.size() != 1 || defGroups.size() != 1 || toolGroups.get(0).getTools().size() != 1
                 || defGroups.get(0).getDefinitions().size() != 1) {
             throw buildParserException("The http plugin can only have 1 group with 1 tool.");
         }
         handleHttpGroupInfo(defGroups, toolGroups);
         ToolData toolData = toolGroups.get(0).getTools().get(0);
-        PluginData pluginData = handleHttpPluginInfo(httpEntity, toolData);
+        PluginData pluginData = handleHttpPluginInfo(httpEntity, toolData, userGroupId);
+        pluginData.setUserGroupId(userGroupId);
         pluginData.setToolGroupDataList(toolGroups);
         pluginData.setDefinitionGroupDataList(defGroups);
         return pluginData;
@@ -192,7 +194,7 @@ public class PluginProcessor extends Processor {
         defData.getSchema().put(NAME, toolData.getName());
     }
 
-    private static PluginData handleHttpPluginInfo(HttpJsonEntity httpEntity, ToolData toolData) {
+    private static PluginData handleHttpPluginInfo(HttpJsonEntity httpEntity, ToolData toolData, String userGroupId) {
         PluginData pluginData = new PluginData();
         pluginData.setPluginId(generatePluginId(toolData.getUniqueName()));
         String userName = getUserName();
@@ -200,7 +202,7 @@ public class PluginProcessor extends Processor {
         pluginData.setModifier(userName);
         pluginData.setPluginName(toolData.getName());
         pluginData.setDeployStatus(DeployStatus.RELEASED.name());
-        PluginToolData pluginToolData = buildPluginToolData(toolData, pluginData.getPluginId());
+        PluginToolData pluginToolData = buildPluginToolData(toolData, userGroupId, pluginData.getPluginId());
         pluginToolData.setSource(httpEntity.getSource());
         pluginData.setIcon(httpEntity.getIcon());
         pluginData.setPluginToolDataList(Arrays.asList(pluginToolData));
@@ -220,13 +222,15 @@ public class PluginProcessor extends Processor {
      * 构建插件工具数据列表。
      *
      * @param toolGroupDatas 表示工具组数据的 {@link List}{@code <}{@link ToolGroupData}{@code >}
+     * @param userGroupId 表示用户组 id 的 {@link String}。
      * @param pluginId 表示插件的唯一标识的 {@link String}。
      * @return 表示插件工具的 {@link List}{@code <}{@link PluginToolData}{@code >}
      */
-    public static List<PluginToolData> buildPluginToolDatas(List<ToolGroupData> toolGroupDatas, String pluginId) {
+    public static List<PluginToolData> buildPluginToolDatas(List<ToolGroupData> toolGroupDatas, String userGroupId,
+            String pluginId) {
         return toolGroupDatas.stream()
                 .flatMap(toolGroupData -> toolGroupData.getTools().stream())
-                .map(toolData -> buildPluginToolData(toolData, pluginId))
+                .map(toolData -> buildPluginToolData(toolData, userGroupId, pluginId))
                 .collect(Collectors.toList());
     }
 
@@ -234,10 +238,11 @@ public class PluginProcessor extends Processor {
      * 构建插件工具数据。
      *
      * @param toolData 表示工具数据的 {@link ToolData}。
+     * @param userGroupId 表示用户组 id 的 {@link String}。
      * @param pluginId 表示插件的唯一标识的 {@link String}。
      * @return 表示插件工具的 {@link PluginToolData}.
      */
-    public static PluginToolData buildPluginToolData(ToolData toolData, String pluginId) {
+    public static PluginToolData buildPluginToolData(ToolData toolData, String userGroupId, String pluginId) {
         PluginToolData pluginToolData = new PluginToolData();
         pluginToolData.setPluginId(pluginId);
         pluginToolData.setUniqueName(toolData.getUniqueName());
@@ -245,6 +250,7 @@ public class PluginProcessor extends Processor {
         pluginToolData.setName(toolData.getName());
         pluginToolData.setCreator(userName);
         pluginToolData.setModifier(userName);
+        pluginToolData.setUserGroupId(userGroupId);
         pluginToolData.setTags(replaceTags(cast(toolData.getExtensions().get(TAGS))));
         return pluginToolData;
     }

@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 /**
  * 检索节点服务的配置实体。
  *
@@ -21,6 +23,11 @@ import lombok.NoArgsConstructor;
  */
 @Data
 public class RetrieverServiceOption {
+    /**
+     * 扩展信息。
+     */
+    Map<String, Object> extensions;
+
     /**
      * 检索方式。
      */

@@ -437,6 +437,8 @@ public class LlmComponent implements FlowableService {
         OperationContext opContext = DataUtils.getOpContext(businessData);
         ModelAccessInfo modelAccessInfo = this.aippModelCenter.getModelAccessInfo(accessInfo.get("tag"),
                 accessInfo.get("serviceName"), opContext);
+        Map<String, Object> extensions = new HashMap<>();
+        extensions.put(AippConst.CONTEXT_USER_ID, businessData.getOrDefault(AippConst.CONTEXT_USER_ID, null));
         return ChatOption.custom()
                 .model(accessInfo.get("serviceName"))
                 .baseUrl(modelAccessInfo.getBaseUrl())
@@ -445,6 +447,7 @@ public class LlmComponent implements FlowableService {
                 .apiKey(modelAccessInfo.getAccessKey())
                 .temperature(ObjectUtils.cast(businessData.get("temperature")))
                 .tools(this.buildToolInfos(businessData))
+                .extensions(extensions)
                 .build();
     }
 

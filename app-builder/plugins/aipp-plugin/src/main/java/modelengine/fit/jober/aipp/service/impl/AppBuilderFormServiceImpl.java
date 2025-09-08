@@ -8,6 +8,7 @@ package modelengine.fit.jober.aipp.service.impl;
 
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.util.Entities;
@@ -61,14 +62,19 @@ public class AppBuilderFormServiceImpl implements AppBuilderFormService {
     private final AippFormCreateConfig aippFormCreateConfig;
     private final UploadedFileManageService uploadedFileManageService;
     private final List<String> excludeNames;
+    private final DomainDivisionService domainDivisionService;
+    private final boolean isEnableDomainDivision;
 
     public AppBuilderFormServiceImpl(AppBuilderFormRepository formRepository, AippFormCreateConfig aippFormCreateConfig,
-            UploadedFileManageService uploadedFileManageService,
-            @Value("${app-engine.form.exclude-names}") List<String> excludeNames) {
+            UploadedFileManageService uploadedFileManageService, DomainDivisionService domainDivisionService,
+            @Value("${app-engine.form.exclude-names}") List<String> excludeNames,
+            @Value("${domain-division.isEnable}") boolean isEnableDomainDivision) {
         this.formRepository = formRepository;
         this.aippFormCreateConfig = aippFormCreateConfig;
         this.uploadedFileManageService = uploadedFileManageService;
+        this.domainDivisionService = domainDivisionService;
         this.excludeNames = excludeNames;
+        this.isEnableDomainDivision = isEnableDomainDivision;
     }
 
     @Override
@@ -109,6 +115,7 @@ public class AppBuilderFormServiceImpl implements AppBuilderFormService {
                 .updateAt(LocalDateTime.now())
                 .version(VERSION)
                 .formSuiteId(Entities.generateId())
+                .userGroupId(this.isEnableDomainDivision ? this.domainDivisionService.getUserGroupId() : null)
                 .build();
         this.updateFile(dto.getAppearance(), IRREMOVABLE);
         this.formRepository.insertOne(appBuilderForm);
@@ -161,6 +168,7 @@ public class AppBuilderFormServiceImpl implements AppBuilderFormService {
                 .limit(pageSize)
                 .name(name)
                 .excludeNames(excludeNames)
+                .userGroupId(this.isEnableDomainDivision ? this.domainDivisionService.getUserGroupId() : null)
                 .build();
         long total = this.formRepository.countWithCondition(cond);
         List<AppBuilderFormDto> result = this.formRepository.selectWithCondition(cond)

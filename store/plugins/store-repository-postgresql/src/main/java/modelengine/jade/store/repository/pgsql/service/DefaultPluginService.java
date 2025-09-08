@@ -10,13 +10,16 @@ import static modelengine.fitframework.inspection.Validation.notNull;
 import static modelengine.jade.store.repository.pgsql.entity.PluginDo.convertToPluginData;
 
 import modelengine.fel.tool.model.transfer.DefinitionGroupData;
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
+import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.exception.FitException;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.transaction.Transactional;
+import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.carver.ListResult;
 import modelengine.jade.store.entity.query.PluginQuery;
 import modelengine.jade.store.entity.query.PluginToolQuery;
@@ -32,6 +35,7 @@ import modelengine.jade.store.service.ToolGroupService;
 import modelengine.jade.store.service.support.DeployStatus;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +54,8 @@ public class DefaultPluginService implements PluginService {
     private final DefinitionGroupService defGroupService;
     private final ToolGroupService toolGroupService;
     private final ObjectSerializer serializer;
+    private final DomainDivisionService domainDivisionService;
+    private final boolean isEnableDomainDivision;
 
     /**
      * 通过插件仓库、插件工具服务和序列化器来初始化 {@link DefaultPluginService} 的实例。
@@ -62,12 +68,15 @@ public class DefaultPluginService implements PluginService {
      */
     public DefaultPluginService(PluginRepository pluginRepository, PluginToolService pluginToolService,
             DefinitionGroupService defGroupService, ToolGroupService toolGroupService,
-            @Fit(alias = "json") ObjectSerializer serializer) {
+            @Fit(alias = "json") ObjectSerializer serializer, DomainDivisionService domainDivisionService,
+            @Value("${domain-division.isEnable}") boolean isEnableDomainDivision) {
         this.pluginRepository = notNull(pluginRepository, "The plugin repository cannot be null.");
         this.pluginToolService = notNull(pluginToolService, "The plugin tool service cannot be null.");
         this.toolGroupService = notNull(toolGroupService, "The tool group service cannot be null.");
         this.defGroupService = notNull(defGroupService, "The definition group service cannot be null.");
         this.serializer = notNull(serializer, "The serializer cannot be null.");
+        this.domainDivisionService = notNull(domainDivisionService, "The domain division service cannot be null.");
+        this.isEnableDomainDivision = isEnableDomainDivision;
     }
 
     @Override
@@ -119,6 +128,9 @@ public class DefaultPluginService implements PluginService {
         if (pluginQuery == null || QueryUtils.isPageInvalid(pluginQuery.getOffset(), pluginQuery.getLimit())) {
             return ListResult.empty();
         }
+        if (this.isEnableDomainDivision && pluginQuery.getCreator() == null) {
+            pluginQuery.setUserGroupId(this.domainDivisionService.getUserGroupId());
+        }
         PluginToolQuery.toUpperCase(pluginQuery);
         List<PluginDo> pluginDos = this.pluginRepository.getPlugins(pluginQuery);
         List<PluginData> pluginDataList = pluginDos.stream()
@@ -134,9 +146,26 @@ public class DefaultPluginService implements PluginService {
     @Fitable(id = FITABLE_ID)
     public List<PluginData> getPlugins(DeployStatus deployStatus) {
         List<PluginDo> pluginDos = this.pluginRepository.getPlugins(deployStatus);
-        return pluginDos.stream()
-                .map(pluginDo -> PluginDo.convertToPluginData(pluginDo, serializer, null))
+        List<PluginData> pluginDatas = pluginDos.stream()
+                .map(pluginDo -> convertToPluginData(pluginDo, serializer, null))
                 .collect(Collectors.toList());
+        if (!this.isEnableDomainDivision) {
+            return pluginDatas;
+        }
+        pluginDatas.stream().filter(this.isNotInUserGroup()).forEach(data -> data.setModifiable(false));
+        return pluginDatas;
+    }
+
+    private Predicate<PluginData> isNotInUserGroup() {
+        return data -> {
+            if (data.getUserGroupId() == null) {
+                return true;
+            }
+            String currentUserGroupId = this.domainDivisionService.getUserGroupId();
+            boolean isCurrentGroup = StringUtils.equals(data.getUserGroupId(), currentUserGroupId);
+            boolean isAllGroup = StringUtils.equals(data.getUserGroupId(), "*");
+            return !(isCurrentGroup || isAllGroup);
+        };
     }
 
     @Override

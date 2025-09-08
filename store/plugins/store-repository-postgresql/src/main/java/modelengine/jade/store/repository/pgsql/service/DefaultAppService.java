@@ -12,8 +12,10 @@ import static modelengine.jade.store.entity.transfer.AppData.toToolGroup;
 
 import modelengine.fel.tool.ToolSchema;
 import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
+import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.exception.FitException;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.transaction.Transactional;
@@ -58,6 +60,8 @@ public class DefaultAppService implements AppService {
     private final TagService tagService;
     private final ToolGroupService toolGroupService;
     private final DefinitionGroupService defGroupService;
+    private final DomainDivisionService domainDivisionService;
+    private final boolean isEnableDomainDivision;
 
     /**
      * 通过应用服务接口来初始化 {@link DefaultAppService} 的实例。
@@ -67,14 +71,19 @@ public class DefaultAppService implements AppService {
      * @param tagService 表示标签服务的 {@link TagService}。
      * @param toolGroupService 表示工具组服务的 {@link ToolGroupService}。
      * @param defGroupService 表示定义组服务的 {@link DefinitionGroupService}。
+     * @param domainDivisionService 表示定义组服务的 {@link DefinitionGroupService}。
      */
     public DefaultAppService(ToolService toolService, AppRepository appRepository, TagService tagService,
-            ToolGroupService toolGroupService, DefinitionGroupService defGroupService) {
+            ToolGroupService toolGroupService, DefinitionGroupService defGroupService,
+            DomainDivisionService domainDivisionService,
+            @Value("${domain-division.isEnable}") boolean isEnableDomainDivision) {
         this.toolService = notNull(toolService, "The tool service cannot be null.");
         this.appRepository = notNull(appRepository, "The app repository cannot be null.");
         this.tagService = notNull(tagService, "The tag service cannot be null.");
         this.toolGroupService = notNull(toolGroupService, "The tool group service cannot be null.");
         this.defGroupService = notNull(defGroupService, "The definition group service cannot be null.");
+        this.domainDivisionService = notNull(domainDivisionService, "The domain division service cannot be null.");
+        this.isEnableDomainDivision = isEnableDomainDivision;
     }
 
     @Override
@@ -98,6 +107,9 @@ public class DefaultAppService implements AppService {
             return ListResult.empty();
         }
         AppQuery.toUpperCase(appQuery);
+        if (this.isEnableDomainDivision) {
+            appQuery.setUserGroupId(this.domainDivisionService.getUserGroupId());
+        }
         List<AppPublishData> data = this.getAppDataList(this.appRepository.getApps(appQuery));
         appQuery.setLimit(null);
         appQuery.setOffset(null);

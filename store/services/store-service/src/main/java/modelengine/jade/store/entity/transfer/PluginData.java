@@ -145,6 +145,16 @@ public class PluginData {
     private String appCategory;
 
     /**
+     * 表示用户组。
+     */
+    private String userGroupId;
+
+    /**
+     * 表示是否可修改。
+     */
+    private boolean isModifiable;
+
+    /**
      * 获取插件的创建者。
      *
      * @return 表示插件创建者的 {@link String}。
@@ -376,5 +386,41 @@ public class PluginData {
      */
     public String getAppCategory() {
         return appCategory;
+    }
+
+    /**
+     * 获取用户组 id。
+     *
+     * @return 表示用户组 id 的 {@link String}.
+     */
+    public String getUserGroupId() {
+        return this.userGroupId;
+    }
+
+    /**
+     * 设置用户组 id。
+     *
+     * @param userGroupId 表示用户组 id 的 {@link String}.
+     */
+    public void setUserGroupId(String userGroupId) {
+        this.userGroupId = userGroupId;
+    }
+
+    /**
+     * 获取是否可修改。
+     *
+     * @return 表示是否可修改的 {@code boolean}.
+     */
+    public boolean getModifiable() {
+        return this.isModifiable;
+    }
+
+    /**
+     * 设置是否可修改。
+     *
+     * @return 表示是否可修改的 {@code boolean}.
+     */
+    public void setModifiable(boolean isModifiable) {
+        this.isModifiable = isModifiable;
     }
 }

@@ -60,6 +60,10 @@
             <groupId>org.fitframework.fel</groupId>
             <artifactId>tool-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>modelengine.jade.service</groupId>
+            <artifactId>aipp-domain-division-service</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.mybatis</groupId>

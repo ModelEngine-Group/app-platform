@@ -37,6 +37,7 @@ public class AppBuilderFormSerializer implements BaseSerializer<AppBuilderForm, 
                 .updateBy(appBuilderForm.getUpdateBy())
                 .version(appBuilderForm.getVersion())
                 .formSuiteId(appBuilderForm.getFormSuiteId())
+                .userGroupId(appBuilderForm.getUserGroupId())
                 .build();
     }
 
@@ -58,6 +59,7 @@ public class AppBuilderFormSerializer implements BaseSerializer<AppBuilderForm, 
                 .updateBy(appBuilderFormPO.getUpdateBy())
                 .version(appBuilderFormPO.getVersion())
                 .formSuiteId(appBuilderFormPO.getFormSuiteId())
+                .userGroupId(appBuilderFormPO.getUserGroupId())
                 .build();
     }
 }

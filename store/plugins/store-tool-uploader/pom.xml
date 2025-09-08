@@ -48,6 +48,10 @@
             <groupId>modelengine.fit.jade.service</groupId>
             <artifactId>authentication-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>modelengine.jade.service</groupId>
+            <artifactId>aipp-domain-division-service</artifactId>
+        </dependency>
 
         <!-- Component -->
         <dependency>
