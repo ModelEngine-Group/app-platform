@@ -151,7 +151,6 @@
         <dependency>
             <groupId>modelengine.fit.jade.plugin</groupId>
             <artifactId>aipp-file-extract-excel</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 

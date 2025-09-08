@@ -6,46 +6,55 @@
 
 package modelengine.fit.jober.aipp.tool;
 
-import modelengine.fit.jade.aipp.file.extract.AbstractFileExtractor;
+import modelengine.fit.jade.aipp.file.extract.FileExtraction;
 import modelengine.fit.jober.aipp.service.OperatorService;
 import modelengine.fitframework.annotation.Component;
 
-import java.util.EnumMap;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * 管理文件提取器的容器
+ * 管理文件提取器的容器。
  *
- * @author jsbjfkbsjk
- * @since 2025-9-6
+ * @author 黄政炫
+ * @since 2025-09-06
  */
 @Component
 public class FileExtractorContainer {
-    private final Map<OperatorService.FileType, AbstractFileExtractor> map;
+    /**
+     * 一种文件类型对应一个提取器集合。
+     */
+    private final Map<String, List<FileExtraction>> fileExtractorMap;
 
     /**
-     * 初始化用框架注入提取器
+     * 初始化用框架注入提取器。
      *
-     * @param extractors 文件提取器 {@link AbstractFileExtractor}
+     * @param extractors 文件提取器 {@link FileExtraction}。
      */
-    public FileExtractorContainer(List<AbstractFileExtractor> extractors) {
-        map = new EnumMap<>(OperatorService.FileType.class);
-        for (AbstractFileExtractor fileExtractor : extractors) {
-            map.put(fileExtractor.supportedFileType(), fileExtractor);
+    public FileExtractorContainer(List<FileExtraction> extractors) {
+        this.fileExtractorMap = new HashMap<>();
+        for (FileExtraction fileExtractor : extractors) {
+            for (String supportedFileType : fileExtractor.supportedFileType()) {
+                this.fileExtractorMap.computeIfAbsent(supportedFileType, k -> new ArrayList<>()).add(fileExtractor);
+            }
         }
     }
 
     /**
-     * 根据文件类型找到支持文件类型的提取器
+     * 根据文件类型找到支持文件类型的提取器。
      *
-     * @param fileUrl 文件路径 {@link String}
-     * @param fileType 文件枚举类型 {@link OperatorService.FileType}
-     * @return 提取的字符串 {@link Optional<String>}
+     * @param fileUrl 文件路径 {@link String}。
+     * @param fileType 文件枚举类型 {@link OperatorService.FileType}。
+     * @return 提取的字符串 {@link Optional<String>}。
      */
     public Optional<String> extract(String fileUrl, OperatorService.FileType fileType) {
-        return Optional.ofNullable(map.get(fileType))
-                .map(extractor -> extractor.extractFile(fileUrl));
+        List<FileExtraction> extractors = this.fileExtractorMap.get(fileType.toString());
+        if (extractors == null || extractors.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(extractors.get(0)).map(extractor -> extractor.extractFile(fileUrl));
     }
 }

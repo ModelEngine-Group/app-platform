@@ -69,6 +69,7 @@
 
         <!-- Not Necessary versions -->
         <commons-io.version>2.16.1</commons-io.version>
+        <file-extract.version>1.0.0-SNAPSHOT</file-extract.version>
 
     </properties>
 
@@ -596,6 +597,11 @@
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-scratchpad</artifactId>
                 <version>${poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>modelengine.fit.jade.plugin</groupId>
+                <artifactId>aipp-file-extract-excel</artifactId>
+                <version>${file-extract.version}</version>
             </dependency>
 
             <!-- Test -->

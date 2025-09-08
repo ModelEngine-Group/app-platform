@@ -22,18 +22,6 @@
             <groupId>org.fitframework</groupId>
             <artifactId>fit-util</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.fitframework</groupId>
-            <artifactId>fit-test-framework</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-        </dependency>
 
         <!-- fast excel -->
         <dependency>
@@ -49,6 +37,23 @@
         <dependency>
             <groupId>modelengine.fit.jade</groupId>
             <artifactId>aipp-service</artifactId>
+        </dependency>
+
+        <!-- Tests -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.fitframework</groupId>
+            <artifactId>fit-test-framework</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

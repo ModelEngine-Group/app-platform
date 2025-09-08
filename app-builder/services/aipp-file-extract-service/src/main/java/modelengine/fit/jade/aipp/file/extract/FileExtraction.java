@@ -6,30 +6,31 @@
 
 package modelengine.fit.jade.aipp.file.extract;
 
-import modelengine.fit.jober.aipp.service.OperatorService;
 import modelengine.fitframework.annotation.Genericable;
+
+import java.util.List;
 
 /**
  * Excel文件提取器的抽象接口。
  *
- * @author jsbjfkbsjk
- * @since 2025-9-6
+ * @author 黄政炫
+ * @since 2025-09-06
  */
-public interface AbstractFileExtractor {
+public interface FileExtraction {
     /**
-     * 提取文件函数
+     * 提取文件函数。
      *
-     * @param fileUrl 文件路径
+     * @param fileUrl 表示文件路径 {@link String}。
      * @return 表示提取的文件信息的 {@link String}。
      */
-    @Genericable(id = "extract-file")
+    @Genericable(id = "modelengine.fit.jade.file.extractFile")
     String extractFile(String fileUrl);
 
     /**
-     * 返回提取器支持文件类型
+     * 返回提取器支持文件类型。
      *
-     * @return 表示返回的文件枚举类型 {@link OperatorService.FileType}
+     * @return 表示返回的文件类型 {@link List<String>}。
      */
-    @Genericable(id = "get-fileType")
-    OperatorService.FileType supportedFileType();
+    @Genericable(id = "modelengine.fit.jade.file.getFileType")
+    List<String> supportedFileType();
 }
