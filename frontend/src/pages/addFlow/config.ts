@@ -6,9 +6,7 @@
 
 import { TENANT_ID } from '../chatPreview/components/send-editor/common/config';
 import i18n from '../../locale/i18n';
-// @ts-ignore
 import chatScreenshot from '../../assets/images/appConfig/chat-screenshot.jpg';
-// @ts-ignore
 import heatmapScreenshot from '../../assets/images/appConfig/heatmap-screenshot.jpg';
 const { origin } = window.location;
 let baseUrl = '';
