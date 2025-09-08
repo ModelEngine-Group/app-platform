@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip}:{port}",
     "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
@@ -9,7 +9,7 @@
     }
   },
   "/aiApi": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip}:{port}",
     "pathRewrite": {
       "^/aiApi": "/tzaip/api/hisp"
     },
@@ -17,13 +17,13 @@
     "changeOrigin": true
   },
   "/aippApi": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip}:{port}",
     "pathRewrite": { "^/aippApi": "/v1/api" },
     "secure": false,
     "changeOrigin": true
   },
   "/modelApi": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip}:{port}",
     "pathRewrite": {
       "^/modelApi": "/"
     },
@@ -31,7 +31,7 @@
     "changeOrigin": true
   },
   "/knowledge": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip}:{port}",
     "pathRewrite": {
       "^/knowledge": ""
     },
@@ -39,13 +39,13 @@
     "changeOrigin": true
   },
   "/v1": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip}:{port}",
     "pathRewrite": { "^/v1": "/v1" },
     "secure": false,
     "changeOrigin": true
   },
   "/elsaApi": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip}:{port}",
     "pathRewrite": {
       "^/elsaApi": ""
     },
@@ -53,7 +53,7 @@
     "changeOrigin": true
   },
   "/llmApi": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip}:{port}",
     "pathRewrite": {
       "^/llmApi": ""
     },
@@ -61,7 +61,7 @@
     "changeOrigin": true
   },
   "/modelbase": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip}:{port}",
     "pathRewrite": {
       "^/modelbase": "/api/model_manage"
     },
@@ -69,7 +69,7 @@
     "changeOrigin": true
   },
   "/modeltrain": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip}:{port}",
     "pathRewrite": {
       "^/modeltrain": "/api/model_finetune"
     },
@@ -77,19 +77,19 @@
     "changeOrigin": true
   },
   "/ttApi": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip1}:{port1}",
     "pathRewrite": { "^/ttApi": "" },
     "secure": false,
     "changeOrigin": true
   },
   "/evaluate": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip1}:{port1}",
     "pathRewrite": { "^/evaluate": "" },
     "secure": false,
     "changeOrigin": true
   },
   "/apps": {
-    "target": "http://localhost:8080",
+    "target": "http://{ip2}:{port2}",
     "pathRewrite": { "^/apps/appengine": "" },
     "secure": false,
     "changeOrigin": true

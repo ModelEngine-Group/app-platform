@@ -61,8 +61,8 @@
     "ajv": "8.17.1"
   },
   "dependencies": {
-    "@fit-elsa/elsa-core": "file:../../../../project/fit-framework/framework/elsa/fit-elsa",
-    "@fit-elsa/elsa-react": "file:../../../../project/fit-framework/framework/elsa/fit-elsa-react",
+    "@fit-elsa/elsa-core": "file:../../fit-framework/framework/elsa/fit-elsa",
+    "@fit-elsa/elsa-react": "file:../../fit-framework/framework/elsa/fit-elsa-react",
     "antd": "4.24.13",
     "axios": "1.8.2",
     "dayjs": "1.11.10",

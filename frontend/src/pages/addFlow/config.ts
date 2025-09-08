@@ -105,7 +105,7 @@ export const configMap = {
       },{
         node: 'queryOptimizationNodeState',
         urls: {
-          llmModelEndpoint: `/llmApi/v1/api/fetch/model-list`,
+          llmModelEndpoint: ``,
         },
       }, {
         node: 'textExtractionNodeState',
