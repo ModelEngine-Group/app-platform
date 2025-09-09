@@ -238,7 +238,7 @@ public class AppBuilderGuestController extends AbstractController {
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId,
             @PathVariable("category_id") String categoryId,
             @RequestParam(value = "isDebug", defaultValue = "true", required = false) boolean isDebug) {
-        return appBuilderPromptService.queryInspirations(appId,
+        return this.appBuilderPromptService.queryInspirations(appId,
                 categoryId,
                 this.contextOf(httpRequest, tenantId),
                 isDebug);
@@ -379,7 +379,7 @@ public class AppBuilderGuestController extends AbstractController {
      */
     @PostMapping("/feedback")
     public void createUsrFeedback(@RequestBody UsrFeedbackDto usrFeedbackDto) {
-        usrFeedbackService.create(usrFeedbackDto);
+        this.usrFeedbackService.create(usrFeedbackDto);
     }
 
     /**
@@ -391,7 +391,7 @@ public class AppBuilderGuestController extends AbstractController {
     @PatchMapping("/feedback/{instanceId}")
     public void updateUsrFeedback(@PathVariable("instanceId") String instanceId,
             @RequestBody UsrFeedbackDto usrFeedbackDto) {
-        usrFeedbackService.updateOne(instanceId, usrFeedbackDto);
+        this.usrFeedbackService.updateOne(instanceId, usrFeedbackDto);
     }
 
     /**
@@ -401,7 +401,7 @@ public class AppBuilderGuestController extends AbstractController {
      */
     @DeleteMapping("/feedback/{instanceId}")
     public void deleteByLogId(@PathVariable("instanceId") String instanceId) {
-        usrFeedbackService.deleteByLogId(instanceId);
+        this.usrFeedbackService.deleteByLogId(instanceId);
     }
 
     /**
@@ -411,7 +411,7 @@ public class AppBuilderGuestController extends AbstractController {
      */
     @GetMapping("/feedbacks")
     public List<UsrFeedbackDto> getAllUsrFeedbacks() {
-        return usrFeedbackService.getAllUsrFeedbacks();
+        return this.usrFeedbackService.getAllUsrFeedbacks();
     }
 
     /**
@@ -422,7 +422,7 @@ public class AppBuilderGuestController extends AbstractController {
      */
     @GetMapping("/feedback/{instanceId}")
     public UsrFeedbackDto getAllAnswerByInstanceId(@PathVariable("instanceId") String instanceId) {
-        return usrFeedbackService.getUsrFeedbackByInstanceId(instanceId);
+        return this.usrFeedbackService.getUsrFeedbackByInstanceId(instanceId);
     }
 
     /**
@@ -455,7 +455,7 @@ public class AppBuilderGuestController extends AbstractController {
     @PostMapping(path = "/recommend")
     public Rsp<List<String>> queryRecommends(HttpClassicServerRequest request,
             @RequestBody AppBuilderRecommendDto recommendDto) {
-        return Rsp.ok(recommendService.queryRecommends(recommendDto, this.contextOf(request, "")));
+        return Rsp.ok(this.recommendService.queryRecommends(recommendDto, this.contextOf(request, "")));
     }
 
     /**
