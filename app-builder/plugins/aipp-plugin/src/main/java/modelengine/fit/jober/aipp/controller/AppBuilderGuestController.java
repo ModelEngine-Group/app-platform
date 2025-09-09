@@ -220,7 +220,7 @@ public class AppBuilderGuestController extends AbstractController {
     public Rsp<List<AppBuilderPromptCategoryDto>> listCategories(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId,
             @RequestParam(value = "isDebug", defaultValue = "true", required = false) boolean isDebug) {
-        return appBuilderPromptService.listPromptCategories(appId, this.contextOf(httpRequest, tenantId), isDebug);
+        return this.appBuilderPromptService.listPromptCategories(appId, this.contextOf(httpRequest, tenantId), isDebug);
     }
 
     /**
