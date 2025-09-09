@@ -14,8 +14,8 @@ import modelengine.fit.http.annotation.PostMapping;
 import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fitframework.annotation.Component;
-import modelengine.jade.app.engine.base.dto.UsrFeedbackDto;
-import modelengine.jade.app.engine.base.service.UsrFeedbackService;
+import modelengine.jade.app.engine.base.dto.UserFeedbackDto;
+import modelengine.jade.app.engine.base.service.UserFeedbackService;
 
 import java.util.List;
 
@@ -26,34 +26,34 @@ import java.util.List;
  *
  */
 @Component
-@RequestMapping("/aipp/usr")
-public class UsrFeedbackController {
-    private final UsrFeedbackService usrFeedbackService;
+@RequestMapping("/aipp/user")
+public class UserFeedbackController {
+    private final UserFeedbackService userFeedbackService;
 
-    public UsrFeedbackController(UsrFeedbackService usrFeedbackService) {
-        this.usrFeedbackService = usrFeedbackService;
+    public UserFeedbackController(UserFeedbackService userFeedbackService) {
+        this.userFeedbackService = userFeedbackService;
     }
 
     /**
      * 创建用户反馈记录
      *
-     * @param usrFeedbackDto 用户反馈消息体
+     * @param userFeedbackDto 用户反馈消息体
      */
     @PostMapping("/feedback")
-    public void createUsrFeedback(@RequestBody UsrFeedbackDto usrFeedbackDto) {
-        usrFeedbackService.create(usrFeedbackDto);
+    public void createUserFeedback(@RequestBody UserFeedbackDto userFeedbackDto) {
+        this.userFeedbackService.create(userFeedbackDto);
     }
 
     /**
      * 更新用户反馈信息
      *
-     * @param usrFeedbackDto 用户反馈消息体
+     * @param userFeedbackDto 用户反馈消息体
      * @param instanceId 对话实例Id
      */
     @PatchMapping("/feedback/{instanceId}")
-    public void updateUsrFeedback(@PathVariable("instanceId") String instanceId,
-                                  @RequestBody UsrFeedbackDto usrFeedbackDto) {
-        usrFeedbackService.updateOne(instanceId, usrFeedbackDto);
+    public void updateUserFeedback(@PathVariable("instanceId") String instanceId,
+                                  @RequestBody UserFeedbackDto userFeedbackDto) {
+        this.userFeedbackService.updateOne(instanceId, userFeedbackDto);
     }
 
     /**
@@ -63,7 +63,7 @@ public class UsrFeedbackController {
      */
     @DeleteMapping("/feedback/{instanceId}")
     public void deleteByLogId(@PathVariable("instanceId") String instanceId) {
-        usrFeedbackService.deleteByLogId(instanceId);
+        this.userFeedbackService.deleteByLogId(instanceId);
     }
 
     /**
@@ -72,8 +72,8 @@ public class UsrFeedbackController {
      * @return 用户反馈信息列表
      */
     @GetMapping("/feedbacks")
-    public List<UsrFeedbackDto> getAllUsrFeedbacks() {
-        return usrFeedbackService.getAllUsrFeedbacks();
+    public List<UserFeedbackDto> getAllUserFeedbacks() {
+        return this.userFeedbackService.getAllUserFeedbacks();
     }
 
     /**
@@ -83,7 +83,7 @@ public class UsrFeedbackController {
      * @return 对话信息
      */
     @GetMapping("/feedback/{instanceId}")
-    public UsrFeedbackDto getAllAnswerByInstanceId(@PathVariable("instanceId") String instanceId) {
-        return usrFeedbackService.getUsrFeedbackByInstanceId(instanceId);
+    public UserFeedbackDto getAllAnswerByInstanceId(@PathVariable("instanceId") String instanceId) {
+        return this.userFeedbackService.getUserFeedbackByInstanceId(instanceId);
     }
 }

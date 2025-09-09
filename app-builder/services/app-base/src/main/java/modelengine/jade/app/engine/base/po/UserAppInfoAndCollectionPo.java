@@ -25,15 +25,15 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsrAppInfoAndCollectionPo {
+public class UserAppInfoAndCollectionPo {
     @Property(description = "collection id")
     private Long id;
 
     @Property(description = "app id")
     private String appId;
 
-    @Property(description = "usr info")
-    private String usrInfo;
+    @Property(description = "user info")
+    private String userInfo;
 
     @Property(description = "name")
     private String name;

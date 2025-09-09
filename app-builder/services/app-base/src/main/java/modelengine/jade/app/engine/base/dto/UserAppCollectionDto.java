@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsrAppCollectionDto {
+public class UserAppCollectionDto {
     @Property(description = "收藏记录 id")
     private Long id;
 
@@ -29,5 +29,5 @@ public class UsrAppCollectionDto {
     private String appId;
 
     @Property(description = "用户信息")
-    private String usrInfo;
+    private String userInfo;
 }

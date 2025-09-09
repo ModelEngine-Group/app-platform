@@ -7,7 +7,7 @@
 package modelengine.jade.app.engine.base.dto;
 
 import modelengine.fitframework.annotation.Property;
-import modelengine.jade.app.engine.base.po.UsrAppInfoAndCollectionPo;
+import modelengine.jade.app.engine.base.po.UserAppInfoAndCollectionPo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,8 +26,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CollectionAppInfoDto {
     @Property(description = "收藏记录列表")
-    List<UsrAppInfoAndCollectionPo> collectionPoList;
+    List<UserAppInfoAndCollectionPo> collectionPoList;
 
     @Property(description = "默认应用")
-    UsrAppInfoAndCollectionPo defaultApp;
+    UserAppInfoAndCollectionPo defaultApp;
 }

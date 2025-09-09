@@ -54,9 +54,9 @@ import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.app.engine.base.dto.AppBuilderRecommendDto;
-import modelengine.jade.app.engine.base.dto.UsrFeedbackDto;
+import modelengine.jade.app.engine.base.dto.UserFeedbackDto;
 import modelengine.jade.app.engine.base.service.AppBuilderRecommendService;
-import modelengine.jade.app.engine.base.service.UsrFeedbackService;
+import modelengine.jade.app.engine.base.service.UserFeedbackService;
 import modelengine.jade.service.annotations.CarverSpan;
 import modelengine.jade.service.annotations.SpanAttr;
 
@@ -80,7 +80,7 @@ public class AppBuilderGuestController extends AbstractController {
     private final AippLogService aippLogService;
     private final AppBuilderPromptService appBuilderPromptService;
     private final AippRunTimeService aippRunTimeService;
-    private final UsrFeedbackService usrFeedbackService;
+    private final UserFeedbackService userFeedbackService;
     private final AppBuilderRecommendService recommendService;
     private final FileService fileService;
     private final AippChatService aippChatService;
@@ -88,7 +88,7 @@ public class AppBuilderGuestController extends AbstractController {
     /**
      * 用限校验认的证器对象 {@link Authenticator}， 应用通用服务 {@link AppBuilderAppService}，对话服务 {@link AppChatService}，实例历史记录服务
      * {@link AippLogService}，灵感大全服务类 {@link AppBuilderPromptService}，运行时服务类 {@link AippRunTimeService}，用户反馈服务类
-     * {@link UsrFeedbackService}，
+     * {@link UserFeedbackService}，
      * 猜你想问服务类 {@link AppBuilderRecommendService}，文件服务类 {@link FileService} 和应用聊天服务类 {@link AippChatService} 构造
      * {@link AppBuilderGuestController}。
      *
@@ -98,7 +98,7 @@ public class AppBuilderGuestController extends AbstractController {
      * @param aippLogService 表示实例历史记录服务的 {@link AippLogService}。
      * @param appBuilderPromptService 表示灵感大全服务的 {@link AppBuilderPromptService}。
      * @param aippRunTimeService 表示运行时服务的 {@link AippRunTimeService}。
-     * @param usrFeedbackService 表示用户反馈服务的 {@link UsrFeedbackService}。
+     * @param userFeedbackService 表示用户反馈服务的 {@link UserFeedbackService}。
      * @param recommendService 表示猜你想问服务的 {@link AppBuilderRecommendService}。
      * @param fileService 表示文件服务的 {@link FileService}。
      * @param aippChatService 表示应用聊天服务的 {@link AippChatService}。
@@ -106,7 +106,7 @@ public class AppBuilderGuestController extends AbstractController {
     public AppBuilderGuestController(Authenticator authenticator, AppBuilderAppService appGenericable,
             AppChatService appChatService, AippLogService aippLogService,
             AppBuilderPromptService appBuilderPromptService, AippRunTimeService aippRunTimeService,
-            UsrFeedbackService usrFeedbackService, AppBuilderRecommendService recommendService, FileService fileService,
+            UserFeedbackService userFeedbackService, AppBuilderRecommendService recommendService, FileService fileService,
             AippChatService aippChatService) {
         super(authenticator);
         this.appGenericable = appGenericable;
@@ -114,7 +114,7 @@ public class AppBuilderGuestController extends AbstractController {
         this.aippLogService = aippLogService;
         this.appBuilderPromptService = appBuilderPromptService;
         this.aippRunTimeService = aippRunTimeService;
-        this.usrFeedbackService = usrFeedbackService;
+        this.userFeedbackService = userFeedbackService;
         this.recommendService = recommendService;
         this.fileService = fileService;
         this.aippChatService = aippChatService;
@@ -375,23 +375,23 @@ public class AppBuilderGuestController extends AbstractController {
     /**
      * 创建用户反馈记录。
      *
-     * @param usrFeedbackDto 表示用户反馈消息体的 {@link UsrFeedbackDto}。
+     * @param userFeedbackDto 表示用户反馈消息体的 {@link UserFeedbackDto}。
      */
     @PostMapping("/feedback")
-    public void createUsrFeedback(@RequestBody UsrFeedbackDto usrFeedbackDto) {
-        this.usrFeedbackService.create(usrFeedbackDto);
+    public void createUserFeedback(@RequestBody UserFeedbackDto userFeedbackDto) {
+        this.userFeedbackService.create(userFeedbackDto);
     }
 
     /**
      * 更新用户反馈信息。
      *
      * @param instanceId 表示对话实例标识的 {@link String}。
-     * @param usrFeedbackDto 表示用户反馈消息体的 {@link UsrFeedbackDto}。
+     * @param userFeedbackDto 表示用户反馈消息体的 {@link UserFeedbackDto}。
      */
     @PatchMapping("/feedback/{instanceId}")
-    public void updateUsrFeedback(@PathVariable("instanceId") String instanceId,
-            @RequestBody UsrFeedbackDto usrFeedbackDto) {
-        this.usrFeedbackService.updateOne(instanceId, usrFeedbackDto);
+    public void updateUserFeedback(@PathVariable("instanceId") String instanceId,
+            @RequestBody UserFeedbackDto userFeedbackDto) {
+        this.userFeedbackService.updateOne(instanceId, userFeedbackDto);
     }
 
     /**
@@ -401,28 +401,28 @@ public class AppBuilderGuestController extends AbstractController {
      */
     @DeleteMapping("/feedback/{instanceId}")
     public void deleteByLogId(@PathVariable("instanceId") String instanceId) {
-        this.usrFeedbackService.deleteByLogId(instanceId);
+        this.userFeedbackService.deleteByLogId(instanceId);
     }
 
     /**
      * 获取用户反馈信息列表。
      *
-     * @return 表示用户反馈信息列表的 {@link List}{@code <}{@link UsrFeedbackDto}{@code >}。
+     * @return 表示用户反馈信息列表的 {@link List}{@code <}{@link UserFeedbackDto}{@code >}。
      */
     @GetMapping("/feedbacks")
-    public List<UsrFeedbackDto> getAllUsrFeedbacks() {
-        return this.usrFeedbackService.getAllUsrFeedbacks();
+    public List<UserFeedbackDto> getAllUserFeedbacks() {
+        return this.userFeedbackService.getAllUserFeedbacks();
     }
 
     /**
      * 通过日志唯一标识获取对话信息列表。
      *
      * @param instanceId 对话实例唯一标识的 {@link String}。
-     * @return 表示对话信息的 {@link UsrFeedbackDto}。
+     * @return 表示对话信息的 {@link UserFeedbackDto}。
      */
     @GetMapping("/feedback/{instanceId}")
-    public UsrFeedbackDto getAllAnswerByInstanceId(@PathVariable("instanceId") String instanceId) {
-        return this.usrFeedbackService.getUsrFeedbackByInstanceId(instanceId);
+    public UserFeedbackDto getAllAnswerByInstanceId(@PathVariable("instanceId") String instanceId) {
+        return this.userFeedbackService.getUserFeedbackByInstanceId(instanceId);
     }
 
     /**

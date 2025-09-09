@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="modelengine.jade.app.engine.base.mapper.UsrAppCollectionMapper">
-    <resultMap id="BaseResultMap" type="modelengine.jade.app.engine.base.po.UsrAppCollectionPo">
+<mapper namespace="modelengine.jade.app.engine.base.mapper.UserAppCollectionMapper">
+    <resultMap id="BaseResultMap" type="modelengine.jade.app.engine.base.po.UserAppCollectionPo">
         <result column="id" property="id"/>
         <result column="app_id" property="appId"/>
-        <result column="usr_info" property="usrInfo"/>
+        <result column="usr_info" property="userInfo"/>
     </resultMap>
-    <resultMap id="AppBuilderAndCollectionResultMap" type="modelengine.jade.app.engine.base.po.UsrAppInfoAndCollectionPo">
+    <resultMap id="AppBuilderAndCollectionResultMap" type="modelengine.jade.app.engine.base.po.UserAppInfoAndCollectionPo">
         <result column="id" property="id"/>
-        <result column="usr_info" property="usrInfo"/>
+        <result column="usr_info" property="userInfo"/>
         <result column="app_id" property="appId"/>
         <result column="name" property="name"/>
         <result column="config_id" property="configId"/>
@@ -24,7 +24,7 @@
         <result column="state" property="state"/>
     </resultMap>
 
-    <resultMap id="AppBuilderResultMap" type="modelengine.jade.app.engine.base.po.UsrAppInfoAndCollectionPo">
+    <resultMap id="AppBuilderResultMap" type="modelengine.jade.app.engine.base.po.UserAppInfoAndCollectionPo">
         <result column="id" property="appId"/>
         <result column="name" property="name"/>
         <result column="config_id" property="configId"/>
@@ -49,15 +49,15 @@
         , name, config_id, flow_graph_id, tenant_id, type, version, attributes, state, create_by, create_at, update_by, update_at
     </sql>
 
-    <insert id="insert" parameterType="modelengine.jade.app.engine.base.dto.UsrAppCollectionDto" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="modelengine.jade.app.engine.base.dto.UserAppCollectionDto" useGeneratedKeys="true" keyProperty="id">
         insert into usr_collection_info (app_id, usr_info)
-        values (#{appId}, #{usrInfo})
+        values (#{appId}, #{userInfo})
     </insert>
 
-    <delete id="deleteByUsrInfoAndAppId">
+    <delete id="deleteByUserInfoAndAppId">
         delete
         from usr_collection_info
-        where usr_info = #{usrInfo}
+        where usr_info = #{userInfo}
         and app_id = #{appId}
     </delete>
 
@@ -68,14 +68,14 @@
     </delete>
 
 
-    <select id="getCollectionsByUsrInfo" resultMap="BaseResultMap" resultType="modelengine.jade.app.engine.base.po.UsrAppCollectionPo">
+    <select id="getCollectionsByUserInfo" resultMap="BaseResultMap" resultType="modelengine.jade.app.engine.base.po.UserAppCollectionPo">
         select
         <include refid="Base_Column_List"/>
         from usr_collection_info
-        where usr_info = #{usrInfo}
+        where usr_info = #{userInfo}
     </select>
 
-    <update id="updateCollectionUsrCntByAppId">
+    <update id="updateCollectionUserCntByAppId">
         update app_builder_app
         <set>
             collection_usr_cnt = collection_usr_cnt + #{collectionNum}
@@ -83,13 +83,13 @@
         where id = #{appId}
     </update>
 
-    <select id="getCollectionUsrCntByAppId" resultType="Integer">
+    <select id="getCollectionUserCntByAppId" resultType="Integer">
         select collection_usr_cnt
         from app_builder_app
         where id = #{appId}
     </select>
 
-    <select id="getAppInfoByUsrInfo" resultMap="AppBuilderAndCollectionResultMap" resultType="modelengine.jade.app.engine.base.po.UsrAppInfoAndCollectionPo">
+    <select id="getAppInfoByUserInfo" resultMap="AppBuilderAndCollectionResultMap" resultType="modelengine.jade.app.engine.base.po.UserAppInfoAndCollectionPo">
         select
         usr.id, usr.usr_info, usr.app_id,
         app.name, app.config_id, app.flow_graph_id, app.tenant_id,
@@ -98,13 +98,13 @@
         from usr_collection_info as usr
         left join app_builder_app as app
         on app.id = usr.app_id
-        where usr.usr_info = #{usrInfo}
+        where usr.usr_info = #{userInfo}
     </select>
 
-    <select id="getDefaultAppInfo" resultMap="AppBuilderResultMap" resultType="modelengine.jade.app.engine.base.po.UsrAppInfoAndCollectionPo">
+    <select id="getDefaultAppInfo" resultMap="AppBuilderResultMap" resultType="modelengine.jade.app.engine.base.po.UserAppInfoAndCollectionPo">
         select
         <include refid="App_Column_List"/>
         from app_builder_app
-        where id = (select default_app from user_info where user_name = #{usrInfo})
+        where id = (select default_app from user_info where user_name = #{userInfo})
     </select>
 </mapper>

@@ -16,9 +16,9 @@ import modelengine.fitframework.annotation.Component;
 import modelengine.jade.app.engine.base.common.resp.Response;
 import modelengine.jade.app.engine.base.common.resp.ResponseCode;
 import modelengine.jade.app.engine.base.dto.CollectionAppInfoDto;
-import modelengine.jade.app.engine.base.dto.UsrAppCollectionDto;
-import modelengine.jade.app.engine.base.po.UsrAppCollectionPo;
-import modelengine.jade.app.engine.base.service.UsrAppCollectionService;
+import modelengine.jade.app.engine.base.dto.UserAppCollectionDto;
+import modelengine.jade.app.engine.base.po.UserAppCollectionPo;
+import modelengine.jade.app.engine.base.service.UserAppCollectionService;
 
 import java.util.List;
 
@@ -29,59 +29,59 @@ import java.util.List;
  *
  */
 @Component
-@RequestMapping("/aipp/usr")
-public class UsrCollectionController {
-    private final UsrAppCollectionService usrAppCollectionService;
+@RequestMapping("/aipp/user")
+public class UserCollectionController {
+    private final UserAppCollectionService userAppCollectionService;
 
-    public UsrCollectionController(UsrAppCollectionService usrAppCollectionService) {
-        this.usrAppCollectionService = usrAppCollectionService;
+    public UserCollectionController(UserAppCollectionService userAppCollectionService) {
+        this.userAppCollectionService = userAppCollectionService;
     }
 
     /**
      * 创建用户应用收藏记录
      *
-     * @param usrAppCollectionDto 用户应用收藏消息体
+     * @param userAppCollectionDto 用户应用收藏消息体
      * @return 收藏记录id
      */
     @PostMapping("/collection")
-    public Response<Long> createUsrAppCollection(@RequestBody UsrAppCollectionDto usrAppCollectionDto) {
-        Long collectionId = usrAppCollectionService.create(usrAppCollectionDto);
+    public Response<Long> createUserAppCollection(@RequestBody UserAppCollectionDto userAppCollectionDto) {
+        Long collectionId = this.userAppCollectionService.create(userAppCollectionDto);
         return Response.success(collectionId, ResponseCode.OK);
     }
 
     /**
      * 删除应用收藏记录
      *
-     * @param usrAppCollectionDto 应用收藏记录信息
+     * @param userAppCollectionDto 应用收藏记录信息
      * @return 响应
      */
     @DeleteMapping("/collection")
-    public Response<Void> deleteUsrCollectionApp(@RequestBody UsrAppCollectionDto usrAppCollectionDto) {
-        usrAppCollectionService.deleteByUsrInfoAndAppId(usrAppCollectionDto.getUsrInfo(),
-                usrAppCollectionDto.getAppId());
+    public Response<Void> deleteUserCollectionApp(@RequestBody UserAppCollectionDto userAppCollectionDto) {
+        this.userAppCollectionService.deleteByUserInfoAndAppId(userAppCollectionDto.getUserInfo(),
+                userAppCollectionDto.getAppId());
         return Response.success(ResponseCode.OK);
     }
 
     /**
      * 通过用户信息获取应用收藏列表
      *
-     * @param usrInfo 用户信息
+     * @param userInfo 用户信息
      * @return 收藏应用列表
      */
-    @GetMapping("/collection/{usrInfo}")
-    public Response<List<UsrAppCollectionPo>> getCollectionsByUsrInfo(@PathVariable("usrInfo") String usrInfo) {
-        return Response.success(usrAppCollectionService.getCollectionsByUsrInfo(usrInfo), ResponseCode.OK);
+    @GetMapping("/collection/{userInfo}")
+    public Response<List<UserAppCollectionPo>> getCollectionsByUserInfo(@PathVariable("userInfo") String userInfo) {
+        return Response.success(this.userAppCollectionService.getCollectionsByUserInfo(userInfo), ResponseCode.OK);
     }
 
     /**
      * 通过用户信息获取应用收藏列表详细信息
      *
-     * @param usrInfo 用户信息
+     * @param userInfo 用户信息
      * @return 收藏应用列表详细信息
      */
-    @GetMapping("/collection/app/{usrInfo}")
-    public Response<CollectionAppInfoDto> getAppCollectionInfoByUsrInfo(@PathVariable("usrInfo") String usrInfo) {
-        return Response.success(usrAppCollectionService.getAppInfoByUsrInfo(usrInfo), ResponseCode.OK);
+    @GetMapping("/collection/app/{userInfo}")
+    public Response<CollectionAppInfoDto> getAppCollectionInfoByUserInfo(@PathVariable("userInfo") String userInfo) {
+        return Response.success(this.userAppCollectionService.getAppInfoByUserInfo(userInfo), ResponseCode.OK);
     }
 
     /**
@@ -91,7 +91,7 @@ public class UsrCollectionController {
      * @return 用户收藏数量
      */
     @GetMapping("/collection/count/{appId}")
-    public Response<Integer> getCollectionUsrCntByAppId(@PathVariable("appId") String appId) {
-        return Response.success(usrAppCollectionService.getCollectionUsrCntByAppId(appId), ResponseCode.OK);
+    public Response<Integer> getCollectionUserCntByAppId(@PathVariable("appId") String appId) {
+        return Response.success(this.userAppCollectionService.getCollectionUserCntByAppId(appId), ResponseCode.OK);
     }
 }

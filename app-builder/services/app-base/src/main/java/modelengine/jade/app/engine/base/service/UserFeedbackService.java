@@ -7,7 +7,7 @@
 package modelengine.jade.app.engine.base.service;
 
 import modelengine.fitframework.annotation.Genericable;
-import modelengine.jade.app.engine.base.dto.UsrFeedbackDto;
+import modelengine.jade.app.engine.base.dto.UserFeedbackDto;
 
 import java.util.List;
 
@@ -17,23 +17,23 @@ import java.util.List;
  * @since 2024-5-24
  *
  */
-public interface UsrFeedbackService {
+public interface UserFeedbackService {
     /**
      * 创建用户反馈信息
      *
-     * @param usrFeedbackDto 用户反馈信息
+     * @param userFeedbackDto 用户反馈信息
      */
-    @Genericable(id = "modelengine.jade.app.engine.base.service.UsrFeedbackService.create")
-    void create(UsrFeedbackDto usrFeedbackDto);
+    @Genericable(id = "modelengine.jade.app.engine.base.service.UserFeedbackService.create")
+    void create(UserFeedbackDto userFeedbackDto);
 
     /**
      * 更新用户反馈记录
      *
      * @param instanceId 应用实例id
-     * @param usrFeedbackDto 用户反馈信息
+     * @param userFeedbackDto 用户反馈信息
      */
-    @Genericable(id = "modelengine.jade.app.engine.base.service.UsrFeedbackService.update")
-    void updateOne(String instanceId, UsrFeedbackDto usrFeedbackDto);
+    @Genericable(id = "modelengine.jade.app.engine.base.service.UserFeedbackService.update")
+    void updateOne(String instanceId, UserFeedbackDto userFeedbackDto);
 
 
     /**
@@ -41,7 +41,7 @@ public interface UsrFeedbackService {
      *
      * @param instanceId 对话实例Id
      */
-    @Genericable(id = "modelengine.jade.app.engine.base.service.UsrFeedbackService.delete")
+    @Genericable(id = "modelengine.jade.app.engine.base.service.UserFeedbackService.delete")
     void deleteByLogId(String instanceId);
 
     /**
@@ -49,8 +49,8 @@ public interface UsrFeedbackService {
      *
      * @return 用户反馈列表
      */
-    @Genericable(id = "modelengine.jade.app.engine.base.service.UsrFeedbackService.getAllUsrFeedbacks")
-    List<UsrFeedbackDto> getAllUsrFeedbacks();
+    @Genericable(id = "modelengine.jade.app.engine.base.service.UserFeedbackService.getAllUserFeedbacks")
+    List<UserFeedbackDto> getAllUserFeedbacks();
 
     /**
      * 通过logId查询用户反馈记录
@@ -58,6 +58,6 @@ public interface UsrFeedbackService {
      * @param instanceId 对话实例Id
      * @return 用户反馈信息
      */
-    @Genericable(id = "modelengine.jade.app.engine.base.service.UsrFeedbackService.getUsrFeedbackByInstanceId")
-    UsrFeedbackDto getUsrFeedbackByInstanceId(String instanceId);
+    @Genericable(id = "modelengine.jade.app.engine.base.service.UserFeedbackService.getUserFeedbackByInstanceId")
+    UserFeedbackDto getUserFeedbackByInstanceId(String instanceId);
 }

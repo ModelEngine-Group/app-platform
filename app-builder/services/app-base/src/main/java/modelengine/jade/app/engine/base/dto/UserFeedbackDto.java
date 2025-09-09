@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsrFeedbackDto {
+public class UserFeedbackDto {
     @Property(description = "反馈记录 id")
     private Long id;
 
@@ -29,8 +29,8 @@ public class UsrFeedbackDto {
     private String instanceId;
 
     @Property(description = "用户反馈 -1 未反馈 0 点赞 1 点踩")
-    private Integer usrFeedback;
+    private Integer userFeedback;
 
     @Property(description = "用户反馈文本")
-    private String usrFeedbackText;
+    private String userFeedbackText;
 }

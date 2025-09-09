@@ -25,7 +25,7 @@ import modelengine.jade.app.engine.base.service.UserInfoService;
  *
  */
 @Component
-@RequestMapping("/aipp/usr")
+@RequestMapping("/aipp/user")
 public class UserInfoController {
     private final UserInfoService userInfoService;
 
@@ -40,8 +40,8 @@ public class UserInfoController {
      * @return 用户信息 id
      */
     @PostMapping("/info")
-    public Response<Long> createUsrAppCollection(@RequestBody UserInfoDto userInfoDto) {
-        Long userInfoId = userInfoService.createUserInfo(userInfoDto);
+    public Response<Long> createUserAppCollection(@RequestBody UserInfoDto userInfoDto) {
+        Long userInfoId = this.userInfoService.createUserInfo(userInfoDto);
         return Response.success(userInfoId, ResponseCode.OK);
     }
 
@@ -52,8 +52,8 @@ public class UserInfoController {
      * @return 响应信息
      */
     @PatchMapping("/info")
-    public Response<Void> updateUsrAppCollection(@RequestBody UserInfoDto userInfoDto) {
-        userInfoService.updateUserInfo(userInfoDto);
+    public Response<Void> updateUserAppCollection(@RequestBody UserInfoDto userInfoDto) {
+        this.userInfoService.updateUserInfo(userInfoDto);
         return Response.success(ResponseCode.OK);
     }
 
@@ -64,7 +64,7 @@ public class UserInfoController {
      * @return 用户信息
      */
     @GetMapping("/info/{userName}")
-    public Response<UserInfoDto> createUsrAppCollection(@PathVariable("userName") String userName) {
-        return Response.success(userInfoService.getUserInfo(userName), ResponseCode.OK);
+    public Response<UserInfoDto> createUserAppCollection(@PathVariable("userName") String userName) {
+        return Response.success(this.userInfoService.getUserInfo(userName), ResponseCode.OK);
     }
 }

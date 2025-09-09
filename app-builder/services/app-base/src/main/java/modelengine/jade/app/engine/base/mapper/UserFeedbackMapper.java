@@ -6,7 +6,7 @@
 
 package modelengine.jade.app.engine.base.mapper;
 
-import modelengine.jade.app.engine.base.dto.UsrFeedbackDto;
+import modelengine.jade.app.engine.base.dto.UserFeedbackDto;
 
 import java.util.List;
 
@@ -16,22 +16,22 @@ import java.util.List;
  * @since 2024-5-24
  *
  */
-public interface UsrFeedbackMapper {
+public interface UserFeedbackMapper {
     /**
      * 用户反馈创建接口
      *
-     * @param usrFeedbackDto 用户反馈信息
+     * @param userFeedbackDto 用户反馈信息
      */
-    void insert(UsrFeedbackDto usrFeedbackDto);
+    void insert(UserFeedbackDto userFeedbackDto);
 
     /**
      * 用户反馈更新接口
      *
      * @param instanceId 对话实例id
-     * @param usrFeedback 用户反馈
-     * @param usrFeedbackText 用户反馈文本
+     * @param userFeedback 用户反馈
+     * @param userFeedbackText 用户反馈文本
      */
-    void updateOne(String instanceId, Integer usrFeedback, String usrFeedbackText);
+    void updateOne(String instanceId, Integer userFeedback, String userFeedbackText);
 
     /**
      * 通过日志Id删除用户反馈记录
@@ -45,7 +45,7 @@ public interface UsrFeedbackMapper {
      *
      * @return 用户反馈列表
      */
-    List<UsrFeedbackDto> getAllUsrFeedbacks();
+    List<UserFeedbackDto> getAllUserFeedbacks();
 
     /**
      * 通过日志Id获取用户反馈信息
@@ -53,5 +53,5 @@ public interface UsrFeedbackMapper {
      * @param instanceId 对话实例id
      * @return 用户反馈信息
      */
-    UsrFeedbackDto getUsrFeedbackByInstanceId(String instanceId);
+    UserFeedbackDto getUserFeedbackByInstanceId(String instanceId);
 }
