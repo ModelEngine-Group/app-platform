@@ -16,7 +16,7 @@ import java.util.List;
  * @author 黄政炫
  * @since 2025-09-06
  */
-public interface FileExtractor{
+public interface FileExtractor {
     /**
      * 提取文件函数。
      *
