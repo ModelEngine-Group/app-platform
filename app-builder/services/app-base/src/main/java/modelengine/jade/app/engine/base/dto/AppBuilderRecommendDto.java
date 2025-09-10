@@ -21,4 +21,5 @@ public class AppBuilderRecommendDto {
     private String answer;
     private String model;
     private String modelTag;
+    private String appOwner;
 }

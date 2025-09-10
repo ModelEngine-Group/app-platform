@@ -68,6 +68,9 @@ const Recommends = (props) => {
       question,
       answer
     }
+    if (isGuest && !location.pathname.includes('/guest')) {
+      params.appOwner = appInfo.createBy;
+    }
     recommendList.length > 0 && setLoading(true);
     try {
       const res:any = isGuest ? await getGuestModeRecommends(params) : await getRecommends(params);

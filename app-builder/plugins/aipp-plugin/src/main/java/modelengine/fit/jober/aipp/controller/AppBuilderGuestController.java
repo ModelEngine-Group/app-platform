@@ -455,7 +455,7 @@ public class AppBuilderGuestController extends AbstractController {
     @PostMapping(path = "/recommend")
     public Rsp<List<String>> queryRecommends(HttpClassicServerRequest request,
             @RequestBody AppBuilderRecommendDto recommendDto) {
-        return Rsp.ok(this.recommendService.queryRecommends(recommendDto, this.contextOf(request, "")));
+        return Rsp.ok(this.recommendService.queryRecommends(recommendDto, this.contextOf(request, ""), true));
     }
 
     /**
