@@ -18,6 +18,8 @@ import cn.idev.excel.metadata.property.ExcelContentProperty;
 import cn.idev.excel.read.listener.ReadListener;
 import cn.idev.excel.read.metadata.ReadSheet;
 import cn.idev.excel.util.DateUtils;
+import cn.idev.excel.util.StringUtils;
+import lombok.NonNull;
 import modelengine.fit.jober.aipp.service.OperatorService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
@@ -45,22 +47,20 @@ import java.util.stream.Collectors;
  * @since 2025-09-06
  */
 @Component
-public class ExcelFileExtractor implements FileExtraction {
+public class ExcelFileExtractor implements FileExtractor {
     /**
      * 把单元格转换成格式化字符串。
      *
      * @param cell 表示单元格数据 {@link ReadCellData}。
      * @return 转换后的内容 {@link String}。
      */
-    private static String getCellValueAsString(ReadCellData<?> cell) {
+    private static String getCellValueAsString(@NonNull ReadCellData<?> cell) {
         switch (cell.getType()) {
             case STRING:
                 return cell.getStringValue();
             case NUMBER:
                 DataFormatData fmt = cell.getDataFormatData();
-                short formatIndex = fmt.getIndex();
-                String formatString = fmt.getFormat();
-                if (DateUtils.isADateFormat(formatIndex, formatString)) {
+                if (DateUtils.isADateFormat(fmt.getIndex(), fmt.getFormat())) {
                     double value = cell.getNumberValue().doubleValue();
                     Date date = DateUtils.getJavaDate(value, true);
                     return new SimpleDateFormat("yyyy-MM-dd").format(date);
@@ -82,13 +82,15 @@ public class ExcelFileExtractor implements FileExtraction {
      */
     @Override
     @Fitable(id = "get-fileType-excel")
-    public List<String> supportedFileType() {
+    public List<String> supportedFileTypes() {
         return Arrays.asList(OperatorService.FileType.EXCEL.toString(), OperatorService.FileType.CSV.toString());
     }
 
     /**
+     * 判断文件路径是否有效
+     *
      * @param fileUrl 表示文件路径 {@link String}。
-     * @return 表示路径是否有效 {@link Boolean}。
+     * @return 表示路径是否有效 {@code boolean}。
      */
     private boolean isValidPath(String fileUrl) {
         try {
@@ -109,7 +111,7 @@ public class ExcelFileExtractor implements FileExtraction {
     @Fitable(id = "extract-file-excel")
     public String extractFile(String fileUrl) {
         if (!isValidPath(fileUrl)) {
-            throw new IllegalArgumentException("无效的文件路径: " + fileUrl);
+            throw new IllegalArgumentException("Invalid FilePath" + fileUrl);
         }
         File file = Paths.get(fileUrl).toFile();
         StringBuilder excelContent = new StringBuilder();
@@ -129,7 +131,7 @@ public class ExcelFileExtractor implements FileExtraction {
             }
             excelContent.append('\n');
         } catch (IOException e) {
-            throw new IllegalStateException("Excel文件读取失败", e);
+            throw new IllegalStateException("Fail To Extract Excel File", e);
         } finally {
             if (reader != null) {
                 reader.finish(); // 关闭资源
@@ -142,7 +144,7 @@ public class ExcelFileExtractor implements FileExtraction {
      * 读取监听器的内部类实现。
      */
     private class ExcelReadListener implements ReadListener<Map<Integer, String>> {
-        StringBuilder excelContent;
+        private final StringBuilder excelContent;
 
         ExcelReadListener(StringBuilder excelContent) {
             this.excelContent = excelContent;
@@ -159,8 +161,7 @@ public class ExcelFileExtractor implements FileExtraction {
         }
 
         @Override
-        public void doAfterAllAnalysed(AnalysisContext context) {
-        }
+        public void doAfterAllAnalysed(AnalysisContext context) {}
     }
 
     /**
@@ -181,7 +182,7 @@ public class ExcelFileExtractor implements FileExtraction {
         @Override
         public String convertToJavaData(ReadCellData<?> cellData, ExcelContentProperty contentProperty,
                 GlobalConfiguration globalConfiguration) {
-            return getCellValueAsString(cellData);
+            return (cellData != null) ? getCellValueAsString(cellData) : StringUtils.EMPTY;
         }
     }
 }

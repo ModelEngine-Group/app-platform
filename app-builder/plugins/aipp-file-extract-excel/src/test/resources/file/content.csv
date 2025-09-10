@@ -1,1 +1,12 @@
 This is an excel test
+ID,Name,Age,JoinDate,Active,Salary,Department,Notes
+1,John Doe,25,2023-01-15,TRUE,8000.50,IT,"Regular employee"
+2,Jane Smith,30,2022-05-20,TRUE,12000.00,Marketing,"Team leader"
+3,Bob Johnson,28,2023-03-10,FALSE,7500.00,Sales,"Left company"
+4,Alice Brown,35,2020-12-01,TRUE,15000.75,IT,"Senior engineer"
+5,Tom Wilson,22,2023-08-25,TRUE,6000.00,HR,"Intern"
+6,,40,2019-06-15,TRUE,18000.00,Finance,"Department manager"
+7,Lucy Davis,27,2023-02-28,FALSE,7000.00,Operations,"Contract ended"
+8,Mike Miller,32,2021-09-10,TRUE,13500.50,IT,"Project lead"
+9,Sarah Lee,29,2022-11-05,TRUE,9500.00,Marketing,"Marketing specialist"
+10,David Zhang,26,2023-07-12,TRUE,8500.25,Sales,"Sales representative"

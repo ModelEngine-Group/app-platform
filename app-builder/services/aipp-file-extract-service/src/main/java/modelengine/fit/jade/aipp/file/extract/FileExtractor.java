@@ -16,7 +16,7 @@ import java.util.List;
  * @author 黄政炫
  * @since 2025-09-06
  */
-public interface FileExtraction {
+public interface FileExtractor{
     /**
      * 提取文件函数。
      *
@@ -32,5 +32,5 @@ public interface FileExtraction {
      * @return 表示返回的文件类型 {@link List<String>}。
      */
     @Genericable(id = "modelengine.fit.jade.file.getFileType")
-    List<String> supportedFileType();
+    List<String> supportedFileTypes();
 }

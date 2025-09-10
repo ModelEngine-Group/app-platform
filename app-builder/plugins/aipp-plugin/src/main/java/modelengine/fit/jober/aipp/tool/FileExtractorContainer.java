@@ -6,9 +6,10 @@
 
 package modelengine.fit.jober.aipp.tool;
 
-import modelengine.fit.jade.aipp.file.extract.FileExtraction;
+import modelengine.fit.jade.aipp.file.extract.FileExtractor;
 import modelengine.fit.jober.aipp.service.OperatorService;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.log.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,20 +25,22 @@ import java.util.Optional;
  */
 @Component
 public class FileExtractorContainer {
+    private static final Logger log = Logger.get(FileExtractorContainer.class);
+
     /**
      * 一种文件类型对应一个提取器集合。
      */
-    private final Map<String, List<FileExtraction>> fileExtractorMap;
+    private final Map<String, List<FileExtractor>> fileExtractorMap;
 
     /**
      * 初始化用框架注入提取器。
      *
-     * @param extractors 文件提取器 {@link FileExtraction}。
+     * @param extractors 文件提取器 {@link FileExtractor}。
      */
-    public FileExtractorContainer(List<FileExtraction> extractors) {
+    public FileExtractorContainer(List<FileExtractor> extractors) {
         this.fileExtractorMap = new HashMap<>();
-        for (FileExtraction fileExtractor : extractors) {
-            for (String supportedFileType : fileExtractor.supportedFileType()) {
+        for (FileExtractor fileExtractor : extractors) {
+            for (String supportedFileType : fileExtractor.supportedFileTypes()) {
                 this.fileExtractorMap.computeIfAbsent(supportedFileType, k -> new ArrayList<>()).add(fileExtractor);
             }
         }
@@ -51,9 +54,12 @@ public class FileExtractorContainer {
      * @return 提取的字符串 {@link Optional<String>}。
      */
     public Optional<String> extract(String fileUrl, OperatorService.FileType fileType) {
-        List<FileExtraction> extractors = this.fileExtractorMap.get(fileType.toString());
+        List<FileExtractor> extractors = this.fileExtractorMap.get(fileType.toString());
         if (extractors == null || extractors.isEmpty()) {
             return Optional.empty();
+        }
+        if (extractors.size() > 1) {
+            log.warn("Multiple extractors found , using first: {}", extractors.get(0).getClass().getSimpleName());
         }
         return Optional.ofNullable(extractors.get(0)).map(extractor -> extractor.extractFile(fileUrl));
     }
