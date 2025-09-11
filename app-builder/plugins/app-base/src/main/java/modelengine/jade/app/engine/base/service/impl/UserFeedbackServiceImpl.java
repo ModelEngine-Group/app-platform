@@ -16,8 +16,9 @@ import modelengine.jade.app.engine.base.mapper.UserFeedbackMapper;
 import java.util.List;
 
 /**
- * Aipp用户反馈功能实现类
+ * Aipp 用户反馈功能实现类
  *
+ * @author 鲁为
  * @since 2024-5-24
  *
  */
