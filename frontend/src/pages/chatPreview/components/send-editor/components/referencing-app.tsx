@@ -36,7 +36,8 @@ const ReferencingApp = (props) => {
         pageNum: pageNo.current,
         pageSize: 3,
         includeTags: 'App',
-        name: searchKey
+        name: searchKey,
+        excludeTags: 'BUILTIN'
       }
       const res = await queryAppsApi(tenantId, params);
       if (res.code === 0) {

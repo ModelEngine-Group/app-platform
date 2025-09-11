@@ -24,6 +24,7 @@ INSERT INTO "public"."store_tag" ("tool_unique_name", "name") VALUES ('aed53a7c-
 INSERT INTO "public"."store_tag" ("tool_unique_name", "name") VALUES ('aed53a7c-4701-437b-b651-a5ec298dd0cf', 'KNOWLEDGE') ON CONFLICT ("tool_unique_name", "name") DO NOTHING;
 INSERT INTO "public"."store_tag" ("tool_unique_name", "name") VALUES ('4ff18263-7cc1-40fc-bd96-4c0ee9eb3af0', 'APP') ON CONFLICT ("tool_unique_name", "name") DO NOTHING;
 INSERT INTO "public"."store_tag" ("tool_unique_name", "name") VALUES ('4ff18263-7cc1-40fc-bd96-4c0ee9eb3af0', 'APP_TYPE_B653EDB7EB5A49BE91ABCD2C5877C6AD') ON CONFLICT ("tool_unique_name", "name") DO NOTHING;
+INSERT INTO "public"."store_tag" ("tool_unique_name", "name") VALUES ('4ff18263-7cc1-40fc-bd96-4c0ee9eb3af0', 'BUILTIN') ON CONFLICT ("tool_unique_name", "name") DO NOTHING;
 
 INSERT INTO "public"."store_plugin_tool" ("like_count", "download_count", "tool_name", "plugin_id", "tool_unique_name", "source", "icon", "user_group_id") VALUES (0, 0, '添加知识库配置', '3733674b4180b02ebb49f60193373d38e08753d890d31d41a1ca880cf4364cdd', 'f952e986-a1ee-474d-bd3a-bdf154db58e7', '', NULL, '*') ON CONFLICT ("plugin_id", "tool_unique_name") DO NOTHING;
 INSERT INTO "public"."store_plugin_tool" ("like_count", "download_count", "tool_name", "plugin_id", "tool_unique_name", "source", "icon", "user_group_id") VALUES (0, 0, '修改知识库配置', '3733674b4180b02ebb49f60193373d38e08753d890d31d41a1ca880cf4364cdd', '39eea5b4-034a-409a-935a-e9df7736dda8', '', NULL, '*') ON CONFLICT ("plugin_id", "tool_unique_name") DO NOTHING;
