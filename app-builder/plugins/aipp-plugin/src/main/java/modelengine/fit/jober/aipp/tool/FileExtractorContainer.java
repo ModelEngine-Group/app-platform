@@ -10,6 +10,7 @@ import modelengine.fit.jade.aipp.file.extract.FileExtractor;
 import modelengine.fit.jober.aipp.service.OperatorService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.log.Logger;
+import modelengine.fitframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,15 +52,20 @@ public class FileExtractorContainer {
      *
      * @param fileUrl 文件路径 {@link String}。
      * @param fileType 文件枚举类型 {@link OperatorService.FileType}。
-     * @return 提取的字符串 {@link Optional<String>}。
+     * @return 提取的字符串 {@link Optional}{@code <}{@link String}{@code >}。
      */
     public Optional<String> extract(String fileUrl, OperatorService.FileType fileType) {
+        if (fileType == null) {
+            log.warn("FileType is null");
+            return Optional.empty();
+        }
         List<FileExtractor> extractors = this.fileExtractorMap.get(fileType.toString());
-        if (extractors == null || extractors.isEmpty()) {
+        if (CollectionUtils.isEmpty(extractors)) {
             return Optional.empty();
         }
         if (extractors.size() > 1) {
-            log.warn("Multiple extractors found , using first: {}", extractors.get(0).getClass().getSimpleName());
+            log.warn("Multiple extractors found, using the first one instead. [name={}]",
+                    extractors.get(0).getClass().getSimpleName());
         }
         return Optional.ofNullable(extractors.get(0)).map(extractor -> extractor.extractFile(fileUrl));
     }

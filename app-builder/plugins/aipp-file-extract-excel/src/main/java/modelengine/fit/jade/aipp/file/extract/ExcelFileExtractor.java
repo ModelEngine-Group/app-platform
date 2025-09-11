@@ -78,7 +78,7 @@ public class ExcelFileExtractor implements FileExtractor {
     /**
      * 该文件提取器支持EXCEL和CSV类型。
      *
-     * @return 枚举常量类型集合 {@link List<String>}。
+     * @return 支持的枚举常量类型列表 {@link List}{@code <}{@link String}{@code >}。
      */
     @Override
     @Fitable(id = "get-fileType-excel")
@@ -111,7 +111,7 @@ public class ExcelFileExtractor implements FileExtractor {
     @Fitable(id = "extract-file-excel")
     public String extractFile(String fileUrl) {
         if (!isValidPath(fileUrl)) {
-            throw new IllegalArgumentException("Invalid FilePath" + fileUrl);
+            throw new IllegalArgumentException(String.format("Invalid FilePath. [fileUrl=%s]", fileUrl));
         }
         File file = Paths.get(fileUrl).toFile();
         StringBuilder excelContent = new StringBuilder();
@@ -131,7 +131,8 @@ public class ExcelFileExtractor implements FileExtractor {
             }
             excelContent.append('\n');
         } catch (IOException e) {
-            throw new IllegalStateException("Fail To Extract Excel File", e);
+            throw new IllegalStateException(String.format("Fail to extract excel file. [exception=%s]", e.getMessage()),
+                    e);
         } finally {
             if (reader != null) {
                 reader.finish(); // 关闭资源
