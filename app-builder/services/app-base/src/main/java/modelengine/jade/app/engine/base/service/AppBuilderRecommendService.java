@@ -23,7 +23,7 @@ public interface AppBuilderRecommendService {
      *
      * @param recommendDto 表示上次对话问答及模型信息的 {@link AppBuilderRecommendDto}。
      * @param context 表示系统上下文的 {@link OperationContext}。
-     * @param isGuest 表示是否为游客模式的 {@link boolean}。
+     * @param isGuest 表示是否为游客模式的 {@code boolean}。
      * @return List<String> 3个推荐问题列表
      */
     List<String> queryRecommends(AppBuilderRecommendDto recommendDto, OperationContext context, boolean isGuest);
