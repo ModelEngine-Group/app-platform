@@ -52,7 +52,7 @@ public class UserFeedbackController {
      */
     @PatchMapping("/feedback/{instanceId}")
     public void updateUserFeedback(@PathVariable("instanceId") String instanceId,
-                                  @RequestBody UserFeedbackDto userFeedbackDto) {
+            @RequestBody UserFeedbackDto userFeedbackDto) {
         this.userFeedbackService.updateOne(instanceId, userFeedbackDto);
     }
 

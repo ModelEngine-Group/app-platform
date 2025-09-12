@@ -20,7 +20,6 @@ import java.util.List;
  *
  * @author 鲁为
  * @since 2024-05-24
- *
  */
 @Component
 public class UserFeedbackServiceImpl implements UserFeedbackService {
