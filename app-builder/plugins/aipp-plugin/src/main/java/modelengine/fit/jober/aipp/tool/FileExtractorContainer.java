@@ -56,7 +56,7 @@ public class FileExtractorContainer {
      */
     public Optional<String> extract(String fileUrl, OperatorService.FileType fileType) {
         if (fileType == null) {
-            log.warn("FileType is null");
+            log.warn("File type cannot be null.");
             return Optional.empty();
         }
         List<FileExtractor> extractors = this.fileExtractorMap.get(fileType.toString());
