@@ -20,7 +20,7 @@ import modelengine.jade.app.engine.base.service.AppBuilderRecommendService;
 import java.util.List;
 
 /**
- * 猜你想问获取接口
+ * 猜你想问获取接口。
  *
  * @author 杨海波
  * @since 2024-05-24
@@ -36,10 +36,11 @@ public class AppBuilderRecommendController extends AbstractController {
     }
 
     /**
-     * 获取猜你想问推荐列表
+     * 获取猜你想问推荐列表。
      *
-     * @param recommendDto 包含上次对话用户提问及模型回答
-     * @return 三个推荐问题列表
+     * @param request 表示 HTTP 请求上下文的 {@link HttpClassicServerRequest}。
+     * @param recommendDto 表示包含上次对话用户提问及模型回答的 {@link AppBuilderRecommendDto}。
+     * @return 表示返回体的 {@link Rsp}{@code <}{@link List}{@code <}{@link String}{@code >>}。
      */
     @PostMapping
     public Rsp<List<String>> queryRecommends(HttpClassicServerRequest request,

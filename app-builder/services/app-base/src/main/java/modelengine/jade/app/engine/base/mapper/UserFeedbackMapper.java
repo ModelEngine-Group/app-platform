@@ -11,47 +11,47 @@ import modelengine.jade.app.engine.base.dto.UserFeedbackDto;
 import java.util.List;
 
 /**
- * 用户反馈映射
+ * 用户反馈映射。
  *
- * @since 2024-5-24
- *
+ * @author 陈潇文
+ * @since 2024-05-24
  */
 public interface UserFeedbackMapper {
     /**
-     * 用户反馈创建接口
+     * 用户反馈创建接口。
      *
-     * @param userFeedbackDto 用户反馈信息
+     * @param userFeedbackDto 表示用户反馈信息的 {@link UserFeedbackDto}。
      */
     void insert(UserFeedbackDto userFeedbackDto);
 
     /**
-     * 用户反馈更新接口
+     * 用户反馈更新接口。
      *
-     * @param instanceId 对话实例id
-     * @param userFeedback 用户反馈
-     * @param userFeedbackText 用户反馈文本
+     * @param instanceId 表示对话实例唯一标识的 {@link String}。
+     * @param userFeedback 表示用户反馈的 {@link Integer}。
+     * @param userFeedbackText 表示用户反馈文本的 {@link String}。
      */
     void updateOne(String instanceId, Integer userFeedback, String userFeedbackText);
 
     /**
-     * 通过日志Id删除用户反馈记录
+     * 通过日志唯一标识删除用户反馈记录。
      *
-     * @param instanceId 对话实例id
+     * @param instanceId 表示对话实例唯一标识的 {@link String}。
      */
     void deleteByLogId(String instanceId);
 
     /**
-     * 获取用户反馈列表
+     * 获取用户反馈列表。
      *
-     * @return 用户反馈列表
+     * @return 表示用户反馈列表的 {@link List}{@code <}{@link UserFeedbackDto}{@code >}。
      */
     List<UserFeedbackDto> getAllUserFeedbacks();
 
     /**
-     * 通过日志Id获取用户反馈信息
+     * 通过日志唯一标识获取用户反馈信息。
      *
-     * @param instanceId 对话实例id
-     * @return 用户反馈信息
+     * @param instanceId 表示对话实例唯一标识的 {@link String}。
+     * @return 表示用户反馈信息的 {@link UserFeedbackDto}。
      */
     UserFeedbackDto getUserFeedbackByInstanceId(String instanceId);
 }

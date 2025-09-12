@@ -14,10 +14,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Aipp用户应用收藏持久化类
+ * 应用编排用户应用收藏持久化类。
  *
- * @since 2024-5-25
- *
+ * @author 陈潇文
+ * @since 2024-05-25
  */
 @Builder
 @Data

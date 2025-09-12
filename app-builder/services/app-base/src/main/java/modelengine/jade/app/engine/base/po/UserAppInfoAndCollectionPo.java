@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 应用信息持久化类
+ * 应用信息持久化类。
  *
- * @since 2025-5-29
- *
+ * @author 陈潇文
+ * @since 2025-05-29
  */
 @Builder
 @Data

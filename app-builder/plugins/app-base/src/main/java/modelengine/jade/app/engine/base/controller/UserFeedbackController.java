@@ -20,10 +20,10 @@ import modelengine.jade.app.engine.base.service.UserFeedbackService;
 import java.util.List;
 
 /**
- * 处理用户Aipp请求
+ * 处理用户反馈请求。
  *
- * @since 2024-5-24
- *
+ * @author 陈潇文
+ * @since 2024-05-24
  */
 @Component
 @RequestMapping("/aipp/user")
@@ -35,9 +35,9 @@ public class UserFeedbackController {
     }
 
     /**
-     * 创建用户反馈记录
+     * 创建用户反馈记录。
      *
-     * @param userFeedbackDto 用户反馈消息体
+     * @param userFeedbackDto 表示用户反馈消息体的 {@link UserFeedbackDto}。
      */
     @PostMapping("/feedback")
     public void createUserFeedback(@RequestBody UserFeedbackDto userFeedbackDto) {
@@ -45,10 +45,10 @@ public class UserFeedbackController {
     }
 
     /**
-     * 更新用户反馈信息
+     * 更新用户反馈信息。
      *
-     * @param userFeedbackDto 用户反馈消息体
-     * @param instanceId 对话实例Id
+     * @param instanceId 表示对话实例唯一标识的 {@link String}。
+     * @param userFeedbackDto 表示用户反馈消息体的 {@link UserFeedbackDto}。
      */
     @PatchMapping("/feedback/{instanceId}")
     public void updateUserFeedback(@PathVariable("instanceId") String instanceId,
@@ -57,9 +57,9 @@ public class UserFeedbackController {
     }
 
     /**
-     * 删除用户反馈信息
+     * 删除用户反馈信息。
      *
-     * @param instanceId 对话实例Id
+     * @param instanceId 表示对话实例唯一标识的 {@link String}。
      */
     @DeleteMapping("/feedback/{instanceId}")
     public void deleteByLogId(@PathVariable("instanceId") String instanceId) {
@@ -67,9 +67,9 @@ public class UserFeedbackController {
     }
 
     /**
-     * 获取用户反馈信息列表
+     * 获取用户反馈信息列表。
      *
-     * @return 用户反馈信息列表
+     * @return 表示用户反馈信息列表的 {@link List}{@code <}{@link UserFeedbackDto}{@code >}。
      */
     @GetMapping("/feedbacks")
     public List<UserFeedbackDto> getAllUserFeedbacks() {
@@ -77,10 +77,10 @@ public class UserFeedbackController {
     }
 
     /**
-     * 通过LogId获取对话信息列表
+     * 通过日志唯一标识获取对话信息列表。
      *
-     * @param instanceId 对话实例Id
-     * @return 对话信息
+     * @param instanceId 表示对话实例唯一标识的 {@link String}。
+     * @return 表示对话信息的 {@link UserFeedbackDto}。
      */
     @GetMapping("/feedback/{instanceId}")
     public UserFeedbackDto getAllAnswerByInstanceId(@PathVariable("instanceId") String instanceId) {

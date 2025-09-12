@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * 收藏应用消息体
+ * 收藏应用消息体。
  *
- * @since 2024-5-29
- *
+ * @author 陈潇文
+ * @since 2024-05-29
  */
 @Data
 @NoArgsConstructor

@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 猜你想问serviceImpl
+ * 猜你想问服务的实现类。
  *
  * @author 杨海波
  * @since 2024-05-25
