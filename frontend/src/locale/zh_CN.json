@@ -1290,14 +1290,14 @@
           "description": "提示词模板"
         }
       },
-      "UsrFeedbackDto": {
+      "UserFeedbackDto": {
         "instanceId": {
           "description": "实例id"
         },
-        "usrFeedback": {
+        "userFeedback": {
           "description": "用户反馈 -1 未反馈 0 点赞 1 点踩"
         },
-        "usrFeedbackText": {
+        "userFeedbackText": {
           "description": "用户反馈文本"
         },
         "id": {

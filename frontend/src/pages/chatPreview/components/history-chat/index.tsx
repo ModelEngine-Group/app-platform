@@ -158,7 +158,7 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({
             const res = isGuest
               ? await guestModeQueryFeedback(item.instanceId)
               : await queryFeedback(item.instanceId);
-            item.feedbackStatus = res?.usrFeedback ?? -1;
+            item.feedbackStatus = res?.userFeedback ?? -1;
           }
           return item;
         })

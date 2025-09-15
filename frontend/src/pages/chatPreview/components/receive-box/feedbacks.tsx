@@ -31,12 +31,12 @@ const Feedbacks = ({ instanceId, feedbackStatus, refreshFeedbackStatus }) => {
   };
   const unLikeClickConfirm = async () => {
     if (feedbackStatus === -1 || feedbackStatus === undefined) {
-      let params = { usrFeedback: '1', usrFeedbackText: textValue, instanceId: instanceId };
+      let params = { userFeedback: '1', userFeedbackText: textValue, instanceId: instanceId };
       isGuest ? await guestModeFeedbacksRq(params) : await feedbacksRq(params);
     } else if (feedbackStatus === 1) {
       isGuest ? await guestModeDeleteFeedback(instanceId) : await deleteFeedback(instanceId);
     } else {
-      let data = { usrFeedback: '1', usrFeedbackText: textValue };
+      let data = { userFeedback: '1', userFeedbackText: textValue };
       isGuest
         ? await guestModeUpdateFeedback(instanceId, data)
         : await updateFeedback(instanceId, data);
@@ -46,12 +46,12 @@ const Feedbacks = ({ instanceId, feedbackStatus, refreshFeedbackStatus }) => {
   // 点赞
   const likeClick = async () => {
     if (feedbackStatus === -1 || feedbackStatus === undefined) {
-      let params = { usrFeedback: '0', usrFeedbackText: '', instanceId: instanceId };
+      let params = { userFeedback: '0', userFeedbackText: '', instanceId: instanceId };
       isGuest ? await guestModeFeedbacksRq(params) : await feedbacksRq(params);
     } else if (feedbackStatus === 0) {
       isGuest ? await guestModeDeleteFeedback(instanceId) : await deleteFeedback(instanceId);
     } else {
-      let data = { usrFeedback: '0', usrFeedbackText: '' };
+      let data = { userFeedback: '0', userFeedbackText: '' };
       isGuest ? await guestModeUpdateFeedback(instanceId, data) : await updateFeedback(instanceId, data);
     }
     refreshFeedbackStatus(instanceId);
