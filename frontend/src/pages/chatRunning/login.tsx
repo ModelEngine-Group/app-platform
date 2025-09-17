@@ -8,6 +8,8 @@ import React from 'react';
 import { Button, Dropdown } from 'antd';
 import { userLogOut } from '@/shared/http/aipp';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '@/store/hook';
+import { useGuestName } from '@/shared/hooks/useGuestName';
 
 /**
  * 预览用户信息展示组件
@@ -18,6 +20,8 @@ import { useTranslation } from 'react-i18next';
  */
 const Login = ({ login }) => {
   const { t } = useTranslation();
+  const guestName = useGuestName();
+  const isGuest = useAppSelector((state) => state.appStore.isGuest);
   const currentUser = localStorage.getItem('currentUser') || '';
   const items = [
     {
@@ -26,26 +30,29 @@ const Login = ({ login }) => {
         <span>{t('logout')}</span>
       ),
     },
-  ]
+  ];
   const loginOut = async () => {
     await userLogOut();
     let url = `${window.location.origin}/SSOSvr/logout`;
-    window.location.href = url
-  }
+    window.location.href = url;
+  };
   const loginClick = async () => {
     let url = `${window.location.origin}/SSOSvr/login`;
-    window.location.href = url
-  }
-  return(
+    window.location.href = url;
+  };
+  return (
     <div className='appengine-login'>
-      { 
-        login ? <Dropdown trigger='click' placement='bottomRight' menu={{ items,  onClick: loginOut }}>
-        <span style={{ cursor: 'pointer' }}>{currentUser}</span>
-      </Dropdown> : 
-        <Button onClick={loginClick}>{t('login')}</Button> 
-      }
+      {isGuest ? (
+        <></>
+      ) : login ? (
+        <Dropdown trigger='click' placement='bottomRight' menu={{ items, onClick: loginOut }}>
+          <span style={{ cursor: 'pointer' }}>{isGuest ? guestName : currentUser}</span>
+        </Dropdown>
+      ) : (
+        <Button onClick={loginClick}>{t('login')}</Button>
+      )}
     </div>
-  )
+  );
 };
 
 export default Login;

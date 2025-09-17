@@ -33,7 +33,7 @@ export function deleteAppApi(tenantId,appId) {
  * 
  * */ 
 export function updateCollectionApp(userName, defaultApp) {
-  const url = `${COLLECT_URL}/usr/info`
+  const url = `${COLLECT_URL}/user/info`
   return patch(url, {
     userName,
     defaultApp,
@@ -46,17 +46,17 @@ export function updateCollectionApp(userName, defaultApp) {
  * @property {string} id - 用户id.
  * */ 
 export function getUserCollection(id) {
-  const url = `${COLLECT_URL}/usr/collection/app/${id}`
+  const url = `${COLLECT_URL}/user/collection/app/${id}`
   return get(url);
 }
 
 /**
  * @description 取消收藏
- * @property {string} usrInfo - 用户id.
+ * @property {string} userInfo - 用户id.
  * @property {string} aippId - 用户appId.
  * */ 
 export function cancelUserCollection(data) {
   data.appId = data.aippId;
-  const url = `${COLLECT_URL}/usr/collection`;
+  const url = `${COLLECT_URL}/user/collection`;
   return del(url, data);
 }

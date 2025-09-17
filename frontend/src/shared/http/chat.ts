@@ -10,7 +10,7 @@ const { PLUGIN_URL } = serviceConfig;
 
 // 点赞点灭
 export function feedbacksRq(params) {
-  const url = `${PLUGIN_URL}/aipp/usr/feedback`;
+  const url = `${PLUGIN_URL}/aipp/user/feedback`;
   return post(url, params);
 }
 
@@ -39,19 +39,19 @@ export function getRecommends(params) {
 
 // 获取点赞点灭详情
 export function queryFeedback(id) {
-  const url = `${PLUGIN_URL}/aipp/usr/feedback/${id}`;
+  const url = `${PLUGIN_URL}/aipp/user/feedback/${id}`;
   return get(url);
 }
 
 // 更新点赞点灭
 export function updateFeedback(id, data) {
-  const url = `${PLUGIN_URL}/aipp/usr/feedback/${id}`;
+  const url = `${PLUGIN_URL}/aipp/user/feedback/${id}`;
   return patch(url, data);
 }
 
 // 取消点赞点灭
 export function deleteFeedback(id) {
-  const url = `${PLUGIN_URL}/aipp/usr/feedback/${id}`;
+  const url = `${PLUGIN_URL}/aipp/user/feedback/${id}`;
   return del(url);
 }
 

@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 猜你想问serviceImpl
+ * 猜你想问服务的实现类。
  *
  * @author 杨海波
  * @since 2024-05-25
@@ -54,7 +54,11 @@ public class AppBuilderRecommendServiceImpl implements AppBuilderRecommendServic
     }
 
     @Override
-    public List<String> queryRecommends(AppBuilderRecommendDto recommendDto, OperationContext context) {
+    public List<String> queryRecommends(AppBuilderRecommendDto recommendDto, OperationContext context, boolean isGuest) {
+        // 游客模式下，需要查询应用所属用户名下的模型信息
+        if (isGuest && recommendDto.getAppOwner() != null) {
+            context.setOperator(recommendDto.getAppOwner());
+        }
         ModelAccessInfo defaultModel = this.aippModelCenter.getDefaultModel(AippConst.CHAT_MODEL_TYPE, context);
         ModelAccessInfo modelAccessInfo =
                 this.aippModelCenter.getModelAccessInfo(defaultModel.getTag(), defaultModel.getServiceName(), context);

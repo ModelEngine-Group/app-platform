@@ -776,26 +776,26 @@ export const apiListData = {
           }
         }
       },
-      'modelengine.jade.app.engine.base.dto.UsrFeedbackDto': {
+      'modelengine.jade.app.engine.base.dto.UserFeedbackDto': {
         type: 'object',
         properties: {
           instanceId: {
-            description: 'north.schema.UsrFeedbackDto.instanceId.description',
+            description: 'north.schema.UserFeedbackDto.instanceId.description',
             examples: [
               ''
             ],
             type: 'string'
           },
-          usrFeedback: {
+          userFeedback: {
             format: 'int32',
-            description: 'north.schema.UsrFeedbackDto.usrFeedback.description',
+            description: 'north.schema.UserFeedbackDto.userFeedback.description',
             examples: [
               ''
             ],
             type: 'integer'
           },
-          usrFeedbackText: {
-            description: 'north.schema.UsrFeedbackDto.usrFeedbackText.description',
+          userFeedbackText: {
+            description: 'north.schema.UserFeedbackDto.userFeedbackText.description',
             examples: [
               ''
             ],
@@ -803,7 +803,7 @@ export const apiListData = {
           },
           id: {
             format: 'int64',
-            description: 'north.schema.UsrFeedbackDto.id.description',
+            description: 'north.schema.UserFeedbackDto.id.description',
             examples: [
               ''
             ],
@@ -811,7 +811,7 @@ export const apiListData = {
           }
         }
       },
-      'modelengine.fit.jane.common.response.Rsp_of_modelengine.jade.app.engine.base.dto.UsrFeedbackDto': {
+      'modelengine.fit.jane.common.response.Rsp_of_modelengine.jade.app.engine.base.dto.UserFeedbackDto': {
         type: 'object',
         properties: {
           msg: {
@@ -837,7 +837,7 @@ export const apiListData = {
             type: 'integer'
           },
           data: {
-            $ref: '#/components/schemas/modelengine.jade.app.engine.base.dto.UsrFeedbackDto'
+            $ref: '#/components/schemas/modelengine.jade.app.engine.base.dto.UserFeedbackDto'
           }
         }
       },
@@ -1629,7 +1629,7 @@ export const apiListData = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/modelengine.jade.app.engine.base.dto.UsrFeedbackDto'
+                $ref: '#/components/schemas/modelengine.jade.app.engine.base.dto.UserFeedbackDto'
               }
             }
           }
@@ -1661,7 +1661,7 @@ export const apiListData = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/modelengine.jade.app.engine.base.dto.UsrFeedbackDto'
+                $ref: '#/components/schemas/modelengine.jade.app.engine.base.dto.UserFeedbackDto'
               }
             }
           }
@@ -1691,7 +1691,7 @@ export const apiListData = {
             content: {
               'application/json': {
                 schema: {
-                  $ref: '#/components/schemas/modelengine.fit.jane.common.response.Rsp_of_modelengine.jade.app.engine.base.dto.UsrFeedbackDto'
+                  $ref: '#/components/schemas/modelengine.fit.jane.common.response.Rsp_of_modelengine.jade.app.engine.base.dto.UserFeedbackDto'
                 }
               }
             }
@@ -1791,7 +1791,7 @@ export const apiListData = {
       name: 'modelengine.jade.store.repository.pgsql.controller.PluginController',
     },
     {
-      name: 'modelengine.jade.app.engine.base.controller.UsrFeedbackController',
+      name: 'modelengine.jade.app.engine.base.controller.UserFeedbackController',
     },
     {
       name: 'modelengine.jade.app.engine.base.controller.AppBuilderRecommendController',
@@ -1827,7 +1827,7 @@ export const apiListData = {
       name: 'modelengine.fit.jober.aipp.controller.AgentController',
     },
     {
-      name: 'modelengine.jade.app.engine.base.controller.UsrCollectionController',
+      name: 'modelengine.jade.app.engine.base.controller.UserCollectionController',
     },
     {
       name: 'modelengine.fit.jober.aipp.controller.AppBuilderFormController',

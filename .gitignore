@@ -8,3 +8,8 @@
 # Common
 target/
 build/
+
+# docker
+docker/app-platform-tmp
+docker/.env
+docker/sql/init/data/tr_init_models.sql

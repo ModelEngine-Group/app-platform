@@ -37,15 +37,13 @@ import modelengine.fit.jober.aipp.enums.AppTypeEnum;
 import modelengine.fit.jober.aipp.po.AppBuilderAppPo;
 import modelengine.fit.jober.aipp.service.UploadedFileManageService;
 import modelengine.fitframework.util.StringUtils;
-import modelengine.jade.app.engine.base.service.UsrAppCollectionService;
+import modelengine.jade.app.engine.base.service.UserAppCollectionService;
 import modelengine.jade.store.service.AppService;
 import modelengine.fitframework.util.IoUtils;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -63,7 +61,7 @@ public class AppServiceTest {
     private AppFactory appFactory;
     private AppVersionService appVersionService;
     private UploadedFileManageService uploadedFileManageService;
-    private UsrAppCollectionService usrAppCollectionService;
+    private UserAppCollectionService userAppCollectionService;
     private IconConverter iconConverter;
 
     @BeforeEach
@@ -71,11 +69,11 @@ public class AppServiceTest {
         this.appFactory = mock(AppFactory.class);
         this.appVersionService = mock(AppVersionService.class);
         this.uploadedFileManageService = mock(UploadedFileManageService.class);
-        this.usrAppCollectionService = mock(UsrAppCollectionService.class);
+        this.userAppCollectionService = mock(UserAppCollectionService.class);
         this.iconConverter = mock(IconConverter.class);
         ConverterFactory converterFactory = new ConverterFactory(List.of(new AppVersionToAppDtoConverter(iconConverter)));
         this.appDomainService = new AppDomainServiceImpl(this.appFactory, this.appVersionService,
-                this.uploadedFileManageService, this.usrAppCollectionService, converterFactory, StringUtils.EMPTY);
+                this.uploadedFileManageService, this.userAppCollectionService, converterFactory, StringUtils.EMPTY);
     }
 
     @Test
@@ -92,7 +90,7 @@ public class AppServiceTest {
         doNothing().when(app).delete(any());
 
         doNothing().when(this.uploadedFileManageService).cleanAippFiles(any());
-        doNothing().when(this.usrAppCollectionService).deleteByAppId(anyString());
+        doNothing().when(this.userAppCollectionService).deleteByAppId(anyString());
 
         // when.
         this.appDomainService.deleteByAppId("app_version_1", new OperationContext());
@@ -101,7 +99,7 @@ public class AppServiceTest {
         verify(app, times(1)).delete(any());
         verify(this.uploadedFileManageService, times(1)).cleanAippFiles(
                 argThat(strings -> strings.size() == 1 && strings.get(0).equals("app_version_1")));
-        verify(this.usrAppCollectionService, times(1)).deleteByAppId(eq("app_version_1"));
+        verify(this.userAppCollectionService, times(1)).deleteByAppId(eq("app_version_1"));
     }
 
     @Test

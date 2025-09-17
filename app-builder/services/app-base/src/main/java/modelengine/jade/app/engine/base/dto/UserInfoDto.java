@@ -14,10 +14,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 用户信息传输类
+ * 用户信息传输类。
  *
- * @since 2024-5-30
- *
+ * @author 陈潇文
+ * @since 2024-05-30
  */
 @Data
 @Builder

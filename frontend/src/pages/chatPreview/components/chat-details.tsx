@@ -7,9 +7,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AppBoxIcon, CreateAppIcon } from '@/assets/icon';
+import { CreateAppIcon } from '@/assets/icon';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
-import { setOpenStar } from '@/store/chatStore/chatStore';
 import { findConfigValue } from '@/shared/utils/common';
 import { convertImgPath } from '@/common/util';
 import EditModal from '@/pages/components/edit-modal';
