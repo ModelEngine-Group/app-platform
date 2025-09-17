@@ -136,4 +136,12 @@ public interface AppBuilderAppMapper {
      * @return 表示短链是否重复 {@link Boolean}。
      */
     boolean checkPathExists(String path);
+
+    /**
+     * 更新访客模式状态。
+     *
+     * @param path 表示应用的短标识的 {@link String}。
+     * @param isGuest 表示访客状态的 {@link Boolean}。
+     */
+    void updateGuestMode(String path, Boolean isGuest);
 }

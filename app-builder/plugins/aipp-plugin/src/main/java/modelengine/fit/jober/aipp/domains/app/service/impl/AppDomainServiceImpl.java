@@ -20,12 +20,11 @@ import modelengine.fit.jober.aipp.dto.AppBuilderAppDto;
 import modelengine.fit.jober.aipp.dto.export.AppExportDto;
 import modelengine.fit.jober.aipp.service.UploadedFileManageService;
 import modelengine.fitframework.annotation.Value;
-import modelengine.jade.app.engine.base.service.UsrAppCollectionService;
+import modelengine.jade.app.engine.base.service.UserAppCollectionService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.AllArgsConstructor;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.transaction.Transactional;
@@ -46,17 +45,17 @@ public class AppDomainServiceImpl implements AppDomainService {
     private final AppFactory appFactory;
     private final AppVersionService appVersionService;
     private final UploadedFileManageService uploadedFileManageService;
-    private final UsrAppCollectionService usrAppCollectionService;
+    private final UserAppCollectionService userAppCollectionService;
     private final ConverterFactory converterFactory;
     private final String contextRoot;
 
     public AppDomainServiceImpl(AppFactory appFactory, AppVersionService appVersionService,
-            UploadedFileManageService uploadedFileManageService, UsrAppCollectionService usrAppCollectionService,
+            UploadedFileManageService uploadedFileManageService, UserAppCollectionService userAppCollectionService,
             ConverterFactory converterFactory, @Value("${app-engine.contextRoot}") String contextRoot) {
         this.appFactory = appFactory;
         this.appVersionService = appVersionService;
         this.uploadedFileManageService = uploadedFileManageService;
-        this.usrAppCollectionService = usrAppCollectionService;
+        this.userAppCollectionService = userAppCollectionService;
         this.converterFactory = converterFactory;
         this.contextRoot = contextRoot;
     }
@@ -69,7 +68,7 @@ public class AppDomainServiceImpl implements AppDomainService {
         App app = this.appFactory.create(appSuiteId);
         app.delete(context);
         this.uploadedFileManageService.cleanAippFiles(Collections.singletonList(appId));
-        this.usrAppCollectionService.deleteByAppId(appId);
+        this.userAppCollectionService.deleteByAppId(appId);
     }
 
     @Override

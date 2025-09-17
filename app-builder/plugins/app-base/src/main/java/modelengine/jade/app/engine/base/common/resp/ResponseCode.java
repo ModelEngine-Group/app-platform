@@ -11,10 +11,10 @@ import modelengine.jade.app.engine.base.common.ErrorCode;
 import lombok.AllArgsConstructor;
 
 /**
- * app-base 错误码
+ * 基础应用错误码。
  *
- * @since 2024-5-27
- *
+ * @author 陈潇文
+ * @since 2024-05-27
  */
 @AllArgsConstructor
 public enum ResponseCode implements ErrorCode {

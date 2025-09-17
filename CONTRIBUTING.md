@@ -39,8 +39,11 @@
 ## 标签管理
 
 - 每个标签的名字和发布分支的名字需要保持一致。例如：`fit-java-1.0.0`、`waterflow-2.1.1`。
+- 纯数字版本的分支需要以 `v` 开头。例如：`v3.6.0`。
 - 候选版本以特殊词组结尾，后面可以跟若干数字代表序号。例如：`fit-java-1.0.0-alpha1` 或 `waterflow-python-2.0.0-beta2`。
 - 当标签被打出后，对应的发布分支应当删除，`Git-Flow` 模式下的 `*-main` 分支除外。
+- **注意：** 请不要使用自动生成的深色标签，如 `dependencies`、`python`、`java` 等，他们是平台自动生成用于机器人创建的 Issue 的。
+- 所有的 Issue 和 PR 都需要至少包含两种标签，一种是 `in: {$module}`，另一种是 `type: {$type}`。
 
 ## 开发规范
 
@@ -66,9 +69,10 @@ Licensed under the MIT License. See License.txt in the project root for license 
   - 所有 `@param` 和 `@return` 的注释，最后都需要根据其类型添加引用，基本类型需要添加 `{@code }` 标记，其他需要添加 `{@link }` 标记。
   - 所有半角字符和全角字符之间需要增加一个空格，来使得整体排版规整，方便超长内容的换行。
 
-### 插件sql
+### 插件 SQL
 
 - 如果插件包含数据库相关操作，需要在插件的 `resources` 目录下创建 `sql` 目录，其中包含 `schema` 目录（存放创表相关语句）和 `data` 目录（存放预置数据相关的语句）。具体目录格式如下：
+
 ```text
 sql
 ├── schema

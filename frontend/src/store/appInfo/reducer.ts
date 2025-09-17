@@ -1,14 +1,16 @@
-import { 
-  SET_APP_ID, 
-  SET_APP_INFO, 
-  SET_TENANT_ID, 
-  SET_AT_APP_ID, 
-  SET_AT_APP_INFO, 
-  SET_VALIDATE_INFO, 
-  SET_NODE_ID, 
+import {
+  SET_APP_ID,
+  SET_APP_INFO,
+  SET_TENANT_ID,
+  SET_AT_APP_ID,
+  SET_AT_APP_INFO,
+  SET_VALIDATE_INFO,
+  SET_NODE_ID,
   SET_AGENT_INFO,
-  SET_AIPP_ID, 
-  SET_APP_VERSION } from './action-types';
+  SET_AIPP_ID,
+  SET_APP_VERSION,
+  SET_IS_GUEST,
+} from './action-types';
 import { TENANT_ID } from '../../pages/chatPreview/components/send-editor/common/config';
 
 const initialState = {
@@ -21,7 +23,8 @@ const initialState = {
   choseNodeId: '',
   agentInfo: {},
   aippId: '',
-  appVersion: ''
+  appVersion: '',
+  isGuest: false
 }
 
 const appInfoReducers = (state = initialState, action) => {
@@ -46,6 +49,8 @@ const appInfoReducers = (state = initialState, action) => {
       return { ...state, aippId: action.payload };
     case SET_APP_VERSION:
       return { ...state, appVersion: action.payload };
+    case SET_IS_GUEST:
+      return  { ...state, isGuest: action.payload };
     default:
       return state
   }
