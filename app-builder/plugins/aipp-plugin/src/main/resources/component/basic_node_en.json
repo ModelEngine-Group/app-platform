@@ -83,5 +83,10 @@
     "type": "textConcatenateNodeState",
     "name": "Text Joiner",
     "uniqueName": ""
+  },
+  {
+    "type": "replyNodeState",
+    "name": "Reply",
+    "uniqueName": ""
   }
 ]

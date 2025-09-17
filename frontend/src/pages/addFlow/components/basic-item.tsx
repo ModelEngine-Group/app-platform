@@ -64,7 +64,8 @@ const BasicItems = (props: any) => {
       'loopNodeState': <LoopIcon />,
       'manualCheckNodeState': <ManualCheckIcon />,
       'parallelNodeState': <PairingIcon />,
-      'textConcatenateNodeState':  <TextConcatenateIcon />
+      'textConcatenateNodeState':  <TextConcatenateIcon />,
+      'replyNodeState':<EndIcon />
     }[type];
   }
   return <>

@@ -213,6 +213,10 @@ export const configMap = {
         urls: {
           llmModelEndpoint: `${baseUrl}/v1/api/fetch/model-list`,
         }
+      },
+      {
+        node: "replyNodeState",
+        urls: {}
       }
     ]
   }

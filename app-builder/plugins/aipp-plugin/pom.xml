@@ -288,6 +288,10 @@
             <groupId>modelengine.fit.jade.service</groupId>
             <artifactId>knowledge-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>modelengine.jade.service</groupId>
+            <artifactId>aipp-template-render-service</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -83,5 +83,10 @@
     "type": "textConcatenateNodeState",
     "name": "文本拼接",
     "uniqueName": ""
+  },
+  {
+    "type": "replyNodeState",
+    "name": "直接回复",
+    "uniqueName": ""
   }
 ]
