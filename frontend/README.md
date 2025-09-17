@@ -205,18 +205,30 @@ plugins/
    npm install
    npm run build
    ```
-2. 修改proxy.conf.json
+2. 在app-platform仓，修改frontend/proxy.conf.json文件
    ```plaintext
-   修改target为本地调试的后端域名， 如http://localhost:8080
+   修改接口代理的target为本地调试的后端域名，如http://localhost:8080
+   示例：
+   "/api": {
+    "target": "http://localhost:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/jober": "",
+      "^/api": ""
+     }
+    }
    ```
-3. 修改package.json else包的地址
-   修改为本地打包的相对地址，以下为示例:
+3. 在app-platform仓，修改frontend/package.json文件
+
+   更新elsa依赖包的地址，更新为当前代码仓，相对于本地fit-framework仓中打包elsa文件的路径，以下为示例:
    ```ts
    "@fit-elsa/elsa-core": "file:../../../fitframework-github/fit-framework/framework/elsa/fit-elsa",
    "@fit-elsa/elsa-react": "file:../../../fitframework-github/fit-framework/framework/elsa/fit-elsa-react"
    ```
 4. 启动代码
-   app-platform仓的frontend目录下执行：
+
+   app-platform仓的frontend/下执行：
     ```bash
    npm install --force
    npm start
