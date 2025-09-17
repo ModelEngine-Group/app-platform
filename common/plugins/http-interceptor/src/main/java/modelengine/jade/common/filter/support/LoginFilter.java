@@ -21,6 +21,7 @@ import modelengine.jade.authentication.context.HttpRequestUtils;
 import modelengine.jade.authentication.context.UserContext;
 import modelengine.jade.authentication.context.UserContextHolder;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class LoginFilter implements HttpServerFilter {
 
     @Override
     public List<String> mismatchPatterns() {
-        return Collections.singletonList("/api/app/v1/**");
+        return Arrays.asList("/api/app/v1/**", "/v1/api/guest/**");
     }
 
     @Override

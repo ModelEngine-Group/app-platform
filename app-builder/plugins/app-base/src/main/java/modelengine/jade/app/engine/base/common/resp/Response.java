@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * app-base 响应类
+ * 基础应用响应类。
  *
- * @since 2024-5-27
- *
+ * @author 陈潇文
+ * @since 2024-05-27
  */
 @Data
 @NoArgsConstructor
@@ -37,10 +37,11 @@ public class Response<T> implements Serializable {
     private String msg;
 
     /**
-     * 请求成功返回数据
+     * 请求成功返回数据。
      *
-     * @param data 数据
-     * @return 响应
+     * @param data 表示数据的 {@link T}。
+     * @param <T> 表示泛型类型的 {@link T}。
+     * @return 表示响应的 {@link Response}@{code <}{@link T}{@code >}。
      */
     public static <T> Response<T> success(T data) {
         Response<T> response = new Response<>();
@@ -51,10 +52,10 @@ public class Response<T> implements Serializable {
     }
 
     /**
-     * 请求成功返回
+     * 请求成功返回。
      *
-     * @param <T> 泛型类数据
-     * @return 响应
+     * @param <T> 表示泛型类型的 {@link T}。
+     * @return 表示响应的 {@link Response}{@code <}{@link T}{@code >}。
      */
     public static <T> Response<T> success() {
         Response<T> response = new Response<>();
@@ -65,11 +66,11 @@ public class Response<T> implements Serializable {
     }
 
     /**
-     * 请求成功返回
+     * 请求成功返回。
      *
-     * @param data 响应数据
-     * @param code 响应码
-     * @return 响应
+     * @param data 表示响应数据的 {@link T}。
+     * @param code 表示响应码的 {@link ErrorCode}。
+     * @return 表示响应的 {@link Response}{@code <}{@link T}{@code >}。
      */
     public static <T> Response<T> success(T data, ErrorCode code) {
         Response<T> response = new Response<>();
@@ -80,12 +81,12 @@ public class Response<T> implements Serializable {
     }
 
     /**
-     * 请求成功返回
+     * 请求成功返回。
      *
-     * @param code 响应码
-     * @return 响应
+     * @param code 表示响应码的 {@link ErrorCode}。
+     * @return 表示响应的 {@link Response}{@code <}{@link T}{@code >}。
      */
-    public static <T >Response<T> success(ErrorCode code) {
+    public static <T> Response<T> success(ErrorCode code) {
         Response<T> response = new Response<>();
         response.setCode(code.getErrorCode());
         response.setMsg(code.getMessage());
@@ -94,10 +95,10 @@ public class Response<T> implements Serializable {
     }
 
     /**
-     * 请求失败返回
+     * 请求失败返回。
      *
-     * @param code 响应码
-     * @return 响应
+     * @param code 表示响应码的 {@link ErrorCode}。
+     * @return 表示响应的 {@link Response}{@code <}{@link T}{@code >}。
      */
     public static <T> Response<T> err(ErrorCode code) {
         Response<T> response = new Response<>();
@@ -108,10 +109,10 @@ public class Response<T> implements Serializable {
     }
 
     /**
-     * 请求失败返回
+     * 请求失败返回。
      *
-     * @param <T> 泛型类数据
-     * @return 响应
+     * @param <T> 表示泛型类型的 {@link T}。
+     * @return 表示响应的 {@link Response}{@code <}{@link T}{@code >}。
      */
     public static <T> Response<T> err() {
         Response<T> response = new Response<>();

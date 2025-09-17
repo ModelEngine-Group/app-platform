@@ -52,7 +52,7 @@ const StarApps = ({ handleAt }) => {
     1: async (item: AnyAction) => {
       if (item?.id) {
         await cancelUserCollection({
-          usrInfo: getLocalUser(),
+          userInfo: getLocalUser(),
           aippId: item.aippId,
         })
       }

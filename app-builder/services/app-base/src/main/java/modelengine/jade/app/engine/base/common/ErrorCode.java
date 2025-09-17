@@ -7,23 +7,23 @@
 package modelengine.jade.app.engine.base.common;
 
 /**
- * 错误码
+ * 错误码。
  *
- * @since 2024-5-27
- *
+ * @author 陈潇文
+ * @since 2024-05-27
  */
 public interface ErrorCode {
     /**
-     * 获取错误码
+     * 获取错误码。
      *
-     * @return 错误码
+     * @return 表示错误码的 {@code int}。
      */
     int getErrorCode();
 
     /**
-     * 获取错误提示信息
+     * 获取错误提示信息。
      *
-     * @return 错误信息
+     * @return 表示错误信息的 {@link String}。
      */
     String getMessage();
 }

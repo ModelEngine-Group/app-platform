@@ -1,8 +1,8 @@
 import serviceConfig from './httpConfig';
-import i18n from '@/locale/i18n';
 import { get } from './http';
 import { getCookie } from '@/shared/utils/common';
-import { ERROR_CODES } from './httpError';
+import { sseError } from '../utils/chat';
+
 const { AIPP_URL } = serviceConfig;
 
 // 工具流调试应用
@@ -89,7 +89,7 @@ export function saveContent(tenantId: string, instanceId: string, params: any, l
 export function getTestVersion(tenantId: string, appId: string) {
   return get(`${AIPP_URL}/${tenantId}/app/${appId}/aipp?isDebug=true`);
 }
-// 请求对话接口（溯源）
+// 重新对话接口
 /**
  * @param {string} tenantId - 租户ID
  * @param {string} instanceId - 实例ID
@@ -112,27 +112,4 @@ export function saveChart(tenantId: string, instanceId: string, params: any) {
       sseError(res, resolve);
     })
   });
-}
-
-// featch sse 错误处理
-const sseError = (res, resolve) => {
-  const { status } = res;
-  if (ERROR_CODES[status]) {
-    resolve({ status:status, msg: ERROR_CODES[status]})
-    return;
-  }
-  const contentType = res.headers.get('content-type');
-  if (contentType.indexOf('text/event-stream') !== -1) {
-    resolve(res);
-  } else {
-    let resJson = {}
-    res.text().then(resText => {
-      try {
-        resJson = JSON.parse(resText);
-      } catch {
-        resJson = { status: 500, suppressed: i18n.t('requestFailed') }
-      }
-      resolve(resJson)
-    });
-  }
 }

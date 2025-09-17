@@ -72,6 +72,12 @@
         .item-bottom {
           display: flex;
           gap: 12px;
+          .guest-contianer {
+            display: flex;
+            .guest-title {
+              margin-right: 4px;
+            }
+          }
           .ant-btn {
             display: flex;
             align-items: center;
