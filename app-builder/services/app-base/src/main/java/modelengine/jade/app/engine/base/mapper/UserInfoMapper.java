@@ -9,39 +9,39 @@ package modelengine.jade.app.engine.base.mapper;
 import modelengine.jade.app.engine.base.dto.UserInfoDto;
 
 /**
- * 用户信息相关映射
+ * 用户信息相关映射。
  *
- * @since 2024-5-30
- *
+ * @author 陈潇文
+ * @since 2024-05-30
  */
 public interface UserInfoMapper {
     /**
-     * 插入用户信息
+     * 插入用户信息。
      *
-     * @param userInfoDto 用户信息消息体
+     * @param userInfoDto 表示用户信息消息体的 {@link UserInfoDto}。
      */
     void insert(UserInfoDto userInfoDto);
 
     /**
-     * 更新用户信息
+     * 更新用户信息。
      *
-     * @param userInfoDto 用户信息消息体
+     * @param userInfoDto 表示用户信息消息体的 {@link UserInfoDto}。
      */
     void update(UserInfoDto userInfoDto);
 
     /**
-     * 查询用户信息
+     * 查询用户信息。
      *
-     * @param userName 用户名
-     * @return 用户信息消息体
+     * @param userName 表示用户名的 {@link String}。
+     * @return 表示用户信息消息体的 {@link UserInfoDto}。
      */
     UserInfoDto get(String userName);
 
     /**
-     * 将所有当前默认应用为 appId 的用户重置为 defaultApp
+     * 将所有当前默认应用为 appId 的用户重置为 defaultApp。
      *
-     * @param appId 应用 id
-     * @param defaultApp 要重置为的应用 id
+     * @param appId 表示应用的唯一标识的 {@link String}。
+     * @param defaultApp 表示要重置的默认应用的 {@link String}。
      */
     void resetDefaultAppByAppId(String appId, String defaultApp);
 }

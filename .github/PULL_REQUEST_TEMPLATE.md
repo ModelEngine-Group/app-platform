@@ -10,6 +10,14 @@ Please do not create a Pull Request without creating an issue first.
 
 微小的变更（如错别字修复）不需要创建 Issue。
 Trivial changes like typos do not require a Github issue.
+
+提交 PR 之前请务必先阅读我们的贡献指南。
+Please read our Contributing Guide(CONTRIBUTING.md) before submitting your Pull Request.
+
+⚠️ 注意 / Note：
+
+不要重复创建类似的 PR，当你发现需要调整一个 PR 的时候，优先选择编辑修改它，而不是关闭之后再创建一个。
+Do not create a Pull Request without creating an issue first.
 -->
 
 ## 🔗 相关问题 / Related Issue
@@ -17,7 +25,10 @@ Trivial changes like typos do not require a Github issue.
 <!-- 请先创建 Issue 讨论，然后在这里链接 -->
 <!-- Please create an issue for discussion first, then link it here -->
 
-**Issue 链接 / Issue Link:** #
+**Issue 链接 / Issue Link:** #{$IssueNumber}
+
+<!-- 请修改 {$IssueNumber} 为真实的编号。 -->
+<!-- Please update {$IssueNumber} to an actual number. -->
 
 - [ ] 我已经创建了相关 Issue 并进行了讨论 / I have created and discussed the related issue
 - [ ] 这是一个微小的修改（如错别字），不需要 Issue / This is a trivial change (like typo fix) that doesn't need an issue
@@ -30,6 +41,8 @@ Trivial changes like typos do not require a Github issue.
 - [ ] 📚 文档更新 / Documentation update
 - [ ] 🔧 重构 / Refactoring (no functional changes)
 - [ ] ⚡ 性能优化 / Performance improvement
+- [ ] 📦 依赖升级 / Dependency upgrade (update dependencies to newer versions)
+- [ ] 🚀 功能增强 / Feature enhancement (improve existing functionality without breaking changes)
 - [ ] 🧹 代码清理 / Code cleanup
 
 ## 📝 变更目的 / Purpose of the Change

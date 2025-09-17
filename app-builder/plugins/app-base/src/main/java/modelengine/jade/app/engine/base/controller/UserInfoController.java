@@ -19,13 +19,13 @@ import modelengine.jade.app.engine.base.dto.UserInfoDto;
 import modelengine.jade.app.engine.base.service.UserInfoService;
 
 /**
- * 用户信息相关控制器
+ * 用户信息相关控制器。
  *
- * @since 2024-5-30
- *
+ * @author 陈潇文
+ * @since 2024-05-30
  */
 @Component
-@RequestMapping("/aipp/usr")
+@RequestMapping("/aipp/user")
 public class UserInfoController {
     private final UserInfoService userInfoService;
 
@@ -34,37 +34,37 @@ public class UserInfoController {
     }
 
     /**
-     * 创建用户信息记录
+     * 创建用户信息记录。
      *
-     * @param userInfoDto 用户信息消息体
-     * @return 用户信息 id
+     * @param userInfoDto 表示用户信息消息体的 {@link UserInfoDto}。
+     * @return 表示用户信息唯一标识的 {@link Response}{@code <}{@link Long}{@code >}。
      */
     @PostMapping("/info")
-    public Response<Long> createUsrAppCollection(@RequestBody UserInfoDto userInfoDto) {
-        Long userInfoId = userInfoService.createUserInfo(userInfoDto);
+    public Response<Long> createUserAppCollection(@RequestBody UserInfoDto userInfoDto) {
+        Long userInfoId = this.userInfoService.createUserInfo(userInfoDto);
         return Response.success(userInfoId, ResponseCode.OK);
     }
 
     /**
-     * 修改用户信息
+     * 修改用户信息。
      *
-     * @param userInfoDto 用户信息消息体
-     * @return 响应信息
+     * @param userInfoDto 表示用户信息消息体的 {@link UserInfoDto}。
+     * @return 表示响应信息的 {@link Response}{@code <}{@link Void}{@code >}。
      */
     @PatchMapping("/info")
-    public Response<Void> updateUsrAppCollection(@RequestBody UserInfoDto userInfoDto) {
-        userInfoService.updateUserInfo(userInfoDto);
+    public Response<Void> updateUserAppCollection(@RequestBody UserInfoDto userInfoDto) {
+        this.userInfoService.updateUserInfo(userInfoDto);
         return Response.success(ResponseCode.OK);
     }
 
     /**
-     * 获取用户信息记录
+     * 获取用户信息记录。
      *
-     * @param userName 用户名
-     * @return 用户信息
+     * @param userName 表示用户名的 {@link String}。
+     * @return 表示用户信息的 {@link Response}{@code <}{@link UserInfoDto}{@code >}。
      */
     @GetMapping("/info/{userName}")
-    public Response<UserInfoDto> createUsrAppCollection(@PathVariable("userName") String userName) {
-        return Response.success(userInfoService.getUserInfo(userName), ResponseCode.OK);
+    public Response<UserInfoDto> createUserAppCollection(@PathVariable("userName") String userName) {
+        return Response.success(this.userInfoService.getUserInfo(userName), ResponseCode.OK);
     }
 }

@@ -119,7 +119,7 @@ public class AppTemplateServiceImplTest {
                 null,
                 this.appVersionService,
                 null,
-                null, this.converterFactory, null);
+                null, this.converterFactory, null, null);
         this.templateService = new AppTemplateServiceImpl(this.appService, this.templateRepository);
     }
 

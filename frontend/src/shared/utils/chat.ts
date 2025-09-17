@@ -1,4 +1,6 @@
 import store from '@/store/store';
+import i18n from '@/locale/i18n';
+import { ERROR_CODES } from '../http/httpError';
 
 /**
  * 检验是否有未结束的对话
@@ -25,4 +27,27 @@ export const exportJson = (data:any, name: string) => {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
+}
+
+// featch sse 错误处理
+export const sseError = (res, resolve) => {
+  const { status } = res;
+  if (ERROR_CODES[status]) {
+    resolve({ status:status, msg: ERROR_CODES[status]})
+    return;
+  }
+  const contentType = res.headers.get('content-type');
+  if (contentType.indexOf('text/event-stream') !== -1) {
+    resolve(res);
+  } else {
+    let resJson = {}
+    res.text().then(resText => {
+      try {
+        resJson = JSON.parse(resText);
+      } catch {
+        resJson = { status: 500, suppressed: i18n.t('requestFailed') }
+      }
+      resolve(resJson)
+    });
+  }
 }

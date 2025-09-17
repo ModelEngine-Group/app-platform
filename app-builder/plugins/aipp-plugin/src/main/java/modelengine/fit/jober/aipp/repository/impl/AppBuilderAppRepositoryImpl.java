@@ -102,4 +102,9 @@ public class AppBuilderAppRepositoryImpl implements AppBuilderAppRepository {
     public boolean checkPathExists(String path) {
         return this.appBuilderAppMapper.checkPathExists(path);
     }
+
+    @Override
+    public void updateGuestMode(String path, Boolean isGuest) {
+        this.appBuilderAppMapper.updateGuestMode(path, isGuest);
+    }
 }
