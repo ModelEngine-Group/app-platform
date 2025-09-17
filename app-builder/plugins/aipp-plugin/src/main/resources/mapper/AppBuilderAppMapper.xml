@@ -322,4 +322,15 @@
         where path = #{path}
           and is_deleted = 0
     </select>
+
+    <update id="updateGuestMode">
+        UPDATE app_builder_app
+        SET attributes = jsonb_set(
+        COALESCE(attributes::jsonb, '{}'::jsonb),
+        '{allow_guest}',
+        to_jsonb(#{isGuest}),
+        true
+        )::json
+        WHERE path = #{path}
+    </update>
 </mapper>

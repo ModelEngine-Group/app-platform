@@ -16,8 +16,8 @@ import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fitframework.annotation.Component;
-import modelengine.jade.app.engine.base.dto.UsrFeedbackDto;
-import modelengine.jade.app.engine.base.service.UsrFeedbackService;
+import modelengine.jade.app.engine.base.dto.UserFeedbackDto;
+import modelengine.jade.app.engine.base.service.UserFeedbackService;
 
 /**
  * 用户反馈北向接口。
@@ -28,42 +28,42 @@ import modelengine.jade.app.engine.base.service.UsrFeedbackService;
 @Component
 @RequestMapping(path = "/api/app/v1/aipp/user")
 public class UserFeedbackController extends AbstractController {
-    private final UsrFeedbackService usrFeedbackService;
+    private final UserFeedbackService userFeedbackService;
 
     /**
-     * 用身份校验器 {@link Authenticator} 和 Aipp 用户反馈功能接口 {@link UsrFeedbackService} 构造 {@link UserFeedbackController}。
+     * 用身份校验器 {@link Authenticator} 和 Aipp 用户反馈功能接口 {@link UserFeedbackService} 构造 {@link UserFeedbackController}。
      *
      * @param authenticator 表示身份校验器的 {@link Authenticator}。
-     * @param usrFeedbackService 表示 Aipp 用户反馈功能接口的 {@link UsrFeedbackService}。
+     * @param userFeedbackService 表示 Aipp 用户反馈功能接口的 {@link UserFeedbackService}。
      */
-    public UserFeedbackController(Authenticator authenticator, UsrFeedbackService usrFeedbackService) {
+    public UserFeedbackController(Authenticator authenticator, UserFeedbackService userFeedbackService) {
         super(authenticator);
-        this.usrFeedbackService = usrFeedbackService;
+        this.userFeedbackService = userFeedbackService;
     }
 
     /**
      * 创建用户反馈记录。
      *
-     * @param usrFeedbackDto 表示用户反馈消息体的 {@link UsrFeedbackDto}。
+     * @param userFeedbackDto 表示用户反馈消息体的 {@link UserFeedbackDto}。
      */
     @PostMapping(path = "/feedback", summary = "创建用户反馈记录",
             description = "该接口用于创建用户对一个对话实例的反馈记录。")
-    public Rsp<Void> createUsrFeedback(@RequestBody UsrFeedbackDto usrFeedbackDto) {
-        this.usrFeedbackService.create(usrFeedbackDto);
+    public Rsp<Void> createUsrFeedback(@RequestBody UserFeedbackDto userFeedbackDto) {
+        this.userFeedbackService.create(userFeedbackDto);
         return Rsp.ok();
     }
 
     /**
      * 更新用户反馈信息。
      *
-     * @param usrFeedbackDto 表示用户反馈消息体的 {@link UsrFeedbackDto}。
+     * @param userFeedbackDto 表示用户反馈消息体的 {@link UserFeedbackDto}。
      * @param instanceId 表示对话实例 Id 的 {@link String}。
      */
     @PatchMapping(path = "/feedback/{instanceId}", summary = "更新用户反馈记录",
             description = "该接口用于更新用户对一个对话实例反馈记录。")
     public Rsp<Void> updateUsrFeedback(@PathVariable("instanceId") String instanceId,
-            @RequestBody UsrFeedbackDto usrFeedbackDto) {
-        this.usrFeedbackService.updateOne(instanceId, usrFeedbackDto);
+            @RequestBody UserFeedbackDto userFeedbackDto) {
+        this.userFeedbackService.updateOne(instanceId, userFeedbackDto);
         return Rsp.ok();
     }
 
@@ -71,11 +71,11 @@ public class UserFeedbackController extends AbstractController {
      * 通过 logId 查询用户反馈记录
      *
      * @param instanceId 表示对话实例 Id 的 {@link String}。
-     * @return 表示反馈记录的 {@link UsrFeedbackDto}。
+     * @return 表示反馈记录的 {@link UserFeedbackDto}。
      */
     @GetMapping(path = "/feedback/{instanceId}", summary = "查询用户反馈记录",
             description = "该接口可以通过待查询实例的唯一标识符来查询实例的反馈记录。")
-    public Rsp<UsrFeedbackDto> getAllAnswerByInstanceId(@PathVariable("instanceId") String instanceId) {
-        return Rsp.ok(this.usrFeedbackService.getUsrFeedbackByInstanceId(instanceId));
+    public Rsp<UserFeedbackDto> getAllAnswerByInstanceId(@PathVariable("instanceId") String instanceId) {
+        return Rsp.ok(this.userFeedbackService.getUserFeedbackByInstanceId(instanceId));
     }
 }

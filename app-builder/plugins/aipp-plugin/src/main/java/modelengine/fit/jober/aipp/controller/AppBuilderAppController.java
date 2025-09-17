@@ -455,6 +455,21 @@ public class AppBuilderAppController extends AbstractController {
         return Rsp.ok(this.appService.recoverApp(appId, recoverAppId, contextOf(httpRequest, tenantId)));
     }
 
+    /**
+     * 更新访客模式状态。
+     *
+     * @param path 表示应用的短标识的 {@link String}。
+     * @param isGuest 表示访客状态的 {@link Boolean}。
+     * @return 表示是否打开游客模式的 {@link Rsp}{@code <}{@link Void}{@code >}。
+     */
+    @CarverSpan(value = "operation.appBuilderApp.updateGuestMode")
+    @PutMapping(value = "/guest/{path}", description = "更新访客模式状态")
+    public Rsp<Void> updateGuestMode(@PathVariable("path") String path,
+            @RequestParam(value = "allow_guest", defaultValue = "false") Boolean isGuest) {
+        this.appService.updateGuestMode(path, isGuest);
+        return Rsp.ok();
+    }
+
     private AppQueryCondition buildAppQueryCondition(AppQueryCondition cond, String type) {
         cond.setType(type);
         if (cond.getExcludeNames() == null) {

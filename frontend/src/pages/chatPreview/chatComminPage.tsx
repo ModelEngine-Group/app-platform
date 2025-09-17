@@ -79,7 +79,7 @@ const CommonChat = (props: any) => {
 
   useEffect(() => {
     const handler = (e: { data: string }) => {
-      const data = JSON.parse(e.data);
+      const data = e.data;
       if (data.type === 'ready') {
         handleReady();
       } else if (data.type === 'back') {

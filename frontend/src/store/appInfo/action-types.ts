@@ -8,3 +8,4 @@ export const SET_NODE_ID = 'SET_NODE_ID';
 export const SET_AGENT_INFO = 'SET_AGENT_INFO';
 export const SET_AIPP_ID = 'SET_AIPP_ID';
 export const SET_APP_VERSION = 'SET_APP_VERSION';
+export const SET_IS_GUEST= 'SET_IS_GUEST';
