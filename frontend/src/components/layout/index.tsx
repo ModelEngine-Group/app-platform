@@ -109,7 +109,7 @@ const AppLayout: React.FC = () => {
   useEffect(() => {
     if (process.env.PACKAGE_MODE === 'common') {
     // TODO: 待后端接口归一后调用 getUser()
-    } else {
+    } else if (!location.pathname.includes('/chat/')){
       getOmsUser();
       getRole();
     }

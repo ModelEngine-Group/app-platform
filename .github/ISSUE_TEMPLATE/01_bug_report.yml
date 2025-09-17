@@ -32,7 +32,8 @@ body:
       label: 版本信息 / Version Information
       description: 您使用的是哪个版本？/ Which version are you using?
       options:
-        - v1.1.0
+        - v1.2.2
+        - v1.1.2
         - v1.0.1
         - "其他 (请在下方说明) / Other (please specify below)"
     validations:

@@ -9,7 +9,7 @@ package modelengine.jade.app.engine.base.dto;
 import lombok.Data;
 
 /**
- * 获取猜你想问数据body
+ * 获取猜你想问数据的消息体。
  *
  * @author 杨海波
  * @since 2024-05-25
@@ -21,4 +21,5 @@ public class AppBuilderRecommendDto {
     private String answer;
     private String model;
     private String modelTag;
+    private String appOwner;
 }

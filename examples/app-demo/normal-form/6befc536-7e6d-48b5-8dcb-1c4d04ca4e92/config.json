@@ -15,7 +15,8 @@
               "modelId": { "type": "string" },
               "baseUrl": { "type": "string" },
               "isDefault": { "type": "integer" },
-              "userId": { "type": "string" }
+              "userId": { "type": "string" },
+              "type": { "type": "string" }
             },
             "required": ["modelId", "isDefault", "userId"]
           }
@@ -37,9 +38,10 @@
             "baseUrl": { "type": "string" },
             "isDefault": { "type": "integer" },
             "userId": { "type": "string" },
-            "apiKey": { "type": "string" }
+            "apiKey": { "type": "string" },
+            "type": { "type": "string" }
           },
-          "required": ["modelName", "modelId", "baseUrl", "isDefault", "userId", "apiKey"]
+          "required": ["modelName", "modelId", "baseUrl", "isDefault", "userId", "apiKey", "type"]
         }
       },
       "required": ["action", "info"]

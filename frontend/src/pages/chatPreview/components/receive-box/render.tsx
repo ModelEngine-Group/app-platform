@@ -8,12 +8,17 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Spin } from 'antd';
 import { ChatContext } from '@/pages/aippIndex/context';
 import { TENANT_ID } from '../send-editor/common/config';
-import { saveContent, saveChart } from "@/shared/http/sse";
+import { saveContent, saveChart } from '@/shared/http/sse';
+import {
+  guestModeResumeChat,
+  guestModeRestartChat,
+  guestModeStopInstance,
+} from '@/shared/http/guest';
 import { stopInstance } from '@/shared/http/aipp';
 import { formEnv } from '@/shared/utils/common';
-import { Message } from "@/shared/utils/message";
+import { Message } from '@/shared/utils/message';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from "@/store/hook";
+import { useAppSelector } from '@/store/hook';
 import './styles/render.scss';
 
 /**
@@ -33,7 +38,7 @@ const Render = (props: {
     startTime: any;
     _internal: any;
     nodeId: any;
-    status: any
+    status: any;
   };
   funcCallback?: any;
   uniqueId: any;
@@ -48,6 +53,7 @@ const Render = (props: {
   const formConfigRef = useRef<any>({});
   const [iframeHeight, setIframeHeight] = useState(0);
   const isDebug = useAppSelector((state) => state.commonStore.isDebug);
+  const isGuest = useAppSelector((state) => state.appStore.isGuest);
   const { conditionConfirm, handleRejectClar } = useContext(ChatContext);
 
   // 表单初始化加载
@@ -56,14 +62,14 @@ const Render = (props: {
       uniqueId,
       origin: window.location.origin,
       tenantId: TENANT_ID,
-      data: formConfigRef.current.formData
-    }
+      data: formConfigRef.current.formData,
+    };
     iframeRef.current?.contentWindow.postMessage({ ...params }, '*');
     setLoading(false);
   };
   // 表单通信回调
-  const message = async (event: { data: { type?: any; uniqueId?: any; height?: any; }; }) => {
-    if (!event.data.type) return
+  const message = async (event: { data: { type?: any; uniqueId?: any; height?: any } }) => {
+    if (!event.data.type) return;
     let iframeKey = event.data?.uniqueId;
     if (String(uniqueIdRef.current) === iframeKey) {
       if (event.data.type === 'app-engine-form-ready') {
@@ -76,10 +82,10 @@ const Render = (props: {
       } else if (event.data.type === 'app-engine-form-resuming') {
         resumingChat(event.data);
       } else if (event.data.type === 'app-engine-form-restart') {
-        restartChat(event.data)
+        restartChat(event.data);
       }
     }
-  }
+  };
   // 终止会话
   const terminateChat = async (data) => {
     const { logId, startTime, _internal, nodeId, instanceId, status } = formConfigRef.current;
@@ -89,10 +95,12 @@ const Render = (props: {
     }
     let params = { ...data, logId, instanceId };
     if (nodeId) {
-      params = { ...data, logId, instanceId, startTime, nodeId, _internal }
+      params = { ...data, logId, instanceId, startTime, nodeId, _internal };
     }
     if (funcCallback) {
-      let res: any = await stopInstance(TENANT_ID, instanceId, params);
+      let res: any = isGuest
+        ? await guestModeStopInstance(TENANT_ID, instanceId, params)
+        : await stopInstance(TENANT_ID, instanceId, params);
       if (res.code === 0) {
         funcCallback();
       } else {
@@ -101,9 +109,9 @@ const Render = (props: {
     } else {
       handleRejectClar(params);
     }
-  }
+  };
   // 重新会话
-  const restartChat = async (data: { type?: any; uniqueId?: any; height?: any; params?: any; }) => {
+  const restartChat = async (data: { type?: any; uniqueId?: any; height?: any; params?: any }) => {
     const { status } = formConfigRef.current;
     if (status === 'RUNNING') {
       Message({ type: 'warning', content: t('restartFormTip') });
@@ -112,24 +120,21 @@ const Render = (props: {
     setLoading(true);
     const params = {
       output: {
-        ...data.params
-      }
-    }
-    const res: any = await saveChart(TENANT_ID, formConfigRef.current.instanceId, params);
+        ...data.params,
+      },
+    };
+    const res: any = isGuest
+      ? await guestModeRestartChat(TENANT_ID, formConfigRef.current.instanceId, params)
+      : await saveChart(TENANT_ID, formConfigRef.current.instanceId, params);
     if (res.status !== 200) {
       Message({ type: 'warning', content: res.msg || t('savingFailed') });
       return;
     }
     funcCallback ? funcCallback(res) : conditionConfirm(res);
     setLoading(false);
-  }
+  };
   // 继续会话
-  const resumingChat = async (data: {
-    type?: any;
-    uniqueId?: any;
-    height?: any;
-    params?: any;
-  }) => {
+  const resumingChat = async (data: { type?: any; uniqueId?: any; height?: any; params?: any }) => {
     const {
       logId,
       parentInstanceId,
@@ -138,21 +143,21 @@ const Render = (props: {
       _internal,
       nodeId,
       instanceId,
-      status
+      status,
     } = formConfigRef.current;
     if (status === 'ARCHIVED') {
       Message({ type: 'warning', content: t('resumingFormTip') });
       return;
     }
-    let params:any = {
+    let params: any = {
       formAppearance: JSON.stringify(formAppearance),
       formData: JSON.stringify(data.params),
       businessData: {
         parentInstanceId: parentInstanceId,
         output: {
-          ...data.params
+          ...data.params,
         },
-      }
+      },
     };
     if (nodeId) {
       params.businessData.nodeId = nodeId;
@@ -160,7 +165,9 @@ const Render = (props: {
       params.businessData.startTime = startTime;
     }
     setLoading(true);
-    const res: any = await saveContent(TENANT_ID, instanceId, params, logId, isDebug);
+    const res: any = isGuest
+      ? await guestModeResumeChat(TENANT_ID, instanceId, params, logId, isDebug)
+      : await saveContent(TENANT_ID, instanceId, params, logId, isDebug);
     if (res.status !== 200) {
       Message({ type: 'warning', content: res.msg || t('conversationFailed') });
       return;
@@ -172,31 +179,34 @@ const Render = (props: {
     setLoading(true);
     window.addEventListener('message', message);
     return () => {
-      window.removeEventListener('message', message)
+      window.removeEventListener('message', message);
     };
   }, []);
   useEffect(() => {
     uniqueIdRef.current = uniqueId;
     formConfigRef.current = formConfig;
   }, [uniqueId]);
-  return <>{(
-    <div>
-      <div className='recieve'>
-        <Spin spinning={loading}>
-        <iframe
-            ref={iframeRef}
-            onLoad={handleIframeLoad}
-            key={props.uniqueId}
-            className='appengine-remote-frame'
-            sandbox='allow-scripts'
-            style={{ width: `100%`, height: `${iframeHeight + 60}px`, border: "none" }}
-            src={`${origin}/${formEnv() ? 'appbuilder' : 'api/jober'}/static/${path}?uniqueId=${props.uniqueId}`}>
-          </iframe>
-        </Spin>
-      </div>
-    </div>)}
-  </>
+  return (
+    <>
+      {
+        <div>
+          <div className='recieve'>
+            <Spin spinning={loading}>
+              <iframe
+                ref={iframeRef}
+                onLoad={handleIframeLoad}
+                key={props.uniqueId}
+                className='appengine-remote-frame'
+                sandbox='allow-scripts'
+                style={{ width: `100%`, height: `${iframeHeight + 60}px`, border: 'none' }}
+                src={`${origin}/${formEnv() ? 'appbuilder' : 'api/jober'}/static/${path}?uniqueId=${props.uniqueId}`}
+              ></iframe>
+            </Spin>
+          </div>
+        </div>
+      }
+    </>
+  );
 };
-
 
 export default Render;

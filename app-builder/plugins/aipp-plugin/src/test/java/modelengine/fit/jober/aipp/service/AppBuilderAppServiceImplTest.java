@@ -9,6 +9,7 @@ package modelengine.fit.jober.aipp.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -46,6 +47,7 @@ import modelengine.fit.jober.aipp.factory.AppTemplateFactory;
 import modelengine.fit.jober.aipp.factory.CheckerFactory;
 import modelengine.fit.jober.aipp.genericable.entity.AippCreate;
 import modelengine.fit.jober.aipp.po.AppBuilderAppPo;
+import modelengine.fit.jober.aipp.repository.AppBuilderAppRepository;
 import modelengine.fit.jober.aipp.service.impl.AppBuilderAppServiceImpl;
 import modelengine.fit.jober.aipp.service.impl.RetrievalNodeChecker;
 import modelengine.fit.jober.aipp.util.ConvertUtils;
@@ -106,6 +108,9 @@ public class AppBuilderAppServiceImplTest {
     @Mock
     private KnowledgeCenterService knowledgeCenterService;
 
+    @Mock
+    private AppBuilderAppRepository appBuilderAppRepository;
+
     @BeforeEach
     public void before() {
         this.converterFactory = mock(ConverterFactory.class);
@@ -114,7 +119,7 @@ public class AppBuilderAppServiceImplTest {
                 this.appTaskService,
                 this.appVersionService,
                 this.appDomainService,
-                this.appDomainFactory, this.converterFactory, this.knowledgeCenterService);
+                this.appDomainFactory, this.converterFactory, this.knowledgeCenterService, this.appBuilderAppRepository);
         mockConvertUtils = mockStatic(ConvertUtils.class);
 
     }
@@ -321,6 +326,13 @@ public class AppBuilderAppServiceImplTest {
         assertEquals(limit, resultSet.getRange().getLimit());
         assertEquals(1, resultSet.getRange().getTotal());
         verify(appVersionService, times(1)).pageListByTenantId(condition, tenantId, offset, limit);
+    }
+
+    @Test
+    @DisplayName("测试更新访客模式")
+    void testUpdateGuestMode() {
+        this.appBuilderAppService.updateGuestMode("path", true);
+        verify(this.appBuilderAppRepository, times(1)).updateGuestMode(anyString(), anyBoolean());
     }
 
     /**

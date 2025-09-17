@@ -8,6 +8,12 @@ import React, { useState } from 'react';
 import { Modal, Input } from 'antd';
 import { LikeIcon, UnlikeIcon, LikeSelectIcon, UnlikeSelectIcon } from '@/assets/icon';
 import { feedbacksRq, updateFeedback, deleteFeedback } from '@/shared/http/chat';
+import {
+  guestModeFeedbacksRq,
+  guestModeUpdateFeedback,
+  guestModeDeleteFeedback,
+} from '@/shared/http/guest';
+import { useAppSelector } from '@/store/hook';
 import { useTranslation } from 'react-i18next';
 import './styles/feedbacks.scss';
 
@@ -15,6 +21,7 @@ const Feedbacks = ({ instanceId, feedbackStatus, refreshFeedbackStatus }) => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [textValue, setTextValue] = useState('');
+  const isGuest = useAppSelector((state) => state.appStore.isGuest);
   const handleOk = async () => {
     setIsModalOpen(false);
     unLikeClickConfirm();
@@ -24,26 +31,28 @@ const Feedbacks = ({ instanceId, feedbackStatus, refreshFeedbackStatus }) => {
   };
   const unLikeClickConfirm = async () => {
     if (feedbackStatus === -1 || feedbackStatus === undefined) {
-      let params = { usrFeedback: '1', usrFeedbackText: textValue, instanceId: instanceId };
-      await feedbacksRq(params);
+      let params = { userFeedback: '1', userFeedbackText: textValue, instanceId: instanceId };
+      isGuest ? await guestModeFeedbacksRq(params) : await feedbacksRq(params);
     } else if (feedbackStatus === 1) {
-      await deleteFeedback(instanceId);
+      isGuest ? await guestModeDeleteFeedback(instanceId) : await deleteFeedback(instanceId);
     } else {
-      let data = { usrFeedback: '1', usrFeedbackText: textValue };
-      await updateFeedback(instanceId, data);
+      let data = { userFeedback: '1', userFeedbackText: textValue };
+      isGuest
+        ? await guestModeUpdateFeedback(instanceId, data)
+        : await updateFeedback(instanceId, data);
     }
     refreshFeedbackStatus(instanceId);
   };
   // 点赞
   const likeClick = async () => {
     if (feedbackStatus === -1 || feedbackStatus === undefined) {
-      let params = { usrFeedback: '0', usrFeedbackText: '', instanceId: instanceId };
-      await feedbacksRq(params);
+      let params = { userFeedback: '0', userFeedbackText: '', instanceId: instanceId };
+      isGuest ? await guestModeFeedbacksRq(params) : await feedbacksRq(params);
     } else if (feedbackStatus === 0) {
-      await deleteFeedback(instanceId);
+      isGuest ? await guestModeDeleteFeedback(instanceId) : await deleteFeedback(instanceId);
     } else {
-      let data = { usrFeedback: '0', usrFeedbackText: '' };
-      await updateFeedback(instanceId, data);
+      let data = { userFeedback: '0', userFeedbackText: '' };
+      isGuest ? await guestModeUpdateFeedback(instanceId, data) : await updateFeedback(instanceId, data);
     }
     refreshFeedbackStatus(instanceId);
   };
@@ -77,7 +86,12 @@ const Feedbacks = ({ instanceId, feedbackStatus, refreshFeedbackStatus }) => {
             onCancel={handleCancel}
             centered
           >
-            <Input.TextArea rows={4} placeholder={t('plsEnter')} value={textValue} onChange={onChange} />
+            <Input.TextArea
+              rows={4}
+              placeholder={t('plsEnter')}
+              value={textValue}
+              onChange={onChange}
+            />
           </Modal>
         </div>
       }
