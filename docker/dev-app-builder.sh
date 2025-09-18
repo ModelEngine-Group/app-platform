@@ -28,7 +28,6 @@ fi
 
 # 提交镜像
 docker commit --change='ENTRYPOINT ["/opt/fit-framework/bin/start.sh"]' app-builder-tmp modelengine/app-builder:$VERSION
-docker commit --change='ENTRYPOINT ["/opt/fit-framework/bin/start.sh"]' app-builder-tmp app-builder:$VERSION
 
 docker stop app-builder-tmp
 docker rm app-builder-tmp
@@ -37,5 +36,9 @@ docker rm app-builder-tmp
 docker-compose down
 echo "Service stopped."
 
-docker-compose up -d
+docker-compose -p app-platform up -d
 echo "Service restarted."
+
+docker stop db-initializer
+docker rm db-initializer
+echo "=== Finished ==="
