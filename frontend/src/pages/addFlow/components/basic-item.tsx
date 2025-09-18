@@ -24,6 +24,7 @@ import {
   FileExtractionIcon,
   LoopIcon,
   PairingIcon,
+  TextConcatenateIcon,
 } from '@/assets/icon';
 import { handleClickAddBasicNode, handleDragBasicNode } from '../utils'
 
@@ -60,7 +61,8 @@ const BasicItems = (props: any) => {
       'noteNode': <ClassificationIcon />,
       'loopNodeState': <LoopIcon />,
       'manualCheckNodeState': <ManualCheckIcon />,
-      'parallelNodeState': <PairingIcon />
+      'parallelNodeState': <PairingIcon />,
+      'textConcatenateNodeState':  <TextConcatenateIcon />
     }[type];
   }
   return <>

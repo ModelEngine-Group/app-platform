@@ -73,5 +73,10 @@
     "type": "parallelNodeState",
     "name": "并行",
     "uniqueName": ""
+  },
+  {
+    "type": "textConcatenateNodeState",
+    "name": "文本拼接",
+    "uniqueName": ""
   }
 ]

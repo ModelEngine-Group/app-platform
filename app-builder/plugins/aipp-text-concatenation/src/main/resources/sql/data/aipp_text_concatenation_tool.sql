@@ -9,7 +9,7 @@ INSERT INTO store_definition (name, schema, definition_group_name) VALUES ('rend
 INSERT INTO store_definition_group (name, summary, description, extensions) VALUES ('defGroup_text_concatenation_tool', '', '', '{}') ON CONFLICT(name) DO NOTHING;
 
 INSERT INTO store_tag (tool_unique_name, name) VALUES ('192a8c72-dce9-40a5-a07e-4f8126c0f295', 'FIT') ON CONFLICT(tool_unique_name, name) DO NOTHING;
-INSERT INTO store_tag (tool_unique_name, name) VALUES ('192a8c72-dce9-40a5-a07e-4f8126c0f295', 'TEXTCONCATENATENODE') ON CONFLICT(tool_unique_name, name) DO NOTHING;
+INSERT INTO store_tag (tool_unique_name, name) VALUES ('192a8c72-dce9-40a5-a07e-4f8126c0f295', 'TEXTCONCATENATENODESTATE') ON CONFLICT(tool_unique_name, name) DO NOTHING;
 INSERT INTO store_tag (tool_unique_name, name) VALUES ('192a8c72-dce9-40a5-a07e-4f8126c0f295', 'BASIC') ON CONFLICT(tool_unique_name, name) DO NOTHING;
 
 INSERT INTO store_tool_group (name, definition_group_name, summary, description, extensions) VALUES ('implGroup_text_concatenation_tool', 'defGroup_text_concatenation_tool', '', '', '{}') ON CONFLICT(name) DO NOTHING;
