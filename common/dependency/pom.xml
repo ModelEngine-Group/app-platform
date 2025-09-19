@@ -377,6 +377,11 @@
                 <artifactId>aipp-file-extract-service</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>modelengine.jade.service</groupId>
+                <artifactId>aipp-template-render-service</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
 
             <!-- App-engine -->
             <dependency>

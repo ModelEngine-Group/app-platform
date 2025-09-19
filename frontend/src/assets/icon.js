@@ -64,6 +64,7 @@ const TextToImageIcon = (props) => <Icon component={() => (<BaseIcons.TextToImag
 const FileExtractionIcon = (props) => <Icon component={() => (<BaseIcons.FileExtraction />)} {...props} />;
 const LoopIcon = (props) => <Icon component={() => (<BaseIcons.Loop />)} {...props} />;
 const PairingIcon = (props) => <Icon component={() => (<BaseIcons.Pairing />)} {...props} />;
+const TextConcatenateIcon = (props) => <BaseIcons.TextConcatenate {...props} />;
 
 export {
   LeftArrowIcon,
@@ -121,6 +122,7 @@ export {
   TextToImageIcon,
   FileExtractionIcon,
   LoopIcon,
-  PairingIcon
+  PairingIcon,
+  TextConcatenateIcon
 }
 

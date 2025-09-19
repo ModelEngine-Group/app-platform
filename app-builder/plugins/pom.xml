@@ -29,6 +29,8 @@
         <module>aipp-plugin</module>
         <module>aipp-prompt-builder</module>
         <module>aipp-rewriter</module>
+        <module>aipp-template-render</module>
+        <module>aipp-text-concatenation</module>
         <module>aipp-variable-aggregation</module>
         <module>aipp-websocket-plugin</module>
         <module>app-announcement</module>
