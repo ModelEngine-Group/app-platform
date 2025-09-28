@@ -17,8 +17,10 @@ import modelengine.fit.http.annotation.RequestBean;
 import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.annotation.RequestParam;
+import modelengine.fit.http.entity.FileEntity;
 import modelengine.fit.http.entity.PartitionedEntity;
 import modelengine.fit.http.server.HttpClassicServerRequest;
+import modelengine.fit.http.server.HttpClassicServerResponse;
 import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
@@ -481,6 +483,26 @@ public class AppBuilderGuestController extends AbstractController {
             }
         }).toList();
         return Rsp.ok(fileRspDtos);
+    }
+
+    /**
+     * 从远端下载文件或者从 nas 下载文件。
+     *
+     * @param httpRequest 表示 Http 请求体的 {@link HttpClassicServerRequest}。
+     * @param tenantId 表示租户唯一标识的 {@link String}。
+     * @param fileCanonicalPath 表示文件的规范路径的 {@link String}。
+     * @param fileName 表示文件名的 {@link String}。
+     * @param httpClassicServerResponse 表示 Http 响应的 {@link HttpClassicServerResponse}。
+     * @return 表示文件实体的 {@link FileEntity}。
+     * @throws IOException 表示文件读写异常的 {@link IOException}。
+     */
+    @GetMapping(path = "/{tenant_id}/file", description = "下载文件")
+    public FileEntity getFile(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
+            @RequestParam(value = "filePath", required = false) String fileCanonicalPath,
+            @RequestParam(value = "fileName") String fileName, HttpClassicServerResponse httpClassicServerResponse)
+            throws IOException {
+        OperationContext context = new OperationContext();
+        return this.fileService.getFile(context, fileCanonicalPath, fileName, httpClassicServerResponse);
     }
 
     /**

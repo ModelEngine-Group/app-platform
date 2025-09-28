@@ -129,9 +129,10 @@ const NormalAppInfo = (props) => {
 const Img = (props) => {
   const { icon } = props;
   const [imgPath, setImgPath] = useState('');
+  const isGuest = useAppSelector((state) => state.appStore.isGuest);
   useEffect(() => {
     if (icon) {
-      convertImgPath(icon).then(res => {
+      convertImgPath(icon, isGuest).then(res => {
         setImgPath(res);
       });
     }

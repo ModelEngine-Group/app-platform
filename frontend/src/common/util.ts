@@ -9,13 +9,19 @@ export function bytesToSize(bytes) {
   return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
 }
 
-export function convertImgPath(path: string) {
+export function convertImgPath(path: string, isGuest = false) {
   return new Promise((resolve, reject) => {
-    fetch(path, {
-      headers: {
-        'X-Auth-Token': getCookie('__Host-X-Auth-Token'),
-        'X-Csrf-Token': getCookie('__Host-X-Csrf-Token')
-      },
+    const headers: HeadersInit = {};
+    let requestPath = path;
+    if (isGuest) {
+      requestPath = path.replace('/appbuilder/v1/api/', '/appbuilder/v1/api/guest/');
+    } else {
+      headers['X-Auth-Token'] = getCookie('__Host-X-Auth-Token');
+      headers['X-Csrf-Token'] = getCookie('__Host-X-Csrf-Token');
+    }
+
+    fetch(requestPath, {
+      headers,
     })
     .then(response => response.blob())
     .then(blob => {

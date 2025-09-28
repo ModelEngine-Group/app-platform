@@ -100,7 +100,7 @@ const EditorBtnHome = (props) => {
   // 获取图片
   const getImgPath = async (cardInfo) => {
     if (cardInfo && cardInfo.icon) {
-      const res: any = await convertImgPath(cardInfo.icon);
+      const res: any = await convertImgPath(cardInfo.icon, isGuest);
       setAppIcon(res);
     }
   };
