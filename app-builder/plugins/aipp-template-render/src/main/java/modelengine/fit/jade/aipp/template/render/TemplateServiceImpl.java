@@ -6,11 +6,15 @@
 
 package modelengine.fit.jade.aipp.template.render;
 
-import modelengine.fitframework.annotation.Component;
+import static modelengine.fitframework.util.ObjectUtils.nullIf;
 
+import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.parameterization.ParameterizationMode;
+import modelengine.fitframework.parameterization.ParameterizedString;
+import modelengine.fitframework.parameterization.ParameterizedStringResolver;
+
+import java.util.Collections;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * {@link TemplateService} 的实现类。
@@ -20,28 +24,18 @@ import java.util.regex.Pattern;
  */
 @Component
 public class TemplateServiceImpl implements TemplateService {
-    private static final Pattern PLACEHOLDER_PATTERN  = Pattern.compile("\\{\\{\\s*(\\w+)\\s*}}");
-
     @Override
     public String renderTemplate(String template, Map<String, Object> args) {
         if (template == null) {
             return null;
         }
-
         if (args == null) {
             args = Map.of();
         }
-
-        Matcher matcher = PLACEHOLDER_PATTERN.matcher(template);
-        StringBuilder sb = new StringBuilder();
-
-        while (matcher.find()) {
-            String key = matcher.group(1);
-            Object value = args.getOrDefault(key, "");
-            matcher.appendReplacement(sb, Matcher.quoteReplacement(String.valueOf(value)));
-        }
-        matcher.appendTail(sb);
-
-        return sb.toString();
+        Map<String, Object> params = nullIf(args, Collections.emptyMap());
+        ParameterizedStringResolver resolver =
+                ParameterizedStringResolver.create("{{", "}}", '/', ParameterizationMode.LENIENT_EMPTY);
+        ParameterizedString parameterizedString = resolver.resolve(template);
+        return parameterizedString.format(params, null);
     }
 }
