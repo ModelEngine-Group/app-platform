@@ -1,0 +1,169 @@
+services:
+  jade-db:
+    container_name: jade-db
+    hostname: jade-db
+    image: modelengine/postgres:15.2-${VERSION}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    networks:
+      my-net:
+        ipv4_address: 172.0.0.98
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      LOG_HOME: /log/app
+    volumes:
+      - ./sql:/home/sql
+      - ./shell/initDB.sh:/home/initDB.sh
+      - "./app-platform-tmp/jade-db:/var/lib/postgresql/data"
+      - "./app-platform-tmp/log:/log/app/postgresql"
+    ports:
+      - "${DB_PORT}:5432"
+
+  db-initializer:
+    container_name: db-initializer
+    hostname: db-initializer
+    image: modelengine/postgres:15.2-${VERSION}
+    networks:
+      my-net:
+        ipv4_address: 172.0.0.99
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "ModelEngine@123"
+      LOG_HOME: /log/app
+      DB_HOST: jade-db
+      DB_PORT: 5432
+      DB_USER: postgres
+      IS_UPGRADE: ${IS_UPGRADE}
+    volumes:
+      - ./shell/initDB.sh:/home/initDB.sh
+      - ./sql:/home/sql
+    entrypoint: ["/bin/bash", "-c"] 
+    command: |
+      " chmod +x /home/initDB.sh
+        bash /home/initDB.sh app_builder /home/sql
+      "
+    restart: "no"
+
+  app-builder:
+    container_name: app-builder
+    hostname: app-builder
+    image: modelengine/app-builder:dev-latest
+    depends_on:
+      jade-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://app-builder:8004/fit/check"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 180s
+    networks:
+      my-net:
+        ipv4_address: 172.0.0.100
+    environment:
+      worker.host: localhost
+      server.http.port: 8004
+      matata.registry.host: localhost
+      matata.registry.port: 8004
+      fit.profiles.active: prod
+      fit.datasource.primary: app-engine
+      fit.datasource.instances.app-engine.mode: shared
+      fit.datasource.instances.app-engine.url: jdbc:postgresql://jade-db/app_builder?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=true&allowPublicKeyRetrieval=true&useAffectedRows=true&connectTimeout=60000&socketTimeout=60000
+      fit.datasource.instances.app-engine.username: postgres
+      fit.datasource.instances.app-engine.password: "ModelEngine@123"
+      openai-urls.internal: https://model-lite-router:8009/v1
+      app-engine.pathPrefix: /api/jober
+      LOG_HOME: /log/app
+      LOG_NUM: 4320
+      LOG_SIZE: "50M"
+      app-engine.ttl.businessData: 15
+      app-engine.ttl.nonBusinessData: 1
+    volumes:
+      - "./app-platform-tmp/fit-runtime:/var/store/tools"
+      - "./app-platform-tmp/log:/log/app/app-builder"
+      - "./app-platform-tmp/jade-db:/var/jade-db"
+      - "./app-platform-tmp/app-builder:/var/share"
+    ports:
+      - "8004:8004"
+
+  fit-runtime-java:
+    container_name: fit-runtime-java
+    hostname: fit-runtime-java
+    image: modelengine/fit-runtime-java:${VERSION}
+    depends_on:
+      app-builder:
+        condition: service_healthy 
+    networks:
+      my-net:
+        ipv4_address: 172.0.0.101
+    environment:
+      worker.id: fit-runtime-java
+      worker.environment: prod
+      worker.host: 172.0.0.101
+      matata.registry.host: app-builder
+      matata.registry.port: 8004
+      matata.registry.environment: prod
+      ENTRY_PLUGINS_PATH: /entry
+      LOG_HOME: /log/app
+    volumes:
+      - "./app-platform-tmp/app-builder:/var/share"
+      - "./app-platform-tmp/fit-runtime:/entry"
+      - "./app-platform-tmp/log:/log/app/runtime-java"
+    ports:
+      - "8090:8090"
+ 
+  fit-runtime-python:
+    container_name: fit-runtime-python
+    hostname: fit-runtime-python
+    image: modelengine/fit-runtime-python:${VERSION}
+    depends_on:
+      app-builder:
+        condition: service_healthy 
+    networks:
+      my-net:
+        ipv4_address: 172.0.0.102
+    environment:
+      WORKER_ID: fit-runtime-python
+      WORK_ENV: prod
+      LOCAL_IP: 172.0.0.102
+      REGISTRY_HOST: app-builder
+      REGISTRY_PORT: 8004
+      matata.registry.environment: prod
+      USER_PLUGINS_PATH: 'custom_dynamic_plugins/python'
+      LOG_HOME: /log/app
+    volumes:
+      - "./app-platform-tmp/app-builder:/var/share"
+      - "./app-platform-tmp/fit-runtime:/app/python/custom_dynamic_plugins"
+      - "./app-platform-tmp/log:/log/app/runtime-python"
+    ports:
+      - "9666:9666"
+      
+  web:
+    container_name: web
+    hostname: web
+    image: modelengine/jade-web:${VERSION}
+    depends_on:
+      app-builder:
+        condition: service_healthy
+    networks:
+      my-net:
+        ipv4_address: 172.0.0.103
+    environment:
+      LOG_HOME: /log/app
+    volumes:
+      - "./app-platform-tmp/log:/log/app/web"
+    ports:
+      - "${WEB_PORT}:8001"
+
+networks:
+  my-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.0.0.0/24
+          gateway: 172.0.0.1

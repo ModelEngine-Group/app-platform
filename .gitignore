@@ -13,3 +13,6 @@ build/
 docker/app-platform-tmp
 docker/.env
 docker/sql/init/data/tr_init_models.sql
+
+# Claude Code settings
+.claude/
