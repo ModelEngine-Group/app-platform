@@ -6,7 +6,7 @@
 
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, InputNumber, Input, Switch, Popover, Empty } from 'antd';
+import { Form, InputNumber, Input, Switch, Popover, Empty, Select } from 'antd';
 import { isInputEmpty, getConfiguration } from '@/shared/utils/common';
 import { AippContext } from '@/pages/aippIndex/context';
 import { useAppSelector } from '@/store/hook';
@@ -80,44 +80,111 @@ const ConversationConfiguration = ({ appInfo, updateUserContext, chatRunning, is
   }, []);
 
   // 根据类型获取输入类型
-  const getConfigurationItem = ({ name, type }) => {
+  const getConfigurationItem = ({ name, type, appearance = {}, value}) => {
+    const displayType = appearance?.displayType;
+
+    // 优先使用 displayType 分支渲染
+    switch (displayType) {
+      case 'input':
+        return (
+          <Input
+            style={{ width: 400 }}
+            maxLength={appearance.maxLength || undefined}
+            showCount
+            value={value}
+            onChange={updateData}
+          />
+        );
+      case 'number':
+        return (
+          <InputNumber
+            style={{ width: 150 }}
+            controls
+            step={0.01}
+            precision={2}
+            min={appearance.minValue ?? undefined}
+            max={appearance.maxValue ?? undefined}
+            value={value}
+            onChange={(e) => handleNumberChange(e, false, name)}
+          />
+        );
+      case 'switch':
+        return <Switch onChange={updateData} checked={!!value}/>;
+      case 'dropdown':
+        return (
+          <Select
+            style={{ width: 200 }}
+            allowClear={true}
+            value={value}
+            onChange={updateData}
+          >
+            {(appearance.options || []).map((opt, idx) => (
+              <Select.Option key={`${opt}-${idx}`} value={opt}>
+                {opt}
+              </Select.Option>
+            ))}
+          </Select>
+        );
+        case 'multiselect':
+          return (
+            <Select
+              style={{ width: 200 }}
+              allowClear={true}
+              value={value}
+              onChange={updateData}
+              mode="multiple"
+              showArrow={true}
+              showSearch={false}
+            >
+              {(appearance.options || []).map((opt, idx) => (
+                <Select.Option key={`${opt}-${idx}`} value={opt}>
+                  {opt}
+                </Select.Option>
+              ))}
+            </Select>
+          );
+    }
+
+    // 如果没有 appearance.displayType，退回旧逻辑
     switch (type) {
       case 'String':
-        return <Input
-          style={{ width: 400 }}
-          maxLength={500}
-          showCount
-          onChange={updateData}
-        />
+        return (
+          <Input
+            style={{ width: 400 }}
+            maxLength={500}
+            showCount
+            onChange={updateData}
+          />
+        );
       case 'Number':
-        return <InputNumber
-          style={{ width: 150 }}
-          controls={true}
-          keyboard={true}
-          step={0.01}
-          precision={2}
-          min={-999999999.99}
-          max={999999999.99}
-          onChange={(e) => handleNumberChange(e, false, name)}
-        />
+        return (
+          <InputNumber
+            style={{ width: 150 }}
+            controls
+            keyboard
+            step={0.01}
+            precision={2}
+            min={-999999999.99}
+            max={999999999.99}
+            onChange={(e) => handleNumberChange(e, false, name)}
+          />
+        );
       case 'Integer':
-        return <InputNumber
-          style={{ width: 150 }}
-          keyboard={true}
-          min={-999999999}
-          max={999999999}
-          parser={(value) => value.replace(/[^\d-]/g, '')} // 仅允许数字和负号
-          onChange={(e) => handleNumberChange(e, true, name)}
-          formatter={(value) => {
-            if (value === '0') {
-              return '0';
-            }
-            return `${Math.floor(value) || ''}`;
-          }
-          } // 强制显示整数
-        />
+        return (
+          <InputNumber
+            style={{ width: 150 }}
+            keyboard
+            parser={(value) => value.replace(/[^\d-]/g, '')}
+            formatter={(value) => (value === '0' ? '0' : `${Math.floor(value) || ''}`)}
+            min={-999999999}
+            max={999999999}
+            onChange={(e) => handleNumberChange(e, true, name)}
+          />
+        );
       case 'Boolean':
-        return <Switch onChange={updateData}></Switch>
+        return <Switch onChange={updateData} />;
+      default:
+        return <Input style={{ width: 400 }} onChange={updateData} />;
     }
   };
 
@@ -170,6 +237,29 @@ const ConversationConfiguration = ({ appInfo, updateUserContext, chatRunning, is
     }
   }, [showElsa]);
 
+  useEffect(() => {
+    if (configurationList?.length) {
+      configurationList.forEach(item => {
+        const preItem = preConfigurationList.current.find(it => it.name === item.name);
+        const isChangeType = preItem?.type !== item.type;
+
+        // 若已有值，保持不变，否则设置为默认值
+        const existingValue = form.getFieldValue(item.name);
+        const defaultValue = item.value ?? null;
+
+        if (item.type === 'Boolean') {
+          form.setFieldValue(item.name, isChangeType ? false : (existingValue ?? defaultValue ?? false));
+        } else {
+          const isEmpty = isInputEmpty(existingValue); // 你已有此函数
+          form.setFieldValue(item.name, isChangeType ? null : (isEmpty ? defaultValue : existingValue));
+        }
+      });
+      updateData();
+    }
+    preConfigurationList.current = configurationList;
+  }, [configurationList]);
+
+
   const content = (
     <>
       <div className='configuration-header'>
@@ -186,7 +276,7 @@ const ConversationConfiguration = ({ appInfo, updateUserContext, chatRunning, is
                   name={config.name}
                   label={config.displayName || ' '}
                   className={config.isRequired ? 'is-required' : ''}>
-                  {getConfigurationItem(config)}
+                  {getConfigurationItem({...config, value: form.getFieldValue(config.value)})}
                 </Form.Item>
               )
             }

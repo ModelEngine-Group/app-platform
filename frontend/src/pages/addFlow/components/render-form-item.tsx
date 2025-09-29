@@ -5,9 +5,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import React, { useEffect } from 'react';
-import { Input, Form, InputNumber, Switch } from 'antd';
+import { Input, Form, InputNumber, Switch, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
-const QUESTION_NAME = 'Question';
 
 /**
  * 调试表单渲染
@@ -22,148 +21,163 @@ const QUESTION_NAME = 'Question';
  */
 const RenderFormItem = (props) => {
   const { t } = useTranslation();
-  const { type, name, label, isRequired, form } = props;
+  const { type, name, label, isRequired, form, appearance } = props;
 
-  useEffect(() => {
-    formInit();
-  }, []);
+  const displayType = appearance?.displayType;
+  const actualType = displayType || type;
 
-  useEffect(() => {
-    formInit();
-  }, [type])
-
-  // 初始化数据
-  const formInit = () => {
-    if (type === 'Boolean') {
-      form.setFieldValue(name, false);
-      return;
-    }
-    form.setFieldValue(name, null);
-  }
-
-  const customLabel = (
+  const getCustomLabel = (typeName) => (
     <span className='debug-form-label'>
       <span className='item-name'>{label}</span>
-      <span className='item-type'>{type}</span>
     </span>
   );
-    
+
   const validateNumber = (value, isInteger) => {
-    if (value === undefined || value === null || value === '') {
-      return Promise.resolve();
-    }
-    if (isNaN(value)) {
-      return Promise.reject(new Error(t('plsEnterValidNumber')));
-    }
-    if (isInteger && (value < -999999999 || value > 999999999)) {
-      return Promise.reject(new Error(t('integerValidateTip')));
-    }
-    if (!isInteger && (value < -999999999.99 || value > 999999999.99)) {
-      return Promise.reject(new Error(t('numberValidateTip')));
-    }
+    if (value === undefined || value === null || value === '') return Promise.resolve();
+    if (isNaN(value)) return Promise.reject(new Error(t('plsEnterValidNumber')));
+    const min = appearance?.minValue ?? (isInteger ? -999999999 : -999999999.99);
+    const max = appearance?.maxValue ?? (isInteger ? 999999999 : 999999999.99);
+    if (value < min || value > max) return Promise.reject(new Error(t(isInteger ? 'integerValidateTip' : 'numberValidateTip')));
     return Promise.resolve();
   };
 
   const handleNumberItemBlur = (value, isInteger) => {
-    if (isNaN(value)) {
-      form.setFieldValue(name, null);
-      form.validateFields([name]);
-    } else if (value === '') {
+    if (isNaN(value) || value === '') {
       form.setFieldValue(name, null);
     } else {
-      let inputNumber = isInteger ? value : Number(value).toFixed(2);
-      form.setFieldValue(name, Number(inputNumber));
+      form.setFieldValue(name, isInteger ? Number(value) : Number(Number(value).toFixed(2)));
     }
-  }
+  };
 
   const handleStringItemBlur = (value) => {
-    if (value !== '') {
-      return;
+    if (value === '') form.setFieldValue(name, null);
+  };
+
+  const isRequiredRule = { required: isRequired !== false, message: t('plsEnter') };
+
+  // 初始化表单值
+  useEffect(() => formInit(), []);
+  useEffect(() => formInit(), [actualType]);
+  const formInit = () => {
+    if (actualType === 'Boolean' || actualType === 'switch') {
+      form.setFieldValue(name, false);
     }
-    form.setFieldValue(name, null);
+    if (actualType === 'multiselect') {
+      form.setFieldValue(name, []);
+    } else {
+      form.setFieldValue(name, null);
+    }
+  };
+
+  // 如果没有 appearance，回退到原来的 type 渲染逻辑
+  if (!appearance) {
+    switch (type) {
+      case 'String':
+        return (
+          <Form.Item
+            name={name}
+            label={getCustomLabel(type)}
+            rules={[{ required: isRequired !== false, message: t('plsEnterString') }]}
+            className='debug-form-item'
+          >
+            <Input.TextArea placeholder={t('plsEnter')} showCount rows={3} onBlur={(e) => handleStringItemBlur(e.target.value)} />
+          </Form.Item>
+        );
+      case 'Integer':
+      case 'Number':
+        const isInteger = type === 'Integer';
+        return (
+          <Form.Item
+            name={name}
+            label={getCustomLabel(type)}
+            rules={[{ required: isRequired !== false, message: t(`plsEnter${type}`) }, { validator: (_, value) => validateNumber(value, isInteger) }]}
+            className='debug-form-item'
+          >
+            <InputNumber
+              style={{ width: '100%' }}
+              step={isInteger ? 1 : 0.01}
+              precision={isInteger ? undefined : 2}
+              onBlur={(e) => handleNumberItemBlur(e.target.value, isInteger)}
+            />
+          </Form.Item>
+        );
+      case 'Boolean':
+        return (
+          <Form.Item
+            name={name}
+            label={getCustomLabel(type)}
+            rules={[{ required: isRequired !== false, message: t('plsChoose') }]}
+            className='debug-form-item'
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+        );
+      default:
+        return null;
+    }
   }
 
-  return <>
-    {type === 'String' &&
-      <Form.Item
-        name={name}
-        label={customLabel}
-        rules={[
-          { required: isRequired !== false, message: t('plsEnterString') },
-        ]}
-        className='debug-form-item'
-      >
-        <Input.TextArea
-          placeholder={`${t('plsEnter')}`}
-          showCount
-          rows={3}
-          onBlur={(e) => handleStringItemBlur(e.target.value)}
-        />
-      </Form.Item>
-    }
-    {type === 'Integer' &&
-      <Form.Item
-        name={name}
-        label={customLabel}
-        initialValue={null}
-        rules={[
-          { required: isRequired !== false, message: t('plsEnterInt') },
-          { validator: (_, value) => validateNumber(value, true) }
-        ]}
-        className='debug-form-item'
-      >
-        <InputNumber
-          step={1}
-          maxLength={11}
-          style={{ width: '100%' }}
-          placeholder={`${t('plsEnter')}${name}`}
-          onBlur={(e) => handleNumberItemBlur(e.target.value, true)}
-          parser={(value) => value.replace(/[^\d-]/g, '')} // 仅允许数字和负号
-          formatter={(value) => {
-            if (value === '0') {
-              return value;
-            }
-            return `${Math.floor(value) || ''}`;
-          }
-          } // 强制显示整数
-        />
-      </Form.Item>
-    }
-    {type === 'Number' &&
-      <Form.Item
-        name={name}
-        label={customLabel}
-        initialValue={null}
-        rules={[
-          { required: isRequired !== false, message: t('plsEnterNumber') },
-          { validator: (_, value) => validateNumber(value, false) }
-        ]}
-        className='debug-form-item'
-      >
-        <InputNumber
-          maxLength={14}
-          step={0.01}
-          precision={2}
-          style={{ width: '100%' }}
-          placeholder={`${t('plsEnter')}${name}`}
-          onBlur={(e) => handleNumberItemBlur(e.target.value, false)}
-        />
-      </Form.Item>
-    }
-    {type === 'Boolean' &&
-      <Form.Item
-        name={name}
-        label={customLabel}
-        rules={[
-          { required: isRequired !== false, message: t('plsChoose') },
-        ]}
-        className='debug-form-item'
-      >
-        <Switch />
-      </Form.Item>
-    }
-  </>
-}
-
+  // 有 appearance，走新的 actualType 渲染逻辑
+  return (
+    <>
+      {actualType === 'input' && (
+        <Form.Item name={name} label={getCustomLabel(actualType)} rules={[isRequiredRule]} className='debug-form-item'>
+          <Input placeholder={t('plsEnter')} maxLength={appearance?.maxLength || 500} showCount onBlur={(e) => handleStringItemBlur(e.target.value)} />
+        </Form.Item>
+      )}
+      {actualType === 'number' && (
+        <Form.Item name={name} label={getCustomLabel(actualType)} rules={[isRequiredRule, { validator: (_, value) => validateNumber(value, false) }]} className='debug-form-item'>
+          <InputNumber
+            style={{ width: '100%' }}
+            step={0.01}
+            precision={2}
+            min={appearance?.minValue ?? -999999999.99}
+            max={appearance?.maxValue ?? 999999999.99}
+            onBlur={(e) => handleNumberItemBlur(e.target.value, false)}
+          />
+        </Form.Item>
+      )}
+      {actualType === 'Integer' && (
+        <Form.Item name={name} label={getCustomLabel(actualType)} rules={[isRequiredRule, { validator: (_, value) => validateNumber(value, true) }]} className='debug-form-item'>
+          <InputNumber
+            style={{ width: '100%' }}
+            step={1}
+            parser={(value) => value.replace(/[^\d-]/g, '')}
+            formatter={(value) => (value === '0' ? value : `${Math.floor(value) || ''}`)}
+            onBlur={(e) => handleNumberItemBlur(e.target.value, true)}
+          />
+        </Form.Item>
+      )}
+      {(actualType === 'Boolean' || actualType === 'switch') && (
+        <Form.Item name={name} label={getCustomLabel(actualType)} rules={[isRequiredRule]} className='debug-form-item' valuePropName="checked">
+          <Switch />
+        </Form.Item>
+      )}
+      {actualType === 'dropdown' && (
+        <Form.Item name={name} label={getCustomLabel(actualType)} rules={[isRequiredRule]} className='debug-form-item'>
+          <Select allowClear placeholder={t('plsChoose')}>
+            {(appearance?.options || []).map((opt, idx) => (
+              <Select.Option key={`${opt}-${idx}`} value={opt}>
+                {opt}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      )}
+      {actualType === 'multiselect' && (
+        <Form.Item name={name} label={getCustomLabel(actualType)} rules={[isRequiredRule]} className='debug-form-item'>
+          <Select placeholder={t('plsChoose')} mode={'multiple'}>
+            {(appearance?.options || []).map((opt, idx) => (
+              <Select.Option key={`${opt}-${idx}`} value={opt}>
+                {opt}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      )}
+    </>
+  );
+};
 
 export default RenderFormItem;
