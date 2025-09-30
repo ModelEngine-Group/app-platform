@@ -86,7 +86,7 @@
             <plugin>
                 <groupId>org.fitframework</groupId>
                 <artifactId>fit-build-maven-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>${fit.version}</version>
                 <executions>
                     <execution>
                         <id>build-plugin</id>

@@ -66,7 +66,7 @@
         <dependency>
             <groupId>org.fitframework.plugin</groupId>
             <artifactId>fit-message-serializer-json-jackson</artifactId>
-            <version>3.5.3</version>
+            <version>${fit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
