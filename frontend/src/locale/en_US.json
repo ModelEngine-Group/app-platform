@@ -1682,5 +1682,23 @@
     "guestTips": "Guest mode has no access authentication, there are potential threats such as data leakage, please use with caution.",
     "wrongAddr": "Access address error",
     "wrongAddrMsg": "Please visit the correct address"
-  }
+  },
+  "inputType": "Input",
+  "numberType": "Number",
+  "dropdownType": "Dropdown",
+  "switchType": "Switch",
+  "multiselectType": "Multi Select",
+  "maxLength": "Max Length",
+  "option": "option",
+  "plsEnterOption": "Please enter an option",
+  "optionShouldBeUnique": "Options should be unique",
+  "addOption": "Add option",
+  "maxValue": "Max Value",
+  "minValue": "Min Value",
+  "addParamField": "Add Param",
+  "editParamField": "Edit Param",
+  "varName": "Param Name",
+  "plsEnterVarName": "Please enter param name",
+  "attributeVarNameMustBeUnique": "Enter a unique param name.",
+  "noDefaultValue": "No default value"
 }

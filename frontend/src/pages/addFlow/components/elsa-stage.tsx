@@ -29,6 +29,7 @@ import { configMap } from '../config';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../../locale/i18n';
 import { cloneDeep } from 'lodash';
+import InputParamModal from '@/pages/configForm/configUi/components/add-input-param';
 
 /**
  * elsa编排组件
@@ -56,6 +57,8 @@ const Stage = (props) => {
   } = props;
   const [showModal, setShowModal] = useState(false);
   const [showTools, setShowTools] = useState(false);
+  const [showInputModal, setShowInputModal] = useState(false);
+  const [inputModalMode, setInputModalMode] = useState('add');
   const [showDrawer, setShowDrawer] = useState(false);
   const [spinning, setSpinning] = useState(false);
   const [isDrawper, setIsDrawper] = useState(false);
@@ -79,6 +82,8 @@ const Stage = (props) => {
   const modelCallback = useRef<any>();
   const knowledgeCallback = useRef<any>();
   const pluginCallback = useRef<any>();
+  const inputParamCallback = useRef<any>();
+  const inputParamRef = useRef<any>({})
   const formCallback = useRef<any>();
   const currentApp = useRef<any>();
   const currentChange = useRef<any>(false);
@@ -251,6 +256,18 @@ const Stage = (props) => {
         setShowTools(true);
         setModalTypes('parallel');
       });
+      agent.onAddInputParam(({onAdd, existParam}) => {
+        inputParamCallback.current = onAdd;
+        setInputModalMode('add')
+        setShowInputModal(true);
+        inputParamRef.current.existParam = existParam;
+      })
+      agent.onEditInputParam(({onEdit, id, selectedParam}) => {
+        inputParamCallback.current = onEdit;
+        setInputModalMode('edit')
+        setShowInputModal(true);
+        inputParamRef.current.selectedParam = selectedParam;
+      })
       if (readOnly) {
         agent.readOnly();
       }
@@ -297,6 +314,10 @@ const Stage = (props) => {
   const handleSearchChange = (value) => {
     searchCallback.current(value);
   };
+
+  const addParam = (value) => {
+    inputParamCallback.current(value);
+  }
 
   // 插件工具流选中
   const toolsConfirm = (item) => {
@@ -443,6 +464,14 @@ const Stage = (props) => {
       onModelSelectCallBack={onModelSelectCallBack}
       taskName={taskName}
       selectModal={selectModal}
+    />
+    {/*input param添加弹窗*/}
+    <InputParamModal
+      mode={inputModalMode}
+      modalRef={inputParamRef}
+      showModal={showInputModal}
+      setShowModal={setShowInputModal}
+      onSubmit={addParam}
     />
     {/* 添加知识库弹窗 */}
     <AddKnowledge

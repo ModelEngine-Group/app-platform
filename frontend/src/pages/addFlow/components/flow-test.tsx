@@ -339,7 +339,9 @@ const Index = (props) => {
                   name={debugType.name}
                   label={debugType.displayName}
                   key={index}
-                  isRequired={debugType.isRequired} />
+                  isRequired={debugType.isRequired}
+                  appearance={debugType.appearance}
+                />
               )
             })}
             {

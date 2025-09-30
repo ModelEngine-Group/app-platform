@@ -37,7 +37,7 @@ public class FlowUtils {
             AppInputParam param = new AppInputParam();
             param.setName(ObjectUtils.cast(rawParam.get("name")));
             param.setType(ObjectUtils.cast(rawParam.get("type")));
-            param.setDescription(ObjectUtils.cast(rawParam.get("description")));
+            param.setDisplayName(ObjectUtils.cast(rawParam.get("displayName")));
             param.setRequired(ObjectUtils.cast(rawParam.getOrDefault("isRequired", true)));
             param.setVisible(ObjectUtils.cast(rawParam.getOrDefault("isVisible", true)));
             return param;
