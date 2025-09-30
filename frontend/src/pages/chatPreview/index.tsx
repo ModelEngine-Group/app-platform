@@ -448,6 +448,9 @@ const ChatPreview = (props) => {
       }
       // 普通日志
       messageData.answer?.forEach((log) => {
+        if (log.type === 'HIDDEN_MSG') {
+          return;
+        }
         if (log.type === 'FORM') {
           let obj = messageProcess(
             runningInstanceId.current,
