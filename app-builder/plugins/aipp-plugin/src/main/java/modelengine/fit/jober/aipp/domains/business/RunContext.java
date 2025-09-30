@@ -181,7 +181,7 @@ public class RunContext {
      * @return 应用id.
      */
     public String getAppSuiteId() {
-        return ObjectUtils.cast(this.businessData.get(AippConst.ATTR_AIPP_TYPE_KEY));
+        return ObjectUtils.cast(this.businessData.get(AippConst.BS_AIPP_ID_KEY));
     }
 
     /**
