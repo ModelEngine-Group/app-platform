@@ -78,5 +78,10 @@
     "type": "parallelNodeState",
     "name": "Parallel",
     "uniqueName": ""
+  },
+  {
+    "type": "textConcatenateNodeState",
+    "name": "Text Joiner",
+    "uniqueName": ""
   }
 ]
