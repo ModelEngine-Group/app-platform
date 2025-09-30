@@ -782,6 +782,11 @@ public enum AippErrCode implements ErrorCode, RetCode {
     APP_NOT_IN_GUEST_MODE(90002144, "应用未打开游客模式。"),
 
     /**
+     * 应用模板不存在。
+     */
+    TEMPLATE_NOT_FOUND(90003000, "应用模板不存在"),
+
+    /**
      * 错误码截止值
      */
     ERROR_CODE_BUTT(99999999, "Error code butt.");
