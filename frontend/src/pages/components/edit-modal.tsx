@@ -298,8 +298,10 @@ const EditModal = (props) => {
       formData.append('file', file);
       let res: any = await uploadChatFile(tenantId, appId, formData, headers);
       if (res.code === 0) {
-        let path = `${AIPP_URL}/${tenantId}/file?filePath=${res.data.file_path}&fileName=${res.data.file_name}`;
-        setFilePath(path);
+        const realPath = res.data.file_path.replace(/^.*[\\/]/, "");
+        setFilePath(realPath);
+        const realPath2 = `/var/share/${realPath}`;
+        let path = `${AIPP_URL}/${tenantId}/file?filePath=${realPath2}&fileName=${realPath}`;
         convertImgPath(path).then(res => {
           setImgPath(res);
         });
