@@ -36,12 +36,12 @@ const InputParamModal = (props) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { showModal, setShowModal, onSubmit, mode, modalRef } = props;
-  const [fieldType, setFieldType] = useState('input');
+  const [fieldType, setFieldType] = useState('textInput');
 
   // 字段类型配置
   const fieldTypes = [
-    { value: 'input', label: t('inputType'), icon: <FileTextOutlined />, type: 'String' },
-    { value: 'number', label: t('numberType'), icon: <NumberOutlined />, type: 'Number' },
+    { value: 'textInput', label: t('inputType'), icon: <FileTextOutlined />, type: 'String' },
+    { value: 'numberInput', label: t('numberType'), icon: <NumberOutlined />, type: 'Number' },
     { value: 'dropdown', label: t('dropdownType'), icon: <UnorderedListOutlined />, type: 'String' },
     { value: 'switch', label: t('switchType'), icon: <SwitcherOutlined />, type: 'Boolean' },
     { value: 'multiselect', label: t('multiselectType'), icon: <CheckSquareOutlined />, type: 'Array[String]' },
@@ -66,11 +66,11 @@ const InputParamModal = (props) => {
         visible: defaultValue.isVisible,
         appearance: defaultValue.appearance,
       });
-      setFieldType(defaultValue.appearance?.displayType || 'input');
+      setFieldType(defaultValue.appearance?.displayType || 'textInput');
     } else if (mode === 'add') {
       // 添加模式：重置表单到初始值
       form.resetFields();
-      setFieldType('input');
+      setFieldType('textInput');
     }
   }, [showModal, mode]);
 
@@ -98,7 +98,7 @@ const InputParamModal = (props) => {
         isVisible: values.visible,
         disableModifiable: false,
         appearance: {
-          displayType: fieldTypeItem?.value || 'input',
+          displayType: fieldTypeItem?.value || 'textInput',
           ...values.appearance,
         },
       };
@@ -143,7 +143,7 @@ const InputParamModal = (props) => {
   // 根据字段类型渲染不同的配置项
   const renderFieldSpecificOptions = () => {
     switch (fieldType) {
-      case 'input':
+      case 'textInput':
         return (
           <>
             <Form.Item label={t('maxLength')} name={['appearance', 'maxLength']}>
@@ -236,7 +236,7 @@ const InputParamModal = (props) => {
           </>
         );
 
-      case 'number':
+      case 'numberInput':
         return (
           <>
             <Row gutter={16}>
@@ -392,7 +392,7 @@ const InputParamModal = (props) => {
         form={form}
         layout='vertical'
         initialValues={{
-          fieldType: 'input',
+          fieldType: 'textInput',
           required: true,
           visible: true,
         }}

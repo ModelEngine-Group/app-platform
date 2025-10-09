@@ -113,8 +113,8 @@ public class AppInputParam {
         }
 
         return switch (displayType) {
-            case "input" -> createStringValidator(config.getStringMaxLength());
-            case "number" -> createNumberValidator(config.getMinValue(), config.getMaxValue());
+            case "textInput" -> createStringValidator(config.getStringMaxLength());
+            case "numberInput" -> createNumberValidator(config.getMinValue(), config.getMaxValue());
             case "dropdown" -> createDropdownValidator(config.getOptions());
             case "switch" -> createBooleanValidator();
             case "multiselect" -> createArrayValidator(config.getOptions());

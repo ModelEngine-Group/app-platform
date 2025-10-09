@@ -121,12 +121,12 @@ const RenderFormItem = (props) => {
   // 有 appearance，走新的 actualType 渲染逻辑
   return (
     <>
-      {actualType === 'input' && (
+      {actualType === 'textInput' && (
         <Form.Item name={name} label={getCustomLabel(actualType)} rules={[isRequiredRule]} className='debug-form-item'>
           <Input placeholder={t('plsEnter')} maxLength={appearance?.maxLength || 500} showCount onBlur={(e) => handleStringItemBlur(e.target.value)} />
         </Form.Item>
       )}
-      {actualType === 'number' && (
+      {actualType === 'numberInput' && (
         <Form.Item name={name} label={getCustomLabel(actualType)} rules={[isRequiredRule, { validator: (_, value) => validateNumber(value, false) }]} className='debug-form-item'>
           <InputNumber
             style={{ width: '100%' }}

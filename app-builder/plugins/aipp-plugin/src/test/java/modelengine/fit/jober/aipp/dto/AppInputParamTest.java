@@ -91,7 +91,7 @@ class AppInputParamTest {
         void shouldParseInputAppearanceConfig() {
             // Given
             Map<String, Object> appearance = new HashMap<>();
-            appearance.put("displayType", "input");
+            appearance.put("displayType", "textInput");
             appearance.put("maxLength", 100);
 
             Map<String, Object> rawParam = new HashMap<>();
@@ -111,7 +111,7 @@ class AppInputParamTest {
         void shouldParseNumberAppearanceConfig() {
             // Given
             Map<String, Object> appearance = new HashMap<>();
-            appearance.put("displayType", "number");
+            appearance.put("displayType", "numberInput");
             appearance.put("minValue", "10.5");
             appearance.put("maxValue", "100.99");
 
@@ -253,7 +253,7 @@ class AppInputParamTest {
             @BeforeEach
             void setUp() {
                 Map<String, Object> appearance = new HashMap<>();
-                appearance.put("displayType", "input");
+                appearance.put("displayType", "textInput");
                 appearance.put("maxLength", 10);
 
                 Map<String, Object> rawParam = new HashMap<>();
@@ -305,7 +305,7 @@ class AppInputParamTest {
             void shouldSuccessWithoutMaxLength() {
                 // Given
                 Map<String, Object> appearance = new HashMap<>();
-                appearance.put("displayType", "input");
+                appearance.put("displayType", "textInput");
 
                 Map<String, Object> rawParam = new HashMap<>();
                 rawParam.put("name", "stringParam");
@@ -329,7 +329,7 @@ class AppInputParamTest {
             @BeforeEach
             void setUp() {
                 Map<String, Object> appearance = new HashMap<>();
-                appearance.put("displayType", "number");
+                appearance.put("displayType", "numberInput");
                 appearance.put("minValue", "10");
                 appearance.put("maxValue", "100");
 
@@ -382,7 +382,7 @@ class AppInputParamTest {
             void shouldSuccessWithoutMaxLength() {
                 // Given
                 Map<String, Object> appearance = new HashMap<>();
-                appearance.put("displayType", "number");
+                appearance.put("displayType", "numberInput");
 
                 Map<String, Object> rawParam = new HashMap<>();
                 rawParam.put("name", "numberParam");
@@ -764,7 +764,7 @@ class AppInputParamTest {
         void shouldHandleInvalidNumberFormat() {
             // Given
             Map<String, Object> appearance = new HashMap<>();
-            appearance.put("displayType", "number");
+            appearance.put("displayType", "numberInput");
             appearance.put("minValue", "invalid");
             appearance.put("maxValue", "also_invalid");
 

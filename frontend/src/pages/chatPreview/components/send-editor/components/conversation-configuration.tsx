@@ -85,7 +85,7 @@ const ConversationConfiguration = ({ appInfo, updateUserContext, chatRunning, is
 
     // 优先使用 displayType 分支渲染
     switch (displayType) {
-      case 'input':
+      case 'textInput':
         return (
           <Input
             style={{ width: 400 }}
@@ -95,7 +95,7 @@ const ConversationConfiguration = ({ appInfo, updateUserContext, chatRunning, is
             onChange={updateData}
           />
         );
-      case 'number':
+      case 'numberInput':
         return (
           <InputNumber
             style={{ width: 150 }}
