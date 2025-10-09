@@ -18,7 +18,7 @@ import { APP_TYPE, APP_BUILT_TYPE, APP_BUILT_CLASSIFICATION } from './common/com
 import { useTranslation } from 'react-i18next';
 import { findConfigItem, getConfigValue } from '@/shared/utils/common';
 import { convertImgPath } from '@/common/util';
-import { createGraphOperator } from '@fit-elsa/elsa-react';
+import { createGraphOperator } from '@fit-elsa/agent-flow';
 import { pick, isEmpty } from 'lodash';
 import assistant from '@/assets/images/appdevelop/assistant.png';
 import agent from '@/assets/images/appdevelop/agent.png';

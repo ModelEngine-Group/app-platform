@@ -18,7 +18,7 @@ import { Message } from "@/shared/utils/message";
 import { setAppInfo, setValidateInfo } from '@/store/appInfo/appInfo';
 import { getCheckList, exportApp, updateAppInfo, updateFlowInfo } from '@/shared/http/aipp';
 import { convertImgPath } from '@/common/util';
-import { createGraphOperator } from '@fit-elsa/elsa-react';
+import { createGraphOperator } from '@fit-elsa/agent-flow';
 import { get, cloneDeep } from 'lodash';
 import TimeLineDrawer from '@/components/timeLine';
 import PublishModal from './publish-modal';

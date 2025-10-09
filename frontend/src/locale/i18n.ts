@@ -7,10 +7,10 @@ import i18n from 'i18next';
 import { initReactI18next } from "react-i18next";
 import en from './en_US.json';
 import zh from './zh_CN.json';
-import coreEn from '@fit-elsa/elsa-core/locales/en.json';
-import coreZh from '@fit-elsa/elsa-core/locales/zh.json';
-import reactEn from '@fit-elsa/elsa-react/locales/en.json';
-import reactZh from '@fit-elsa/elsa-react/locales/zh.json';
+import coreEn from '@fit-elsa/elsa/locales/en.json';
+import coreZh from '@fit-elsa/elsa/locales/zh.json';
+import agentEn from '@fit-elsa/agent-flow/locales/en.json';
+import agentZh from '@fit-elsa/agent-flow/locales/zh.json';
 
 const mergeTranslations = (...translationObjects) => {
   // 从右向左合并（右侧优先级更高）
@@ -21,10 +21,10 @@ const mergeTranslations = (...translationObjects) => {
 
 const resources = {
   en: {
-    translation: mergeTranslations(coreEn, reactEn, en) // 优先级顺序: en > reactEn > coreEn
+    translation: mergeTranslations(coreEn, agentEn, en) // 优先级顺序: en > agentEn > coreEn
   },
   zh: {
-    translation: mergeTranslations(coreZh, reactZh, zh) // 优先级顺序: zh > reactZh > coreZh
+    translation: mergeTranslations(coreZh, agentZh, zh) // 优先级顺序: zh > agentZh > coreZh
   }
 };
 
