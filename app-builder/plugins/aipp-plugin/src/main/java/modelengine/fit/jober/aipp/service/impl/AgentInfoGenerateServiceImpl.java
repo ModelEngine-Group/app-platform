@@ -25,6 +25,7 @@ import modelengine.fit.jober.aipp.service.AgentInfoGenerateService;
 import modelengine.fit.jober.aipp.service.AippModelService;
 import modelengine.fit.jober.aipp.util.UUIDUtil;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.IoUtils;
 import modelengine.fitframework.util.MapBuilder;
@@ -40,6 +41,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 表示 {@link AgentInfoGenerateService} 的默认实现。
@@ -65,13 +68,17 @@ public class AgentInfoGenerateServiceImpl implements AgentInfoGenerateService {
 
     private final String agentNameFormat = "^[\\u4E00-\\u9FA5A-Za-z0-9][\\u4E00-\\u9FA5A-Za-z0-9-_]*$";
 
+    private final String systemCreator;
+
     public AgentInfoGenerateServiceImpl(AippModelService aippModelService, AippModelCenter aippModelCenter,
-            PluginToolService toolService, LocaleService localeService, AppBuilderAppRepository appRepository) {
+            PluginToolService toolService, LocaleService localeService, AppBuilderAppRepository appRepository,
+            @Value("${app-engine.plugin.system-creator}") String systemCreator) {
         this.aippModelService = aippModelService;
         this.aippModelCenter = aippModelCenter;
         this.toolService = toolService;
         this.localeService = localeService;
         this.appRepository = appRepository;
+        this.systemCreator = systemCreator;
     }
 
     @Override
@@ -110,7 +117,9 @@ public class AgentInfoGenerateServiceImpl implements AgentInfoGenerateService {
 
     private ArrayList<String> getToolsResult(String desc, String creator, OperationContext context) {
         StringBuilder toolsCandidate = new StringBuilder();
-        ListResult<PluginToolData> tools = this.getTools(creator);
+        ListResult<PluginToolData> creatorTools = this.getTools(creator);
+        ListResult<PluginToolData> systemTools = this.getTools(this.systemCreator);
+        ListResult<PluginToolData> tools = this.merge(creatorTools, systemTools);
         int count = tools.getCount();
         List<PluginToolData> toolData = tools.getData();
         for (int i = 0; i < count; i++) {
@@ -134,6 +143,20 @@ public class AgentInfoGenerateServiceImpl implements AgentInfoGenerateService {
             toolsResult.add(toolData.get(toolsIndex.get(i)).getUniqueName());
         }
         return toolsResult;
+    }
+
+    private ListResult<PluginToolData> merge(ListResult<PluginToolData> tool1, ListResult<PluginToolData> tools2) {
+        if (tool1 == null || tool1.getCount() == 0) {
+            return tools2;
+        } else if (tools2 == null || tools2.getCount() == 0) {
+            return tool1;
+        }
+        ListResult<PluginToolData> tools = ListResult.create(new ArrayList<>(), 0);
+        tools.setCount(tool1.getCount() + tools2.getCount());
+        List<PluginToolData> mergedData = Stream.concat(tool1.getData().stream(), tools2.getData().stream())
+                .collect(Collectors.toList());
+        tools.setData(mergedData);
+        return tools;
     }
 
     private ListResult<PluginToolData> getTools(String creator) {
