@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { LeftArrowIcon } from '@/assets/icon';
 import { useParams } from 'react-router-dom';
 import { getAppInfo } from '@/shared/http/aipp';
-import { JadeFlow } from '@fit-elsa/elsa-react';
+import { JadeFlow } from '@fit-elsa/agent-flow';
 import { configMap } from '../addFlow/config';
 import i18n from '../../locale/i18n';
 import './index.scss';
