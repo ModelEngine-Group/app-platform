@@ -9,7 +9,12 @@ import { UpOutlined } from '@ant-design/icons';
 import ThinkBtn from './think-btn';
 import './styles/think-block.scss';
 
-const ThinkBlock = memo(({ content = '', thinkTime = '' }) => {
+interface ThinkBlockProps {
+  content: string;
+  thinkTime: any;
+}
+
+const ThinkBlock = memo<ThinkBlockProps>(({ content = '', thinkTime = '' }) => {
   let thinkEndIdx = content.indexOf('</think>');
   const thinkFinished = thinkEndIdx > -1;
   const [collapse, setcollapse] = useState(false);

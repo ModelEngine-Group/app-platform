@@ -24,7 +24,7 @@
 .source-circle {
   display: inline-block;
   width: 16px;
-  line-height: 14px;
+  line-height: 12px;
   border-radius: 50%;
   border: 1px solid #000;
   text-align: center;
@@ -62,4 +62,480 @@
   line-height: 22px;
   color: #333;
   text-indent: 24px;
+}
+
+/* DeepSeek风格的引用样式 */
+.reference-item {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+  }
+}
+
+.reference-content {
+  margin-bottom: 10px;
+}
+
+.reference-text {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #333;
+  display: block;
+}
+
+/* 引用来源样式调整 */
+.reference-source {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.reference-source-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+/* 移除原来的 reference-number 样式，或者可以保留给其他地方使用 */
+.reference-source-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.reference-url {
+  color: #333;
+  text-decoration: none;
+  font-size: 13px;
+  word-break: break-all;
+  display: block;
+  padding: 4px 0;
+  
+  &:hover {
+    color: #61666b;
+    text-decoration: underline;
+  }
+}
+
+.reference-doc-name {
+  color: #52c41a;
+  font-size: 13px;
+  font-weight: 500;
+  display: block;
+  padding: 4px 0;
+}
+
+/* 引用总览按钮样式 */
+.reference-overview-section {
+  margin-top: 12px;
+  padding: 8px 0;
+}
+
+.reference-overview-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0px 16px;
+  height: 34px;
+  line-height: 34px;
+  background-color: #f0f8ff;
+  border: 1px solid #d6e4ff;
+  border-radius: 34px;
+  color: #333;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #e6f7ff;
+    border-color: #91d5ff;
+    color: #61666b;
+  }
+  
+  &:active {
+    background-color: #bae7ff;
+  }
+}
+
+.reference-overview-icon {
+  font-size: 12px;
+}
+
+.reference-overview-text {
+  font-weight: 500;
+}
+
+/* 引用总览模态框样式 */
+.reference-overview-modal {
+  .ant-modal-header {
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .ant-modal-body {
+    padding: 0;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+}
+
+.reference-overview-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.reference-overview-title-icon {
+  font-size: 18px;
+}
+
+.reference-overview-content {
+  padding: 20px;
+}
+
+.reference-overview-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 12px;
+}
+
+/* 引用总览项目标题样式 */
+.reference-overview-item-header {
+  margin-bottom: 8px;
+}
+
+.reference-overview-item-title-link {
+  color: #333;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  display: block;
+  
+  &:hover {
+    color: #61666b;
+    text-decoration: underline;
+  }
+}
+
+
+.reference-overview-item-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 20px;
+  line-height: 18px;
+  text-align: center;
+  background-color: #1890ff;
+  color: white;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* 行内引用数字样式 */
+.reference-number-inline {
+  background: #1890ff;
+  color: white;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  vertical-align: baseline;
+  line-height: 1;
+
+  &:hover {
+    background: #40a9ff;
+    transform: scale(1.05);
+  }
+}
+
+.reference-number-active {
+  background: #096dd9;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* 确保 Markdown 内容正常显示 */
+.receive-info-html {
+  /* 保持 markdown 默认格式 */
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  h1 { font-size: 24px; }
+  h2 { font-size: 20px; }
+  h3 { font-size: 18px; }
+  h4 { font-size: 16px; }
+  h5 { font-size: 14px; }
+  h6 { font-size: 14px; }
+
+  p {
+    margin-bottom: 12px;
+  }
+
+  ul, ol {
+    margin-bottom: 12px;
+    padding-left: 24px;
+    
+    li {
+      margin-bottom: 4px;
+    }
+  }
+
+  pre {
+    margin-bottom: 12px;
+    padding: 12px;
+    background-color: #282c34;
+    border-radius: 6px;
+    overflow-x: auto;
+    
+    code {
+      background: none;
+      padding: 0;
+      color: #abb2bf;
+    }
+  }
+
+  code {
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+  }
+
+  blockquote {
+    margin: 12px 0;
+    padding-left: 16px;
+    border-left: 4px solid #ddd;
+    color: #666;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin-bottom: 12px;
+    width: 100%;
+    
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    
+    th {
+      background-color: #f5f5f5;
+      font-weight: 600;
+    }
+  }
+
+  a {
+    color: #1890ff;
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 8px 0;
+  }
+
+  hr {
+    margin: 16px 0;
+    border: none;
+    border-top: 1px solid #e8e8e8;
+  }
+}
+
+/* 独立的圆形引用数字样式 */
+.reference-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: #ebeef2;
+  color: #61666b;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 500;
+  margin: 0 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  vertical-align: middle;
+  line-height: 1;
+  position: relative;
+
+  &:hover {
+    background-color: #dbe2e8;
+    transform: scale(1.1);
+  }
+}
+
+.reference-circle-active {
+  background-color: #096dd9;
+  border-color: #096dd9;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* 确保引用数字之间没有额外的空格 */
+.receive-info-html {
+  .reference-circle {
+    & + .reference-circle {
+      margin-left: 2px;
+    }
+  }
+}
+
+/* 悬停显示引用信息样式 */
+.reference-hover-tooltip {
+  position: fixed;
+  z-index: 1000;
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 12px 16px;
+  max-width: 400px;
+  pointer-events: none;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.reference-hover-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 6px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.reference-hover-summary {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+  word-break: break-word;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 引用总览抽屉样式 */
+.reference-overview-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.reference-overview-title-icon {
+  font-size: 18px;
+}
+
+.reference-overview-content {
+  padding: 0;
+}
+
+.reference-overview-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 12px;
+}
+
+/* 引用总览项目样式 - 圆形数字 */
+.reference-overview-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: #fafafa;
+  }
+}
+
+.reference-overview-item-number-circle {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  line-height: 22px;
+  text-align: center;
+  background-color: #f0f0f0;
+  color: #666;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #d9d9d9;
+}
+
+.reference-overview-item-content {
+  flex: 1;
+}
+
+.reference-overview-item-header {
+  margin-bottom: 8px;
+}
+
+.reference-overview-item-title-link {
+  color: #333;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  display: block;
+
+  &:hover {
+    color: #61666b;
+    text-decoration: underline;
+  }
+}
+
+.reference-overview-item-title {
+  color: #333;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  display: block;
+}
+
+.reference-overview-item-text {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #61666b;
+  display: block;
 }
