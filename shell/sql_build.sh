@@ -102,6 +102,9 @@ do
   cp "$i" "$directory/schema"
 done
 
+# 联网搜索相关 sql 脚本
+cp ../app-builder/plugins/fit_py_internet_search/schema/search-online-plugin.sql "$directory/schema"
+
 # 自定义模型相关 sql 脚本
 app_model_center_schema_sql_list=$(find ../app-builder/plugins/aipp-custom-model-center/src/main/resources/sql/schema -name "*.sql")
 echo "${app_model_center_schema_sql_list}"
