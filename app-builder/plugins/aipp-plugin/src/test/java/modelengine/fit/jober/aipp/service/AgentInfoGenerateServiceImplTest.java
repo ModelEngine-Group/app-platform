@@ -101,7 +101,7 @@ public class AgentInfoGenerateServiceImplTest {
         when(model.getTag()).thenReturn("llm_tag");
         when(this.aippModelCenter.getDefaultModel(any(), any())).thenReturn(model);
         when(aippModelService.chat(anyString(), anyString(), anyDouble(), anyString())).thenReturn("PROMPT");
-        assertThat(this.agentInfoGenerateService.generatePrompt("DESC", null)).isEqualTo("PROMPT");
+        assertThat(this.agentInfoGenerateService.generatePrompt("DESC", null)).startsWith("PROMPT");
     }
 
     @Test

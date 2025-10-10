@@ -100,7 +100,16 @@ public class AgentInfoGenerateServiceImpl implements AgentInfoGenerateService {
 
     @Override
     public String generatePrompt(String desc, OperationContext context) {
-        return this.generateByTemplate(desc, "prompt/promptGeneratePrompt.txt", context);
+        String prompt = this.generateByTemplate(desc, "prompt/promptGeneratePrompt.txt", context);
+        String format;
+        try {
+            format = IoUtils.content(AgentInfoGenerateService.class.getClassLoader(),
+                    "prompt/promptGeneratePromptFormat.txt");
+        } catch (IOException e) {
+            log.error("read prompt format file fail.", e);
+            throw new AippException(AippErrCode.EXTRACT_FILE_FAILED);
+        }
+        return StringUtils.format(format, prompt);
     }
 
     @Override
