@@ -362,7 +362,7 @@ public class AippLogServiceImpl implements AippLogService {
      * @return 日志id
      */
     @Override
-    public String insertLogWithInterception(String logType, AippLogData logData, Map<String, Object> businessData) {
+    public String insertLog(String logType, AippLogData logData, Map<String, Object> businessData) {
         AippLogCreateDto logCreateDto = this.buildAippLogCreateDto(logType, logData, businessData);
         if (logCreateDto == null) {
             return null;
@@ -416,7 +416,7 @@ public class AippLogServiceImpl implements AippLogService {
     @Override
     public void insertErrorLog(String msg, List<Map<String, Object>> flowData) {
         AippLogData logData = AippLogData.builder().msg(msg).build();
-        insertLogWithInterception(AippInstLogType.ERROR.name(), logData, DataUtils.getBusiness(flowData));
+        this.insertLog(AippInstLogType.ERROR.name(), logData, DataUtils.getBusiness(flowData));
     }
 
     /**
@@ -511,14 +511,5 @@ public class AippLogServiceImpl implements AippLogService {
             return;
         }
         this.aippLogMapper.deleteInstanceLogs(logIds);
-    }
-
-    @Override
-    public void insertLog(String logType, AippLogData logData, Map<String, Object> businessData) {
-        AippLogCreateDto logCreateDto = this.buildAippLogCreateDto(logType, logData, businessData);
-        if (logCreateDto == null) {
-            return;
-        }
-        this.aippLogMapper.insertOne(logCreateDto);
     }
 }

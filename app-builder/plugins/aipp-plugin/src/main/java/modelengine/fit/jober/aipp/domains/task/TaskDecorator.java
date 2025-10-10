@@ -111,7 +111,7 @@ public class TaskDecorator implements AppTaskRunnable {
                 else {
                     msg = localeService.localize(UI_WORD_KEY);
                 }
-                this.aippLogService.insertLogWithInterception(AippInstLogType.ERROR.name(),
+                this.aippLogService.insertLog(AippInstLogType.ERROR.name(),
                         AippLogData.builder().msg(msg).build(), ctx.getBusinessData());
                 return null;
             }

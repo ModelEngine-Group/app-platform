@@ -66,7 +66,7 @@ public class TaskDecoratorTest {
 
         doNothing().when(this.appTaskInstanceService).update(any(), any());
         when(this.localeService.localize(any())).thenReturn("xxxxxxx");
-        when(this.aippLogService.insertLogWithInterception(any(), any(), any())).thenReturn("xxxxxx");
+        when(this.aippLogService.insertLog(any(), any(), any())).thenReturn("xxxxxx");
 
         // when.
         RunContext runContext = new RunContext(businessData, new OperationContext());
@@ -84,6 +84,6 @@ public class TaskDecoratorTest {
         Assertions.assertEquals(MetaInstStatusEnum.ERROR.name(), instance.getEntity().getStatus().get());
 
         verify(this.localeService, times(1)).localize(eq("aipp.service.impl.AippRunTimeServiceImpl"));
-        verify(this.aippLogService, times(1)).insertLogWithInterception(eq(AippInstLogType.ERROR.name()), any(), any());
+        verify(this.aippLogService, times(1)).insertLog(eq(AippInstLogType.ERROR.name()), any(), any());
     }
 }

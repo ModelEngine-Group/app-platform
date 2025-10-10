@@ -109,7 +109,7 @@ public class TaskInstanceDecoratorTest {
                 .exceptionLog(this.appTaskInstanceService, this.logService)
                 .run(runContext, null);
         verify(this.appTaskInstanceService, times(1)).update(any(), any());
-        verify(this.logService, times(1)).insertLogWithInterception(any(), any(), any());
+        verify(this.logService, times(1)).insertLog(any(), any(), any());
     }
 
     @Test
@@ -126,6 +126,6 @@ public class TaskInstanceDecoratorTest {
         verify(this.appChatSessionService, times(1)).addSession(any(), any());
         verify(this.appChatSSEService, times(2)).send(any(), any());
         verify(this.appTaskInstanceService, times(0)).update(any(), any());
-        verify(this.logService, times(0)).insertLogWithInterception(any(), any(), any());
+        verify(this.logService, times(0)).insertLog(any(), any(), any());
     }
 }

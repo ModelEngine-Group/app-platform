@@ -142,7 +142,7 @@ public class TaskInstanceDecorator implements AppTaskRunnable {
                         .setStatus(MetaInstStatusEnum.ERROR.name())
                         .build(), ctx.getOperationContext());
                 // 更新日志类型为HIDDEN_FORM
-                logService.insertLogWithInterception(AippInstLogType.ERROR.name(), AippLogData.builder().msg(e.getMessage()).build(),
+                logService.insertLog(AippInstLogType.ERROR.name(), AippLogData.builder().msg(e.getMessage()).build(),
                         ctx.getBusinessData());
             }
             return null;

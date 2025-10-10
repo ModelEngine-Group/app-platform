@@ -1,3 +1,9 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) 2025 Huawei Technologies Co., Ltd. All rights reserved.
+ *  This file is a part of the ModelEngine Project.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 package modelengine.fit.jober.aipp.fitable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@link ReplyNode}的测试用例.
+ * {@link ReplyNode}的测试用例。
  *
  * @author 孙怡菲
  * @since 2025-09-17
@@ -62,7 +68,7 @@ class ReplyNodeTest {
         assertEquals(flowData, result);
 
         ArgumentCaptor<AippLogData> logCaptor = ArgumentCaptor.forClass(AippLogData.class);
-        verify(this.aippLogService, times(1)).insertLogWithInterception(
+        verify(this.aippLogService, times(1)).insertLog(
                 eq(AippInstLogType.MSG.name()),
                 logCaptor.capture(),
                 eq(businessData)

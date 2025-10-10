@@ -27,13 +27,13 @@ import java.util.Map;
  */
 @Component
 public class ReplyNode implements FlowableService {
-    private final AippLogService aippLogService;
-
-    private final TemplateService templateService;
-
     private final static String TEMPLATE_KEY = "template";
 
     private final static String VARIABLES_KEY = "variables";
+
+    private final AippLogService aippLogService;
+
+    private final TemplateService templateService;
 
     public ReplyNode(AippLogService aippLogService, TemplateService templateService) {
         this.aippLogService = aippLogService;
@@ -52,7 +52,7 @@ public class ReplyNode implements FlowableService {
     }
 
     private void sendMsg(String msg, Map<String, Object> businessData) {
-        this.aippLogService.insertLogWithInterception(AippInstLogType.MSG.name(),
+        this.aippLogService.insertLog(AippInstLogType.MSG.name(),
                 AippLogData.builder().msg(msg).build(),
                 businessData);
     }

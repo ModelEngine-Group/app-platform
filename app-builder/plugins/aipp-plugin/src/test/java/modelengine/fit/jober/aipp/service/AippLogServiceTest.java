@@ -424,7 +424,7 @@ public class AippLogServiceTest {
         Map<String, Object> businessData = MapBuilder.get(() -> new HashMap<String, Object>())
                 .put(AippConst.BS_HTTP_CONTEXT_KEY, "{\"account\":\"123\"}")
                 .build();
-        Assertions.assertNull(this.aippLogService.insertLogWithInterception(AippInstLogType.FORM.name(), aippLogData, businessData));
+        Assertions.assertNull(this.aippLogService.insertLog(AippInstLogType.FORM.name(), aippLogData, businessData));
     }
 
     @Test
@@ -433,7 +433,7 @@ public class AippLogServiceTest {
         Map<String, Object> businessData = MapBuilder.get(() -> new HashMap<String, Object>())
                 .put(AippConst.BS_HTTP_CONTEXT_KEY, "{\"account\":\"123\"}").build();
         Assertions.assertThrows(NullPointerException.class,
-                () -> this.aippLogService.insertLogWithInterception(AippInstLogType.MSG.name(), aippLogData, businessData));
+                () -> this.aippLogService.insertLog(AippInstLogType.MSG.name(), aippLogData, businessData));
     }
 
     @Test

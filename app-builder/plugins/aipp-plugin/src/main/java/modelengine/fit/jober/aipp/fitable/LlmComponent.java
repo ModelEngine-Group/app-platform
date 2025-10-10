@@ -291,7 +291,7 @@ public class LlmComponent implements FlowableService {
             llmOutput.put("output", output);
             Optional<ResponsibilityResult> formatOutput = this.formatterChain.handle(llmOutput);
             String logMsg = formatOutput.map(ResponsibilityResult::text).orElse(answer);
-            this.aippLogService.insertLogWithInterception(AippInstLogType.META_MSG.name(),
+            this.aippLogService.insertLog(AippInstLogType.META_MSG.name(),
                     AippLogData.builder().msg(logMsg).build(),
                     businessData);
         }

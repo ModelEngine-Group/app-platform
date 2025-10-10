@@ -156,7 +156,7 @@ class AippFlowEndCallbackTest {
         }).when(this.formatterChain).handle(any());
 
         this.aippFlowEndCallback.callback(TestUtils.buildFlowDataWithExtraConfig(buildBusinessData(), null));
-        verify(this.aippLogService).insertLogWithInterception(eq(AippInstLogType.META_MSG.name()), any(), any());
+        verify(this.aippLogService).insertLog(eq(AippInstLogType.META_MSG.name()), any(), any());
     }
 
     @Test
@@ -179,7 +179,7 @@ class AippFlowEndCallbackTest {
 
         this.aippFlowEndCallback.callback(TestUtils.buildFlowDataWithExtraConfig(businessData, null));
         verify(this.conversationRecordService).insertConversationRecord(any());
-        verify(this.aippLogService).insertLogWithInterception(eq(AippInstLogType.FORM.name()), any(), any());
+        verify(this.aippLogService).insertLog(eq(AippInstLogType.FORM.name()), any(), any());
     }
 
     static class MessageItemStub implements MessageItem {

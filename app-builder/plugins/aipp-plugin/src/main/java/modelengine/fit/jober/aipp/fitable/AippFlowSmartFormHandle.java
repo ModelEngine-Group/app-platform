@@ -179,7 +179,7 @@ public class AippFlowSmartFormHandle implements FlowSmartFormService {
         Object appearance = formDataMap.get(AippConst.FORM_APPEARANCE_KEY);
         logData.setFormAppearance(ObjectUtils.cast(JsonUtils.toJsonString(appearance)));
         logData.setFormData(ObjectUtils.cast(JsonUtils.toJsonString(formDataMap.get(AippConst.FORM_DATA_KEY))));
-        return this.aippLogService.insertLogWithInterception(AippInstLogType.FORM.name(), logData, businessData);
+        return this.aippLogService.insertLog(AippInstLogType.FORM.name(), logData, businessData);
     }
 
     private void updateInstance(String sheetId, String nodeId, Map<String, Object> businessData) {
