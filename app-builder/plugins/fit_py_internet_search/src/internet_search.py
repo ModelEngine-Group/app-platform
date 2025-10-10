@@ -1,29 +1,8 @@
-"""
-Standalone internet search function that can query multiple providers (Exa, Tavily, Linkup)
-without coupling to the existing project code. No environment variables are read here; all
-API keys must be provided via function parameters.
-
-Returned structure is a dictionary with one key:
-- items: list of {fileName, url, text, source, published_date, summary}
-
-Example:
-
-    from nexent.core.tools.standalone_web_search import internet_search
-
-    result = internet_search(
-        query="OpenAI o4 mini update",
-        api_keys={
-            "exa": "EXA_API_KEY",
-            "tavily": "TAVILY_API_KEY",
-            "linkup": "LINKUP_API_KEY",
-        },
-        providers=["exa", "tavily", "linkup"],
-        max_results_per_provider=5,
-    )
-
-    for item in result["items"]:
-        print(item["fileName"], item["url"], item["summary"])  # Display URLs and individual summaries
-"""
+# -- encoding: utf-8 --
+# Copyright (c) 2024 Huawei Technologies Co., Ltd. All Rights Reserved.
+# This file is a part of the ModelEngine Project.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+# ======================================================================================================================
 import json
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence
@@ -96,62 +75,12 @@ def _truncate(text: str, max_chars: int) -> str:
     return text[: max_chars - 1].rstrip() + "…"
 
 
-def _generate_individual_summary(text: str, max_chars: int = 200) -> str:
-    """为单个搜索结果生成独立摘要
-
-    策略：
-    - 如果内容较短，直接返回
-    - 如果内容较长，提取前几个句子作为摘要
-    - 确保摘要不超过最大字符限制
-    """
-    if not text:
-        return ""
-
-    # 如果内容已经很短，直接返回
-    if len(text) <= max_chars:
-        return text
-
-    # 按句子分割（简单按句号分割）
-    sentences = text.split('. ')
-
-    # 收集句子直到达到字符限制
-    summary_parts = []
-    current_length = 0
-
-    for sentence in sentences:
-        sentence = sentence.strip()
-        if not sentence:
-            continue
-
-        # 确保句子以句号结束
-        if not sentence.endswith('.'):
-            sentence += '.'
-
-        sentence_length = len(sentence) + 1  # +1 for space
-
-        # 如果添加这个句子会超过限制，且已经有内容，就停止
-        if current_length + sentence_length > max_chars and summary_parts:
-            break
-
-        summary_parts.append(sentence)
-        current_length += sentence_length
-
-    summary = '. '.join(summary_parts)
-
-    # 确保不超过最大字符限制
-    if len(summary) > max_chars:
-        summary = summary[:max_chars].rstrip() + "…"
-
-    return summary
-
-
 def _internet_search(
         query: str,
         api_keys: Dict[str, str],
         providers: Optional[Sequence[str]] = None,
         max_results_per_provider: int = 5,
         max_snippet_chars: int = 500,
-        max_summary_chars: int = 200,
 ) -> List[SearchItem]:
     """Run internet search via selected providers and return unified items with individual summaries."""
     selected = list(providers) if providers is not None else []
@@ -160,20 +89,20 @@ def _internet_search(
             if api_keys.get(name):
                 selected.append(name)
     items: List[SearchItem] = []
+    errors = []  # 记录失败的搜索工具
 
     # Exa
     if "exa" in selected and api_keys.get("exa"):
         try:
             exa_client = Exa(api_key=api_keys["exa"])
-            res = exa_client.search_and_texts(
+            res = exa_client.search_and_contents(
                 query,
                 text={"max_characters": 2000},
                 livecrawl="always",
-                extras={"links": 0, "image_links": 0},
                 num_results=max_results_per_provider,
             )
             for i, r in enumerate(getattr(res, "results", [])[:max_results_per_provider]):
-                text = _truncate(getattr(r, "content", "") or "", max_snippet_chars)
+                text = _truncate(getattr(r, "text", "") or getattr(r, "content", "") or "", max_snippet_chars)
                 items.append(
                     SearchItem(
                         id=getattr(r, "id", "") or f"exa_{i}",
@@ -184,12 +113,13 @@ def _internet_search(
                             "url": getattr(r, "url", "") or "",
                             "source": "exa",
                             "published_date": getattr(r, "published_date", None),
-                            "summary": _generate_individual_summary(text, max_summary_chars),
+                            "summary": text,
                         }
                     )
                 )
-        except Exception:
-            pass
+        except Exception as e:
+            sys_plugin_logger.warning(f'Failed to search in Exa tool: {str(e)}')
+            errors.append("exa")
 
     # Tavily
     if "tavily" in selected and api_keys.get("tavily"):
@@ -212,12 +142,13 @@ def _internet_search(
                             "url": r.get("url", "") or "",
                             "source": "tavily",
                             "published_date": r.get("published_date"),
-                            "summary": _generate_individual_summary(text, max_summary_chars),
+                            "summary": text,
                         }
                     )
                 )
-        except Exception:
-            pass
+        except Exception as e:
+            sys_plugin_logger.warning(f'Failed to search in Tavily tool: {str(e)}')
+            errors.append("tavily")
 
     # Linkup
     if "linkup" in selected and api_keys.get("linkup"):
@@ -241,12 +172,20 @@ def _internet_search(
                             "url": getattr(r, "url", "") or "",
                             "source": "linkup",
                             "published_date": None,
-                            "summary": _generate_individual_summary(text, max_summary_chars),
+                            "summary": text,
                         }
                     )
                 )
-        except Exception:
-            pass
+        except Exception as e:
+            sys_plugin_logger.warning(f'Failed to search in Linkup tool: {str(e)}')
+            errors.append("linkup")
+    
+    # 如果所有搜索都失败了，才抛出异常
+    if not items and errors:
+        raise FitException(
+            InternalErrorCode.CLIENT_ERROR, 
+            f'All search tools failed: {", ".join(errors)}'
+        )
 
     # 去重逻辑
     seen = set()
