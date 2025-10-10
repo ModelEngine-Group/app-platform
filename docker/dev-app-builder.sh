@@ -35,7 +35,7 @@ docker-compose stop app-builder
 
 echo "=== Creating development version image ==="
 # Use stable version as base
-docker run -d --name app-builder-tmp --entrypoint sleep modelengine/app-builder:${BASE_VERSION} infinity
+docker run -d --name app-builder-tmp --entrypoint sleep ${REPO}/app-builder:${BASE_VERSION} infinity
 
 # Copy files
 echo "Copying plugins..."
@@ -46,10 +46,10 @@ docker cp "$SHARED_DIR"/. app-builder-tmp:/opt/fit-framework/shared/
 
 # Commit as development version
 echo "Committing development version image: ${DEV_VERSION}"
-docker commit --change='ENTRYPOINT ["/opt/fit-framework/bin/start.sh"]' app-builder-tmp modelengine/app-builder:${DEV_VERSION}
+docker commit --change='ENTRYPOINT ["/opt/fit-framework/bin/start.sh"]' app-builder-tmp ${REPO}/app-builder:${DEV_VERSION}
 
 # Create development tag (for docker-compose convenience)
-docker tag modelengine/app-builder:${DEV_VERSION} modelengine/app-builder:dev-latest
+docker tag ${REPO}/app-builder:${DEV_VERSION} ${REPO}/app-builder:dev-latest
 
 echo "=== Cleaning up temporary container ==="
 docker stop app-builder-tmp
@@ -59,10 +59,10 @@ echo "=== Updating docker-compose configuration ==="
 # Create docker-compose configuration for development
 cp docker-compose.yml docker-compose.dev.yml
 if [[ "$(uname -s)" == "Darwin" ]]; then
-    sed -i '.bak' "s/modelengine\/app-builder:\${VERSION}/modelengine\/app-builder:dev-latest/g" docker-compose.dev.yml
+    sed -i '.bak' "s/app-builder:\${VERSION}/app-builder:dev-latest/g" docker-compose.dev.yml
     rm -f docker-compose.dev.yml.bak
 else
-    sed -i "s/modelengine\/app-builder:\${VERSION}/modelengine\/app-builder:dev-latest/g" docker-compose.dev.yml
+    sed -i "s/app-builder:\${VERSION}/app-builder:dev-latest/g" docker-compose.dev.yml
 fi
 
 echo "=== Restarting services ==="
@@ -93,4 +93,4 @@ echo "Current tag in use: dev-latest"
 echo "Service URL: http://localhost:8001"
 echo ""
 echo "=== Version Management Commands ==="
-echo "View all versions: docker images modelengine/app-builder"
+echo "View all versions: docker images ${REPO}/app-builder"

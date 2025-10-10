@@ -36,7 +36,7 @@
 | 内存     | 4+ GB                      |
 | 软件     | 安装 Docker & Docker Compose |
 
-### 2. Docker Compose 启动
+### 2. Docker Compose 启动（拉取镜像以及启动服务时间大约 3 minutes）
 克隆项目并进入项目根目录，执行以下命令：/ Clone the repository and enter the project root directory, then run the following commands:
 ```shell
 # 用户按需配置环境变量，例如模型名称、基础 URL 和 APIKEY等 / Configure environment variables as needed, including model name, base URL and APIKEY
@@ -47,23 +47,33 @@ bash docker/deploy.sh
 
 > 如需修改数据库密码，二次启动前需要删除`docker/app-platform-tmp`目录
 
-## 本地快速开发测试
+## 后端快速开发测试
 本章节给出快速启动之后，本地快速开发测试的方法。
 
 ### 1. 编译代码
+1.1. 全量编译（2 minutes 30 seconds）
 编写代码，在项目根目录下，执行以下命令编译：
 ```shell
 mvn clean install
 ```
 
+1.2. 增量编译（10 seconds）
+编写代码，在修改的插件目录下，执行以下命令编译：
+```shell
+mvn clean install
+```
+
 ### 2. 一键部署修改
-在项目根目录下，执行以下命令快速部署：
+在项目根目录下，执行以下命令快速部署（3 minutes 30 seconds）：
 ```shell
 bash docker/dev-app-builder.sh
 ```
 
 ### 3. 测试
 浏览器打开 http://localhost:8001 测试
+
+## 前端快速开发测试
+TODO
 
 ## 源码编译启动
 

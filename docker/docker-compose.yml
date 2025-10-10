@@ -2,7 +2,7 @@ services:
   jade-db:
     container_name: jade-db
     hostname: jade-db
-    image: modelengine/postgres:15.2-${VERSION}
+    image: ${REPO}/postgres:15.2-${VERSION}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
@@ -27,7 +27,7 @@ services:
   db-initializer:
     container_name: db-initializer
     hostname: db-initializer
-    image: modelengine/postgres:15.2-${VERSION}
+    image: ${REPO}/postgres:15.2-${VERSION}
     networks:
       my-net:
         ipv4_address: 172.0.0.99
@@ -52,7 +52,7 @@ services:
   app-builder:
     container_name: app-builder
     hostname: app-builder
-    image: modelengine/app-builder:${VERSION}
+    image: ${REPO}/app-builder:${VERSION}
     depends_on:
       jade-db:
         condition: service_healthy
@@ -94,7 +94,7 @@ services:
   fit-runtime-java:
     container_name: fit-runtime-java
     hostname: fit-runtime-java
-    image: modelengine/fit-runtime-java:${VERSION}
+    image: ${REPO}/fit-runtime-java:${VERSION}
     depends_on:
       app-builder:
         condition: service_healthy 
@@ -120,7 +120,7 @@ services:
   fit-runtime-python:
     container_name: fit-runtime-python
     hostname: fit-runtime-python
-    image: modelengine/fit-runtime-python:${VERSION}
+    image: ${REPO}/fit-runtime-python:${VERSION}
     depends_on:
       app-builder:
         condition: service_healthy 
@@ -146,7 +146,7 @@ services:
   web:
     container_name: web
     hostname: web
-    image: modelengine/jade-web:${VERSION}
+    image: ${REPO}/jade-web:${VERSION}
     depends_on:
       app-builder:
         condition: service_healthy
