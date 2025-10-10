@@ -1,0 +1,6 @@
+internet-search:
+  max_results_per_provider: 5
+  api-key:
+    exa: "https://dashboard.exa.ai/home -- 登录获取api key"
+    tavily: "https://app.tavily.com/home -- 登录获取api key"
+    linkup: "https://app.linkup.so/api-keys -- 登录获取api key"
