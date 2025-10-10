@@ -26,6 +26,7 @@ import {
   LoopIcon,
   PairingIcon,
   TextConcatenateIcon,
+  ReplyIcon
 } from '@/assets/icon';
 import { handleClickAddBasicNode, handleDragBasicNode } from '../utils'
 
@@ -65,7 +66,7 @@ const BasicItems = (props: any) => {
       'manualCheckNodeState': <ManualCheckIcon />,
       'parallelNodeState': <PairingIcon />,
       'textConcatenateNodeState':  <TextConcatenateIcon />,
-      'replyNodeState':<EndIcon />
+      'replyNodeState':<ReplyIcon />
     }[type];
   }
   return <>
