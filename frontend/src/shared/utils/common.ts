@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 import { useCallback, useMemo, useState } from 'react';
 import { pick, find, filter } from 'lodash';
 import { Message } from '@/shared/utils/message';
-import { createGraphOperator } from '@fit-elsa/elsa-react';
+import { createGraphOperator } from '@fit-elsa/agent-flow';
 import { storage } from '../storage';
 import i18n from '@/locale/i18n';
 import { getAppCategories } from "@/shared/http/aipp";

@@ -13,7 +13,7 @@ import './index.scoped.scss';
 import './configUi/index.scoped.scss';
 import { setConfigData } from '@/store/appConfig/config';
 import { getConfigValue } from '@/shared/utils/common';
-import { createGraphOperator } from '@fit-elsa/elsa-react';
+import { createGraphOperator } from '@fit-elsa/agent-flow';
 
 const ConfigForm = (props) => {
   const {
