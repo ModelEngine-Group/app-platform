@@ -15,7 +15,7 @@ create table if not exists store_plugin
     "is_builtin"    boolean     default false             not null,
     "source"        varchar(16) default ''                not null,
     "icon"          text,
-    "user_group_id" varchar(64)                           not null,
+    "user_group_id" varchar(64),
     unique ("plugin_id")
 );
 create index if not exists query_plugin ON store_plugin ("is_builtin");

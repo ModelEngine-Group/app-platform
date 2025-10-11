@@ -228,6 +228,7 @@ public class AppBuilderAppServiceImpl
         if (cond == null) {
             cond = new AppQueryCondition();
         }
+        cond.setCreateBy(context.getOperator());
         if (this.isEnableDomainDivision) {
             cond.setUserGroupId(this.domainDivisionService.getUserGroupId());
         }

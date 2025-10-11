@@ -15,7 +15,7 @@ create table if not exists store_app
     "app_category" varchar(16) default 'chatbot',
     "tool_name"        varchar(256)                          not null,
     "tool_unique_name" varchar(36)                           not null,
-    "user_group_id"    varchar(64)                           not null,
+    "user_group_id"    varchar(64),
     unique("tool_unique_name")
     );
 create index if not exists fast_query_app on store_app ("tool_unique_name");

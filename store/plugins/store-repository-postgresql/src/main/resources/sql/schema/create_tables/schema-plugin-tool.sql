@@ -15,7 +15,7 @@ create table if not exists store_plugin_tool
     "tool_unique_name" varchar(36)                           not null,
     "source"           varchar(16) default ''                not null,
     "icon"             text,
-    "user_group_id"    varchar(64)                           not null,
+    "user_group_id"    varchar(64),
     unique("plugin_id", "tool_unique_name")
 );
 comment on column store_plugin_tool.id is '插件工具的自增主键';

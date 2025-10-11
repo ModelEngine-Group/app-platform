@@ -99,6 +99,9 @@
         <if test="cond.tenantId != null">
             and tenant_id = #{cond.tenantId}
         </if>
+        <if test="cond.userGroupId == null and cond.createBy != null">
+            and create_by = #{cond.createBy}
+        </if>
         <if test='cond.userGroupId != null'>
             and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
         </if>
@@ -128,6 +131,9 @@
         from app_builder_form where is_deleted = 0
         <if test="cond.tenantId != null">
             and tenant_id = #{cond.tenantId}
+        </if>
+        <if test="cond.userGroupId == null and cond.createBy != null">
+            and create_by = #{cond.createBy}
         </if>
         <if test='cond.userGroupId != null'>
             and (user_group_id = #{cond.userGroupId} or user_group_id = '*')

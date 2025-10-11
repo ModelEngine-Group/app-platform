@@ -123,6 +123,9 @@
                     #{excludeName}
                 </foreach>
             </if>
+            <if test="cond.userGroupId == null and cond.createBy != null">
+                and create_by = #{cond.createBy}
+            </if>
             <if test='cond.userGroupId != null'>
                 and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
             </if>
@@ -201,6 +204,9 @@
         </if>
         <if test="cond.appCategory != null">
             and app_category = #{cond.appCategory}
+        </if>
+        <if test="cond.userGroupId == null and cond.createBy != null">
+            and create_by = #{cond.createBy}
         </if>
         <if test='cond.userGroupId != null'>
             and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
