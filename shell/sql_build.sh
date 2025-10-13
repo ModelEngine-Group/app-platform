@@ -151,4 +151,12 @@ do
   cp "$sql_file" "$directory/data"
 done
 
+# text-concatenation 相关 sql 脚本
+text_concatenation_data_sql_list=$(find ../app-builder/plugins/aipp-text-concatenation/src/main/resources/sql/data -name '*.sql')
+echo "${text_concatenation_data_sql_list}"
+for sql_file in ${text_concatenation_data_sql_list}
+do
+  cp "$sql_file" "$directory/data"
+done
+
 exit 0
