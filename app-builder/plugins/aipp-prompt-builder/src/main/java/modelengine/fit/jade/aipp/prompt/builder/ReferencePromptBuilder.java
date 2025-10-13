@@ -31,6 +31,9 @@ import modelengine.jade.common.globalization.LocaleService;
 import modelengine.jade.schema.SchemaValidator;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,9 +56,15 @@ import java.util.stream.Collectors;
 @Order(PromptBuilderOrder.REFERENCE)
 public class ReferencePromptBuilder implements PromptBuilder {
     private static final String KNOWLEDGE_PLACEHOLDER = "knowledgeData";
+    private static final String CURRENT_DATE_PLACEHOLDER = "currentDate";
     private static final String KNOWLEDGE_SEPARATOR = "\n";
     private static final String KNOWLEDGE_ID = "id";
     private static final String KNOWLEDGE_TEXT = "text";
+    private static final String KNOWLEDGE_METADATA = "metadata";
+    private static final String METADATA_URL = "url";
+    private static final String METADATA_SOURCE = "source";
+    private static final String METADATA_TIMESTAMP = "timestamp";
+    private static final String METADATA_DATE = "date";
     private static final String KNOWLEDGE_SCHEMA = "/knowledge_reference_schema.json";
     private static final int REFERENCE_ID_LENGTH = 6;
     private static final List<String> REFERENCE_TEMPLATE_LIST =
@@ -93,8 +102,10 @@ public class ReferencePromptBuilder implements PromptBuilder {
         String referenceTemplate = this.templateI18nMap.get(templateFilePath);
         Validation.notBlank(referenceTemplate, "The reference prompt template cannot be blank.");
 
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String referenceMessage = new DefaultStringTemplate(referenceTemplate).render(MapBuilder.<String, String>get()
                 .put(KNOWLEDGE_PLACEHOLDER, this.formatKnowledge(referenceKnowledge))
+                .put(CURRENT_DATE_PLACEHOLDER, currentDate)
                 .build());
         String systemMessage = this.getBackground(userAdvice.getBackground()) + referenceMessage;
         String humanMessage = new DefaultStringTemplate(userAdvice.getTemplate()).render(userAdvice.getVariables());
@@ -153,8 +164,45 @@ public class ReferencePromptBuilder implements PromptBuilder {
 
     private String formatKnowledge(Map<String, Map<String, Object>> referenceKnowledge) {
         StringBuilder sb = new StringBuilder();
-        referenceKnowledge.forEach((key, value) -> sb.append(
-                StringUtils.format("[{0}] {1}{2}", key, value.get(KNOWLEDGE_TEXT), KNOWLEDGE_SEPARATOR)));
+        referenceKnowledge.forEach((key, value) -> {
+            StringBuilder knowledgeItem = new StringBuilder();
+            knowledgeItem.append(StringUtils.format("[{0}] {1}", key, value.get(KNOWLEDGE_TEXT)));
+            
+            // 处理 metadata 信息
+            if (value.containsKey(KNOWLEDGE_METADATA)) {
+                Map<String, Object> metadata = ObjectUtils.cast(value.get(KNOWLEDGE_METADATA));
+                if (metadata != null && !metadata.isEmpty()) {
+                    List<String> metadataInfo = new ArrayList<>();
+                    
+                    // 添加 URL（网络搜索数据的标识）
+                    if (metadata.containsKey(METADATA_URL) && metadata.get(METADATA_URL) != null) {
+                        metadataInfo.add(StringUtils.format("URL: {0}", metadata.get(METADATA_URL)));
+                    }
+                    
+                    // 添加来源
+                    if (metadata.containsKey(METADATA_SOURCE) && metadata.get(METADATA_SOURCE) != null) {
+                        metadataInfo.add(StringUtils.format("Source: {0}", metadata.get(METADATA_SOURCE)));
+                    }
+                    
+                    // 添加时间戳
+                    if (metadata.containsKey(METADATA_TIMESTAMP) && metadata.get(METADATA_TIMESTAMP) != null) {
+                        metadataInfo.add(StringUtils.format("Timestamp: {0}", metadata.get(METADATA_TIMESTAMP)));
+                    }
+                    
+                    // 添加日期
+                    if (metadata.containsKey(METADATA_DATE) && metadata.get(METADATA_DATE) != null) {
+                        metadataInfo.add(StringUtils.format("Date: {0}", metadata.get(METADATA_DATE)));
+                    }
+                    
+                    if (!metadataInfo.isEmpty()) {
+                        knowledgeItem.append(" [").append(String.join(", ", metadataInfo)).append("]");
+                    }
+                }
+            }
+            
+            knowledgeItem.append(KNOWLEDGE_SEPARATOR);
+            sb.append(knowledgeItem);
+        });
         return sb.toString();
     }
 
