@@ -61,6 +61,8 @@ import CheckGroup from './components/check-group';
 import Inspiration from './components/inspiration';
 import PreviewPicture from './components/receive-box/preview-picture';
 import './styles/chat-preview.scss';
+import store from '@/store/store';
+import {setIsCurrentAnswer} from "@/store/chatStore/chatStore";
 
 /**
  * 应用聊天对话页面
@@ -92,6 +94,7 @@ const ChatPreview = (props) => {
   const isDebug = useAppSelector((state) => state.commonStore.isDebug);
   const isGuest = useAppSelector((state) => state.appStore.isGuest);
   const currentAnswer = useAppSelector((state) => state.chatCommonStore.currentAnswer);
+  const isCurrentAnswer = useAppSelector((state) => state.chatCommonStore.isCurrentAnswer);
   const { showElsa } = useContext(AippContext);
   const [checkedList, setCheckedList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -586,6 +589,7 @@ const ChatPreview = (props) => {
       let { content } = currentChatItem;
       str = content + msg;
       item.content = str;
+      store.dispatch(setIsCurrentAnswer(true));
       if (status === 'ARCHIVED') {
         item.finished = true;
       }
@@ -646,8 +650,8 @@ const ChatPreview = (props) => {
   // 终止进行中的对话
   async function chatRunningStop(params) {
     let terminateParams: any = {};
-    terminateParams.content = params.content ? params.content : currentAnswer ? currentAnswer :
-      t('conversationTerminated');
+    terminateParams.content = params.content ? params.content : currentAnswer ?
+    parseCurrentAnswer(currentAnswer) : t('conversationTerminated');
     if (params.logId) {
       terminateParams.logId = params.logId;
     }
@@ -668,6 +672,14 @@ const ChatPreview = (props) => {
       }
     } finally {
       setStopLoading(false);
+    }
+  }
+
+  function parseCurrentAnswer(currentAnswer) {
+    if (currentAnswer && currentAnswer.props && currentAnswer.props.dangerouslySetInnerHTML
+      && isCurrentAnswer == true) {
+      store.dispatch(setIsCurrentAnswer(false));
+      return currentAnswer.props.dangerouslySetInnerHTML.__html;
     }
   }
 
