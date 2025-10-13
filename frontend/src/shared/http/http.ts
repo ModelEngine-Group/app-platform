@@ -43,7 +43,7 @@ baseAxios.interceptors.response.use(
     if (error.response.status === 401) {
       store.dispatch(setLoginStatus(false));
       if (error.response.headers["fit-redirect-to-prefix"]) {
-        window.location.href = error.response.headers["fit-redirect-to-prefix"] + window.location.href;
+        window.location.href = error.response.headers["fit-redirect-to-prefix"] + encodeURIComponent(window.location.href);
       } else {
         Message({ type: 'error', content: '登录失效且headers里面没有跳转登录的url' });
       }
