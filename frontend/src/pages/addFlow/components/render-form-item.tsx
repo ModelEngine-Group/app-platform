@@ -61,8 +61,7 @@ const RenderFormItem = (props) => {
   const formInit = () => {
     if (actualType === 'Boolean' || actualType === 'switch') {
       form.setFieldValue(name, false);
-    }
-    else if (actualType === 'multiselect') {
+    } else if (actualType === 'multiselect') {
       form.setFieldValue(name, []);
     } else {
       form.setFieldValue(name, null);
