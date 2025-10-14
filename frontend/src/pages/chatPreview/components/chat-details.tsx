@@ -103,7 +103,6 @@ const ChatDetail = ({ showMask = false }) => {
             </div>
           </div>
         )) : <NormalAppInfo showMask={showMask} />}
-      <EditModal type='add' modalRef={modalRef} appInfo={modalInfo} addAippCallBack={addAippCallBack} />
     </div>
   )}</>;
 };
