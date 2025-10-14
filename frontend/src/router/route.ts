@@ -5,22 +5,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type { MenuProps } from 'antd';
-import { ReactElement } from 'react';
+import { ReactElement, lazy } from 'react';
 import { Icons } from '../components/icons/index';
-import IntelligentForm from '../pages/intelligent-form';
-import Plugin from '../pages/plugin';
-import ChatHome from '../pages/chatEngineHome/index';
-import ChatRunning from '../pages/chatRunning/index';
-import AppDetail from '../pages/appDetail';
-import AippIndex from '../pages/aippIndex';
-import AddFlow from '../pages/addFlow';
-import FlowDetail from '../pages/detailFlow';
-import Apps from '../pages/apps';
-import AppDev from '../pages/appDev/index';
-import PlugeDetail from '../pages/plugin/detail/plugin-list';
-import PlugeFlowDetail from '../pages/plugin/detail/plugin-flow-detail';
-import ViewReport from '../pages/appDetail/evaluate/task/viewReport';
-import HttpTool from '../pages/httpTool';
+const IntelligentForm = lazy(()=> import('../pages/intelligent-form'));
+const Plugin = lazy(()=> import('../pages/plugin'));
+const ChatHome = lazy(()=> import('../pages/chatEngineHome/index'));
+const ChatRunning = lazy(()=> import('../pages/chatRunning/index'));
+const AppDetail = lazy(()=> import('../pages/appDetail'));
+const AippIndex = lazy(() => import('../pages/aippIndex'));
+const AddFlow = lazy(()=> import('../pages/addFlow'));
+const FlowDetail = lazy(()=> import('../pages/detailFlow'));
+const Apps = lazy(()=> import('../pages/apps'));
+const AppDev = lazy(()=> import('../pages/appDev/index'));
+const PlugeDetail = lazy(()=> import('../pages/plugin/detail/plugin-list'));
+const PlugeFlowDetail = lazy(()=> import('../pages/plugin/detail/plugin-flow-detail'));
+const ViewReport = lazy(()=> import('../pages/appDetail/evaluate/task/viewReport'));
+const HttpTool = lazy(()=> import('../pages/httpTool'));
+
 import i18n from '../locale/i18n';
 
 export type MenuItem = Required<MenuProps>['items'][number] & {

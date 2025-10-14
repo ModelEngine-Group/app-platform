@@ -4,12 +4,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { Spin } from 'antd';
 import { useParams } from 'react-router-dom';
 import AddFlow from '../addFlow';
 import ConfigForm from '../configForm';
-import CommonChat from '../chatPreview/chatComminPage';
+const CommonChat = lazy(() => import('../chatPreview/chatComminPage'));
 import ChoreographyHead from '../components/header';
 import { getAppInfo, updateFormInfo } from '@/shared/http/aipp';
 import { debounce, getCurrentTime, getUiD, setSpaClassName, getAppConfig } from '@/shared/utils/common';
@@ -215,12 +215,14 @@ const AippIndex = () => {
                   onChangeShowConfig={handleChangeShowConfig}
                 />
               )}
-              <CommonChat
-                showElsa={showElsa}
-                contextProvider={contextProvider}
-                previewBack={changeChat}
-                pluginName={pluginName}
-              />
+              <Suspense fallback={<div style={{display:"none"}}>loading</div>}>
+                <CommonChat
+                  showElsa={showElsa}
+                  contextProvider={contextProvider}
+                  previewBack={changeChat}
+                  pluginName={pluginName}
+                />
+              </Suspense>
             </div>
           </RenderContext.Provider>
         </div>

@@ -4,7 +4,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import type { MenuProps } from 'antd';
 import { Layout, Menu } from 'antd';
 import { MenuFoldOutlined } from '@ant-design/icons';
@@ -155,19 +155,21 @@ const AppLayout: React.FC = () => {
       <Layout className={setClassName()}>
         <Provider store={store}>
           <Content style={{ padding: (layoutValidate() || isSpaMode()) ? '0 16px' : '0', background: colorBgContainer }}>
-            <Switch>
-              {flattenRouteList.map((route) => (
-                <Route
-                  exact
-                  path={route.key}
-                  key={route.key}
-                  component={route.component}
-                />
-              ))}
-              <Route exact path='/' key='/' >
-                <Redirect to='/app-develop' />
-              </Route>
-            </Switch>
+            <Suspense fallback={<div style={{display:"none"}}>loading</div>}>
+              <Switch>
+                {flattenRouteList.map((route) => (
+                  <Route
+                    exact
+                    path={route.key}
+                    key={route.key}
+                    component={route.component}
+                  />
+                ))}
+                <Route exact path='/' key='/' >
+                  <Redirect to='/app-develop' />
+                </Route>
+              </Switch>
+            </Suspense>
           </Content>
         </Provider>
       </Layout>
