@@ -35,7 +35,8 @@ const Apps: React.FC = () => {
       pageNum: page,
       pageSize,
       includeTags: 'APP',
-      name: search
+      name: search,
+      excludeTags: 'BUILTIN'
     };
     setListLoading(true);
     try {

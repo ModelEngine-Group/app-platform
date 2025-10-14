@@ -1,5 +1,6 @@
 internet-search:
   max_results_per_provider: 5
+  summary-length: 150
   api-key:
     exa: "https://dashboard.exa.ai/home -- 登录获取api key"
     tavily: "https://app.tavily.com/home -- 登录获取api key"

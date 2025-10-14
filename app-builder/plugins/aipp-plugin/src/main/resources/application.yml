@@ -60,6 +60,8 @@ app-engine:
     max-length: 20000
   user-context:
     max-length: 500
+  plugin:
+    system-creator: 'system'
 elsa:
   endpoint:
   elsaKey:

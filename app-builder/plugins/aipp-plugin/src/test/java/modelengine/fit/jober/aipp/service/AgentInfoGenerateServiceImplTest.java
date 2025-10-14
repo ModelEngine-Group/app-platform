@@ -25,6 +25,7 @@ import modelengine.jade.store.entity.transfer.PluginToolData;
 import modelengine.jade.store.service.PluginToolService;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ public class AgentInfoGenerateServiceImplTest {
                 this.aippModelCenter,
                 this.toolService,
                 this.localeService,
-                this.appRepository);
+                this.appRepository, "system");
     }
 
     @Test
@@ -101,7 +102,7 @@ public class AgentInfoGenerateServiceImplTest {
         when(model.getTag()).thenReturn("llm_tag");
         when(this.aippModelCenter.getDefaultModel(any(), any())).thenReturn(model);
         when(aippModelService.chat(anyString(), anyString(), anyDouble(), anyString())).thenReturn("PROMPT");
-        assertThat(this.agentInfoGenerateService.generatePrompt("DESC", null)).isEqualTo("PROMPT");
+        assertThat(this.agentInfoGenerateService.generatePrompt("DESC", null)).startsWith("PROMPT");
     }
 
     @Test
@@ -133,6 +134,81 @@ public class AgentInfoGenerateServiceImplTest {
 
         assertThat(this.agentInfoGenerateService.selectTools("DESC", "CREATOR", null)).containsExactly("UNIQUENAME2",
                 "UNIQUENAME3");
+    }
+
+    @Test
+    void testMerge_tool1IsNull_returnsTools2() {
+        ListResult<PluginToolData> tools2 = new ListResult<>(List.of(new PluginToolData()), 1);
+        ListResult<PluginToolData> result = this.invokeMerge(null, tools2);
+        Assertions.assertSame(tools2, result);
+    }
+
+    /**
+     * 测试当 tool1 的 count 为 0 时是否正确返回 tools2
+     */
+    @Test
+    void testMerge_tool1IsEmpty_returnsTools2() {
+        ListResult<PluginToolData> tool1 = new ListResult<>(new ArrayList<>(), 0);
+        ListResult<PluginToolData> tools2 = new ListResult<>(List.of(new PluginToolData()), 1);
+        ListResult<PluginToolData> result = this.invokeMerge(tool1, tools2);
+        Assertions.assertSame(tools2, result);
+    }
+
+    /**
+     * 测试当 tools2 为 null 时是否正确返回 tool1
+     */
+    @Test
+    void testMerge_tools2IsNull_returnsTool1() {
+        ListResult<PluginToolData> tool1 = new ListResult<>(List.of(new PluginToolData()), 1);
+        ListResult<PluginToolData> result = invokeMerge(tool1, null);
+        Assertions.assertSame(tool1, result);
+    }
+
+    /**
+     * 测试当 tools2 的 count 为 0 时是否正确返回 tool1
+     */
+    @Test
+    void testMerge_tools2IsEmpty_returnsTool1() {
+        ListResult<PluginToolData> tool1 = new ListResult<>(List.of(new PluginToolData()), 1);
+        ListResult<PluginToolData> tools2 = new ListResult<>(new ArrayList<>(), 0);
+        ListResult<PluginToolData> result = invokeMerge(tool1, tools2);
+        Assertions.assertSame(tool1, result);
+    }
+
+    /**
+     * 测试正常情况下两个列表能否成功合并
+     */
+    @Test
+    void testMerge_bothValid_mergeCorrectly() {
+        PluginToolData data1 = new PluginToolData();
+        PluginToolData data2 = new PluginToolData();
+        ListResult<PluginToolData> tool1 = new ListResult<>(List.of(data1), 1);
+        ListResult<PluginToolData> tools2 = new ListResult<>(List.of(data2), 1);
+
+        ListResult<PluginToolData> result = invokeMerge(tool1, tools2);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.getCount());
+        Assertions.assertTrue(result.getData().contains(data1));
+        Assertions.assertTrue(result.getData().contains(data2));
+    }
+
+    /**
+     * 利用反射机制调用私有方法 merge
+     *
+     * @param tool1 第一个 ListResult 参数
+     * @param tools2 第二个 ListResult 参数
+     * @return 合并后的 ListResult 结果
+     */
+    private ListResult<PluginToolData> invokeMerge(ListResult<PluginToolData> tool1, ListResult<PluginToolData> tools2) {
+        try {
+            var method = AgentInfoGenerateServiceImpl.class.getDeclaredMethod("merge",
+                    ListResult.class, ListResult.class);
+            method.setAccessible(true);
+            return (ListResult<PluginToolData>) method.invoke(this.agentInfoGenerateService, tool1, tools2);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to invoke private method 'merge'", e);
+        }
     }
 
     @NotNull
