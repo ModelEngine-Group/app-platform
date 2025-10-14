@@ -4,6 +4,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # ======================================================================================================================
 import json
+import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence
@@ -70,6 +71,11 @@ def _get_max_results_per_provider() -> int:
     pass
 
 
+@value('internet-search.summary-length')
+def _get_max_summary_length() -> int:
+    pass
+
+
 def _truncate(text: str, max_chars: int) -> str:
     if len(text) <= max_chars:
         return text
@@ -90,8 +96,6 @@ def _extract_summary(text: str, max_sentences: int = 4) -> str:
     if not text:
         return ""
 
-    # 定义句子分隔符（支持中英文）
-    import re
     # 使用正则表达式匹配句子结束符号
     sentences = re.split(r'([。！？\.!?]+["\'»\)]?\s*)', text)
 
@@ -115,10 +119,11 @@ def _extract_summary(text: str, max_sentences: int = 4) -> str:
         summary = " ".join(combined_sentences[:max_sentences])
 
     # 确保摘要不会过长（最多150字符）
-    if len(summary) > 150:
-        summary = summary[:147].rstrip() + "..."
+    if len(summary) > _get_max_summary_length():
+        summary = summary[:(_get_max_summary_length() - 3)].rstrip() + "..."
 
     return summary
+
 
 def _search_exa(query: str, api_key: str, max_results: int, max_snippet_chars: int) -> List[SearchItem]:
     """在 Exa 中搜索"""
@@ -264,11 +269,11 @@ def _internet_search(
             except Exception as e:
                 sys_plugin_logger.error(f'Unexpected error in {provider_name} search: {str(e)}')
                 errors.append(provider_name)
-    
+
     # 如果所有搜索都失败了，才抛出异常
     if not items and errors:
         raise FitException(
-            InternalErrorCode.CLIENT_ERROR, 
+            InternalErrorCode.CLIENT_ERROR,
             f'All search tools failed: {", ".join(errors)}'
         )
 
