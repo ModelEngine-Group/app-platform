@@ -15,8 +15,6 @@ import {
   SET_NO_AUTH,
   SET_PLUGIN_LIST,
   SET_CURRENT_ANSWER,
-  SET_KNOWLEDGE_CONFIG,
-  SET_SHOW_CHAT_HISTORY,
   SET_IS_CURRENT_ANSWER
 } from './action-types';
 
@@ -37,8 +35,6 @@ const initialState = {
   noAuth: false,
   pluginList: [],
   currentAnswer: '',
-  knowledgeConfig: null,
-  showChatHistory: false,
   isCurrentAnswer: false
 }
 
@@ -78,10 +74,6 @@ const chatReducers = (state = initialState, action) => {
       return { ...state, currentAnswer: action.payload };
     case SET_IS_CURRENT_ANSWER:
       return { ...state, isCurrentAnswer: action.payload };
-    case SET_KNOWLEDGE_CONFIG:
-      return { ...state, knowledgeConfig: action.payload };
-    case SET_SHOW_CHAT_HISTORY:
-      return { ...state, showChatHistory: action.payload };
     default:
       return state
   }
