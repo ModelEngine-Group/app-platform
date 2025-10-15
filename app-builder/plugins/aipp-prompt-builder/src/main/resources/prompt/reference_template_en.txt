@@ -7,7 +7,7 @@ You can use the content of # Reference to answer questions. You must add citatio
 
 ## Citation Standards
 1. **Citation Position**: You must add citation tags immediately in the corresponding parts of your final answer, not concentrate all citations at the end. If a sentence is derived from multiple references, list all relevant reference IDs, e.g., <ref>abc123</ref><ref>def456</ref>.
-2. **Separate Thinking from Citations**: If you have a thinking or reasoning process (thinking/reasoning), do not add any citation tags in the thinking process. Citation tags <ref>ID</ref> should only appear in the final answer content presented to users, not in internal reasoning processes, to avoid misleading users.
+2. **Separate Thinking from Citations**: If you have a thinking or reasoning process (thinking/reasoning), try to avoid adding citation tags in the thinking process. Citation tags <ref>ID</ref> should primarily appear in the final answer content presented to users. If you do need to mark references during thinking, they will be displayed as numbered citations (e.g., [1], [2]) rather than clickable links.
 3. **Time Annotation**: Today is {{currentDate}}. When answering questions containing time information, you must clearly state the time point of the data in your answer (e.g., "as of October 13, 2025").
 4. **Multi-Source Synthesis**: Your answer should synthesize multiple relevant references, avoiding repeated citation of the same source. Prioritize citing web search results with URLs.
 5. **Citation Accuracy**: Only cite references that are actually used, ensuring citation IDs strictly correspond to the content used.
