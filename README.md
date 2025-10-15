@@ -216,20 +216,6 @@ fit debug
 
 - 环境要求：node.js  >= 20
 
-- ELSA 框架编译产物：参考 [ELSA](https://github.com/ModelEngine-Group/fit-framework/blob/main/framework/elsa/README.md) 的编译构建章节
-
-**修改 ELSA 依赖地址**
-
-进入目录 `app-platform/frontend` ，搜索 `package.json` 文件的 ELSA 依赖地址：
-
-```
-"dependencies": {
-    "@fit-elsa/elsa-core": "file:${fitElsaCoreUrl}",
-    "@fit-elsa/elsa-react": "file:${fitElsaReactUrl}",
-```
-
-将 `${fitElsaCoreUrl}` 和 `${fitElsaReactUrl}` 分别改成 `ELSA` 框架编译产物 `fit-elsa-core` 和 `fit-react` 的目录地址即可。
-
 **修改代理文件**
 
 修改 `app-platform/frontend` 目录下的 `proxy.config.json` 文件，可以修改需要访问的后端地址。如本地后端地址是 `http://127.0.0.1:8080` 。可以按照如下示例配置：
@@ -267,6 +253,23 @@ npm run build:single
 ```
 npm run start
 ```
+
+### 联调ELSA配置
+
+- ELSA 框架编译产物：参考 [ELSA](https://github.com/ModelEngine-Group/fit-framework/blob/main/framework/elsa/README.md) 的编译构建章节
+
+**修改 ELSA 依赖地址**
+
+进入目录 `app-platform/frontend` ，搜索 `package.json` 文件的 ELSA 依赖地址：
+
+```
+"dependencies": {
+    "@fit-elsa/elsa-core": "file:${fitElsaCoreUrl}",
+    "@fit-elsa/agent-flow": "file:${fitElsaReactUrl}",
+```
+
+将 `${fitElsaCoreUrl}` 和 `${fitElsaReactUrl}` 分别改成 `ELSA` 框架编译产物 `fit-elsa-core` 和 `fit-react` 的目录地址即可。
+
 ---------
 ## 快速开始
 
