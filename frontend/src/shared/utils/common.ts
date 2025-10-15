@@ -2,7 +2,6 @@ import { useLocation } from 'react-router-dom';
 import { useCallback, useMemo, useState } from 'react';
 import { pick, find, filter } from 'lodash';
 import { Message } from '@/shared/utils/message';
-import { createGraphOperator } from '@fit-elsa/elsa-react';
 import { storage } from '../storage';
 import i18n from '@/locale/i18n';
 import { getAppCategories } from "@/shared/http/aipp";
@@ -450,3 +449,126 @@ export const getAppConfig = (appInfo) => {
 export const generateUniqueName = () => {
   return 'guest-' + nanoid(16);
 }
+
+// ==================== GraphOperator ====================
+
+// 数据类型常量
+const DATA_TYPES = {
+  STRING: 'String',
+  INTEGER: 'Integer',
+  BOOLEAN: 'Boolean',
+  NUMBER: 'Number',
+  OBJECT: 'Object',
+  ARRAY: 'Array',
+};
+
+// 来源类型常量
+const FROM_TYPE = {
+  EXPAND: 'Expand',
+  INPUT: 'Input',
+  REFERENCE: 'Reference',
+};
+
+/**
+ * 将配置数据转换为结构体
+ * @param config 配置数据
+ * @return {{}|*} 结构体
+ */
+const configToStruct = (config: any) => {
+  if (config.type === DATA_TYPES.ARRAY) {
+    return config.value.map(v => configToStruct(v));
+  } else if (config.type === DATA_TYPES.OBJECT) {
+    const obj = {};
+    config.value.forEach((item: any) => {
+      obj[item.name] = configToStruct(item);
+    });
+    return obj;
+  } else {
+    return Object.prototype.hasOwnProperty.call(config, 'value') ? config.value : config;
+  }
+};
+
+/**
+ * 创建画布操纵器
+ * @param graphString 画布字符串
+ * @return {{}} 画布操纵器对象
+ */
+export const createGraphOperator = (graphString: string) => {
+  const graph = JSON.parse(graphString);
+  const shapes = graph.pages[0].shapes;
+
+  const getInputParams = (shape: any) => {
+    if (shape.type === 'startNodeStart') {
+      return shape.flowMeta.inputParams;
+    } else if (shape.type === 'endNodeEnd') {
+      return shape.flowMeta.callback.converter.entity.inputParams;
+    } else {
+      return shape.flowMeta.jober.converter.entity.inputParams;
+    }
+  };
+
+  const getConfigByKeys = (keys: string[]) => {
+    if (!Array.isArray(keys)) {
+      throw new Error('Expected keys to be an array');
+    }
+
+    if (keys.length === 0) {
+      return null;
+    }
+
+    const tmpKeys = [...keys];
+    const shapeId = tmpKeys.shift();
+    const shape = getShapeById(shapeId);
+    const inputParams = getInputParams(shape);
+    if (!inputParams) {
+      throw new Error('Expected inputParams exists');
+    }
+    let config = {type: DATA_TYPES.OBJECT, value: inputParams};
+    while (tmpKeys.length > 0 && config && config.value) {
+      const key = tmpKeys.shift();
+      config = config.value.find(v => v.name === key);
+    }
+    return config;
+  };
+
+  const getShapeById = (shapeId: string) => {
+    return shapes.find((shape) => shape.id === shapeId);
+  };
+
+  return {
+    /**
+     * 获取配置信息
+     * @param keys 键值数组
+     * @return {{}|*|null} 配置信息
+     */
+    getConfig: (keys: string[]) => {
+      const config = getConfigByKeys(keys);
+      return config ? configToStruct(config) : null;
+    },
+
+    /**
+     * 获取画布中开始节点的入参信息
+     * @return {array} 开始节点入参信息
+     */
+    getStartNodeInputParams: (): any[] => {
+      return shapes.filter(shape => shape.type === 'startNodeStart').map(startNode => startNode.flowMeta.inputParams);
+    },
+
+    /**
+     * 根据节点类型获取对应节点id列表
+     * @param type 节点类型
+     * @returns {array} 对应节点id列表
+     */
+    getShapeIdsByType: (type: string): string[] => {
+      return shapes.filter((shape) => shape.type === type).map((shape) => shape.id);
+    },
+
+    /**
+     * 获取画布数据
+     * @return {string} 画布数据
+     */
+    getGraph: (): string => {
+      return JSON.stringify(graph);
+    }
+  };
+};
