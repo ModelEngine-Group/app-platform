@@ -11,7 +11,6 @@ import { CreateAppIcon } from '@/assets/icon';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { findConfigValue } from '@/shared/utils/common';
 import { convertImgPath } from '@/common/util';
-import EditModal from '@/pages/components/edit-modal';
 import knowledgeBase from '@/assets/images/knowledge/knowledge-base.png';
 import robot2 from '@/assets/images/ai/demo.png';
 import '../styles/chat-details.scss';
