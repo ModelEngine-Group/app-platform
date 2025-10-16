@@ -782,6 +782,11 @@ public enum AippErrCode implements ErrorCode, RetCode {
     APP_NOT_IN_GUEST_MODE(90002144, "应用未打开游客模式。"),
 
     /**
+     * 大模型调用超时。
+     */
+    MODEL_INVOKE_TIMEOUT(90002145, "大模型调用超时，请尝试更换默认模型。"),
+
+    /**
      * 应用模板不存在。
      */
     TEMPLATE_NOT_FOUND(90003000, "应用模板不存在"),

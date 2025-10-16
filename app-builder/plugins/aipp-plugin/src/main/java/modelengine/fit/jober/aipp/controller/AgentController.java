@@ -27,6 +27,8 @@ import modelengine.fitframework.validation.Validated;
 import modelengine.jade.service.annotations.CarverSpan;
 import modelengine.jade.service.annotations.SpanAttr;
 
+import java.net.SocketTimeoutException;
+
 /**
  * 表示智能体信息获取接口集。
  *
@@ -74,9 +76,12 @@ public class AgentController extends AbstractController {
             entity.setTools(
                     this.agentInfoGenerateService.selectTools(dto.getDescription(), context.getOperator(), context));
         } catch (ClientException e) {
-            // 模型生成内容超时的情况下，提醒用户更换默认模型
             log.error("Failed to generate agent infos.", e);
-            throw new AippException(AippErrCode.GENERATE_CONTENT_FAILED, "agent infos", e.getMessage());
+            if (e.getCause() != null && e.getCause() instanceof SocketTimeoutException) {
+                throw new AippException(AippErrCode.MODEL_INVOKE_TIMEOUT);
+            } else {
+                throw new AippException(AippErrCode.GENERATE_CONTENT_FAILED, "agent infos", e.getMessage());
+            }
         }
         return Rsp.ok(entity);
     }
