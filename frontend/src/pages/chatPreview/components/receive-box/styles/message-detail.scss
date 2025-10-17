@@ -185,18 +185,6 @@
   }
 }
 
-.reference-overview-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #262626;
-}
-
-.reference-overview-title-icon {
-  font-size: 18px;
-}
 
 .reference-overview-content {
   padding: 20px;
@@ -221,7 +209,7 @@
   font-weight: 500;
   line-height: 1.4;
   display: block;
-  
+
   &:hover {
     color: #61666b;
     text-decoration: underline;
@@ -290,7 +278,7 @@
   ul, ol {
     margin-bottom: 12px;
     padding-left: 24px;
-    
+
     li {
       margin-bottom: 4px;
     }
@@ -302,7 +290,7 @@
     background-color: #282c34;
     border-radius: 6px;
     overflow-x: auto;
-    
+
     code {
       background: none;
       padding: 0;
@@ -329,13 +317,13 @@
     border-collapse: collapse;
     margin-bottom: 12px;
     width: 100%;
-    
+
     th, td {
       border: 1px solid #ddd;
       padding: 8px 12px;
       text-align: left;
     }
-    
+
     th {
       background-color: #f5f5f5;
       font-weight: 600;
@@ -345,7 +333,7 @@
   a {
     color: #1890ff;
     text-decoration: none;
-    
+
     &:hover {
       text-decoration: underline;
     }
@@ -405,6 +393,16 @@
   }
 }
 
+/* 思考内容中的引用样式 */
+.think-reference {
+  background-color: rgba(235, 238, 242, 0.7);
+  color: #61666b;
+
+  &:hover {
+    background-color: rgba(219, 226, 232, 0.9);
+  }
+}
+
 /* 悬停显示引用信息样式 */
 .reference-hover-tooltip {
   position: fixed;
@@ -453,7 +451,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #262626;
 }
@@ -477,7 +475,7 @@
 .reference-overview-item {
   display: flex;
   gap: 12px;
-  padding: 16px;
+  padding: 16px 0px;
   border-bottom: 1px solid #f0f0f0;
 
   &:last-child {
@@ -508,14 +506,32 @@
 }
 
 .reference-overview-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 8px;
+}
+
+.reference-overview-item-number-badge {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  line-height: 15px;
+  text-align: center;
+  background-color: #f0f0f0;
+  color: #666;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 500;
+  border: 1px solid #d9d9d9;
 }
 
 .reference-overview-item-title-link {
   color: #333;
   text-decoration: none;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
   display: block;
 
@@ -525,10 +541,19 @@
   }
 }
 
+.ant-drawer-close {
+  margin-right: 0px !important;
+  font-size: 14px !important;
+}
+
+.ant-drawer-body {
+  padding: 16px 20px;
+}
+
 .reference-overview-item-title {
   color: #333;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
   display: block;
 }

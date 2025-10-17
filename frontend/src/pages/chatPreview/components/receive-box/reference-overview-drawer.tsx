@@ -81,13 +81,13 @@ const ReferenceOverviewDrawer = (props: any) => {
                 onClick={() => onClickReference(ref)}
                 style={{ cursor: 'pointer' }}
               >
-                <div className='reference-overview-item-number-circle'>
-                  {ref.number}
-                </div>
                 <div className='reference-overview-item-content'>
                   <div className='reference-overview-item-header'>
                     <span className='reference-overview-item-title'>
                       {title}
+                    </span>
+                    <span className='reference-overview-item-number-badge'>
+                      {ref.number}
                     </span>
                   </div>
                   <div className='reference-overview-item-text'>
