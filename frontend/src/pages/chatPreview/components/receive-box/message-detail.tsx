@@ -4,23 +4,83 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { markedProcess } from '../../utils/marked-process';
 import { useTranslation } from 'react-i18next';
 import { Message } from '@/shared/utils/message';
 import { isChatRunning } from '@/shared/utils/chat';
 import { useAppSelector } from '@/store/hook';
+import Feedbacks from './feedbacks';
 import PictureList from './picture-list';
 import ThinkBlock from './think-block';
 import StepBlock from './step-block';
 import ReferenceOverviewDrawer from './reference-overview-drawer';
-import ActionButtons from './action-buttons';
-import { Tooltip } from 'antd';
 import 'highlight.js/styles/monokai-sublime.min.css';
 import './styles/message-detail.scss';
 import store from '@/store/store';
 import {setCurrentAnswer} from "@/store/chatStore/chatStore";
-import {useMemo } from 'react';
+
+/**
+ * 工具函数：判断是否为URL
+ */
+const isUrl = (str: string) => {
+  try {
+    new URL(str);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * 工具函数：转义HTML属性值
+ */
+const escapeAttribute = (str: string) => {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
+/**
+ * 工具函数：从内容中提取使用的引用键
+ * @param content 内容文本
+ * @param allRefKeys 所有可用的引用键
+ * @returns 按出现顺序排列的引用键数组
+ */
+const extractUsedReferenceKeys = (content: string, allRefKeys: string[]): string[] => {
+  if (!content) return [];
+
+  const usedRefKeysInOrder: string[] = [];
+  const tempUsedKeys = new Set<string>();
+
+  // 1. 提取 <ref>ID</ref> 格式的引用
+  const refMatches = content.match(/<ref>(.*?)<\/ref>/g) || [];
+  refMatches.forEach((match: string) => {
+    const keyContent = match.replace(/<ref>|<\/ref>/g, '');
+    const keys = keyContent.split('_');
+    keys.forEach((key: string) => {
+      if (allRefKeys.includes(key) && !tempUsedKeys.has(key)) {
+        tempUsedKeys.add(key);
+        usedRefKeysInOrder.push(key);
+      }
+    });
+  });
+
+  // 2. 提取 [ID] 格式的引用（常见于思考内容中）
+  const bracketMatches = content.match(/\[([a-f0-9]{6})\]/gi) || [];
+  bracketMatches.forEach((match: string) => {
+    const key = match.replace(/\[|\]/g, '').toLowerCase();
+    if (allRefKeys.includes(key) && !tempUsedKeys.has(key)) {
+      tempUsedKeys.add(key);
+      usedRefKeysInOrder.push(key);
+    }
+  });
+
+  return usedRefKeysInOrder;
+};
 
 /**
  * 消息详情
@@ -46,202 +106,83 @@ const MessageBox = (props: any) => {
   const referenceList = useAppSelector((state) => state.chatCommonStore.referenceList);
   const contentContainerRef = useRef<HTMLDivElement>(null);
 
-  // 计算实际引用数量
-  const getReferenceCount = () => {
-    if (!reference || !Array.isArray(reference)) return 0;
-    let count = 0;
-    reference.forEach((refGroup) => {
-      if (refGroup && typeof refGroup === 'object') {
-        count += Object.keys(refGroup).length;
-      }
-    });
-    return count;
-  };
-
-  // 计算当前消息实际使用的引用数量
-  const getUsedReferenceCount = () => {
-    if (!reference || !Array.isArray(reference) || reference.length === 0) return 0;
-
-    const referenceList = reference[0] || {};
-    const allRefKeys = Object.keys(referenceList);
-
-    const usedKeys = new Set();
-
-    // 从内容中提取使用的引用键
-    if (content) {
-      // 1. 提取 <ref>ID</ref> 格式的引用
-      const refMatches = content.match(/<ref>(.*?)<\/ref>/g) || [];
-      refMatches.forEach((match: string) => {
-        const keyContent = match.replace(/<ref>|<\/ref>/g, '');
-        const keys = keyContent.split('_');
-        keys.forEach((key: string) => {
-          if (allRefKeys.includes(key)) {
-            usedKeys.add(key);
-          }
-        });
-      });
-
-      // 2. 提取 [ID] 格式的引用（常见于思考内容中）
-      const bracketMatches = content.match(/\[([a-f0-9]{6})\]/gi) || [];
-      bracketMatches.forEach((match: string) => {
-        const key = match.replace(/\[|\]/g, '').toLowerCase();
-        if (allRefKeys.includes(key)) {
-          usedKeys.add(key);
-        }
-      });
+  // 使用 useMemo 缓存引用列表和所有引用键
+  const { referenceData, allRefKeys } = useMemo(() => {
+    if (!reference || !Array.isArray(reference) || reference.length === 0) {
+      return { referenceData: {}, allRefKeys: [] };
     }
+    const refData = reference[0] || {};
+    return {
+      referenceData: refData,
+      allRefKeys: Object.keys(refData)
+    };
+  }, [reference]);
 
-    return usedKeys.size;
-  };
+  // 使用 useMemo 缓存提取的引用键
+  const usedRefKeysInOrder = useMemo(() => {
+    return extractUsedReferenceKeys(content, allRefKeys);
+  }, [content, allRefKeys]);
 
   // 获取当前消息使用的所有引用数据（按新编号排序）
-  const getUsedReferences = () => {
-    if (!reference || !Array.isArray(reference) || reference.length === 0) return [];
-
-    const referenceList = reference[0] || {};
-    const allRefKeys = Object.keys(referenceList);
-
-    // 收集所有使用的引用键（按出现顺序）
-    const usedRefKeysInOrder: string[] = [];
-    const tempUsedKeys = new Set<string>();
-
-    // 从内容中提取使用的引用键（保持出现顺序）
-    if (content) {
-      // 1. 提取 <ref>ID</ref> 格式的引用
-      const refMatches = content.match(/<ref>(.*?)<\/ref>/g) || [];
-      refMatches.forEach((match: string) => {
-        const keyContent = match.replace(/<ref>|<\/ref>/g, '');
-        const keys = keyContent.split('_');
-        keys.forEach((key: string) => {
-          if (allRefKeys.includes(key) && !tempUsedKeys.has(key)) {
-            tempUsedKeys.add(key);
-            usedRefKeysInOrder.push(key);
-          }
-        });
-      });
-
-      // 2. 提取 [ID] 格式的引用（常见于思考内容中）
-      const bracketMatches = content.match(/\[([a-f0-9]{6})\]/gi) || [];
-      bracketMatches.forEach((match: string) => {
-        const key = match.replace(/\[|\]/g, '').toLowerCase();
-        if (allRefKeys.includes(key) && !tempUsedKeys.has(key)) {
-          tempUsedKeys.add(key);
-          usedRefKeysInOrder.push(key);
-        }
-      });
-    }
+  const usedReferences = useMemo(() => {
+    if (!referenceData || usedRefKeysInOrder.length === 0) return [];
 
     // 按出现顺序创建引用数据（重新编号从1开始）
-    const usedRefs = usedRefKeysInOrder.map((key, index) => ({
+    return usedRefKeysInOrder.map((key, index) => ({
       id: key,
       number: index + 1, // 重新编号：1,2,3,4,5,6
-      data: referenceList[key] // 将引用数据放在 data 字段中
+      data: referenceData[key] // 将引用数据放在 data 字段中
     }));
+  }, [referenceData, usedRefKeysInOrder]);
 
-    return usedRefs;
-  };
-
-  const usedReferences = useMemo(() => {
-    return getUsedReferences();
-  }, [reference, content]); // 当 reference 或 content 变化时重新计算
-
+  // 计算实际引用数量
   const usedReferenceCount = useMemo(() => {
-    return getUsedReferenceCount();
-  }, [reference, content]);
+    return usedRefKeysInOrder.length;
+  }, [usedRefKeysInOrder]);
 
-  // 判断是否为URL
-  const isUrl = (str: string) => {
-    try {
-      new URL(str);
-      return true;
-    } catch {
-      return false;
-    }
-  };
+  // 构建引用键到新编号的映射
+  const refKeyToNewNumber = useMemo(() => {
+    const map = new Map<string, number>();
+    usedReferences.forEach(ref => {
+      map.set(ref.id, ref.number);
+    });
+    return map;
+  }, [usedReferences]);
 
-  // 获取引用数据
-  const getReferenceData = (refNumber: number) => {
-    if (!reference || !Array.isArray(reference) || reference.length === 0) return null;
-
-    const referenceList = reference[0] || {};
-    const allRefKeys = Object.keys(referenceList);
-
-    // 收集所有使用的引用键（按出现顺序）
-    const usedRefKeysInOrder: string[] = [];
-    const tempUsedKeys = new Set<string>();
-
-    if (content) {
-      // 1. 提取 <ref>ID</ref> 格式的引用
-      const refMatches = content.match(/<ref>(.*?)<\/ref>/g) || [];
-      refMatches.forEach((match: string) => {
-        const keyContent = match.replace(/<ref>|<\/ref>/g, '');
-        const keys = keyContent.split('_');
-        keys.forEach((key: string) => {
-          if (allRefKeys.includes(key) && !tempUsedKeys.has(key)) {
-            tempUsedKeys.add(key);
-            usedRefKeysInOrder.push(key);
-          }
-        });
-      });
-
-      // 2. 提取 [ID] 格式的引用（常见于思考内容中）
-      const bracketMatches = content.match(/\[([a-f0-9]{6})\]/gi) || [];
-      bracketMatches.forEach((match: string) => {
-        const key = match.replace(/\[|\]/g, '').toLowerCase();
-        if (allRefKeys.includes(key) && !tempUsedKeys.has(key)) {
-          tempUsedKeys.add(key);
-          usedRefKeysInOrder.push(key);
-        }
-      });
-    }
-
-    // 根据编号获取对应的引用数据
-    if (refNumber > 0 && refNumber <= usedRefKeysInOrder.length) {
-      const refKey = usedRefKeysInOrder[refNumber - 1];
-      const refData = referenceList[refKey];
-      return refData;
+  // 获取引用数据（根据编号）
+  const getReferenceData = useCallback((refNumber: number) => {
+    if (refNumber > 0 && refNumber <= usedReferences.length) {
+      return usedReferences[refNumber - 1].data;
     }
     return null;
-  };
+  }, [usedReferences]);
+
+  /**
+   * 创建引用标签HTML的辅助函数
+   */
+  const createReferenceTag = useCallback((num: number, isThinkReference = false) => {
+    const ref = usedReferences.find(r => r.number === num);
+    const title = ref?.data?.metadata?.fileName || ref?.data?.source || '未知来源';
+    const summary = ref?.data?.txt || ref?.data?.text || '无摘要';
+    const url = ref?.data?.metadata?.url || ref?.data?.source || '';
+
+    const escapedTitle = escapeAttribute(title);
+    const escapedSummary = escapeAttribute(summary);
+    const escapedUrl = escapeAttribute(url);
+
+    const className = isThinkReference ? 'reference-circle think-reference' : 'reference-circle';
+
+    return `<span class="${className}" data-ref-number="${num}" data-ref-url="${escapedUrl}" data-ref-title="${escapedTitle}" data-ref-summary="${escapedSummary}">${num}</span>`;
+  }, [usedReferences]);
 
   /**
    * 将引用ID替换为可点击的序号标签（用于思考内容）
    * 处理两种格式：<ref>ID</ref> 和 [ID]
    */
-  const replaceReferenceIdsWithNumbers = (content: string) => {
-    if (!content || !reference || !Array.isArray(reference) || reference.length === 0) {
+  const replaceReferenceIdsWithNumbers = useCallback((content: string) => {
+    if (!content || usedReferences.length === 0) {
       return content;
     }
-
-    // 构建引用键到新编号的映射
-    const refKeyToNewNumber = new Map<string, number>();
-    usedReferences.forEach(ref => {
-      refKeyToNewNumber.set(ref.id, ref.number);
-    });
-
-    // 更安全的转义函数
-    const escapeAttribute = (str: string) => {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    };
-
-    // 创建引用标签的辅助函数
-    const createReferenceTag = (num: number) => {
-      const ref = usedReferences.find(r => r.number === num);
-      const title = ref?.data?.metadata?.fileName || ref?.data?.source || '未知来源';
-      const summary = ref?.data?.txt || ref?.data?.text || '无摘要';
-      const url = ref?.data?.metadata?.url || ref?.data?.source || '';
-
-      const escapedTitle = escapeAttribute(title);
-      const escapedSummary = escapeAttribute(summary);
-      const escapedUrl = escapeAttribute(url);
-
-      return `<span class="reference-circle think-reference" data-ref-number="${num}" data-ref-url="${escapedUrl}" data-ref-title="${escapedTitle}" data-ref-summary="${escapedSummary}">${num}</span>`;
-    };
 
     let processedContent = content;
 
@@ -252,36 +193,29 @@ const MessageBox = (props: any) => {
       if (keys.length === 0) return match;
 
       const refNumbers = keys.map((k: string) => refKeyToNewNumber.get(k)!).sort((a: number, b: number) => a - b);
-      return refNumbers.map(createReferenceTag).join('');
+      return refNumbers.map((num: number) => createReferenceTag(num, true)).join('');
     });
 
     // 2. 处理 [ID] 格式（方括号格式，常见于思考内容中）
-    // 匹配 [6位字母数字组合] 这种格式
     processedContent = processedContent.replace(/\[([a-f0-9]{6})\]/gi, (match, keyContent) => {
       if (refKeyToNewNumber.has(keyContent)) {
         const num = refKeyToNewNumber.get(keyContent)!;
-        return createReferenceTag(num);
+        return createReferenceTag(num, true);
       }
       return match; // 如果不是引用ID，保持原样
     });
 
     return processedContent;
-  };
+  }, [refKeyToNewNumber, createReferenceTag, usedReferences]);
 
   /**
    * 渲染正文 + 引用 - 保持 Markdown 格式完整性
    */
-  const renderWithReferences = (rawContent: string) => {
+  const renderWithReferences = useCallback((rawContent: string) => {
     if (!rawContent) return null;
 
     // 合并相邻的引用标签
     let processedContent = rawContent.replace(/<\/ref><ref>/g, '_');
-
-    // 构建引用键到新编号的映射
-    const refKeyToNewNumber = new Map<string, number>();
-    usedReferences.forEach(ref => {
-      refKeyToNewNumber.set(ref.id, ref.number);
-    });
 
     // 收集引用数据用于后续替换
     const refPlaceholders: Array<{id: string, refData: any[]}> = [];
@@ -320,16 +254,6 @@ const MessageBox = (props: any) => {
     // 将占位符替换为可点击的引用标签
     refPlaceholders.forEach(({ id, refData }) => {
       const refHtml = refData.map((data: any) => {
-        // 更安全的转义函数 - 但是不要转义已经存在的实体
-        const escapeAttribute = (str: string) => {
-          return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-        };
-
         const escapedTitle = escapeAttribute(data.title);
         const escapedSummary = escapeAttribute(data.summary);
         const escapedUrl = escapeAttribute(data.url || '');
@@ -340,7 +264,6 @@ const MessageBox = (props: any) => {
       console.log('[Debug 3] Replacing placeholder:', id, 'with HTML:', refHtml);
 
       // 替换占位符 - 注意可能被 markdown 包裹或转义
-      // 尝试多种可能的格式
       const patterns = [
         id,  // 原始格式
         `<p>${id}</p>`,  // 被包裹在 p 标签中
@@ -363,7 +286,7 @@ const MessageBox = (props: any) => {
     console.log('[Debug 4] Final HTML sample:', htmlContent.substring(0, 400));
 
     return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
-  };
+  }, [refKeyToNewNumber, usedReferences]);
 
 
   // 设置接受消息显示内容
@@ -448,7 +371,7 @@ const MessageBox = (props: any) => {
     } else {
       setReplacedNodes(<span dangerouslySetInnerHTML={{ __html: finalContent }} />);
     }
-  }, [answerContent, usedReferences]);
+  }, [answerContent, renderWithReferences, msgType, chatReference]);
 
 
   useEffect(() => {
@@ -469,7 +392,7 @@ const MessageBox = (props: any) => {
     } else {
       setAnswerContent(content);
     }
-  }, [content, usedReferences]);
+  }, [content, replaceReferenceIdsWithNumbers]);
 
   // 接受消息点击事件
   useEffect(() => {
@@ -574,18 +497,11 @@ const MessageBox = (props: any) => {
         {getMessageContent()}
         { finished &&
         <div className='feed-footer'>
-          <div className='feed-inner'>
-            <div className='feed-left'>{t('receiveTips')}</div>
-            <div className='feed-right'>
-              <ActionButtons
-                content={content}
-                formConfig={props.formConfig}
-                instanceId={instanceId}
-                feedbackStatus={feedbackStatus}
-                refreshFeedbackStatus={props.refreshFeedbackStatus}
-              />
-            </div>
-          </div>
+          <Feedbacks
+              instanceId={instanceId}
+              feedbackStatus={feedbackStatus}
+              refreshFeedbackStatus={props.refreshFeedbackStatus}
+            />
         </div> }
 
         {/* 引用总览按钮 - 只在有实际使用的引用时显示 */}
