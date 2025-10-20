@@ -109,7 +109,7 @@ const ConversationConfiguration = ({ appInfo, updateUserContext, chatRunning, is
           />
         );
       case 'switch':
-        return <Switch onChange={updateData} checked={!!value}/>;
+        return <Switch onChange={updateData} />;
       case 'dropdown':
         return (
           <Select
@@ -195,7 +195,9 @@ const ConversationConfiguration = ({ appInfo, updateUserContext, chatRunning, is
         const preItem = preConfigurationList.current.find(it => it.name === item.name);
         const isChangeType = preItem?.type !== item.type;
         if (item.type === 'Boolean') {
-          form.setFieldValue(item.name, isChangeType ? false : (form.getFieldValue(item.name) || false));
+          const existingValue = form.getFieldValue(item.name);
+          const defaultValue = item.value ?? false;
+          form.setFieldValue(item.name, isChangeType ? defaultValue : (existingValue ?? defaultValue));
         } else {
           form.setFieldValue(item.name, isChangeType ? null : ((isInputEmpty(form.getFieldValue(item.name)) ? null : form.getFieldValue(item.name))));
         }
@@ -264,24 +266,33 @@ const ConversationConfiguration = ({ appInfo, updateUserContext, chatRunning, is
     <>
       <div className='configuration-header'>
         <span className='configuration-title'>{t('conversationConfiguration')}</span>
-        <img src={CloseImg} alt="" onClick={() => setOpen(false)} />
+        <img src={CloseImg} alt='' onClick={() => setOpen(false)} />
       </div>
       <div className='configuration-content'>
-        {
-          configurationList?.length > 0 ? <Form form={form} autoComplete='off'>
-            {
-              configurationList.map(config =>
-                <Form.Item
-                  key={config.id}
-                  name={config.name}
-                  label={config.displayName || ' '}
-                  className={config.isRequired ? 'is-required' : ''}>
-                  {getConfigurationItem({...config, value: form.getFieldValue(config.value)})}
-                </Form.Item>
-              )
-            }
-          </Form> : <Empty description={t('noData')}></Empty>
-        }
+        {configurationList?.length > 0 ? (
+          <Form
+            form={form}
+            autoComplete='off'
+          >
+            {configurationList.map((config) => (
+              <Form.Item
+                key={config.id}
+                name={config.name}
+                label={config.displayName || ' '}
+                className={config.isRequired ? 'is-required' : ''}
+                valuePropName={
+                  config.type === 'Boolean' || config.appearance?.displayType === 'switch'
+                    ? 'checked'
+                    : 'value'
+                }
+              >
+                {getConfigurationItem({ ...config, value: form.getFieldValue(config.name) })}
+              </Form.Item>
+            ))}
+          </Form>
+        ) : (
+          <Empty description={t('noData')}></Empty>
+        )}
       </div>
     </>
   );

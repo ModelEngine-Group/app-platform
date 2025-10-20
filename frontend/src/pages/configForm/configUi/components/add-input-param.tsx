@@ -115,7 +115,6 @@ const InputParamModal = (props) => {
       }
 
       setShowModal(false);
-      form.resetFields();
       onSubmit(transformed);
     } catch (error) {
       console.log('验证失败:', error);
@@ -124,7 +123,6 @@ const InputParamModal = (props) => {
 
   const handleCancel = () => {
     setShowModal(false);
-    form.resetFields();
   };
 
   const handleFieldTypeChange = (value) => {
@@ -264,7 +262,12 @@ const InputParamModal = (props) => {
       case 'switch':
         return (
           <>
-            <Form.Item label={t('defaultValue')} name='defaultValue'>
+            <Form.Item
+              label={t('defaultValue')}
+              name='defaultValue'
+              valuePropName="checked"
+              initialValue={false}
+            >
               <Switch />
             </Form.Item>
           </>
@@ -374,7 +377,7 @@ const InputParamModal = (props) => {
 
   return (
     <Modal
-      title={mode === 'edit' ? '编辑变量' : '添加变量'}
+      title={mode === 'edit' ? t('editParamField') : t('addParamField')}
       open={showModal}
       onCancel={handleCancel}
       width={480}
