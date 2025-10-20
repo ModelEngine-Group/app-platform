@@ -1,0 +1,27 @@
+# SSH配置文件示例 (~/.ssh/config)
+# 将此文件内容复制到 ~/.ssh/config 并根据实际情况修改
+
+# 测试环境服务器配置
+Host test-server
+    HostName 192.168.1.100
+    Port 22
+    User developer
+    IdentityFile ~/.ssh/test_server_key
+
+# 生产环境服务器配置
+Host prod-server
+    HostName prod.example.com
+    Port 22
+    User admin
+    IdentityFile ~/.ssh/prod_server_key
+
+# GitHub配置（如果您使用SSH方式访问）
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/github_key
+
+# 使用通配符配置一组服务器
+Host *.example.com
+    User default-user
+    Port 2222
