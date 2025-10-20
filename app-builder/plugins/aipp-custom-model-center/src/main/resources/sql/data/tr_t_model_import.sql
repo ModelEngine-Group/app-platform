@@ -64,4 +64,3 @@ INSERT INTO "public"."store_tool" ("name", "schema", "runnables", "extensions", 
 
 INSERT INTO "public"."store_tag" ("tool_unique_name", "name") VALUES ('7a76cbd2-881d-469b-b2df-76abed7d0b61', 'APP') ON CONFLICT ("tool_unique_name", "name") DO NOTHING;
 INSERT INTO "public"."store_tag" ("tool_unique_name", "name") VALUES ('7a76cbd2-881d-469b-b2df-76abed7d0b61', 'APP_TYPE_B653EDB7EB5A49BE91ABCD2C5877C6AD') ON CONFLICT ("tool_unique_name", "name") DO NOTHING;
-INSERT INTO "public"."store_tag" ("tool_unique_name", "name") VALUES ('7a76cbd2-881d-469b-b2df-76abed7d0b61', 'BUILTIN') ON CONFLICT ("tool_unique_name", "name") DO NOTHING;
