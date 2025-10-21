@@ -26,6 +26,7 @@ import modelengine.fit.waterflow.service.SingleFlowRuntimeService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.log.Logger;
+import modelengine.fitframework.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -125,6 +126,27 @@ public class SingleFlowRuntimeServiceImpl implements SingleFlowRuntimeService {
         }
         this.flowRuntimeService.failAsyncJob(Collections.singletonList(flowDataId),
                 new WaterflowException(FLOW_EXECUTE_ASYNC_JOBER_FAILED, errorInfo), operationContext);
+    }
+
+    @Override
+    public boolean cleanInstances(int expiredDays, int limit) {
+        List<String> traceIds = this.traceRepo.getExpiredTrace(expiredDays, limit);
+        if (traceIds.isEmpty()) {
+            return false;
+        }
+        this.deleteFlowContext(traceIds);
+        return true;
+    }
+
+    /**
+     * 根据链路唯一标识列表删除链路信息和上下文数据。
+     *
+     * @param traceIds 表示流程链路唯一标识列表的 {@link List}{@code <}{@link String}{@code >}。
+     */
+    @Transactional
+    public void deleteFlowContext(List<String> traceIds) {
+        this.repo.deleteByTraceIdList(traceIds);
+        this.traceRepo.deleteByIdList(traceIds);
     }
 
     private static boolean isAllowResumeOrFailAsyncJob(FlowContext<FlowData> context) {

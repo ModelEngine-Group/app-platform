@@ -13,5 +13,6 @@ jane:
   flowsEngine:
     retry:
       scheduleRate: 60000
+    contextExpiredDays: 3
 
 distributed-lock-provider: databaseDistributedLockProvider

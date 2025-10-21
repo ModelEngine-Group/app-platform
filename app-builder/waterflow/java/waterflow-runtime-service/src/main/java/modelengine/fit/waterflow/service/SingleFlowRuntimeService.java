@@ -9,7 +9,6 @@ package modelengine.fit.waterflow.service;
 import modelengine.fit.waterflow.entity.OperationContext;
 import modelengine.fit.waterflow.entity.FlowStartDTO;
 import modelengine.fit.waterflow.entity.FlowStartInfo;
-import modelengine.fit.waterflow.entity.FlowStartParameter;
 import modelengine.fit.waterflow.entity.JoberErrorInfo;
 
 import java.util.Map;
@@ -71,4 +70,13 @@ public interface SingleFlowRuntimeService {
      * @param operationContext 操作人，为null则默认为前一个操作人
      */
     void failAsyncJob(String flowDataId, JoberErrorInfo errorInfo, OperationContext operationContext);
+
+    /**
+     * 根据过期时间清理实例上下文数据。
+     *
+     * @param expiredDays 过期天数。
+     * @param limit 最大清理数量。
+     * @return 表示是否有数据被清理。
+     */
+    boolean cleanInstances(int expiredDays, int limit);
 }
