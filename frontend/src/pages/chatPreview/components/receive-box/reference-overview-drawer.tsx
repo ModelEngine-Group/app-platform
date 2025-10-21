@@ -69,7 +69,7 @@ const ReferenceOverviewDrawer = (props: any) => {
           usedReferences.map((ref: any) => {
             const item = ref.data; // 从 data 字段获取引用数据
             const sourceText = item?.source || item?.metadata?.url || '';
-            const txtContent = item?.txt || item?.text || item || '';
+            const summaryContent = item?.metadata?.summary || item?.text || item || '';
             const title = item?.metadata?.fileName || sourceText || '未知来源';
             const sourceUrl = item?.metadata?.url || item?.source;
             const url = sourceUrl && isUrl(sourceUrl) ? sourceUrl : null;
@@ -91,7 +91,7 @@ const ReferenceOverviewDrawer = (props: any) => {
                     </span>
                   </div>
                   <div className='reference-overview-item-text'>
-                    {txtContent}
+                    {summaryContent}
                   </div>
                 </div>
               </div>

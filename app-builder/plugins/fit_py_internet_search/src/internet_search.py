@@ -142,7 +142,7 @@ def _search_exa(query: str, api_key: str, max_results: int, max_snippet_chars: i
             items.append(
                 SearchItem(
                     id=getattr(r, "id", "") or f"exa_{i}",
-                    text=summary,
+                    text=text,
                     score=12.0,
                     metadata={
                         "fileName": getattr(r, "title", "") or "",
@@ -174,7 +174,7 @@ def _search_tavily(query: str, api_key: str, max_results: int, max_snippet_chars
             items.append(
                 SearchItem(
                     id=r.get("id", "") or f"tavily_{i}",
-                    text=summary,
+                    text=text,
                     score=12.0,
                     metadata={
                         "fileName": r.get("title", "") or "",
@@ -207,7 +207,7 @@ def _search_linkup(query: str, api_key: str, max_results: int, max_snippet_chars
             items.append(
                 SearchItem(
                     id=getattr(r, "id", "") or f"linkup_{i}",
-                    text=summary,
+                    text=text,
                     score=12.0,
                     metadata={
                         "fileName": getattr(r, "name", None) or getattr(r, "title", "") or "",
