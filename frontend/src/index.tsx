@@ -26,9 +26,7 @@ const render = (Component) => {
         </Suspense>
     );
 }
-if (window.singleSpaNavigate) {
-    __webpack_public_path__ = '';
-} else {
+if (!window.singleSpaNavigate) {
     render(App);
 }
 
