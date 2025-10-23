@@ -369,7 +369,8 @@ const MessageBox = (props: any) => {
     if (msgType === 'META_MSG' || chatReference) {
       setReplacedNodes(renderWithReferences(finalContent));
     } else {
-      setReplacedNodes(<span dangerouslySetInnerHTML={{ __html: finalContent }} />);
+      const htmlContent = markedProcess(finalContent);
+      setReplacedNodes(<span dangerouslySetInnerHTML={{ __html: htmlContent }} />);
     }
   }, [answerContent, renderWithReferences, msgType, chatReference]);
 
