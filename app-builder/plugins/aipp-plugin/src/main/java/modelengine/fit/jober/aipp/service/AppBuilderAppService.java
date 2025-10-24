@@ -16,6 +16,7 @@ import modelengine.fit.jober.aipp.dto.AppBuilderAppMetadataDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderConfigDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderConfigFormPropertyDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderFlowGraphDto;
+import modelengine.fit.jober.aipp.dto.AppBuilderNodeConfigsDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderSaveConfigDto;
 import modelengine.fit.jober.aipp.dto.PublishedAppResDto;
 import modelengine.fit.jober.aipp.dto.check.AppCheckDto;
@@ -103,6 +104,24 @@ public interface AppBuilderAppService {
      */
     @Genericable(id = "modelengine.fit.jober.aipp.service.flow.graph.update")
     Rsp<AppBuilderAppDto> updateFlowGraph(String appId, AppBuilderFlowGraphDto graphDto, OperationContext context);
+
+    /**
+     * 更新节点的配置项。
+     *
+     * @param nodeConfigs 节点配置项的 {@link AppBuilderNodeConfigsDto}。
+     * @param context 表示操作上下文的 {@link OperationContext}。
+     */
+    @Genericable(id = "modelengine.fit.jober.aipp.service.update.node.configs")
+    void updateNodeConfigs(AppBuilderNodeConfigsDto nodeConfigs, OperationContext context);
+
+    /**
+     * 发布最新版本。
+     *
+     * @param appSuiteId 应用的版本 id 的 {@link String}。
+     * @param context 表示操作上下文的 {@link OperationContext}。
+     */
+    @Genericable(id = "modelengine.fit.jober.aipp.service.app.publish.latest.version")
+    Rsp<AippCreateDto> publishLatestVersion(String appSuiteId, OperationContext context);
 
     /**
      * 发布应用。

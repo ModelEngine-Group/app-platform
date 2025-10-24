@@ -787,6 +787,11 @@ public enum AippErrCode implements ErrorCode, RetCode {
     MODEL_INVOKE_TIMEOUT(90002145, "大模型调用超时，请尝试更换默认模型。"),
 
     /**
+     * 节点配置更新失败
+     */
+    NODE_CONFIG_UPDATE_FAILED(90002146, "节点配置更新失败，失败原因：{0}。"),
+
+    /**
      * 应用模板不存在。
      */
     TEMPLATE_NOT_FOUND(90003000, "应用模板不存在"),

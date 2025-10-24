@@ -38,6 +38,7 @@ import modelengine.fit.jober.aipp.dto.AppBuilderAppMetadataDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderConfigDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderConfigFormPropertyDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderFlowGraphDto;
+import modelengine.fit.jober.aipp.dto.AppBuilderNodeConfigsDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderSaveConfigDto;
 import modelengine.fit.jober.aipp.dto.PublishedAppResDto;
 import modelengine.fit.jober.aipp.dto.check.AppCheckDto;
@@ -52,6 +53,7 @@ import modelengine.fit.jober.aipp.service.AppBuilderAppService;
 import modelengine.fit.jober.aipp.service.Checker;
 import modelengine.fit.jober.aipp.service.UploadedFileManageService;
 import modelengine.fit.jober.aipp.util.ConvertUtils;
+import modelengine.fit.jober.aipp.util.JsonUtils;
 import modelengine.fit.jober.aipp.util.RandomPathUtils;
 import modelengine.fit.jober.common.RangedResultSet;
 import modelengine.fitframework.annotation.Component;
@@ -59,6 +61,7 @@ import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.transaction.Transactional;
+import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.knowledge.KnowledgeCenterService;
 
@@ -189,7 +192,11 @@ public class AppBuilderAppServiceImpl
     @Override
     public AppBuilderAppDto queryLatestOrchestration(String appId, OperationContext context) {
         AppVersion appVersion = this.appVersionService.retrieval(appId);
-        App app = this.appDomainFactory.create(appVersion.getData().getAppSuiteId());
+        return this.queryLatestOrchestrationBySuiteId(appVersion.getData().getAppSuiteId(), context);
+    }
+
+    private AppBuilderAppDto queryLatestOrchestrationBySuiteId(String appSuiteId, OperationContext context) {
+        App app = this.appDomainFactory.create(appSuiteId);
         AppVersion latestVersion = app.getLatestVersion()
                 .orElseThrow(() -> new AippException(OBTAIN_APP_ORCHESTRATION_INFO_FAILED));
         if (latestVersion.isPublished()) {
@@ -307,6 +314,176 @@ public class AppBuilderAppServiceImpl
             OperationContext context) {
         AppVersion appVersion = this.appVersionService.update(appId, graphDto, context);
         return Rsp.ok(this.converterFactory.convert(appVersion, AppBuilderAppDto.class));
+    }
+
+    @Override
+    public void updateNodeConfigs(AppBuilderNodeConfigsDto nodeConfigs, OperationContext context) {
+        if (StringUtils.isBlank(nodeConfigs.getAppSuiteId())) {
+            throw new IllegalArgumentException("Id is not exist");
+        }
+        AppVersion latestVersion = this.appVersionService.getLatestCreatedByAppSuiteId(nodeConfigs.getAppSuiteId())
+                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND));
+        boolean isPublished = latestVersion.isPublished();
+        if (isPublished) {
+            // 如果是发布状态，则创建一个草稿态
+            this.queryLatestOrchestrationBySuiteId(nodeConfigs.getAppSuiteId(), context);
+            latestVersion = this.appVersionService.getLatestCreatedByAppSuiteId(nodeConfigs.getAppSuiteId())
+                    .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND));
+        }
+        Map<String, Object> appearances = JsonUtils.parseObject(latestVersion.getFlowGraph().getAppearance());
+        List<?> shapes = this.getShapes(appearances);
+        for(Map.Entry<String, Object> nodeConfig: nodeConfigs.getNodeConfigs().entrySet()) {
+            Map<String, Object> oldShape = this.getNodeShape(shapes, ObjectUtils.cast(nodeConfig.getKey()));
+            Map<String, Object> params = this.getParams(oldShape);
+            List<Map<String, Object>> inputParams = ObjectUtils.cast(params.get("inputParams"));
+            Map<String, Object> newConfig = ObjectUtils.cast(nodeConfig.getValue());
+            this.updateValueParams(inputParams, ObjectUtils.cast(newConfig.get("valueParams")));
+        }
+        AppBuilderFlowGraphDto flowGraphDto = this.buildAppBuilderFlowGraphDto(latestVersion, appearances);
+        this.appVersionService.updateGraph(latestVersion, flowGraphDto, context);
+    }
+
+    @Override
+    public Rsp<AippCreateDto> publishLatestVersion(String appSuiteId, OperationContext context) {
+        AppVersion latestVersion = this.appVersionService.getLatestCreatedByAppSuiteId(appSuiteId)
+                .orElseThrow(() -> new AippException(AippErrCode.APP_NOT_FOUND));
+        if (latestVersion.isPublished()) {
+            throw new AippException(AippErrCode.APP_HAS_ALREADY);
+        }
+        AppBuilderAppDto appDto = this.converterFactory.convert(latestVersion, AppBuilderAppDto.class);
+        return this.publish(appDto, context);
+    }
+
+    private AppBuilderFlowGraphDto buildAppBuilderFlowGraphDto(AppVersion appVersion, Map<String, Object> appearances) {
+        return AppBuilderFlowGraphDto.builder()
+                .name(appVersion.getFlowGraph().getName())
+                .appearance(appearances)
+                .build();
+    }
+
+    private void updateValueParams(List<Map<String, Object>> inputParams, Map<String, Object> newConfig) {
+        if (inputParams == null || newConfig == null || newConfig.isEmpty()) {
+            return;
+        }
+        for (Map.Entry<String, Object> entry : newConfig.entrySet()) {
+            this.updateInputParam(inputParams, entry);
+        }
+    }
+
+    private void updateInputParam(List<Map<String, Object>> inputParams, Map.Entry<String, Object> entry) {
+        String key = entry.getKey();
+        Object value = entry.getValue();
+        String[] pathParts = key.split("\\.");
+        if (pathParts.length == 0) {
+            return;
+        }
+
+        // 从顶层inputParams开始查找目标节点
+        List<Map<String, Object>> currentLevel = inputParams;
+        Map<String, Object> targetNode = null;
+        for (int i = 0; i < pathParts.length; i++) {
+            String part = pathParts[i];
+
+            // 在当前层级查找name匹配的节点
+            Map<String, Object> found = this.findConfigByName(currentLevel, part);
+            if (found == null) {
+                break;
+            }
+
+            // 如果是最后一层，找到目标节点
+            if (i == pathParts.length - 1) {
+                targetNode = found;
+                break;
+            }
+
+            // 非最后一层，进入下一层（value字段）
+            Object nextLevelObj = found.get("value");
+            if (!(nextLevelObj instanceof List)) {
+                // 下一层不是List，路径无效，跳过
+                break;
+            }
+            currentLevel = ObjectUtils.cast(nextLevelObj);
+        }
+
+        // 更新目标节点的value
+        if (targetNode != null) {
+            targetNode.put("value", value);
+        }
+    }
+
+    private Map<String, Object> findConfigByName(List<Map<String, Object>> configs, String name) {
+        if (configs == null) {
+            return null;
+        }
+        for (Map<String, Object> config : configs) {
+            Object nodeName = config.get("name");
+            if (nodeName != null && StringUtils.equals(name, ObjectUtils.cast(nodeName))) {
+                return config;
+            }
+        }
+        return null;
+    }
+
+    private Map<String, Object> getParams(Map<String, Object> config) {
+        Map<String, Object> flowMetaMap =
+                this.mapSearch(config, "flowMeta", "FlowMeta is not map", "FlowMeta is empty");
+        Map<String, Object> joberMap = this.mapSearch(flowMetaMap, "jober", "Jober is not map", "Jober is empty");
+        Map<String, Object> converterMap =
+                this.mapSearch(joberMap, "converter", "Converter is not map", "Converter is empty");
+        return this.mapSearch(converterMap, "entity", "entity is not map", "Entity is empty");
+    }
+
+    private Map<String, Object> mapSearch(Map<String, Object> config, String key, String typeErrorMsg,
+            String emptyErrorMsg) {
+        Object value = config.get(key);
+        if (!(value instanceof Map)) {
+            throw new AippException(AippErrCode.NODE_CONFIG_UPDATE_FAILED, typeErrorMsg);
+        }
+        Map<String, Object> newMap = ObjectUtils.cast(value);
+        if (newMap.isEmpty()) {
+            throw new AippException(AippErrCode.NODE_CONFIG_UPDATE_FAILED, emptyErrorMsg);
+        }
+        return newMap;
+    }
+
+    private Map<String, Object> getNodeShape(List<?> shapes, String targetId) {
+        for (Object shape : shapes) {
+            if (!(shape instanceof Map)) {
+                continue;
+            }
+            Map<String, Object> shapeMap = ObjectUtils.cast(shape);
+            String idObj = ObjectUtils.cast(shapeMap.get("id"));
+            if (StringUtils.equals(idObj, targetId)) {
+               return ObjectUtils.cast(shape);
+            }
+        }
+        throw new AippException(AippErrCode.NODE_CONFIG_UPDATE_FAILED, "Target node is not found");
+    }
+
+    private List<?> getShapes(Map<String, Object> appearances) {
+        Object pagesObj = appearances.get("pages");
+        if (!(pagesObj instanceof List)) {
+            throw new AippException(AippErrCode.NODE_CONFIG_UPDATE_FAILED, "Pages is not list");
+        }
+        List<?> pages = ObjectUtils.cast(pagesObj);
+        if (pages.isEmpty()) {
+            throw new AippException(AippErrCode.NODE_CONFIG_UPDATE_FAILED, "Pages is empty");
+        }
+        Object pageConfig = pages.get(0);
+        if (!(pageConfig instanceof Map)) {
+            throw new AippException(AippErrCode.NODE_CONFIG_UPDATE_FAILED,
+                    "The first element of pages is not of map type");
+        }
+        Map<String, Object> pageConfigMap = ObjectUtils.cast(pageConfig);
+        Object shapesObj = pageConfigMap.get("shapes");
+        if (!(shapesObj instanceof List)) {
+            throw new AippException(AippErrCode.NODE_CONFIG_UPDATE_FAILED, "Shapes is not an list type");
+        }
+        List<?> shapes = ObjectUtils.cast(shapesObj);
+        if (shapes.isEmpty()) {
+            throw new AippException(AippErrCode.NODE_CONFIG_UPDATE_FAILED, "Shapes list is empty");
+        }
+        return shapes;
     }
 
     @Override
