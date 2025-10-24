@@ -1,0 +1,234 @@
+name: Daily Build Experience Images
+
+on:
+  schedule:
+  # 每天0点运行（UTC时间）
+  - cron: '0 0 * * *'
+
+jobs:
+  app-builder:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout pipeline
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.PIPELINE_REPO }}/pipeline.git  # 目标仓库
+        ref: ${{ vars.PIPELINE_BRANCH }}             # 分支、标签或commit SHA
+        token: ${{ secrets.ME_FIT_TOKEN }}  # 个人访问令牌
+        path: pipeline              # 存放路径
+
+    - name: Checkout app-platform
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.APP_PLATFORM_REPO }}/app-platform.git
+        ref: ${{ vars.APP_PLATFORM_BRANCH }}
+        path: pipeline/independent/x86/app-platform
+
+    - name: Checkout fit-framework
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.FIT_FRAMEWORK_REPO }}/fit-framework.git  # 目标仓库
+        ref: ${{ vars.FIT_FRAMEWORK_BRANCH }}            # 分支、标签或commit SHA
+        token: ${{ secrets.ME_FIT_TOKEN }}  # 个人访问令牌
+        path: pipeline/independent/x86/fit-framework              # 存放路径
+
+    - name: Set up JDK (for Maven build)
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        architecture: x64  # 构建时使用x64 JDK
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Image
+      working-directory: pipeline/independent/x86
+      run: |
+        export WORKSPACE=$(pwd)
+        bash framework/fit/java/build.sh experience-daily
+
+    - name: Log in to Aliyun Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ secrets.REGISTRY }}
+        username: ${{ secrets.ALIYUN_USERNAME }}
+        password: ${{ secrets.ALIYUN_PASSWORD }}
+
+    - name: Tag and push image
+      run: |
+        docker tag app-builder:experience-daily ${{ secrets.REGISTRY }}/app-builder:experience-daily
+        docker push ${{ secrets.REGISTRY }}/app-builder:experience-daily
+
+  fit-runtime-java:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout pipeline
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.PIPELINE_REPO }}/pipeline.git  # 目标仓库
+        ref: ${{ vars.PIPELINE_BRANCH }}             # 分支、标签或commit SHA
+        token: ${{ secrets.ME_FIT_TOKEN }}  # 个人访问令牌
+        path: pipeline              # 存放路径
+
+    - name: Checkout fit-framework
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.FIT_FRAMEWORK_REPO }}/fit-framework.git  # 目标仓库
+        ref: ${{ vars.FIT_FRAMEWORK_BRANCH }}            # 分支、标签或commit SHA
+        token: ${{ secrets.ME_FIT_TOKEN }}  # 个人访问令牌
+        path: pipeline/independent/x86/fit-framework              # 存放路径
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Images
+      working-directory: pipeline/independent/x86
+      run: |
+        export WORKSPACE=$(pwd)
+        bash framework/fit/fit-java/build.sh experience-daily
+
+    - name: Log in to Aliyun Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ secrets.REGISTRY }}
+        username: ${{ secrets.ALIYUN_USERNAME }}
+        password: ${{ secrets.ALIYUN_PASSWORD }}
+
+    - name: Tag and push image
+      run: |
+        docker tag fit-runtime-java:experience-daily ${{ secrets.REGISTRY }}/fit-runtime-java:experience-daily
+        docker push ${{ secrets.REGISTRY }}/fit-runtime-java:experience-daily
+
+  fit-runtime-python:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout pipeline
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.PIPELINE_REPO }}/pipeline.git  # 目标仓库
+        ref: ${{ vars.PIPELINE_BRANCH }}             # 分支、标签或commit SHA
+        token: ${{ secrets.ME_FIT_TOKEN }}  # 个人访问令牌
+        path: pipeline              # 存放路径
+
+    - name: Checkout fit-framework
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.FIT_FRAMEWORK_REPO }}/fit-framework.git  # 目标仓库
+        ref: ${{ vars.FIT_FRAMEWORK_BRANCH }}            # 分支、标签或commit SHA
+        token: ${{ secrets.ME_FIT_TOKEN }}  # 个人访问令牌
+        path: pipeline/independent/x86/fit-framework              # 存放路径
+
+    - name: Checkout app-platform
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.APP_PLATFORM_REPO }}/app-platform.git
+        ref: ${{ vars.APP_PLATFORM_BRANCH }}
+        path: pipeline/independent/x86/app-platform
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Images
+      working-directory: pipeline/independent/x86
+      run: |
+        export WORKSPACE=$(pwd)
+        bash framework/fit/fit-python/build.sh experience-daily
+
+    - name: Log in to Aliyun Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ secrets.REGISTRY }}
+        username: ${{ secrets.ALIYUN_USERNAME }}
+        password: ${{ secrets.ALIYUN_PASSWORD }}
+
+    - name: Tag and push image
+      run: |
+        docker tag fit-runtime-python:experience-daily ${{ secrets.REGISTRY }}/fit-runtime-python:experience-daily
+        docker push ${{ secrets.REGISTRY }}/fit-runtime-python:experience-daily
+
+  jade-web:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout pipeline
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.PIPELINE_REPO }}/pipeline.git  # 目标仓库
+        ref: ${{ vars.PIPELINE_BRANCH }}             # 分支、标签或commit SHA
+        token: ${{ secrets.ME_FIT_TOKEN }}  # 个人访问令牌
+        path: pipeline              # 存放路径
+
+    - name: Checkout app-platform
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.APP_PLATFORM_REPO }}/app-platform.git
+        ref: ${{ vars.APP_PLATFORM_BRANCH }}
+        path: pipeline/independent/x86/app-platform
+
+    - name: Checkout elsa
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.ELSA_REPO }}/fit-framework.git  # 目标仓库
+        ref: ${{ vars.ELSA_BRANCH }}              # 分支、标签或commit SHA
+        token: ${{ secrets.ME_FIT_TOKEN }}  # 个人访问令牌
+        path: pipeline/independent/x86/elsa              # 存放路径
+
+    # 安装 Node.js (自动包含 npm)
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Image
+      working-directory: pipeline/independent/x86
+      run: |
+        export WORKSPACE=$(pwd)
+        bash frontend/modify.sh
+        bash frontend/build.sh experience-daily
+
+    - name: Log in to Aliyun Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ secrets.REGISTRY }}
+        username: ${{ secrets.ALIYUN_USERNAME }}
+        password: ${{ secrets.ALIYUN_PASSWORD }}
+
+    - name: Tag and push image
+      run: |
+        docker tag jade-web:experience-daily ${{ secrets.REGISTRY }}/jade-web:experience-daily
+        docker push ${{ secrets.REGISTRY }}/jade-web:experience-daily
+
+  postgres:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout pipeline
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ vars.PIPELINE_REPO }}/pipeline.git  # 目标仓库
+        ref: ${{ vars.PIPELINE_BRANCH }}             # 分支、标签或commit SHA
+        token: ${{ secrets.ME_FIT_TOKEN }}  # 个人访问令牌
+        path: pipeline              # 存放路径
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Images
+      working-directory: pipeline/independent/x86
+      run: |
+        export WORKSPACE=$(pwd)
+        bash db/postgresql/x86_64/build.sh experience-daily
+
+    - name: Log in to Aliyun Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ secrets.REGISTRY }}
+        username: ${{ secrets.ALIYUN_USERNAME }}
+        password: ${{ secrets.ALIYUN_PASSWORD }}
+
+    - name: Tag and push image
+      run: |
+        docker tag postgres:15.2-experience-daily ${{ secrets.REGISTRY }}/postgres:15.2-experience-daily
+        docker push ${{ secrets.REGISTRY }}/postgres:15.2-experience-daily
