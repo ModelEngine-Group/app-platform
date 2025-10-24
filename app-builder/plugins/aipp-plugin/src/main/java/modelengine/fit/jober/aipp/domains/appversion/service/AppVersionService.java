@@ -187,6 +187,15 @@ public interface AppVersionService {
     AppVersion update(String appId, AppBuilderFlowGraphDto graphDto, OperationContext context);
 
     /**
+     * 根据传入的 {@link AppVersion} 数据更新流程.
+     *
+     * @param appVersion 应用版本.
+     * @param graphDto 待修改数据.
+     * @param context 操作人上下文信息.
+     */
+    void updateGraph(AppVersion appVersion, AppBuilderFlowGraphDto graphDto, OperationContext context);
+
+    /**
      * 根据传入的 {@link AppBuilderSaveConfigDto} 数据进行修改.
      *
      * @param appId 版本id.

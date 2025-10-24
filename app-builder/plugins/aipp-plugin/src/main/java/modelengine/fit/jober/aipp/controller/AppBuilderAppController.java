@@ -41,6 +41,7 @@ import modelengine.fit.jober.aipp.dto.AppBuilderAppCreateDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppMetadataDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderFlowGraphDto;
+import modelengine.fit.jober.aipp.dto.AppBuilderNodeConfigsDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderSaveConfigDto;
 import modelengine.fit.jober.aipp.dto.PublishedAppResDto;
 import modelengine.fit.jober.aipp.dto.check.AppCheckDto;
@@ -278,6 +279,21 @@ public class AppBuilderAppController extends AbstractController {
             @PathVariable("tenant_id") String tenantId, @PathVariable("app_id") String appId,
             @RequestBody @Validated AppBuilderFlowGraphDto flowGraphDto) {
         return this.appService.updateFlowGraph(appId, flowGraphDto, this.contextOf(httpRequest, tenantId));
+    }
+
+    /**
+     * 修改节点的配置项。
+     *
+     * @param httpRequest 请求。
+     * @param tenantId 租户Id。
+     * @param nodeConfigs 节点的配置项的 dto。
+     */
+    @CarverSpan(value = "operation.appBuilderApp.update.node.config")
+    @PutMapping(value = "/node/config", description = "修改节点的配置项")
+    @AppValidation
+    public void updateNodeConfig(HttpClassicServerRequest httpRequest, @PathVariable("tenant_id") String tenantId,
+            @RequestBody @Validated AppBuilderNodeConfigsDto nodeConfigs) {
+        this.appService.updateNodeConfigs(nodeConfigs, this.contextOf(httpRequest, tenantId));
     }
 
     /**
