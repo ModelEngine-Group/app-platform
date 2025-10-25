@@ -86,6 +86,11 @@ if [ $WAITED -ge $MAX_WAIT ]; then
     echo "Warning: Service startup timeout, but continuing execution..."
 fi
 
+docker stop db-initializer
+docker stop sql-initializer
+docker rm db-initializer
+docker rm sql-initializer
+
 echo ""
 echo "=== Completed! ==="
 echo "Development version deployed: ${DEV_VERSION}"

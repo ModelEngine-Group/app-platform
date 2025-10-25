@@ -17,17 +17,36 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       LOG_HOME: /log/app
     volumes:
-      - ./sql:/home/sql
-      - ./shell/initDB.sh:/home/initDB.sh
       - "./app-platform-tmp/jade-db:/var/lib/postgresql/data"
       - "./app-platform-tmp/log:/log/app/postgresql"
     ports:
       - "${DB_PORT}:5432"
 
+  sql-initializer:
+    container_name: sql-initializer
+    hostname: sql-initializer
+    image: ${REPO}/app-builder:${VERSION}
+    networks:
+      my-net:
+        ipv4_address: 172.0.0.97
+    volumes:
+      - ./app-platform-tmp/sql:/opt/appbuilder/sql
+    entrypoint: ["/bin/bash", "-c"]
+    command: |
+      "
+      rm -rf /opt/appbuilder/sql/*
+      mv -f /opt/sql/* /opt/appbuilder/sql/
+      "
+
   db-initializer:
     container_name: db-initializer
     hostname: db-initializer
     image: ${REPO}/postgres:15.2-${VERSION}
+    depends_on:
+      jade-db:
+        condition: service_healthy
+      sql-initializer:
+        condition: service_completed_successfully
     networks:
       my-net:
         ipv4_address: 172.0.0.99
@@ -39,13 +58,15 @@ services:
       DB_PORT: 5432
       DB_USER: postgres
       IS_UPGRADE: ${IS_UPGRADE}
+      APIKEY: ${APIKEY}
     volumes:
-      - ./shell/initDB.sh:/home/initDB.sh
-      - ./sql:/home/sql
-    entrypoint: ["/bin/bash", "-c"] 
+      - ./app-platform-tmp/sql:/opt/sql
+    entrypoint: ["/bin/bash", "-c"]
     command: |
-      " chmod +x /home/initDB.sh
-        bash /home/initDB.sh app_builder /home/sql
+      " 
+      chmod +x /opt/initDB.sh
+      sed -i "s#TODO#${APIKEY}#g" /opt/sql/init/data/tr_init_models.sql
+      bash /opt/initDB.sh app_builder /opt/sql
       "
     restart: "no"
 
@@ -54,8 +75,8 @@ services:
     hostname: app-builder
     image: ${REPO}/app-builder:${VERSION}
     depends_on:
-      jade-db:
-        condition: service_healthy
+      db-initializer:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "curl", "-f", "http://app-builder:8004/fit/check"]
       interval: 30s
@@ -81,8 +102,15 @@ services:
       LOG_HOME: /log/app
       LOG_NUM: 4320
       LOG_SIZE: "50M"
-      app-engine.ttl.businessData: 15
-      app-engine.ttl.nonBusinessData: 1
+      app-engine.ttl.businessData: 360
+      app-engine.ttl.nonBusinessData: 180
+      task.expiredDays: 360
+      model.imageExtractor.model: THUDM/GLM-4.1V-9B-Thinking
+      model.imageExtractor.url: https://api.siliconflow.cn/v1
+      model.audioTranscriptions.model: TeleAI/TeleSpeechASR
+      model.audioTranscriptions.url: https://api.siliconflow.cn/v1
+      model.imageExtractor.apiKey: ${APIKEY}
+      model.audioTranscriptions.apiKey: ${APIKEY}
     volumes:
       - "./app-platform-tmp/fit-runtime:/var/store/tools"
       - "./app-platform-tmp/log:/log/app/app-builder"
@@ -97,7 +125,7 @@ services:
     image: ${REPO}/fit-runtime-java:${VERSION}
     depends_on:
       app-builder:
-        condition: service_healthy 
+        condition: service_healthy
     networks:
       my-net:
         ipv4_address: 172.0.0.101
@@ -116,14 +144,14 @@ services:
       - "./app-platform-tmp/log:/log/app/runtime-java"
     ports:
       - "8090:8090"
- 
+
   fit-runtime-python:
     container_name: fit-runtime-python
     hostname: fit-runtime-python
     image: ${REPO}/fit-runtime-python:${VERSION}
     depends_on:
       app-builder:
-        condition: service_healthy 
+        condition: service_healthy
     networks:
       my-net:
         ipv4_address: 172.0.0.102
@@ -142,7 +170,7 @@ services:
       - "./app-platform-tmp/log:/log/app/runtime-python"
     ports:
       - "9666:9666"
-      
+
   web:
     container_name: web
     hostname: web
