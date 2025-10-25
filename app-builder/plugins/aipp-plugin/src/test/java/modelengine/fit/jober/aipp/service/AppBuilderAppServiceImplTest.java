@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,9 +27,11 @@ import modelengine.fit.jade.waterflow.service.FlowDefinitionService;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
+import modelengine.fit.jober.aipp.common.exception.AippJsonDecodeException;
 import modelengine.fit.jober.aipp.common.exception.AippTaskNotFoundException;
 import modelengine.fit.jober.aipp.condition.AppQueryCondition;
 import modelengine.fit.jober.aipp.converters.ConverterFactory;
+import modelengine.fit.jober.aipp.domain.AppBuilderFlowGraph;
 import modelengine.fit.jober.aipp.domains.app.AppFactory;
 import modelengine.fit.jober.aipp.domains.app.service.AppDomainService;
 import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
@@ -40,6 +43,7 @@ import modelengine.fit.jober.aipp.dto.AippDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppMetadataDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderConfigDto;
+import modelengine.fit.jober.aipp.dto.AppBuilderNodeConfigsDto;
 import modelengine.fit.jober.aipp.dto.AppBuilderSaveConfigDto;
 import modelengine.fit.jober.aipp.dto.check.AppCheckDto;
 import modelengine.fit.jober.aipp.dto.check.CheckResult;
@@ -54,7 +58,6 @@ import modelengine.fit.jober.aipp.service.impl.RetrievalNodeChecker;
 import modelengine.fit.jober.aipp.util.ConvertUtils;
 import modelengine.fit.jober.aipp.util.JsonUtils;
 import modelengine.fit.jober.common.RangedResultSet;
-
 import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.knowledge.KnowledgeCenterService;
 
@@ -73,6 +76,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -139,6 +143,88 @@ public class AppBuilderAppServiceImplTest {
     }
 
     /**
+     * 测试 case: appSuiteId 为空时抛出 IllegalArgumentException
+     */
+    @Test
+    void testUpdateNodeConfigs_WhenAppSuiteIdIsEmpty_ShouldThrowException() {
+        AppBuilderNodeConfigsDto nodeConfigs = new AppBuilderNodeConfigsDto("", Collections.emptyMap());
+        OperationContext context = new OperationContext();
+
+        assertThrows(IllegalArgumentException.class, () ->
+                this.appBuilderAppService.updateNodeConfigs(nodeConfigs, context));
+    }
+
+    /**
+     * 测试 case: getLatestCreatedByAppSuiteId 返回空 Optional 应抛出 AippException
+     */
+    @Test
+    void testUpdateNodeConfigs_WhenGetLatestReturnsEmpty_ShouldThrowAippException() {
+        String appSuiteId = "test-suite-id";
+        AppBuilderNodeConfigsDto nodeConfigs = new AppBuilderNodeConfigsDto(appSuiteId, Collections.emptyMap());
+        OperationContext context = new OperationContext();
+
+        when(appVersionService.getLatestCreatedByAppSuiteId(appSuiteId)).thenReturn(Optional.empty());
+
+        assertThrows(AippException.class, () ->
+                appBuilderAppService.updateNodeConfigs(nodeConfigs, context));
+    }
+
+    /**
+     * 测试 case: 更新当前版本
+     */
+    @Test
+    void testUpdateNodeConfigs_WhenNotPublished_ShouldUpdateCurrentVersionDirectly() {
+        String appSuiteId = "test-suite-id";
+        Map<String, Object> nodeConfigsMap = new HashMap<>();
+        nodeConfigsMap.put("nodeKey",
+                Collections.singletonMap("valueParams", Collections.singletonMap("key", "newValue")));
+
+        AppBuilderNodeConfigsDto nodeConfigs = new AppBuilderNodeConfigsDto(appSuiteId, nodeConfigsMap);
+        OperationContext context = new OperationContext();
+
+        AppVersion mockAppVersion = mock(AppVersion.class);
+        AppBuilderFlowGraph mockFlowGraph = mock(AppBuilderFlowGraph.class);
+
+        when(mockAppVersion.isPublished()).thenReturn(false);
+        when(mockAppVersion.getFlowGraph()).thenReturn(mockFlowGraph);
+        when(mockFlowGraph.getAppearance()).thenReturn(
+                "{\"pages\":[{\"shapes\":[{\"id\":\"nodeKey\","
+                        + "\"flowMeta\":{\"jober\":{\"converter\":{\"entity\":{\"inputParams\":[{\"name\":\"key\","
+                        + "\"value\":\"oldValue\"}]}}}}}]}]}");
+
+        when(appVersionService.getLatestCreatedByAppSuiteId(appSuiteId)).thenReturn(Optional.of(mockAppVersion));
+        doNothing().when(appVersionService).updateGraph(any(), any(), any());
+        assertDoesNotThrow(() -> appBuilderAppService.updateNodeConfigs(nodeConfigs, context));
+        verify(appVersionService, times(1)).updateGraph(any(), any(), any());
+    }
+
+    /**
+     * 测试 case: JSON 解析失败应捕获并转换为 AippJsonDecodeException
+     */
+    @Test
+    void testUpdateNodeConfigs_WhenJsonParseFails_ShouldThrowAippJsonDecodeException() {
+        String appSuiteId = "test-suite-id";
+        Map<String, Object> nodeConfigsMap = new HashMap<>();
+        nodeConfigsMap.put("nodeKey", Collections.singletonMap("valueParams", Collections.singletonList(
+                Collections.singletonMap("key", "newValue"))));
+
+        AppBuilderNodeConfigsDto nodeConfigs = new AppBuilderNodeConfigsDto(appSuiteId, nodeConfigsMap);
+        OperationContext context = new OperationContext();
+
+        AppVersion mockAppVersion = mock(AppVersion.class);
+        AppBuilderFlowGraph mockFlowGraph = mock(AppBuilderFlowGraph.class);
+
+        when(mockAppVersion.isPublished()).thenReturn(false);
+        when(mockAppVersion.getFlowGraph()).thenReturn(mockFlowGraph);
+        when(mockFlowGraph.getAppearance()).thenReturn("{invalid-json}");
+
+        when(appVersionService.getLatestCreatedByAppSuiteId(appSuiteId)).thenReturn(Optional.of(mockAppVersion));
+
+        assertThrows(AippJsonDecodeException.class, () ->
+                appBuilderAppService.updateNodeConfigs(nodeConfigs, context));
+    }
+
+    /**
      * 为 {@link AppBuilderAppServiceImpl#updateFlow(String, OperationContext)} 提供测试
      */
     @Nested
@@ -201,7 +287,7 @@ public class AppBuilderAppServiceImplTest {
         when(appVersion.getData()).thenReturn(AppBuilderAppPo.builder().appSuiteId("id1").build());
         when(appVersionService.getFirstCreatedByAppSuiteId(anyString())).thenReturn(Optional.of(appVersion));
         when(converterFactory.convert(any(), any())).thenReturn(AppBuilderAppDto.builder().aippId("id1").build());
-        Assertions.assertDoesNotThrow(() -> appBuilderAppService.query("testId", new OperationContext()));
+        assertDoesNotThrow(() -> appBuilderAppService.query("testId", new OperationContext()));
     }
 
     @Test
@@ -222,7 +308,7 @@ public class AppBuilderAppServiceImplTest {
         AppVersion appVersion = mock(AppVersion.class);
         when(appVersionService.getByPath(anyString())).thenReturn(Optional.of(appVersion));
         when(converterFactory.convert(any(), any())).thenReturn(AppBuilderAppDto.builder().build());
-        Assertions.assertDoesNotThrow(() -> appBuilderAppService.queryByPath(validPath));
+        assertDoesNotThrow(() -> appBuilderAppService.queryByPath(validPath));
     }
 
     @Test

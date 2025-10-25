@@ -372,6 +372,12 @@ public class AppVersionServiceImpl implements AppVersionService {
         if (appVersion.isPublished()) {
             throw new AippException(AippErrCode.APP_HAS_ALREADY);
         }
+        this.updateGraph(appVersion, graphDto, context);
+        return appVersion;
+    }
+
+    @Override
+    public void updateGraph(AppVersion appVersion, AppBuilderFlowGraphDto graphDto, OperationContext context) {
         Span.current().setAttribute("name", appVersion.getData().getName());
         LocalDateTime operateTime = LocalDateTime.now();
         appVersion.getFlowGraph().setUpdateAt(operateTime);
@@ -389,7 +395,6 @@ public class AppVersionServiceImpl implements AppVersionService {
         appVersion.getData().setUpdateBy(context.getOperator());
         appVersion.putAttributes(new HashMap<>());
         this.repository.update(appVersion);
-        return appVersion;
     }
 
     @Override
