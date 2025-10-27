@@ -1,0 +1,121 @@
+.ant-switch.ant-switch-checked {
+    background-color: rgba(62, 194, 84, 1);
+}
+.ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
+    background-color: rgba(62, 194, 84, 1);
+}
+
+.icon-button {
+    padding: 0;
+    margin: 0;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.required-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* 将内容垂直居中 */
+    width: 100%;
+}
+
+.switch-container {
+    margin-left: auto; /* 将 Switch 放置在最右侧 */
+}
+
+.start-node-delete-icon-button {
+    margin-left: auto !important;
+    height: 22px;
+}
+
+.param-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.param-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.param-left {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.param-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1f1f1f;
+}
+
+.param-display-name {
+    color: #8c8c8c;
+    margin-top: 2px;
+}
+
+.param-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 16px;
+    flex-shrink: 0;
+}
+
+.param-type {
+    font-size: 13px;
+    color: #595959;
+    white-space: nowrap;
+}
+
+.param-icons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.param-icons svg {
+    color: #8c8c8c;
+    cursor: pointer;
+}
+
+.param-icons svg:hover {
+    color: #1890ff;
+}
+
+.param-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 16px;
+    flex-shrink: 0;
+    min-width: 80px;
+    justify-content: flex-end;
+}
+
+.param-type {
+    font-size: 13px;
+    color: #595959;
+    white-space: nowrap;
+    margin-right: 8px;
+}
+
+.param-icons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 32px;
+    justify-content: flex-end;
+}
+
+.param-type-wrapper {
+    min-width: 60px;
+    text-align: left;
+}
