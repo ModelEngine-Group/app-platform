@@ -55,16 +55,6 @@ echo "=== Cleaning up temporary container ==="
 docker stop app-builder-tmp
 docker rm app-builder-tmp
 
-echo "=== Updating docker-compose configuration ==="
-# Create docker-compose configuration for development
-cp docker-compose.yml docker-compose.dev.yml
-if [[ "$(uname -s)" == "Darwin" ]]; then
-    sed -i '.bak' "s/app-builder:\${VERSION}/app-builder:dev-latest/g" docker-compose.dev.yml
-    rm -f docker-compose.dev.yml.bak
-else
-    sed -i "s/app-builder:\${VERSION}/app-builder:dev-latest/g" docker-compose.dev.yml
-fi
-
 echo "=== Restarting services ==="
 docker-compose -f docker-compose.dev.yml -p app-platform up -d app-builder
 

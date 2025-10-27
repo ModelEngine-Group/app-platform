@@ -73,7 +73,27 @@ bash docker/dev-app-builder.sh
 浏览器打开 http://localhost:8001 测试
 
 ## 前端快速开发测试
-TODO
+本章节给出快速启动之后，本地快速开发测试前端的方法。
+
+### 1. 编译代码
+1. 全量编译前端（1 minutes 10 seconds）
+编写代码，在项目根目录下，执行以下命令编译：
+```shell
+cd frontend
+npm install --legacy-peer-deps --force --registry=https://registry.npmmirror.com
+npm run build:prod
+```
+
+### 2. 一键部署修改
+在项目根目录下，执行以下命令快速部署（18 seconds）：
+```shell
+cd ..
+bash docker/dev-frontend.sh
+```
+
+### 3. 测试
+浏览器打开 http://localhost:8001 测试
+
 
 ## 源码编译启动
 

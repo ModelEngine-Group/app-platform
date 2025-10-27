@@ -146,7 +146,7 @@ services:
   web:
     container_name: web
     hostname: web
-    image: ${REPO}/jade-web:${VERSION}
+    image: ${REPO}/jade-web:dev-latest
     depends_on:
       app-builder:
         condition: service_healthy
