@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@fit-elsa/elsa": "1.0.2",
-    "@fit-elsa/agent-flow": "1.0.0-alpha.6",
+    "@fit-elsa/agent-flow": "file:../agent-flow",
     "antd": "4.24.13",
     "axios": "1.8.2",
     "dayjs": "1.11.10",
