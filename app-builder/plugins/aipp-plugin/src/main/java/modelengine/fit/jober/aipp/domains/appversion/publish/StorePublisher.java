@@ -44,6 +44,7 @@ public class StorePublisher implements Publisher {
     private final AppService appService;
     private final PluginService pluginService;
     private final ToolService toolService;
+    private final String chatPathFormat;
 
     @Override
     public void publish(PublishContext context, AppVersion appVersion) {
@@ -101,6 +102,7 @@ public class StorePublisher implements Publisher {
                 .put("aippId", appVersion.getData().getAppSuiteId())
                 .put("version", context.getPublishData().getVersion())
                 .put("appCategory", context.getPublishData().getAppCategory())
+                .put("chatPath", String.format(this.chatPathFormat, appVersion.getData().getPath()))
                 .build();
         runnablesMap.put("APP", app);
         return runnablesMap;

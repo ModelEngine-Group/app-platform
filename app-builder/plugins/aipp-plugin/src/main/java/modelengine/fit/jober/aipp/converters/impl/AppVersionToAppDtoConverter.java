@@ -23,6 +23,7 @@ import modelengine.fit.jober.aipp.dto.AppBuilderFlowGraphDto;
 import modelengine.fit.jober.aipp.util.JsonUtils;
 
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.util.ObjectUtils;
 
@@ -46,6 +47,9 @@ import java.util.stream.Collectors;
 public class AppVersionToAppDtoConverter implements EntityConverter {
     private static final String FORM_PROPERTY_GROUP_NULL = "null";
     private final IconConverter iconConverter;
+
+    @Value("${app-engine.chat-path.format}")
+    private String chatPathFormat;
 
     @Override
     public Class<AppVersion> source() {
@@ -83,7 +87,7 @@ public class AppVersionToAppDtoConverter implements EntityConverter {
                     .configFormProperties(this.buildConfigFormProperties(s.getFormProperties()));
             Optional.ofNullable(s.getData().getPath())
                     .filter(path -> !path.isEmpty())
-                    .ifPresent(path -> appDtoBuilder.chatUrl(String.format("/chat/%s", path)));
+                    .ifPresent(path -> appDtoBuilder.chatUrl(String.format(this.chatPathFormat, path)));
             return appDtoBuilder.build();
         }).orElse(null);
     }
