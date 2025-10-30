@@ -643,7 +643,7 @@ public class AppBuilderAppServiceImplTest {
                 300,
                 null,
                 "/var/share",
-                null);
+                null, "/chat/%s");
         if (StringUtils.isBlank(appPo.getConfigId())) {
             appPo.setConfigId("defaultConfigId");
         }

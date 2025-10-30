@@ -62,6 +62,8 @@ app-engine:
     max-length: 500
   plugin:
     system-creator: 'system'
+  chat-path:
+    format: '/chat/%s'
 elsa:
   endpoint:
   elsaKey:

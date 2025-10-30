@@ -71,6 +71,7 @@ public class AppVersionFactory {
     private final KnowledgeCenterService knowledgeCenterService;
     private final String resourcePath;
     private final IconConverter iconConverter;
+    private final String chatPathFormat;
 
     public AppVersionFactory(AppBuilderFormPropertyRepository formPropertyRepository, AppTaskService appTaskService,
             AppBuilderConfigRepository configRepository, AppBuilderFormRepository formRepository,
@@ -85,7 +86,7 @@ public class AppVersionFactory {
             @Value("${app-engine.question.max-length}") Integer maxQuestionLen,
             @Value("${app-engine.user-context.max-length}") Integer maxUserContextLen,
             KnowledgeCenterService knowledgeCenterService, @Value("${app-engine.resource.path}") String resourcePath,
-            IconConverter iconConverter) {
+            IconConverter iconConverter, @Value("${app-engine.chat-path.format}") String chatPathFormat) {
         this.formPropertyRepository = formPropertyRepository;
         this.appTaskService = appTaskService;
         this.configRepository = configRepository;
@@ -112,6 +113,7 @@ public class AppVersionFactory {
         this.knowledgeCenterService = knowledgeCenterService;
         this.resourcePath = resourcePath;
         this.iconConverter = iconConverter;
+        this.chatPathFormat = chatPathFormat;
     }
 
     /**
@@ -150,6 +152,7 @@ public class AppVersionFactory {
                 .knowledgeCenterService(this.knowledgeCenterService)
                 .resourcePath(this.resourcePath)
                 .iconConverter(this.iconConverter)
+                .chatPathFormat(this.chatPathFormat)
                 .build());
     }
 }

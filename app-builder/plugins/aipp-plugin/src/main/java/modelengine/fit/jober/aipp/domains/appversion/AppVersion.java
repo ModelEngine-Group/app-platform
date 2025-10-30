@@ -199,6 +199,7 @@ public class AppVersion {
     private final FlowDefinitionService flowDefinitionService;
     private final KnowledgeCenterService knowledgeCenterService;
     private final String resourcePath;
+    private final String chatPathFormat;
 
     AppVersion(AppBuilderAppPo data, Dependencies dependencies) {
         this.data = data;
@@ -233,6 +234,7 @@ public class AppVersion {
         this.maxUserContextLen = dependencies.getMaxUserContextLen();
         this.knowledgeCenterService = dependencies.getKnowledgeCenterService();
         this.resourcePath = dependencies.getResourcePath();
+        this.chatPathFormat = dependencies.getChatPathFormat();
     }
 
     /**
@@ -344,12 +346,17 @@ public class AppVersion {
         // 判断版本是否已存在.
         this.validateVersion(context);
 
+        // 发布时候需要用到 path 字段，所以需要提前生成一个唯一的 path
+        if (StringUtils.isBlank(this.data.getPath())) {
+            this.data.setPath(this.generateUniquePath());
+        }
+
         // 发布.
         List<Publisher> publishers = new ArrayList<>();
         publishers.add(new GraphPublisher(this.flowGraphRepository));
         publishers.add(new FormProperyPublisher(this.formPropertyRepository));
         publishers.add(new FlowPublisher(this.flowsService));
-        publishers.add(new StorePublisher(this.appService, this.pluginService, this.toolService));
+        publishers.add(new StorePublisher(this.appService, this.pluginService, this.toolService, this.chatPathFormat));
         publishers.add(new TaskPublisher(this.appTaskService));
         publishers.forEach(p -> p.publish(context, this));
 
@@ -364,9 +371,6 @@ public class AppVersion {
         this.attributes.put(PUBLISH_UPDATE_DESCRIPTION_KEY, context.getPublishData().getPublishedDescription());
         this.attributes.put(PUBLISH_UPDATE_LOG_KEY, context.getPublishData().getPublishedUpdateLog());
         this.attributes.put(ATTR_APP_IS_UPDATE, true);
-        if (StringUtils.isBlank(this.data.getPath())) {
-            this.data.setPath(this.generateUniquePath());
-        }
         this.appVersionRepository.update(this);
     }
 

@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.domains.appversion.publish;
 
+import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jane.task.util.Entities;
 import modelengine.fit.jober.WaterFlowService;
@@ -29,6 +30,7 @@ import modelengine.fitframework.util.MapBuilder;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +46,7 @@ public class StorePublisher implements Publisher {
     private final AppService appService;
     private final PluginService pluginService;
     private final ToolService toolService;
+    private final String chatPathFormat;
 
     @Override
     public void publish(PublishContext context, AppVersion appVersion) {
@@ -84,7 +87,12 @@ public class StorePublisher implements Publisher {
         itemData.setUniqueName(appVersion.getData().getUniqueName());
         itemData.setSchema(ToolSchemaBuilder.create(context).build());
         itemData.setSource(appCategory.getSource());
-        itemData.setTags(Set.of(appCategory.getTag()));
+        Set<String> tag = new HashSet<>();
+        tag.add(appCategory.getTag());
+        if (StringUtils.isNotBlank(appVersion.getClassification())) {
+            tag.add(appVersion.getClassification());
+        }
+        itemData.setTags(tag);
         itemData.setRunnables(this.buildRunnables(context, appVersion));
         itemData.setUserGroupId(context.getPublishData().getUserGroupId());
         return itemData;
@@ -101,6 +109,7 @@ public class StorePublisher implements Publisher {
                 .put("aippId", appVersion.getData().getAppSuiteId())
                 .put("version", context.getPublishData().getVersion())
                 .put("appCategory", context.getPublishData().getAppCategory())
+                .put("chatPath", String.format(this.chatPathFormat, appVersion.getData().getPath()))
                 .build();
         runnablesMap.put("APP", app);
         return runnablesMap;

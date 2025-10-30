@@ -205,7 +205,7 @@ public class AppVersionTest {
                 300,
                 this.knowledgeCenterService,
                 "/var/share",
-                this.iconConverter);
+                this.iconConverter, "/chat/%s");
         when(this.iconConverter.toFrontend(anyString())).thenReturn("/v1/api");
         when(this.iconConverter.toStorage(anyString())).thenReturn("/v1/api");
     }
