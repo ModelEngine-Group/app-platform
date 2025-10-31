@@ -84,7 +84,7 @@ const PromptTemplate = ({ promptTemplateRef, promptValue, openGeneratePrompt, up
           </div>
           <Input.TextArea
             value={currentPrompt}
-            showCount maxLength={2000}
+            showCount maxLength={5000}
             style={{ height: '100%' }}
             onChange={(e) => setCurrentPrompt(e.target.value)}
           />
