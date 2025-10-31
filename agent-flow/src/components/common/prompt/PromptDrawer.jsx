@@ -46,7 +46,7 @@ const _PromptDrawer = (
     onConfirm,
     allowAIGenerate,
     onAIGenerate,
-    maxLength = 2000,
+    maxLength = 5000,
     labelName
   }) => {
   const {t} = useTranslation();

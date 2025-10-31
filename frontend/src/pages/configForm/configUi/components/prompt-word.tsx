@@ -61,7 +61,7 @@ const PromptWord = ({ promptWordRef, updatePromptValue, currentModelInfo }) => {
       );
       if (res?.code === 0 && res?.data) {
         if (isGenerating.current) {
-          setPrompt(res.data.substring(0, 2000));
+          setPrompt(res.data.substring(0, 5000));
           setGenerateStatus(generateStatusMap.GENEATED);
         }
       } else {
@@ -102,7 +102,7 @@ const PromptWord = ({ promptWordRef, updatePromptValue, currentModelInfo }) => {
       case generateStatusMap.GENEATED:
         return <Input.TextArea
           value={prompt}
-          maxLength={2000}
+          maxLength={5000}
           showCount
           style={{ height: '100%', width: '100%' }}
           onChange={promptChange}
