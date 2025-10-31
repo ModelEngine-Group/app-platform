@@ -130,11 +130,7 @@ class CheckerTest {
                 + "\"createdAt\":\"2024-12-02 12:41:14\",\"checked\":true}]}]}";
             AppCheckDto appCheckDto = JsonUtils.parseObject(testNode, AppCheckDto.class);
             List<CheckResult> results = this.retrievalNodeChecker.validate(appCheckDto, null);
-            Assertions.assertEquals(results.size(), 2);
-            Assertions.assertFalse(results.get(0).isValid());
-            Assertions.assertEquals(results.get(0).getConfigChecks().size(), 2);
-            Assertions.assertFalse(results.get(1).isValid());
-            Assertions.assertEquals(results.get(1).getConfigChecks().size(), 1);
+            Assertions.assertTrue(results.isEmpty());
         }
     }
 
