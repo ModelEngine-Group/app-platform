@@ -70,4 +70,5 @@ public class Dependencies {
     private KnowledgeCenterService knowledgeCenterService;
     private String resourcePath;
     private IconConverter iconConverter;
+    private String chatPathFormat;
 }

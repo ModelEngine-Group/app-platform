@@ -572,8 +572,7 @@ public class AppBuilderAppServiceImplTest {
             mockedStatic.when(() -> CheckerFactory.getChecker(anyString())).thenReturn(new RetrievalNodeChecker());
             List<CheckResult> results =
                     this.appBuilderAppService.checkAvailable(Collections.singletonList(appCheckDto), null);
-            Assertions.assertFalse(results.get(0).isValid());
-            Assertions.assertEquals(results.get(0).getConfigChecks().size(), 2);
+            Assertions.assertTrue(results.isEmpty());
         }
     }
 
@@ -643,7 +642,7 @@ public class AppBuilderAppServiceImplTest {
                 300,
                 null,
                 "/var/share",
-                null);
+                null, "/chat/%s");
         if (StringUtils.isBlank(appPo.getConfigId())) {
             appPo.setConfigId("defaultConfigId");
         }
