@@ -69,7 +69,7 @@ public class AppInputParam {
                 .isRequired(cast(rawParam.getOrDefault("isRequired", true)))
                 .isVisible(cast(rawParam.getOrDefault("isVisible", true)))
                 .stringMaxLength(appearance.getStringMaxLength())
-                .validator(createValidator(appearance, type))
+                .validator(createValidator(appearance, type, rawParam))
                 .build();
     }
 
@@ -105,11 +105,11 @@ public class AppInputParam {
     /**
      * 根据外观配置创建校验器
      */
-    private static Predicate<Object> createValidator(AppearanceConfig config, String type) {
+    private static Predicate<Object> createValidator(AppearanceConfig config, String type, Map<String, Object> rawParam) {
         String displayType = config.getDisplayType();
 
         if (displayType == null) {
-            return createDefaultValidator(type);
+            return createDefaultValidator(type, rawParam);
         }
 
         return switch (displayType) {
@@ -118,7 +118,7 @@ public class AppInputParam {
             case "dropdown" -> createDropdownValidator(config.getOptions());
             case "switch" -> createBooleanValidator();
             case "multiselect" -> createArrayValidator(config.getOptions());
-            default -> createDefaultValidator(type);
+            default -> createDefaultValidator(type, rawParam);
         };
     }
 
@@ -182,7 +182,7 @@ public class AppInputParam {
         return value -> value instanceof Boolean;
     }
 
-    private static Predicate<Object> createDefaultValidator(String type) {
+    private static Predicate<Object> createDefaultValidator(String type, Map<String, Object> rawParam) {
         if (type == null) {
             return value -> false; // 如果类型未定义，则校验失败
         }
@@ -192,7 +192,11 @@ public class AppInputParam {
                 if (!(value instanceof String str)) {
                     return false;
                 }
-                return lengthBetween(str, 1, DEFAULT_STRING_MAX_LENGTH, true, true);
+                return lengthBetween(str,
+                        1,
+                        cast(rawParam.getOrDefault("stringMaxLength", DEFAULT_STRING_MAX_LENGTH)),
+                        true,
+                        true);
             };
 
             case "integer"-> value -> {
