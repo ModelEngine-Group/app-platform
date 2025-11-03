@@ -192,7 +192,7 @@ const LLM = (props) => {
                   placeholder={t('promptHolder')}
                   rows={16}
                   showCount
-                  maxLength={2000}
+                  maxLength={5000}
                   onChange={() => isPromptChange.current = true}
                   onBlur={(e) => updatePrompt(e.target.value)}
                 />
