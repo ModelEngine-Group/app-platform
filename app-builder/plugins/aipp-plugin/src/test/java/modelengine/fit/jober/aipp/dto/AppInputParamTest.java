@@ -753,6 +753,42 @@ class AppInputParamTest {
                 // When & Then
                 assertThrows(AippParamException.class, () -> param.validate(dataMap));
             }
+
+            @Test
+            @DisplayName("string 类型长度超限异常")
+            void shouldReturnFalseWhenValidateStringParamGivenStringOverLimit() {
+                // Given
+                Map<String, Object> rawParam = new HashMap<>();
+                rawParam.put("name", "stringParam");
+                rawParam.put("type", "String");
+                rawParam.put("isRequired", true);
+                rawParam.put("stringMaxLength", 5);
+
+                AppInputParam param = AppInputParam.from(rawParam);
+
+                // When & Then
+                Map<String, Object> data = new HashMap<>();
+                data.put("stringParam", "123456");
+                assertThrows(AippParamException.class, () -> param.validate(data));
+            }
+
+            @Test
+            @DisplayName("string 类型长度正常范围内")
+            void shouldReturnTrueWhenValidateStringParamGivenStringInLimit() {
+                // Given
+                Map<String, Object> rawParam = new HashMap<>();
+                rawParam.put("name", "stringParam");
+                rawParam.put("type", "String");
+                rawParam.put("isRequired", true);
+                rawParam.put("stringMaxLength", 5);
+
+                AppInputParam param = AppInputParam.from(rawParam);
+                Map<String, Object> data = new HashMap<>();
+                data.put("stringParam", "123");
+
+                // When & Then
+                assertDoesNotThrow(() -> param.validate(data));
+            }
         }
     }
 
