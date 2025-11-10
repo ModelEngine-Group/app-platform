@@ -14,9 +14,9 @@
         <java.version>17</java.version>
 
         <!-- Framework version -->
-        <fit.version>3.5.3</fit.version>
-        <fel.version>3.5.3</fel.version>
-        <waterflow.core.version>3.5.3</waterflow.core.version>
+        <fit.version>3.5.5</fit.version>
+        <fel.version>3.5.5</fel.version>
+        <waterflow.core.version>3.5.5</waterflow.core.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
         <carver.version>1.0.0-SNAPSHOT</carver.version>
         <store.version>1.0.0-SNAPSHOT</store.version>

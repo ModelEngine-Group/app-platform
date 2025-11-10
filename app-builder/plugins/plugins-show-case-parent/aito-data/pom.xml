@@ -105,7 +105,7 @@
             <plugin>
                 <groupId>org.fitframework.fel</groupId>
                 <artifactId>tool-maven-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>3.5.5</version>
                 <executions>
                     <execution>
                         <id>build-tool</id>

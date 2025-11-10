@@ -21,7 +21,7 @@
         <java.version>17</java.version>
 
         <!-- Framework version -->
-        <fit.version>3.5.3</fit.version>
+        <fit.version>3.5.5</fit.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
 
         <!-- Jacoco version -->
