@@ -2,9 +2,9 @@ name: Anti-Spam Filter
 
 on:
   issues:
-    types: [ opened, edited ]
+    types: [opened, edited]
   pull_request:
-    types: [ opened, edited ]
+    types: [opened, edited]
   issue_comment:
     types: [created, edited]
   pull_request_review_comment:
