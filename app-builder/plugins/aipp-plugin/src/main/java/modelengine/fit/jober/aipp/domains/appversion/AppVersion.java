@@ -150,6 +150,7 @@ public class AppVersion {
     private static final Logger LOGGER = Logger.get(AppVersion.class);
     private static final String PUBLISH_UPDATE_DESCRIPTION_KEY = "publishedDescription";
     private static final String PUBLISH_UPDATE_LOG_KEY = "publishedUpdateLog";
+    private static final String ALLOW_GUEST = "allow_guest";
     private static final int RETRY_PATH_GENERATION_TIMES = 3;
     private static final int PATH_LENGTH = 16;
     private static final String VERSION_FORMAT = "{0}.{1}.{2}";
@@ -748,11 +749,13 @@ public class AppVersion {
         this.getFormProperties().forEach(p -> p.setAppId(newAppId));
 
         if (Objects.nonNull(dto)) {
+            boolean allowGuest = ObjectUtils.cast(this.attributes.getOrDefault(ALLOW_GUEST, false));
             this.attributes.clear();
             this.attributes.put("description", dto.getDescription());
             this.attributes.put("icon", dto.getIcon());
             this.attributes.put("greeting", dto.getGreeting());
             this.attributes.put("app_type", dto.getAppType());
+            this.attributes.put(ALLOW_GUEST, allowGuest);
             if (StringUtils.isNotBlank(dto.getStoreId())) {
                 this.attributes.put("store_id", dto.getStoreId());
                 this.data.setUniqueName(dto.getStoreId());
