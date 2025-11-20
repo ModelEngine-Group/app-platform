@@ -14,7 +14,7 @@ const MutiConversation = (props) => {
 
   const options = [{ value: 'ByConversationTurn', label: t('byConversationTurn') }]
   const defaultRecalls = {
-    1: '1', [3]: t('default'), 10: '10'
+    1: '1', [3]: t('default'), 20: '20'
   };
   return <>
     <div>
@@ -34,7 +34,7 @@ const MutiConversation = (props) => {
       >
         <Slider style={{ width: '95%', marginTop: 0 }} // 设置固定宽度
           min={1}
-          max={10}
+          max={20}
           disabled={disabled}
           defaultValue={3}
           marks={defaultRecalls}
