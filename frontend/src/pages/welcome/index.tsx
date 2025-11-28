@@ -33,6 +33,9 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai-sublime.min.css';
 import './index.less';
 
+// 使用 require 导入中文文件名的图片
+const wechatQrcode = require('../../assets/images/二维码.png');
+
 // 瑞金医院病理推理成功案例
 const ruijinCase = {
   partner: '上海交通大学医学院附属瑞金医院',
@@ -722,17 +725,24 @@ const Footer: React.FC = () => (
       <div className="footer-column footer-follow">
         <h4>关注我们</h4>
         <p className="footer-follow-desc">扫码加入技术交流群，掌握产品更新、获取技术支持，与更多开发者协作。</p>
-        <div className="footer-qrcode">
-          <div className="footer-qrcode-media">
-            <img 
-              src="https://modelengine-ai.com/assets/fit-wechat-account.6e8dca4b.png" 
-              alt="联系我们二维码"
-            />
+        <div className="footer-qrcodes">
+          <div className="footer-qrcode-item">
+            <div className="footer-qrcode-media">
+              <img 
+                src={wechatQrcode} 
+                alt="微信二维码"
+              />
+            </div>
+            <p className="footer-qrcode-label">微信扫码加入社区</p>
           </div>
-          <div className="footer-qrcode-copy">
-            <strong>联系我们</strong>
-            <p>微信扫码加入 Aido 社区交流群</p>
-            <span>获取解决方案、技术支持与最佳实践</span>
+          <div className="footer-qrcode-item">
+            <div className="footer-qrcode-media">
+              <img 
+                src="https://modelengine-ai.com/assets/fit-wechat-account.6e8dca4b.png" 
+                alt="微信公众号"
+              />
+            </div>
+            <p className="footer-qrcode-label">关注微信公众号</p>
           </div>
         </div>
       </div>
@@ -847,7 +857,7 @@ const HeroSection: React.FC<{ experienceUrl: string }> = ({ experienceUrl }) => 
     </section>
   );
 
-const Navbar: React.FC<{ marketplaceUrl: string; freeTrialUrl: string }> = ({ marketplaceUrl, freeTrialUrl }) => {
+const Navbar: React.FC<{ freeTrialUrl: string }> = ({ freeTrialUrl }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -864,11 +874,15 @@ const Navbar: React.FC<{ marketplaceUrl: string; freeTrialUrl: string }> = ({ ma
           <div className="logo-icon">A</div>
           <span className="logo-text">Aido</span>
         </div>
-        <div className="navbar-links">
-          <a href={marketplaceUrl} target="_blank" rel="noreferrer">魔擎市场</a>
-          <a href="https://modelengine-ai.com/#/docs/zh_CN/model-engine-intro" target="_blank" rel="noreferrer">文档</a>
-        </div>
         <div className="navbar-actions">
+          <a
+            className="navbar-link-doc"
+            href="https://modelengine-ai.com/#/docs/zh_CN/model-engine-intro"
+            target="_blank"
+            rel="noreferrer"
+          >
+            文档
+          </a>
           <a
             className="navbar-btn-ghost"
             href="https://github.com/ModelEngine-Group/app-platform"
@@ -887,14 +901,14 @@ const Navbar: React.FC<{ marketplaceUrl: string; freeTrialUrl: string }> = ({ ma
       {mobileMenuOpen && (
         <div className="navbar-mobile-menu">
           <a
-            href={marketplaceUrl}
+            className="navbar-link-doc"
+            href="https://modelengine-ai.com/#/docs/zh_CN/model-engine-intro"
             target="_blank"
             rel="noreferrer"
             onClick={() => setMobileMenuOpen(false)}
           >
-            魔擎市场
+            文档
           </a>
-          <a href="https://modelengine-ai.com/#/docs/zh_CN/model-engine-intro" target="_blank" rel="noreferrer">文档</a>
           <a
             className="navbar-btn-ghost"
             href="https://github.com/ModelEngine-Group/app-platform"
@@ -926,7 +940,6 @@ const Navbar: React.FC<{ marketplaceUrl: string; freeTrialUrl: string }> = ({ ma
  * @constructor
  */
 const WelcomePage: React.FC = () => {
-  const marketplaceUrl = '/#/app';
   const experienceUrl = '/#/home';
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -944,7 +957,7 @@ const WelcomePage: React.FC = () => {
 
   return (
     <div className="welcome-layout gpu-safe-mode">
-      <Navbar marketplaceUrl={marketplaceUrl} freeTrialUrl={experienceUrl} />
+      <Navbar freeTrialUrl={experienceUrl} />
       <div className="welcome-content">
         <HeroSection experienceUrl={experienceUrl} />
         <OpenSourceSection />
