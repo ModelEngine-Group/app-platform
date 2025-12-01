@@ -148,7 +148,7 @@
     .editor-input {
       width: 100%;
       background-color: #fff;
-      border: 1px solid #ecedec;
+      border: 1.5px solid #d0d0d0;
       border-radius: 16px;
       position: relative;
       margin-bottom: 12px;
@@ -292,8 +292,9 @@
         }
 
         &.active {
-          background-color: #e6ebf1;
-          border-color: rgba(51, 51, 51, 0.6);
+          background-color: #e6ecf3;
+          border: 1.5px solid rgba(51, 51, 51, 0.3);
+          font-weight: 600;
         }
       }
 
@@ -305,8 +306,9 @@
         }
 
         &.active {
-          background-color: #e6ebf1;
-          border-color: rgba(51, 51, 51, 0.6);
+          background-color: #e6ecf3;
+          border: 1.5px solid rgba(51, 51, 51, 0.3);
+          font-weight: 600;
         }
       }
 
