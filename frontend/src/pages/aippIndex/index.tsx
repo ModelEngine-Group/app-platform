@@ -134,7 +134,6 @@ const AippIndex = () => {
       if (res.code === 0) {
         dispatch(setTestStatus(null));
         setSaveTime(getCurrentTime());
-        getAippDetails(true);
         if (inspirationRefresh.current) {
           inspirationRefresh.current = false;
           let key = getUiD();
