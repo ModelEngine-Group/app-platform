@@ -29,6 +29,9 @@
     <update id="updateOne" parameterType="modelengine.fit.task_new.po.MetaPo">
         update task_new
         <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
             <if test="version != null">
                 version = #{version},
             </if>
