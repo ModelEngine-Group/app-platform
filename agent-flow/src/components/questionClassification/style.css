@@ -54,8 +54,8 @@
     height: 21px !important;
     display: inline-block;
     align-items: center;
-    margin-top: 16px;
-    margin-bottom: 12px;
+    margin-top: 0;
+    margin-bottom: 20px;
     padding: 0 12px 0 12px;
 }
 

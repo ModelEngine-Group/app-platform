@@ -13,8 +13,9 @@ import {getConfigValue} from '@/components/util/JadeConfigUtils.js';
 import httpUtil from '@/components/util/httpUtil.jsx';
 import {HistoryConfig} from '@/components/textExtraction/HistoryConfig.jsx';
 import {JadeInputForm} from '@/components/common/JadeInputForm.jsx';
-import {ModelConfig} from '@/components/common/ModelConfig.jsx';
 import {QuestionClassificationPanel} from '@/components/questionClassification/QuestionClassificationPanel.jsx';
+import {QuestionClassificationModelConfig} from '@/components/questionClassification/QuestionClassificationModelConfig.jsx';
+import {QuestionClassificationAdvancedSettings} from '@/components/questionClassification/QuestionClassificationAdvancedSettings.jsx';
 
 const EMPTY_STRING = '';
 
@@ -120,16 +121,23 @@ const _QuestionClassificationWrapper = ({data, shapeStatus}) => {
       deleteItem={deleteItem}
       content={inputDescription}
       maxInputLength={1000}/>
-    <ModelConfig
-      modelOptions={modelOptions} temperature={temperature} serviceName={serviceName} tag={tag}
-      description={template} disabled={shapeStatus.disabled} promptTitle={'userPromptTemplate'}
-      promptPopover={'questionClassificationPromptPopover'}/>
+    <QuestionClassificationModelConfig
+      modelOptions={modelOptions}
+      temperature={temperature}
+      serviceName={serviceName}
+      tag={tag}
+      disabled={shapeStatus.disabled}/>
+    <QuestionClassificationPanel disabled={shapeStatus.disabled} questionTypeList={questionTypeList}/>
     <HistoryConfig
       disabled={shapeStatus.disabled}
       dispatch={dispatch}
       memoryConfig={memoryConfig}
       memorySwitch={memorySwitch}/>
-    <QuestionClassificationPanel disabled={shapeStatus.disabled} questionTypeList={questionTypeList}/>
+    <QuestionClassificationAdvancedSettings
+      description={template}
+      disabled={shapeStatus.disabled}
+      promptTitle={'additionalInstruction'}
+      promptPopover={'questionClassificationPromptPopover'}/>
   </>);
 };
 
