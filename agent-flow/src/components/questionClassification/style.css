@@ -46,8 +46,8 @@
     /* 椭圆形 (ICON/16/Remove) */
     width: 13px;
     height: 13px;
-    left: 1.5px;
-    top: 1.5px;
+    left: -7.5px;
+    top: -7px;
 }
 
 .add-question-classification-wrapper {
@@ -56,7 +56,7 @@
     align-items: center;
     margin-top: 0;
     margin-bottom: 20px;
-    padding: 0 12px 0 12px;
+    padding: 0 12px 0 7px;
 }
 
 .add-question-classification-button-style {

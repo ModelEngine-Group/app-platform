@@ -128,16 +128,16 @@ const _QuestionClassificationWrapper = ({data, shapeStatus}) => {
       tag={tag}
       disabled={shapeStatus.disabled}/>
     <QuestionClassificationPanel disabled={shapeStatus.disabled} questionTypeList={questionTypeList}/>
-    <HistoryConfig
-      disabled={shapeStatus.disabled}
-      dispatch={dispatch}
-      memoryConfig={memoryConfig}
-      memorySwitch={memorySwitch}/>
     <QuestionClassificationAdvancedSettings
       description={template}
       disabled={shapeStatus.disabled}
       promptTitle={'additionalInstruction'}
       promptPopover={'questionClassificationPromptPopover'}/>
+    <HistoryConfig
+      disabled={shapeStatus.disabled}
+      dispatch={dispatch}
+      memoryConfig={memoryConfig}
+      memorySwitch={memorySwitch}/>
   </>);
 };
 
