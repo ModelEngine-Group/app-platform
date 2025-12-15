@@ -39,6 +39,7 @@
         <module>app-base</module>
         <module>app-metrics</module>
         <module>app-metrics-influxdb</module>
+        <module>data-mate-knowledge</module>
         <module>eval-dataset</module>
         <module>eval-task</module>
         <module>flow-graph-db-driver</module>
