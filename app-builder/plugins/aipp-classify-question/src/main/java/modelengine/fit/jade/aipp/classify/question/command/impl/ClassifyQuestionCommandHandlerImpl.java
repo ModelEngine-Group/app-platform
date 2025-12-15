@@ -48,7 +48,8 @@ public class ClassifyQuestionCommandHandlerImpl implements ClassifyQuestionComma
     private final String builtinPrompt;
     private final ChatModel modelService;
 
-    private static final String TYPE_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+    private static final String TYPE_REGEX =
+            "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
 
     /**
      * 创建 {@link ClassifyQuestionCommandHandlerImpl} 的实例。
@@ -74,8 +75,8 @@ public class ClassifyQuestionCommandHandlerImpl implements ClassifyQuestionComma
         HashMap<String, String> variables = new HashMap<>(args);
         variables.put(Constant.HISTORY_KEY, memory.text());
         variables.put(Constant.TYPE_LIST_KEY, command.getTypeList());
-        ModelAccessInfo modelAccessInfo = this.aippModelCenter.getModelAccessInfo(command.getModelTag(),
-                command.getModel(), null);
+        ModelAccessInfo modelAccessInfo =
+                this.aippModelCenter.getModelAccessInfo(command.getModelTag(), command.getModel(), null);
         ChatOption chatOption = ChatOption.custom()
                 .model(command.getModel())
                 .baseUrl(modelAccessInfo.getBaseUrl())
@@ -102,6 +103,7 @@ public class ClassifyQuestionCommandHandlerImpl implements ClassifyQuestionComma
     }
 
     private String getTemplate(ClassifyQuestionCommand command) {
-        return StringUtils.isNotBlank(command.getTemplate()) ? command.getTemplate() : this.builtinPrompt;
+        return StringUtils.isNotBlank(command.getTemplate()) ? this.builtinPrompt + "\n\n## 辅助描述\n\n"
+                + command.getTemplate() : this.builtinPrompt;
     }
 }

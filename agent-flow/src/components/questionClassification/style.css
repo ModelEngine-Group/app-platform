@@ -46,17 +46,17 @@
     /* 椭圆形 (ICON/16/Remove) */
     width: 13px;
     height: 13px;
-    left: 1.5px;
-    top: 1.5px;
+    left: -7.5px;
+    top: -7px;
 }
 
 .add-question-classification-wrapper {
     height: 21px !important;
     display: inline-block;
     align-items: center;
-    margin-top: 16px;
-    margin-bottom: 12px;
-    padding: 0 12px 0 12px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding: 0 12px 0 7px;
 }
 
 .add-question-classification-button-style {
