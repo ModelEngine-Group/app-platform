@@ -31,6 +31,7 @@ const RecommendContainer = (props) => {
       dispatch(setConfigItem({ key: config.name, value }));
     }
     updateData();
+    setRecommendValues(value);
   };
 
   // 新增猜你想问
