@@ -39,7 +39,7 @@ const LLMContainer = (props) => {
       return;
     }
     const modelData = (config.from === 'graph' ? graphOperator.getConfig(config.defaultValue) : config.defaultValue);
-    form.setFieldsValue(pick(modelData, ['model', 'temperature', 'systemPrompt']));
+    form.setFieldsValue(pick(modelData, ['accessInfo', 'model', 'temperature', 'systemPrompt']));
     llmRef.current.setPromptValue(modelData.systemPrompt);
   }, [config, appConfig]);
 

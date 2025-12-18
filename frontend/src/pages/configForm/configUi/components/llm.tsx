@@ -49,13 +49,7 @@ const LLM = (props) => {
   const handleGetModels = (open) => {
     if (!open) return;
     getModels().then((res) => {
-      const models = res.models.map((model) => {
-        return {
-          ...model,
-          id: model.serviceName + '***' + model.tag
-        }
-      })
-      setModels(models);
+      setModels(res.models);
     })
   }
 
@@ -105,8 +99,9 @@ const LLM = (props) => {
   };
 
   // 校验模型是否存在
-  const checkExist = (rules, value) => {
-    if (!models.find(item => item.id === value)) {
+  const checkExist = () => {
+    const accessInfo = form.getFieldValue('accessInfo');
+    if (!models.find(item => item.serviceName === accessInfo.serviceName && item.tag === accessInfo.tag)) {
       return Promise.reject(new Error(`${t('LLM')}${value}${t('modelNotExistTip')}`));
     }
     return Promise.resolve();
@@ -118,7 +113,8 @@ const LLM = (props) => {
         dispatch(setValidateInfo(appValidateInfo.filter(item => (item.configCheckId !== validateItem.configCheckId) && item.configName !== 'accessInfo')));
       })
     }
-    const updateModelInfo = models.find(item => item.id === value);
+    const updateModelInfo = models.find(item => item.serviceName === value);
+    form.setFieldValue('accessInfo', { serviceName: updateModelInfo.serviceName, tag: updateModelInfo.tag });
     updateData({ model: value, accessInfo: { serviceName: updateModelInfo.serviceName, tag: updateModelInfo.tag } });
   };
 
@@ -160,7 +156,7 @@ const LLM = (props) => {
                   onChange={(value) => handleUpdateModel(models, value)}
                   fieldNames={{
                     label: 'serviceName',
-                    value: 'id'
+                    value: 'serviceName'
                   }}
                 >
                 </Select>
