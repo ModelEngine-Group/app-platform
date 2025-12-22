@@ -192,29 +192,30 @@ public class LlmComponent implements FlowableService {
                 .build();
         String systemPrompt = ObjectUtils.cast(businessData.get("systemPrompt"));
         String msgId = UuidUtils.randomUuidString();
-        PromptMessage promptMessage = this.buildPromptMessage(systemPrompt, businessData);
+        ChatOption chatOption = this.buildChatOptions(businessData);
+        final boolean isQwen72BWithTool = chatOption.model().equals("Qwen/Qwen2.5-72B-Instruct") && !chatOption.tools().isEmpty();
+        PromptMessage promptMessage = this.buildPromptMessage(systemPrompt, businessData, isQwen72BWithTool);
         final boolean[] firstTokenFlag = {true};
         llmMeta.setPromptMetadata(promptMessage.getMetadata());
         StreamMsgSender streamMsgSender =
                 new StreamMsgSender(this.aippLogStreamService, this.serializer, path, msgId, instId);
         streamMsgSender.sendKnowledge(promptMessage.getMetadata(), businessData);
-        ChatOption chatOption = this.buildChatOptions(businessData);
         agentFlow.converse()
                 .bind((acc, chunk) -> {
                     if (firstTokenFlag[0]) {
                         log.info("[perf] [{}] converse sendLog start, instId={}, chunk={}", System.currentTimeMillis(),
                                 instId, chunk.text());
                         firstTokenFlag[0] = false;
-                        streamMsgSender.sendMsg(chunk.text(), businessData);
+                        streamMsgSender.sendMsg(chunk.text(), businessData, isQwen72BWithTool);
                         log.info("[perf] [{}] converse sendLog end, instId={}", System.currentTimeMillis(),
                                 instId);
                         return;
                     }
-                    streamMsgSender.sendMsg(chunk.text(), businessData);
+                    streamMsgSender.sendMsg(chunk.text(), businessData, isQwen72BWithTool);
                 })
                 .bind(new AippMemory(this.getMemoriesByMaxRounds(businessData)))
                 .bind(AippConst.TOOL_CONTEXT_KEY, toolContext)
-                .doOnConsume(msg -> llmOutputConsumer(llmMeta, msg, promptMessage.getMetadata()))
+                .doOnConsume(msg -> llmOutputConsumer(llmMeta, msg, promptMessage.getMetadata(), isQwen72BWithTool))
                 .doOnError(throwable -> doOnAgentError(llmMeta,
                         throwable.getCause() == null ? throwable.getMessage() : throwable.getCause().getMessage()))
                 .bind(chatOption)
@@ -269,9 +270,16 @@ public class LlmComponent implements FlowableService {
      * @param answer 表示模型返回的响应的 {@link ChatMessage}。
      * @param promptMetadata 表示提示词元数据的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
      */
-    private void llmOutputConsumer(AippLlmMeta llmMeta, ChatMessage answer, Map<String, Object> promptMetadata) {
+    private void llmOutputConsumer(AippLlmMeta llmMeta, ChatMessage answer, Map<String, Object> promptMetadata,
+            boolean isQwen72BWithTool) {
         if (answer.type() == MessageType.AI) {
-            addAnswer(llmMeta, answer.text(), ObjectUtils.nullIf(promptMetadata, Collections.emptyMap()));
+            String answerText = answer.text();
+            if (isQwen72BWithTool) {
+                answerText = answer.text().replaceAll("␣", " ")
+                        .replaceAll("↵", "\n")
+                        .replaceAll("⇥", "    ");
+            }
+            addAnswer(llmMeta, answerText, ObjectUtils.nullIf(promptMetadata, Collections.emptyMap()));
         }
     }
 
@@ -364,9 +372,38 @@ public class LlmComponent implements FlowableService {
         }
     }
 
-    private PromptMessage buildPromptMessage(String background, Map<String, Object> businessData) {
+    /**
+     * 构建提示消息。
+     *
+     * @param background 表示系统提示词的 {@link String}。
+     * @param businessData 表示业务上下文数据的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
+     * @param isQwen72BWithTool 表示是否为 Qwen2.5-72B-Instruct 模型且包含工具的 {@code boolean}，需要进行markdown特殊处理。
+     * @return 表示提示消息的 {@link PromptMessage}。
+     */
+    private PromptMessage buildPromptMessage(String background, Map<String, Object> businessData,
+            boolean isQwen72BWithTool) {
         Map<String, Object> input = ObjectUtils.cast(businessData.get("prompt"));
         String template = ObjectUtils.cast(input.get("template"));
+
+        // 问题：调用Qwen2.5-72B-Instruct模型且有工具，模型不输出空格和回车，导致markdown不能正确显示。
+        // 解决方法：如果是Qwen2.5-72B-Instruct模型且有工具，在用户提示词中说明，输出HTML格式。
+        if (isQwen72BWithTool) {
+            String markdownInstruction = """
+                    
+                    输出文本格式要求
+                    
+                    - 不要输出Markdown文本
+                    - 输出文本格式使用HTML标签，要各级标题用、各级列表、加粗、代码块等
+                    - HTML标签中的空格使用␣替换，缩进用⇥替换，换行时添加↵字符
+                    - 代码块在标签<pre><code>里，也要空格使用␣替换，缩进用⇥替换，每行代码的换行添加↵字符
+                    - 调用工具的时候不要在参数里面出现␣、⇥和↵字符
+                    - 如果需要输出图片，需要在src和alt前面加上␣，示例: <img␣src="1.jpg"␣alt="图片1">。注意不要输出示例内容。
+                    """;
+            background = (background != null ? background : "") + markdownInstruction;
+            template = (template != null ? template : "") + "（不要输出Markdown文本，请根据格式要求输出HTML文本，并正确使用␣、⇥和↵字符）"
+                    + "\n调用工具的时候不要在参数里面出现␣、⇥和↵字符";
+            log.info("Add markdown prompt into Qwen2.5-72B-Instruct model.");
+        }
         Map<String, String> standardInput = ObjectUtils.<Map<String, String>>cast(input.get("variables"))
                 .entrySet()
                 .stream()
@@ -566,13 +603,20 @@ public class LlmComponent implements FlowableService {
          *
          * @param msg 表示流式响应片段的 {@link String}。
          * @param businessData 表示流程上下文的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
+         * @param isQwen72BWithTool 表示是否为 Qwen2.5-72B-Instruct 模型且包含工具的 {@code boolean}。
          */
-        public void sendMsg(String msg, Map<String, Object> businessData) {
+        public void sendMsg(String msg, Map<String, Object> businessData, boolean isQwen72BWithTool) {
+            String processedMsg = msg;
+            if (isQwen72BWithTool) {
+                processedMsg = msg.replaceAll("␣", " ")
+                        .replaceAll("↵", "\n")
+                        .replaceAll("⇥", "    ");
+            }
             boolean enableLog = checkEnableLog(businessData);
-            if (!enableLog || StringUtils.isEmpty(msg) || msg.contains("<tool_call>")) {
+            if (!enableLog || StringUtils.isEmpty(processedMsg) || processedMsg.contains("<tool_call>")) {
                 return;
             }
-            this.sendMsgHandle(msg, StreamMsgType.from(AippInstLogType.MSG), businessData);
+            this.sendMsgHandle(processedMsg, StreamMsgType.from(AippInstLogType.MSG), businessData);
         }
 
         /**

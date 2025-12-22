@@ -6,15 +6,15 @@
 
 package modelengine.fit.jade.aito.data;
 
+import modelengine.fel.tool.annotation.Attribute;
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.annotation.Property;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.LazyLoader;
 import modelengine.fitframework.util.MapBuilder;
-import modelengine.fel.tool.annotation.Attribute;
-import modelengine.fel.tool.annotation.Group;
-import modelengine.fel.tool.annotation.ToolMethod;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -239,6 +239,15 @@ public class AITOServiceImpl implements AITOService {
     @Property(description = "问界车型的宣传图片的访问地址")
     public List<Map<String, String>> url(String carType) {
         List<Map<String, String>> value = carImageMap.get(carType);
+        // 如果直接get不到，尝试忽略空格匹配
+        if (value == null) {
+            String normalizedCarType = carType.replaceAll("\\s+", "");
+            value = carImageMap.entrySet().stream()
+                    .filter(e -> e.getKey().replaceAll("\\s+", "").equals(normalizedCarType))
+                    .map(Map.Entry::getValue)
+                    .findFirst()
+                    .orElse(null);
+        }
         List<Map<String, String>> res = Optional.ofNullable(value)
                 .orElse(Collections.singletonList(new MapBuilder<String, String>().put("describe",
                         "抱歉没有搜索到该类型").put("url", DEFAULT_URL).build()));
