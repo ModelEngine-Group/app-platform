@@ -128,12 +128,45 @@ const AippIndex = () => {
       dispatch(setAppInfo(aippRef.current));
     }
   }
+
+  // 遍历 configFormProperties[0].children 的所有子孙节点，按 name 建立映射
+  const buildNameToNodeMap = (nodes: any[]): Record<string, any> => {
+    const map: Record<string, any> = {};
+
+    const traverse = (node: any) => {
+      if (node.name) {
+        map[node.name] = node;
+      }
+      if (Array.isArray(node.children)) {
+        node.children.forEach(traverse);
+      }
+    }
+    nodes.forEach(traverse);
+    return map;
+  }
+
   // 保存配置
   const saveConfig = (data) => {
     updateFormInfo(tenantId, appId, {config: aippRef.current.config, ...data}).then((res) => {
       if (res.code === 0) {
         dispatch(setTestStatus(null));
         setSaveTime(getCurrentTime());
+
+        aippRef.current.flowGraph.appearance = JSON.parse(data.graph);
+        if (aippRef.current?.configFormProperties?.[0]?.children && Array.isArray(data.input)) {
+          const nodeMap = buildNameToNodeMap(aippRef.current.configFormProperties[0].children);
+
+          for (const item of data.input) {
+            const targetNode = nodeMap[item.name];
+            if (targetNode) {
+              // 赋值：用 item.defaultValue 作为当前值（根据你给的数据结构）
+              targetNode.defaultValue = item.defaultValue;
+            }
+          }
+        }
+        aippRef.current = JSON.parse(JSON.stringify(aippRef.current));
+        dispatch(setAppInfo(aippRef.current));
+        RefreshChatStyle(aippRef.current);
         if (inspirationRefresh.current) {
           inspirationRefresh.current = false;
           let key = getUiD();
