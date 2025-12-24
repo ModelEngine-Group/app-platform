@@ -91,7 +91,7 @@ import java.util.stream.Stream;
 @Component
 public class LlmComponent implements FlowableService {
     private static final Logger log = Logger.get(LlmComponent.class);
-    private static final String SYSTEM_PROMPT = "{{0}}";
+    private static final String SYSTEM_PROMPT = ":{{0}}";
     private static final String PROMPT_TEMPLATE = "{{1}}";
     private static final String AGENT_NODE_ID = "agent";
     private static final String REGEX_MODEL = "statusCode=(\\d+)";
