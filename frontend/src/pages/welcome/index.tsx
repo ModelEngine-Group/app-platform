@@ -747,7 +747,12 @@ const Footer: React.FC = () => (
         </div>
       </div>
     </div>
-    <div className="footer-bottom">&copy; 2025 ModelEngine Group · MIT Licensed</div>
+    <div className="footer-bottom">
+      &copy; 2025 ModelEngine Group · MIT Licensed ·{' '}
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer" className="footer-icp">
+        蜀ICP备2025169945号-1
+      </a>
+    </div>
   </footer>
 );
 
