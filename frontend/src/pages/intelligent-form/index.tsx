@@ -21,16 +21,10 @@ import './index.scss';
 const IntelligentForm = () => {
   const { t } = useTranslation();
 
-  // 联机帮助
-  const onlineHelp = () => {
-    window.open(`${window.parent.location.origin}/help${getCookie('locale').toLocaleLowerCase() === 'en-us' ? '/en' : '/zh'}/smart_forms.html`, '_blank');
-  }
-
   return <div className={setSpaClassName('app-fullpage')}>
     <div className='aui-header-1'>
       <div className='aui-title-1'>
         {t('intelligentForm')}
-        { process.env.PACKAGE_MODE === 'spa' && <QuestionCircleOutlined onClick={onlineHelp} style={{ marginLeft: '8px', fontSize: '18px' }} />}
       </div>
     </div>
     <div className='aui-block'>
