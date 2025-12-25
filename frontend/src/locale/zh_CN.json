@@ -1051,10 +1051,10 @@
           "tenantId": {
             "description": "租户的唯一标识符"
           },
-          "app_id": {
+          "appId": {
             "description": "应用的唯一标识符"
           },
-          "chat_id": {
+          "chatId": {
             "description": "要删除的聊天会话的唯一标识符，若没有指定，则全部删除"
           }
         }
