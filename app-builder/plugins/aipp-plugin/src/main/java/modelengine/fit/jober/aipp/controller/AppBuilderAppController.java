@@ -471,8 +471,10 @@ public class AppBuilderAppController extends AbstractController {
     public Rsp<AppBuilderAppDto> importApp(HttpClassicServerRequest httpRequest,
             @PathVariable("tenant_id") String tenantId, PartitionedEntity appConfig) {
         this.fitRuntime.publisherOfEvents().publishEvent(new AppCreatingEvent(this));
-        if (this.appService.getAppCount(tenantId, this.buildAppQueryCondition(new AppQueryCondition(), DEFAULT_TYPES))
-                >= this.maxAppNum) {
+        OperationContext context = this.contextOf(httpRequest, tenantId);
+        if (this.appService.getAppCount(tenantId,
+                this.buildAppQueryCondition(AppQueryCondition.builder().createBy(context.getOperator()).build(),
+                        DEFAULT_TYPES)) >= this.maxAppNum) {
             throw new AippException(AippErrCode.TOO_MANY_APPS);
         }
         if (appConfig.entities().isEmpty() || !appConfig.entities().get(0).isFile()) {
@@ -484,8 +486,7 @@ public class AppBuilderAppController extends AbstractController {
             }
             String configString = new String(AppImExportUtil.readAllBytes(appConfigFileEntity.getInputStream()),
                     StandardCharsets.UTF_8);
-            return Rsp.ok(this.appDomainService.importApp(configString,
-                this.contextOf(httpRequest, tenantId)));
+            return Rsp.ok(this.appDomainService.importApp(configString, context));
         } catch (IOException e) {
             log.error("Failed to read uploaded application config file", e);
             throw new AippException(AippErrCode.UPLOAD_FAILED);
