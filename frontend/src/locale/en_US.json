@@ -1051,10 +1051,10 @@
           "tenantId": {
             "description": "Unique identifier of the tenant"
           },
-          "app_id": {
+          "appId": {
             "description": "The unique identifier of the application"
           },
-          "chat_id": {
+          "chatId": {
             "description": "The unique identifier of the chat session to be deleted. If not specified, all chats will be deleted"
           }
         }
