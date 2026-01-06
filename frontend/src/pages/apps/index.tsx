@@ -99,11 +99,6 @@ const Apps: React.FC = () => {
     }
   }
 
-  // 联机帮助
-  const onlineHelp = () => {
-    window.open(`${window.parent.location.origin}/help${getCookie('locale').toLocaleLowerCase() === 'en-us' ? '/en' : '/zh'}/application_market.html`, '_blank');
-  }
-
   useEffect(() => {
     queryApps();
   }, [page, pageSize, search]);
@@ -111,7 +106,6 @@ const Apps: React.FC = () => {
     <div className={setSpaClassName('apps_root')}>
       <div className='apps_header'>
         <div className='apps_title'>{t('applicationMarket')}</div>
-        { process.env.PACKAGE_MODE === 'spa' && <QuestionCircleOutlined onClick={onlineHelp} />}
       </div>
       <div className='apps_main_market'>
         <div className='operatorArea'>

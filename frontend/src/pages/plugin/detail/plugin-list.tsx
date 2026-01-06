@@ -49,11 +49,6 @@ const PliginList = (props) => {
     }
   };
 
-  // 联机帮助
-  const onlineHelp = () => {
-    window.open(`${window.parent.location.origin}/help${getCookie('locale').toLocaleLowerCase() === 'en-us' ? '/en' : '/zh'}/application_plug-in.html`, '_blank');
-  }
-
   useEffect(() => {
     getPluginList();
   }, []);
@@ -64,7 +59,6 @@ const PliginList = (props) => {
         <div className='aui-header-1 '>
           <div className='aui-title-1'>
             {t('pluginManagement')}
-            { process.env.PACKAGE_MODE === 'spa' && <QuestionCircleOutlined onClick={onlineHelp} style={{ marginLeft: '8px', fontSize: '18px' }} />}
           </div>
           { !readOnly && <Button type='primary' onClick={() => setOpen(true)}>{t('deploying')}</Button> }
         </div>
