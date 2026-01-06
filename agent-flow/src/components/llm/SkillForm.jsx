@@ -264,7 +264,6 @@ export const SkillContent = ({toolOptions, disabled, dispatch, t}) => {
                       <span className={'tool-version-font'}>{item.version}</span>
                     </div>
                   </div>
-                  {renderViewIcon(item)}
                   {renderDeleteIcon(item)}
                 </div>
               </Row>

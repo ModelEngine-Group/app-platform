@@ -169,7 +169,6 @@ const _ParallelPluginItem = ({plugin, handlePluginDelete, shapeStatus}) => {
             className="jade-panel"
             header={<div style={{display: 'flex', alignItems: 'center'}}>
               <span className="jade-panel-header-font">{plugin?.value?.find(item => item.name === 'outputName')?.value ?? ''}</span>
-              {renderViewIcon()}
               {renderDeleteIcon(plugin.id, outputName)}
             </div>}
             key="parallelPanel">
