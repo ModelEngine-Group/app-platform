@@ -100,6 +100,8 @@ public class GetSourceAspectTest {
             this.getSourceAspect.beforeGet(this.joinPoint);
             assertNotNull(UserInfoHolder.get());
             assertEquals("*allGroupUser*", UserInfoHolder.get().getUserGroupId());
+            this.getSourceAspect.afterGet(this.joinPoint);
+            assertNull(UserInfoHolder.get());
         });
     }
 
