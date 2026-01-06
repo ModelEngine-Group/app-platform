@@ -8,6 +8,7 @@ package modelengine.fit.jade.aipp.domain.division.aop;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -97,7 +98,8 @@ public class GetSourceAspectTest {
         UserContext context = new UserContext("admin1", "localhost", "en");
         UserContextHolder.apply(context, () -> {
             this.getSourceAspect.beforeGet(this.joinPoint);
-            assertNull(UserInfoHolder.get());
+            assertNotNull(UserInfoHolder.get());
+            assertEquals("*allGroupUser*", UserInfoHolder.get().getUserGroupId());
         });
     }
 
