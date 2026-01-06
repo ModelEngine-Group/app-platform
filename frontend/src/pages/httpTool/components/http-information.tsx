@@ -234,15 +234,6 @@ const InformationConfiguration = (props: any) => {
     if (type === 'prev') {
       setStepCurrent(1);
     } else {
-      if (!validateUrl(formParams.url)) {
-        form.setFields([
-          {
-            name: 'url',
-            errors: [t('plsEnterValidUrl')],
-          },
-        ]);
-        return;
-      }
       setLoading(true);
       let params = requestParam(confirmHttpInfo);
       createHttp(params)
@@ -255,17 +246,6 @@ const InformationConfiguration = (props: any) => {
         .finally(() => {
           setLoading(false);
         });
-    }
-  };
-
-  // url校验
-  const validateUrl = (value: any) => {
-    let strRegex =
-      /^((((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,6})|(((2[0-4]\d|25[0-5])|[0-1]?\d{0,2})(\.((2[0-4]\d|25[0-5])|[0-1]?\d{0,2})){3}:((6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])|[0-5]?\d{0,4})))(\/[\w-?=&./{}]*)?$/;
-    if (strRegex.test(value)) {
-      return true;
-    } else {
-      return false;
     }
   };
 
