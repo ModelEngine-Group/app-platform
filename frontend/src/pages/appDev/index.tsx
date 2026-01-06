@@ -243,11 +243,6 @@ const AppDev: React.FC = () => {
     </div>
   };
 
-  // 联机帮助
-  const onlineHelp = () => {
-    window.open(`${window.parent.location.origin}/help${getCookie('locale').toLocaleLowerCase() === 'en-us' ? '/en' : '/zh'}/application_development.html`, '_blank');
-  }
-
   useEffect(() => {
     const fetchTab = async () => {
       const newTab = await queryAppCategories(tenantId, false);
@@ -260,7 +255,6 @@ const AppDev: React.FC = () => {
     <div className={setSpaClassName('apps_root')}>
       <div className='apps_header'>
         <div className='apps_title'>{t('appDevelopment')}</div>
-        { process.env.PACKAGE_MODE === 'spa' && <QuestionCircleOutlined onClick={onlineHelp} />}
       </div>
       <div className='apps_main'>
         <div className='apps-haeader-content'>
