@@ -136,29 +136,33 @@
             <if test="isDeployed != null and isDeployed">
                 and (p."deploy_status" = 'DEPLOYED' or p."deploy_status" = 'RELEASED')
             </if>
-            <if test='isBuiltin != null and isBuiltin and userGroupId != null and userGroupId != ""'>
-                and (p."is_builtin" = true or i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            <if test='userGroupId != null and userGroupId != ""'>
+                <if test='isBuiltin != null and isBuiltin and userGroupId != "*allGroupUser*"'>
+                    and (p."is_builtin" = true or i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+                </if>
+                <if test='isBuiltin != null and !isBuiltin and userGroupId != "*allGroupUser*"'>
+                    and (p."is_builtin" = false and i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+                </if>
+                <if test="isBuiltin != null and !isBuiltin and userGroupId == '*allGroupUser*'">
+                    and p."is_builtin" = false
+                </if>
+                <if test='isBuiltin == null and userGroupId != "*allGroupUser*"'>
+                    and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+                </if>
             </if>
-            <if test='isBuiltin != null and !isBuiltin and userGroupId != null and userGroupId != ""'>
-                and (p."is_builtin" = false and i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
-            </if>
-            <if test="isBuiltin != null and userGroupId == null">
-                and p."is_builtin" = #{isBuiltin}
-            </if>
-            <if test='isBuiltin == null and userGroupId != null and userGroupId != ""'>
-                and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
-            </if>
-            <if test="isBuiltin != null and isBuiltin and creator != null and creator != '' and userGroupId == null">
-                and (p."is_builtin" = true or i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
-            </if>
-            <if test="isBuiltin != null and !isBuiltin and creator != null and creator != '' and userGroupId == null">
-                and (p."is_builtin" = false and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
-            </if>
-            <if test="isBuiltin != null and creator == null and userGroupId == null">
-                and p."is_builtin" = #{isBuiltin}
-            </if>
-            <if test="isBuiltin == null and creator != null and creator != '' and userGroupId == null">
-                and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\'
+            <if test='userGroupId == null or userGroupId == ""'>
+                <if test="isBuiltin != null and isBuiltin and creator != null and creator != ''">
+                    and (p."is_builtin" = true or i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+                </if>
+                <if test="isBuiltin != null and !isBuiltin and creator != null and creator != ''">
+                    and (p."is_builtin" = false and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+                </if>
+                <if test="isBuiltin != null and creator == null">
+                    and p."is_builtin" = #{isBuiltin}
+                </if>
+                <if test="isBuiltin == null and creator != null and creator != ''">
+                    and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\'
+                </if>
             </if>
             <include refid="getOrSearchConditions"/>
             <if test="toolName != null and toolName != ''">
@@ -173,29 +177,33 @@
             <if test="isDeployed != null and isDeployed">
                 and (p."deploy_status" = 'DEPLOYED' or p."deploy_status" = 'RELEASED')
             </if>
-            <if test='isBuiltin != null and isBuiltin and userGroupId != null and userGroupId != ""'>
-                and (p."is_builtin" = true or i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+            <if test='userGroupId != null and userGroupId != ""'>
+                <if test='isBuiltin != null and isBuiltin and userGroupId != "*allGroupUser*"'>
+                    and (p."is_builtin" = true or i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+                </if>
+                <if test='isBuiltin != null and !isBuiltin and userGroupId != "*allGroupUser*"'>
+                    and (p."is_builtin" = false and i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+                </if>
+                <if test="isBuiltin != null and !isBuiltin and userGroupId == '*allGroupUser*'">
+                    and p."is_builtin" = false
+                </if>
+                <if test='isBuiltin == null and userGroupId != "*allGroupUser*"'>
+                    and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
+                </if>
             </if>
-            <if test='isBuiltin != null and !isBuiltin and userGroupId != null and userGroupId != ""'>
-                and (p."is_builtin" = false and i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
-            </if>
-            <if test="isBuiltin != null and userGroupId == null">
-                and p."is_builtin" = #{isBuiltin}
-            </if>
-            <if test='isBuiltin == null and userGroupId != null and userGroupId != ""'>
-                and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
-            </if>
-            <if test="isBuiltin != null and isBuiltin and creator != null and creator != '' and userGroupId == null">
-                and (p."is_builtin" = true or i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
-            </if>
-            <if test="isBuiltin != null and !isBuiltin and creator != null and creator != '' and userGroupId == null">
-                and (p."is_builtin" = false and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
-            </if>
-            <if test="isBuiltin != null and creator == null and userGroupId == null">
-                and p."is_builtin" = #{isBuiltin}
-            </if>
-            <if test="isBuiltin == null and creator != null and creator != '' and userGroupId == null">
-                and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\'
+            <if test='userGroupId == null or userGroupId == ""'>
+                <if test="isBuiltin != null and isBuiltin and creator != null and creator != ''">
+                    and (p."is_builtin" = true or i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+                </if>
+                <if test="isBuiltin != null and !isBuiltin and creator != null and creator != ''">
+                    and (p."is_builtin" = false and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\')
+                </if>
+                <if test="isBuiltin != null and creator == null">
+                    and p."is_builtin" = #{isBuiltin}
+                </if>
+                <if test="isBuiltin == null and creator != null and creator != ''">
+                    and i."creator" ilike '%\' || #{creator} || '%' ESCAPE '\'
+                </if>
             </if>
             <include refid="getOrSearchConditions"/>
             <if test="toolName != null and toolName != ''">
