@@ -59,6 +59,8 @@ public class GetSourceAspect extends SourceAspect {
         }
         String username = this.getUserName();
         if (this.allGroupUsers != null && this.allGroupUsers.contains(username)) {
+            UserInfo userInfo = this.buildUserInfo(username, "*allGroupUser*");
+            UserInfoHolder.set(userInfo);
             return;
         }
         UserGroup userGroup = this.getUserGroup(username);

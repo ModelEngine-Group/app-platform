@@ -183,7 +183,6 @@ const _SkillForm = ({plugin, data = undefined, handlePluginChange, handlePluginD
                 <span className={'jade-custom-multi-select-item'}>
                     {plugin?.name ?? ''}
                 </span>
-                {plugin?.appId && plugin?.tenantId && renderViewIcon()}
                 {renderDeleteIcon(plugin.id)}
               </div>
             </Row>}

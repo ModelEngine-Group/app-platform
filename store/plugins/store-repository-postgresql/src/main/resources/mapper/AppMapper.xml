@@ -119,7 +119,7 @@
             <if test="appCategory != null and appCategory != ''">
                 and i."app_category" ilike '%\' || #{appCategory} || '%' ESCAPE '\'
             </if>
-            <if test='userGroupId != null and userGroupId != ""'>
+            <if test='userGroupId != null and userGroupId != "" and userGroupId != "*allGroupUser*"'>
                 and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
             </if>
         </where>
@@ -135,7 +135,7 @@
             <if test="appCategory != null and appCategory != ''">
                 and i."app_category" ilike '%\' || #{appCategory} || '%' ESCAPE '\'
             </if>
-            <if test='userGroupId != null and userGroupId != ""'>
+            <if test='userGroupId != null and userGroupId != "" and userGroupId != "*allGroupUser*"'>
                 and (i."user_group_id" = #{userGroupId} or i."user_group_id" = '*')
             </if>
         </where>

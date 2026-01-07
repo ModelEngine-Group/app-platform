@@ -126,7 +126,7 @@
             <if test="cond.userGroupId == null and cond.createBy != null">
                 and create_by = #{cond.createBy}
             </if>
-            <if test='cond.userGroupId != null'>
+            <if test="cond.userGroupId != null and cond.userGroupId != '*allGroupUser*'">
                 and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
             </if>
             ORDER BY
@@ -208,7 +208,7 @@
         <if test="cond.userGroupId == null and cond.createBy != null">
             and create_by = #{cond.createBy}
         </if>
-        <if test='cond.userGroupId != null'>
+        <if test="cond.userGroupId != null and cond.userGroupId != '*allGroupUser*'">
             and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
         </if>
         ) as latest_records WHERE <include refid="appTypeCondition"/>;
