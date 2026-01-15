@@ -104,7 +104,7 @@ public enum AippErrCode implements ErrorCode, RetCode {
     /**
      * 名称已存在
      */
-    AIPP_NAME_IS_DUPLICATE(90001014, "应用名称已存在。"),
+    AIPP_NAME_IS_DUPLICATE(90001014, "应用名称已存在，该名称可能已被您或其他用户使用，请更换名称后重试。"),
 
     /**
      * 实例历史记录不存在
