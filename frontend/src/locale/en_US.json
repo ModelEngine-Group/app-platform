@@ -1621,7 +1621,7 @@
       "90001011": "Configuration error, please check if the workflow orchestration is correct. Error reason: {error info}.",
       "90001012": "Duplicate application property exists.",
       "90001013": "Application name cannot be empty.",
-      "90001014": "Application name already exists.",
+      "90001014": "The application name already exists. It may be used by you or another user. Please change the name and try again.",
       "90001015": "Application instance log is empty.",
       "90002000": "File upload failed.",
       "90002001": "File expired or corrupted.",
