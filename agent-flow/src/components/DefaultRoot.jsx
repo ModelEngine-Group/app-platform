@@ -41,6 +41,7 @@ export const DefaultRoot = forwardRef(function (
   const [form] = Form.useForm();
   const domRef = useRef();
   const [open, setOpen] = useState(false);
+  const [drawerZIndex, setDrawerZIndex] = useState(999);
 
   // 对外暴露方法.
   useImperativeHandle(ref, () => {
@@ -92,7 +93,13 @@ export const DefaultRoot = forwardRef(function (
     } else {
       domRef.current.style.pointerEvents = 'auto';
     }
-    setOpen(shape.page.onConfigShape === shape.id);
+    const shouldOpen = shape.page.onConfigShape === shape.id;
+    setOpen(shouldOpen);
+    if (shouldOpen) {
+      const nextZIndex = (shape.page.configDrawerZIndex || 999) + 1;
+      shape.page.configDrawerZIndex = nextZIndex;
+      setDrawerZIndex(nextZIndex);
+    }
   };
 
   // 第一次进来不会触发，第一次发生变化时才触发.
@@ -150,7 +157,7 @@ export const DefaultRoot = forwardRef(function (
         </Form>
       </div>
       {shape.allowConfig && createPortal(
-        <div className={`jade-form-drawer ${open ? '' : 'hidden'}`}>
+        <div className={`jade-form-drawer ${open ? '' : 'hidden'}`} style={{zIndex: drawerZIndex}}>
           <Form
             form={form}
             name={`outside-form-${shape.id}`}
