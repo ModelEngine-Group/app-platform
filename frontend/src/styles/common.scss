@@ -101,22 +101,6 @@ blockquote {
   color: #8c8c8c;
 }
 
-input {
-  box-sizing: border-box;
-  font-size: 0.85em;
-  padding: 0.5em;
-  border-radius: 3px;
-  border: 0;
-  outline: none;
-  border: 1px solid #ddd;
-}
-
-input:focus {
-  border: 0;
-  outline: none;
-  border: 1px solid #ddd;
-}
-
 code {
   font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier,
     monospace, sans-serif;
