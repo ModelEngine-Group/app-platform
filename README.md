@@ -76,7 +76,20 @@ bash docker/dev-app-builder.sh
 本章节给出快速启动之后，本地快速开发测试前端的方法。
 
 ### 1. 编译代码
-1. 全量编译前端（1 minutes 10 seconds）
+
+1. 构建 `agent-flow`，在项目根目录下，执行以下命令编译：
+
+```shell
+cd agent-flow
+npm install --legacy-peer-deps --force --registry=https://registry.npmmirror.com
+npm run build
+npm link
+cd -
+```
+
+> 首次的话，需要执行一次，后续有修改再增量构建执行即可。
+
+2. 全量编译前端（1 minutes 10 seconds）
 编写代码，在项目根目录下，执行以下命令编译：
 ```shell
 cd frontend
@@ -238,7 +251,7 @@ fit debug
 
 **修改代理文件**
 
-修改 `app-platform/frontend` 目录下的 `proxy.config.json` 文件，可以修改需要访问的后端地址。如本地后端地址是 `http://127.0.0.1:8080` 。可以按照如下示例配置：
+修改 `frontend` 目录下的 `proxy.config.json` 文件，可以修改需要访问的后端地址。如本地后端地址是 `http://127.0.0.1:8080` 。可以按照如下示例配置：
 
 ```json
 {
@@ -253,10 +266,24 @@ fit debug
 }
 ```
 
+**前置准备**
+
+构建 `agent-flow`:
+
+```bash
+cd agent-flow
+
+npm install
+npm run build
+npm link
+
+cd -
+```
+
 **依赖安装**
 
 ```
-cd app-platform/frontend/
+cd frontend/
 npm install
 ```
 
