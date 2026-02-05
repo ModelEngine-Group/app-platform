@@ -12,6 +12,7 @@ import modelengine.fit.http.client.HttpClassicClientRequest;
 import modelengine.fit.http.client.HttpClientResponseException;
 import modelengine.fit.http.entity.Entity;
 import modelengine.fit.http.protocol.HttpRequestMethod;
+import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateRetrievalChunksEntity;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.exception.ClientException;
@@ -29,6 +30,7 @@ import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateRetrieva
 import modelengine.jade.knowledge.exception.KnowledgeException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static modelengine.fit.http.protocol.MessageHeaderNames.AUTHORIZATION;

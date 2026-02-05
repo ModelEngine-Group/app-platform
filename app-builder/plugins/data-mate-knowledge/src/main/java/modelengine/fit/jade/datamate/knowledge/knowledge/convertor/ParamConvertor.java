@@ -129,6 +129,8 @@ public interface ParamConvertor {
         if (!StringUtils.isEmpty(rawMetadata)) {
             try {
                 Map<String, Object> parsed = new ObjectMapper().readValue(rawMetadata, Map.class);
+                metadata.put("fileId", parsed.get("original_file_id"));
+                metadata.put("fileName", parsed.get("file_name"));
                 metadata.putAll(parsed);
             } catch (JsonProcessingException ex) {
                 metadata.put("metadata", rawMetadata);

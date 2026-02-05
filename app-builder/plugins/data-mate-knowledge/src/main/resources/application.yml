@@ -4,6 +4,6 @@ fit:
       - 'modelengine.fit.jade.datamate.knowledge'
 datamate:
   url:
-    list: '${datamate.knowledge-list-url:https://datamate.example.com/api/knowledge-base/list}'
-    retrieve: '${datamate.knowledge-retrieve-url:https://datamate.example.com/api/knowledge-base/retrieve}'
+    list: 'https://datamate.dallas98.top:30000/api/knowledge-base/list'
+    retrieve: 'https://datamate.dallas98.top:30000/api/knowledge-base/retrieve'
 

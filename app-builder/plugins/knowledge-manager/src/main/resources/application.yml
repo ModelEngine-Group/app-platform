@@ -33,3 +33,6 @@ knowledge:
     - groupId: qianfanKnowledge
       name: 百度千帆知识库
       description: 百度千帆知识库
+    - groupId: dataMateKnowledge
+      name: DataMate知识库
+      description: DataMate知识库
