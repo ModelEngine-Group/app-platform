@@ -6,13 +6,26 @@
 
 package modelengine.fit.jade.datamate.knowledge.knowledge.external;
 
+import static modelengine.fit.http.protocol.MessageHeaderNames.AUTHORIZATION;
+import static modelengine.fit.http.protocol.MessageHeaderNames.CONTENT_TYPE;
+import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.AUTHENTICATION_ERROR;
+import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.CLIENT_REQUEST_ERROR;
+import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.INTERNAL_SERVICE_ERROR;
+import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.NOT_FOUND;
+import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.QUERY_KNOWLEDGE_ERROR;
+import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.QUERY_KNOWLEDGE_LIST_ERROR;
+
 import modelengine.fit.http.client.HttpClassicClient;
 import modelengine.fit.http.client.HttpClassicClientFactory;
 import modelengine.fit.http.client.HttpClassicClientRequest;
 import modelengine.fit.http.client.HttpClientResponseException;
 import modelengine.fit.http.entity.Entity;
 import modelengine.fit.http.protocol.HttpRequestMethod;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateRetrievalChunksEntity;
+import modelengine.fit.jade.datamate.knowledge.knowledge.dto.DataMateKnowledgeListQueryParam;
+import modelengine.fit.jade.datamate.knowledge.knowledge.dto.DataMateRetrievalParam;
+import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateKnowledgeListEntity;
+import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateResponse;
+import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateRetrievalResult;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.exception.ClientException;
@@ -22,25 +35,10 @@ import modelengine.fitframework.util.LazyLoader;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.jade.knowledge.code.KnowledgeManagerRetCode;
-import modelengine.fit.jade.datamate.knowledge.knowledge.dto.DataMateKnowledgeListQueryParam;
-import modelengine.fit.jade.datamate.knowledge.knowledge.dto.DataMateRetrievalParam;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateKnowledgeListEntity;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateResponse;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateRetrievalResult;
 import modelengine.jade.knowledge.exception.KnowledgeException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static modelengine.fit.http.protocol.MessageHeaderNames.AUTHORIZATION;
-import static modelengine.fit.http.protocol.MessageHeaderNames.CONTENT_TYPE;
-import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.AUTHENTICATION_ERROR;
-import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.CLIENT_REQUEST_ERROR;
-import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.INTERNAL_SERVICE_ERROR;
-import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.NOT_FOUND;
-import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.QUERY_KNOWLEDGE_ERROR;
-import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.QUERY_KNOWLEDGE_LIST_ERROR;
 
 /**
  * 表示 DataMate 知识库的调用工具。
@@ -91,7 +89,7 @@ public class DataMateKnowledgeBaseManager {
             return Validation.notNull(resp.getData(), "The response body is abnormal.");
         } catch (ClientException ex) {
             log.error(QUERY_KNOWLEDGE_LIST_ERROR.getMsg(), ex.getMessage());
-            throw new KnowledgeException(QUERY_KNOWLEDGE_LIST_ERROR, ex.getMessage());
+            throw new KnowledgeException(QUERY_KNOWLEDGE_LIST_ERROR, ex, ex.getMessage());
         } catch (HttpClientResponseException ex) {
             throw this.handleException(ex);
         }
@@ -119,7 +117,7 @@ public class DataMateKnowledgeBaseManager {
             return Validation.notNull(resp.getData(), "The response body is abnormal.");
         } catch (ClientException ex) {
             log.error(QUERY_KNOWLEDGE_ERROR.getMsg(), ex.getMessage());
-            throw new KnowledgeException(QUERY_KNOWLEDGE_ERROR, ex.getMessage());
+            throw new KnowledgeException(QUERY_KNOWLEDGE_ERROR, ex, ex.getMessage());
         } catch (HttpClientResponseException ex) {
             throw this.handleException(ex);
         }
@@ -128,7 +126,7 @@ public class DataMateKnowledgeBaseManager {
     private KnowledgeException handleException(HttpClientResponseException ex) {
         int statusCode = ex.statusCode();
         log.error(this.exceptionMap.get(statusCode).getMsg(), ex);
-        return new KnowledgeException(this.exceptionMap.get(statusCode), ex.getSimpleMessage());
+        return new KnowledgeException(this.exceptionMap.get(statusCode), ex, ex.getSimpleMessage());
     }
 
     private HttpClassicClient getHttpClient() {

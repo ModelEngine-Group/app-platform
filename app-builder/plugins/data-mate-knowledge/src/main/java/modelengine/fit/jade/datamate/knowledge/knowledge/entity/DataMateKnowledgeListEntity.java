@@ -32,18 +32,22 @@ public class DataMateKnowledgeListEntity {
      * 当前页码（从 0 开始）。
      */
     private Integer page;
+
     /**
      * 每页数量。
      */
     private Integer size;
+
     /**
      * 总条目数。
      */
     private Integer totalElements;
+
     /**
      * 总页数。
      */
     private Integer totalPages;
+
     /**
      * 知识库列表查询数据。
      */

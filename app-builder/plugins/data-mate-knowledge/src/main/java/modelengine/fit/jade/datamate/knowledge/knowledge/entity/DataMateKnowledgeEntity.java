@@ -29,50 +29,62 @@ public class DataMateKnowledgeEntity {
      * 知识库id。
      */
     private String id;
+
     /**
      * 知识库名称。
      */
     private String name;
+
     /**
      * 知识库描述。
      */
     private String description;
+
     /**
      * 知识库创建时间。
      */
     private String createdAt;
+
     /**
      * 知识库更新时间。
      */
     private String updatedAt;
+
     /**
      * 创建人。
      */
     private String createdBy;
+
     /**
      * 更新人。
      */
     private String updatedBy;
+
     /**
      * 嵌入模型名称。
      */
     private String embeddingModel;
+
     /**
      * 聊天模型名称。
      */
     private String chatModel;
+
     /**
      * 文件数量。
      */
     private Long fileCount;
+
     /**
      * chunk 数量。
      */
     private Long chunkCount;
+
     /**
      * 嵌入模型配置。
      */
     private ModelConfig embedding;
+
     /**
      * 聊天模型配置。
      */

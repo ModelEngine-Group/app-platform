@@ -23,10 +23,12 @@ public class DataMateRetrievalChunksEntity {
      * 查询结果实体。
      */
     private RagChunk entity;
+
     /**
      * 匹配分值。
      */
     private Double score;
+
     /**
      * 主键字段名。
      */
