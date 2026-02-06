@@ -4,7 +4,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-package modelengine.fit.jade.datamate.knowledge.knowledge.entity;
+package modelengine.fit.jade.datamate.knowledge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

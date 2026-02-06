@@ -4,7 +4,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-package modelengine.fit.jade.datamate.knowledge.knowledge.convertor;
+package modelengine.fit.jade.datamate.knowledge.convertor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,9 +12,9 @@ import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.knowledge.KnowledgeRepo;
 import modelengine.jade.knowledge.ReferenceLimit;
 import modelengine.jade.knowledge.document.KnowledgeDocument;
-import modelengine.fit.jade.datamate.knowledge.knowledge.dto.DataMateRetrievalParam;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateKnowledgeEntity;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateRetrievalChunksEntity;
+import modelengine.fit.jade.datamate.knowledge.dto.DataMateRetrievalParam;
+import modelengine.fit.jade.datamate.knowledge.entity.DataMateKnowledgeEntity;
+import modelengine.fit.jade.datamate.knowledge.entity.DataMateRetrievalChunksEntity;
 import modelengine.jade.knowledge.support.FlatKnowledgeOption;
 
 import org.mapstruct.Mapper;

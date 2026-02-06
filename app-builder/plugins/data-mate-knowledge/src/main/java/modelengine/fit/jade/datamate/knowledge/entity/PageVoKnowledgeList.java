@@ -4,26 +4,30 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-package modelengine.fit.jade.datamate.knowledge.knowledge.entity;
+package modelengine.fit.jade.datamate.knowledge.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 /**
- * DataMate 知识库检索结果。
+ * 表示知识库列表分页数据对象。
  *
  * @author 陈镕希
  * @since 2025-12-15
  */
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class DataMateRetrievalResult {
+@Builder
+public class PageVoKnowledgeList {
     /**
-     * 检索结果集合。
+     * 知识库列表查询数据。
      */
-    private List<DataMateRetrievalChunksEntity> data;
+    private List<DataMateKnowledgeEntity> knowledgeEntityList;
+
+    /**
+     * 知识库总数。
+     */
+    private int total;
 }
 

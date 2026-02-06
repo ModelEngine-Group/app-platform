@@ -2,8 +2,11 @@ fit:
   beans:
     packages:
       - 'modelengine.fit.jade.datamate.knowledge'
+# 默认使用 ME 集群内 DataMate 服务名，可通过环境变量或 profile 覆盖
+# timeout: 访问超时时间（秒），默认 30，可按场景自定义
 datamate:
   url:
-    list: 'https://datamate.dallas98.top:30000/api/knowledge-base/list'
-    retrieve: 'https://datamate.dallas98.top:30000/api/knowledge-base/retrieve'
+    list: 'http://datamate/api/knowledge-base/list'
+    retrieve: 'http://datamate/api/knowledge-base/retrieve'
+  # timeout: 30
 

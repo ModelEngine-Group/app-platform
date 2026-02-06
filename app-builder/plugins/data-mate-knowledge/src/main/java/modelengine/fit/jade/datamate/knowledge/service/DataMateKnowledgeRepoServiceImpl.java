@@ -4,17 +4,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-package modelengine.fit.jade.datamate.knowledge.knowledge.service;
+package modelengine.fit.jade.datamate.knowledge.service;
 
-import modelengine.fit.jade.datamate.knowledge.knowledge.convertor.ParamConvertor;
-import modelengine.fit.jade.datamate.knowledge.knowledge.dto.DataMateKnowledgeListQueryParam;
-import modelengine.fit.jade.datamate.knowledge.knowledge.dto.DataMateRetrievalParam;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateKnowledgeEntity;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateKnowledgeListEntity;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateRetrievalChunksEntity;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateRetrievalResult;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.PageVoKnowledgeList;
-import modelengine.fit.jade.datamate.knowledge.knowledge.external.DataMateKnowledgeBaseManager;
+import modelengine.fit.jade.datamate.knowledge.convertor.ParamConvertor;
+import modelengine.fit.jade.datamate.knowledge.dto.DataMateKnowledgeListQueryParam;
+import modelengine.fit.jade.datamate.knowledge.dto.DataMateRetrievalParam;
+import modelengine.fit.jade.datamate.knowledge.entity.DataMateKnowledgeEntity;
+import modelengine.fit.jade.datamate.knowledge.entity.DataMateKnowledgeListEntity;
+import modelengine.fit.jade.datamate.knowledge.entity.DataMateRetrievalChunksEntity;
+import modelengine.fit.jade.datamate.knowledge.entity.DataMateRetrievalResult;
+import modelengine.fit.jade.datamate.knowledge.entity.PageVoKnowledgeList;
+import modelengine.fit.jade.datamate.knowledge.external.DataMateKnowledgeBaseManager;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.inspection.Validation;

@@ -4,30 +4,40 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-package modelengine.fit.jade.datamate.knowledge.knowledge.entity;
+package modelengine.fit.jade.datamate.knowledge.dto;
 
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
+import modelengine.fitframework.serialization.annotation.SerializeStrategy;
 
 /**
- * 表示知识库列表分页数据对象。
+ * DataMate 知识库列表查询参数。
  *
  * @author 陈镕希
  * @since 2025-12-15
  */
 @Data
 @Builder
-public class PageVoKnowledgeList {
+@SerializeStrategy(include = SerializeStrategy.Include.NON_NULL)
+public class DataMateKnowledgeListQueryParam {
     /**
-     * 知识库列表查询数据。
+     * 页码，从0开始。
      */
-    private List<DataMateKnowledgeEntity> knowledgeEntityList;
+    private Integer page;
 
     /**
-     * 知识库总数。
+     * 每页大小。
      */
-    private int total;
+    private Integer size;
+
+    /**
+     * 知识库名称过滤。
+     */
+    private String name;
+
+    /**
+     * 知识库描述过滤。
+     */
+    private String description;
 }
 

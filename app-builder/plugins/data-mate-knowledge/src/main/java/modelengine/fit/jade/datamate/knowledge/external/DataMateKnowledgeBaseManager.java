@@ -4,7 +4,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-package modelengine.fit.jade.datamate.knowledge.knowledge.external;
+package modelengine.fit.jade.datamate.knowledge.external;
 
 import static modelengine.fit.http.protocol.MessageHeaderNames.AUTHORIZATION;
 import static modelengine.fit.http.protocol.MessageHeaderNames.CONTENT_TYPE;
@@ -21,11 +21,11 @@ import modelengine.fit.http.client.HttpClassicClientRequest;
 import modelengine.fit.http.client.HttpClientResponseException;
 import modelengine.fit.http.entity.Entity;
 import modelengine.fit.http.protocol.HttpRequestMethod;
-import modelengine.fit.jade.datamate.knowledge.knowledge.dto.DataMateKnowledgeListQueryParam;
-import modelengine.fit.jade.datamate.knowledge.knowledge.dto.DataMateRetrievalParam;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateKnowledgeListEntity;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateResponse;
-import modelengine.fit.jade.datamate.knowledge.knowledge.entity.DataMateRetrievalResult;
+import modelengine.fit.jade.datamate.knowledge.dto.DataMateKnowledgeListQueryParam;
+import modelengine.fit.jade.datamate.knowledge.dto.DataMateRetrievalParam;
+import modelengine.fit.jade.datamate.knowledge.entity.DataMateKnowledgeListEntity;
+import modelengine.fit.jade.datamate.knowledge.entity.DataMateResponse;
+import modelengine.fit.jade.datamate.knowledge.entity.DataMateRetrievalResult;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.exception.ClientException;
@@ -34,6 +34,7 @@ import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.LazyLoader;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.ObjectUtils;
+import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.knowledge.code.KnowledgeManagerRetCode;
 import modelengine.jade.knowledge.exception.KnowledgeException;
 
@@ -51,16 +52,22 @@ public class DataMateKnowledgeBaseManager {
     private static final Logger log = Logger.get(DataMateKnowledgeBaseManager.class);
     private static final String BEARER = "Bearer ";
     private static final String CONTENT_TYPE_JSON = "application/json";
+    /** 默认访问超时时间（秒）。 */
+    private static final int DEFAULT_TIMEOUT_SECONDS = 30;
 
     private final Map<String, String> dataMateUrls;
     private final HttpClassicClientFactory httpClientFactory;
     private final LazyLoader<HttpClassicClient> httpClient;
     private final Map<Integer, KnowledgeManagerRetCode> exceptionMap = new HashMap<>();
+    /** 访问超时时间（秒），用于连接、读、请求超时。 */
+    private final int timeoutSeconds;
 
     public DataMateKnowledgeBaseManager(@Value("${datamate.url}") Map<String, String> dataMateUrls,
-            HttpClassicClientFactory httpClientFactory) {
+            HttpClassicClientFactory httpClientFactory,
+            @Value("${datamate.timeout:30}") int timeoutSeconds) {
         this.dataMateUrls = dataMateUrls;
         this.httpClientFactory = httpClientFactory;
+        this.timeoutSeconds = timeoutSeconds > 0 ? timeoutSeconds : DEFAULT_TIMEOUT_SECONDS;
         this.httpClient = new LazyLoader<>(this::getHttpClient);
         this.exceptionMap.put(500, INTERNAL_SERVICE_ERROR);
         this.exceptionMap.put(401, AUTHENTICATION_ERROR);
@@ -79,7 +86,9 @@ public class DataMateKnowledgeBaseManager {
         HttpClassicClientRequest request =
                 this.httpClient.get().createRequest(HttpRequestMethod.POST, this.dataMateUrls.get("list"));
         request.entity(Entity.createObject(request, param));
-        request.headers().set(AUTHORIZATION, BEARER + apiKey);
+        if (StringUtils.isNotEmpty(apiKey)) {
+            request.headers().set(AUTHORIZATION, BEARER + apiKey);
+        }
         try {
             Object object = this.httpClient.get().exchangeForEntity(request, Object.class);
             Map<String, Object> response =
@@ -106,7 +115,9 @@ public class DataMateKnowledgeBaseManager {
         HttpClassicClientRequest request =
                 this.httpClient.get().createRequest(HttpRequestMethod.POST, this.dataMateUrls.get("retrieve"));
         request.entity(Entity.createObject(request, param));
-        request.headers().set(AUTHORIZATION, BEARER + apiKey);
+        if (StringUtils.isNotEmpty(apiKey)) {
+            request.headers().set(AUTHORIZATION, BEARER + apiKey);
+        }
         request.headers().set(CONTENT_TYPE, CONTENT_TYPE_JSON);
         try {
             Object object = this.httpClient.get().exchangeForEntity(request, Object.class);
@@ -130,11 +141,17 @@ public class DataMateKnowledgeBaseManager {
     }
 
     private HttpClassicClient getHttpClient() {
+        int timeoutMs = this.timeoutSeconds * 1000;
         Map<String, Object> custom = MapBuilder.<String, Object>get()
                 .put("client.http.secure.ignore-trust", true)
                 .put("client.http.secure.ignore-hostname", true)
                 .build();
-        return this.httpClientFactory.create(HttpClassicClientFactory.Config.builder().custom(custom).build());
+        return this.httpClientFactory.create(HttpClassicClientFactory.Config.builder()
+                .custom(custom)
+                .connectTimeout(timeoutMs)
+                .socketTimeout(timeoutMs)
+                .connectionRequestTimeout(timeoutMs)
+                .build());
     }
 }
 
