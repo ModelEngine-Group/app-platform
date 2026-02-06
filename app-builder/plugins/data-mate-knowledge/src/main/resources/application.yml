@@ -6,7 +6,7 @@ fit:
 # timeout: 访问超时时间（秒），默认 30，可按场景自定义
 datamate:
   url:
-    list: 'http://datamate/api/knowledge-base/list'
-    retrieve: 'http://datamate/api/knowledge-base/retrieve'
+    list: 'https://datamate-gateway:8080/api/knowledge-base/list'
+    retrieve: 'https://datamate-gateway:8080/api/knowledge-base/retrieve'
   # timeout: 30
 
