@@ -34,9 +34,6 @@ export const IconMap = {
 export const sourceTabs = [
   { key: 'APP', label: i18n.t('all') },
   { key: 'HTTP', label: 'Http' },
-  { key: 'HUGGINGFACE', label: 'HuggingFace' },
-  { key: 'LANGCHAIN', label: 'LangChain' },
-  { key: 'LLAMAINDEX', label: 'LlamaIndex' },
   { key: 'WATERFLOW', label: i18n.t('workflow') },
   { key: 'MINE', label: i18n.t('mine') },
 ];
@@ -64,12 +61,10 @@ export const minePluginCategories = [
   { key: 'APP', label: i18n.t('all') },
   { key: 'TOOL', label: i18n.t('tool') },
   { key: 'HTTP', label: 'Http' },
-  { key: 'LANGCHAIN', label: 'LangChain' },
-  { key: 'LLAMAINDEX', label: 'LlamaIndex' },
   { key: 'WORKFLOW', label: i18n.t('workFlow') },
 ];
 
-export const generalPluginCategories = ['APP', 'TOOL', 'HTTP', 'HUGGINGFACE', 'LLAMAINDEX', 'LANGCHAIN'];
+export const generalPluginCategories = ['APP', 'TOOL', 'HTTP'];
 
 export const chatbotPluginCategories = ['CHATBOT', 'AGENT', 'WORKFLOW'];
 
