@@ -15,8 +15,8 @@ import modelengine.fitframework.annotation.Property;
 
 import java.util.Map;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 表示代码执行的命令。

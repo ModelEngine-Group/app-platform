@@ -27,8 +27,9 @@
             <artifactId>fit-util</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.fitframework.extension</groupId>
-            <artifactId>fit-validation-hibernate</artifactId>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.1.1</version>
         </dependency>
 
         <!-- Services -->

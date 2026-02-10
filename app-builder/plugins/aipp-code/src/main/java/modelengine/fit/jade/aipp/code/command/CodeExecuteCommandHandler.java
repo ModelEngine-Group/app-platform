@@ -6,8 +6,8 @@
 
 package modelengine.fit.jade.aipp.code.command;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 代码执行命令处理器接口定义。

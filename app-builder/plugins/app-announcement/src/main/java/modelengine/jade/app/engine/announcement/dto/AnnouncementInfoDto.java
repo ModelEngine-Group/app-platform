@@ -6,11 +6,11 @@
 
 package modelengine.jade.app.engine.announcement.dto;
 
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import modelengine.fit.jane.common.validation.Pattern;
-import modelengine.fit.jane.common.validation.Size;
 import modelengine.fitframework.annotation.Property;
 
 /**

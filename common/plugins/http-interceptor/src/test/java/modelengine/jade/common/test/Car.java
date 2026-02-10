@@ -6,8 +6,9 @@
 
 package modelengine.jade.common.test;
 
-import modelengine.fitframework.validation.constraints.NotBlank;
-import modelengine.fitframework.validation.constraints.Range;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * 表示汽车的测试数据。
@@ -16,7 +17,8 @@ import modelengine.fitframework.validation.constraints.Range;
  * @since 2024-09-03
  */
 public class Car {
-    @Range(min = 0, max = 6, message = "{test.car.seats}")
+    @Min(value = 0, message = "{test.car.seats}")
+    @Max(value = 6, message = "{test.car.seats}")
     private int seats;
 
     @NotBlank(message = "品牌不能为空!")

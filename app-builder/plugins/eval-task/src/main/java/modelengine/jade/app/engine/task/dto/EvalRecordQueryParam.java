@@ -10,7 +10,7 @@ import modelengine.jade.common.query.PageQueryParam;
 
 import lombok.Data;
 import modelengine.fitframework.annotation.Property;
-import modelengine.fitframework.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 import modelengine.jade.app.engine.task.controller.EvalRecordController;
 
 import java.util.List;

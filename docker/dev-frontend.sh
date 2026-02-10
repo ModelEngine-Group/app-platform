@@ -49,7 +49,7 @@ docker stop web-tmp
 docker rm web-tmp
 
 echo "=== Restarting services ==="
-docker-compose -f docker-compose.dev.yml -p app-platform up -d web
+docker-compose -f docker-compose.dev.yml -p modelengine_v251112_x86_64 up -d web
 
 echo ""
 echo "=== Completed! ==="

@@ -8,7 +8,8 @@ package modelengine.jade.app.engine.metrics.dto;
 
 import modelengine.fit.http.annotation.RequestQuery;
 import modelengine.fitframework.annotation.Property;
-import modelengine.fitframework.validation.constraints.Range;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -70,11 +71,13 @@ public class MetricsFeedbackDto {
 
     @Property(description = "页码(1开始)", example = "1")
     @RequestQuery(name = "pageIndex", required = false, defaultValue = "1")
-    @Range(min = 1, max = Integer.MAX_VALUE, message = "页码从1开始")
+    @Min(value = 1, message = "页码从1开始")
+    @Max(value = Integer.MAX_VALUE, message = "页码从1开始")
     private int pageIndex = 1;
 
     @Property(description = "每页大小", example = "10")
     @RequestQuery(name = "pageSize", required = false, defaultValue = "10")
-    @Range(min = 1, max = 300, message = "每页尺寸范围[1, 300]")
+    @Min(value = 1, message = "每页尺寸范围[1, 300]")
+    @Max(value = 300, message = "每页尺寸范围[1, 300]")
     private int pageSize = 10;
 }

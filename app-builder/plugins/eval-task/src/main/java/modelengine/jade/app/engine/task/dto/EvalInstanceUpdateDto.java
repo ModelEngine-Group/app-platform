@@ -8,7 +8,8 @@ package modelengine.jade.app.engine.task.dto;
 
 import lombok.Data;
 import modelengine.fitframework.annotation.Property;
-import modelengine.fitframework.validation.constraints.Range;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +22,8 @@ import java.time.LocalDateTime;
 @Data
 public class EvalInstanceUpdateDto {
     @Property(description = "评估任务实例编号", required = true, defaultValue = "1")
-    @Range(min = 1, max = Long.MAX_VALUE, message = "The instance id is invalid.")
+    @Min(value = 1, message = "The instance id is invalid.")
+    @Max(value = Long.MAX_VALUE, message = "The instance id is invalid.")
     private Long id;
 
     @Property(description = "评估任务实例用例通过率", required = true)
