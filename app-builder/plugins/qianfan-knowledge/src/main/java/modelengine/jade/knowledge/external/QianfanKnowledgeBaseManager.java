@@ -119,8 +119,9 @@ public class QianfanKnowledgeBaseManager {
 
     private KnowledgeException handleException(HttpClientResponseException ex) {
         int statusCode = ex.statusCode();
-        log.error(this.exceptionMap.get(statusCode).getMsg(), ex);
-        return new KnowledgeException(this.exceptionMap.get(statusCode), ex.getSimpleMessage());
+        KnowledgeManagerRetCode retCode = this.exceptionMap.getOrDefault(statusCode, INTERNAL_SERVICE_ERROR);
+        log.error(retCode.getMsg(), ex);
+        return new KnowledgeException(retCode, ex.getSimpleMessage());
     }
 
     private HttpClassicClient getHttpClient() {
