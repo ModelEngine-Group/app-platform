@@ -6,13 +6,14 @@
 
 package modelengine.jade.app.engine.eval.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
+
 import modelengine.jade.app.engine.eval.controller.EvalDataController;
 import modelengine.fitframework.annotation.Property;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 /**
  * 表示评估数据修改传输对象。

@@ -12,8 +12,8 @@ import modelengine.fitframework.annotation.Property;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * 表示评估数据集创建传输对象。

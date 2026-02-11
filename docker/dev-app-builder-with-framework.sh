@@ -42,7 +42,7 @@ docker run -d --name app-builder-tmp --entrypoint sleep ${REPO}/app-builder:${BA
 echo "Cleaning framework and app-builder..."
 docker exec -i app-builder-tmp sh -c "rm -rf /opt/fit-framework/plugins/"
 docker exec -i app-builder-tmp sh -c "rm -rf /opt/fit-framework/shared/"
-docker exec -i app-builder-tmp sh -c "rm -rf opt/fit-framework/lib/"
+docker exec -i app-builder-tmp sh -c "rm -rf /opt/fit-framework/lib/"
 docker exec -i app-builder-tmp sh -c "rm -rf /opt/fit-framework/third-party/"
 docker exec -i app-builder-tmp sh -c "rm -rf /opt/fit-framework/fit-discrete-launcher*.jar"
 

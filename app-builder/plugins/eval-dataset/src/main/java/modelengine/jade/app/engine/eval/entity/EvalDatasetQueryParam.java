@@ -11,7 +11,7 @@ import modelengine.jade.common.query.PageQueryParam;
 import lombok.Data;
 import modelengine.fitframework.annotation.Property;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * 表示数据集查询参数。

@@ -13,6 +13,7 @@ import modelengine.fel.tool.model.ListResult;
 import modelengine.fel.tool.model.entity.ToolIdentifier;
 import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fel.tool.service.ToolChangedObserver;
+import modelengine.fel.tool.service.ToolChangedObserverRegistry;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.exception.FitException;
@@ -22,6 +23,7 @@ import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepositoryIn
 import modelengine.jade.store.service.DefinitionService;
 import modelengine.jade.store.service.ToolService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,13 +35,14 @@ import java.util.stream.Collectors;
  * @since 2024/5/10
  */
 @Component
-public class DefaultToolService implements ToolService {
+public class DefaultToolService implements ToolService, ToolChangedObserverRegistry {
     private static final Logger log = Logger.get(DefaultToolService.class);
     private static final String FITABLE_ID = "tool-repository-pgsql";
 
     private final ToolRepositoryInner toolRepo;
     private final DefinitionService definitionService;
-    private final ToolChangedObserver toolChangedObserver;
+    // private final ToolChangedObserver toolChangedObserver;
+    private final List<ToolChangedObserver> toolChangedObservers = new ArrayList<>();
 
     /**
      * 通过持久层接口来初始化 {@link DefaultToolService} 的实例。
@@ -52,9 +55,25 @@ public class DefaultToolService implements ToolService {
             ToolChangedObserver toolChangedObserver) {
         this.toolRepo = toolRepo;
         this.definitionService = definitionService;
-        this.toolChangedObserver = toolChangedObserver;
-        List<Tool.Info> allTools = this.toolRepo.getAllTools();
-        allTools.forEach(this::onToolAdded);
+        // this.toolChangedObserver = toolChangedObserver;
+        // List<Tool.Info> allTools = this.toolRepo.getAllTools();
+        // allTools.forEach(this::onToolAdded);
+    }
+
+    @Override
+    public synchronized void register(ToolChangedObserver observer) {
+        if (observer != null) {
+            this.toolChangedObservers.add(observer);
+            List<Tool.Info> allTools = this.toolRepo.getAllTools();
+            allTools.forEach(tool -> observer.onToolAdded(tool.uniqueName(), tool.description(), tool.parameters()));
+        }
+    }
+
+    @Override
+    public synchronized void unregister(ToolChangedObserver observer) {
+        if (observer != null) {
+            this.toolChangedObservers.remove(observer);
+        }
     }
 
     @Override
@@ -240,17 +259,17 @@ public class DefaultToolService implements ToolService {
         return infos.stream().map(ToolData::from).map(ToolData::transform).collect(Collectors.toList());
     }
 
-    private void onToolAdded(Tool.Info toolInfo) {
-        if (this.toolChangedObserver == null) {
+    private synchronized void onToolAdded(Tool.Info toolInfo) {
+        if (this.toolChangedObservers.isEmpty()) {
             return;
         }
-        this.toolChangedObserver.onToolAdded(toolInfo.uniqueName(), toolInfo.description(), toolInfo.parameters());
+        this.toolChangedObservers.forEach(observer -> observer.onToolAdded(toolInfo.uniqueName(), toolInfo.description(), toolInfo.parameters()));
     }
 
-    private void onToolRemoved(String toolUniqueName) {
-        if (this.toolChangedObserver == null) {
+    private synchronized void onToolRemoved(String toolUniqueName) {
+        if (this.toolChangedObservers.isEmpty()) {
             return;
         }
-        this.toolChangedObserver.onToolRemoved(toolUniqueName);
+        this.toolChangedObservers.forEach(observer -> observer.onToolRemoved(toolUniqueName));
     }
 }
