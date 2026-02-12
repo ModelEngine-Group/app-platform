@@ -1,0 +1,24 @@
+{
+  "data": {
+    "page": 0,
+    "size": 2,
+    "totalElements": 2,
+    "totalPages": 1,
+    "content": [
+      {
+        "id": "1",
+        "name": "test1",
+        "description": "test1知识库",
+        "createdAt": "2025-04-22T14:27:17Z"
+      },
+      {
+        "id": "2",
+        "name": "test2",
+        "description": "test2知识库",
+        "createdAt": "2023-10-25T08:06:19Z"
+      }
+    ]
+  },
+  "code": "0",
+  "message": "success"
+}

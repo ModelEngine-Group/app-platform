@@ -136,8 +136,9 @@ public class DataMateKnowledgeBaseManager {
 
     private KnowledgeException handleException(HttpClientResponseException ex) {
         int statusCode = ex.statusCode();
-        log.error(this.exceptionMap.get(statusCode).getMsg(), ex);
-        return new KnowledgeException(this.exceptionMap.get(statusCode), ex, ex.getSimpleMessage());
+        KnowledgeManagerRetCode retCode = this.exceptionMap.getOrDefault(statusCode, INTERNAL_SERVICE_ERROR);
+        log.error(retCode.getMsg(), ex);
+        return new KnowledgeException(retCode, ex, ex.getSimpleMessage());
     }
 
     private HttpClassicClient getHttpClient() {
