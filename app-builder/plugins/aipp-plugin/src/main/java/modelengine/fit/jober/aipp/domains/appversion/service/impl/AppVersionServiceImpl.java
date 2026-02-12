@@ -333,12 +333,24 @@ public class AppVersionServiceImpl implements AppVersionService {
         if (appVersion.isPublished()) {
             throw new AippException(AippErrCode.APP_HAS_ALREADY);
         }
-        List<AppTask> tasks = appVersion.getPublishedTasks(context);
-        if (CollectionUtils.isNotEmpty(tasks) && !StringUtils.equals(tasks.get(0).getEntity().getName(),
-                appDto.getName())) {
-            throw new AippException(AippErrCode.APP_NAME_HAS_PUBLISHED);
-        }
+
+        // 检查名称是否发生变化
+        String oldName = appVersion.getData().getName();
+        String newName = appDto.getName();
+        boolean nameChanged = !StringUtils.equals(oldName, newName);
+
         this.validateAppName(appDto.getName(), context);
+
+        // 如果名称发生变化，更新所有草稿态任务的name字段
+        if (nameChanged) {
+            List<AppTask> previewTasks = this.appTaskService.getPreviewTasks(
+                    appVersion.getData().getAppSuiteId(), context);
+            for (AppTask previewTask : previewTasks) {
+                previewTask.getEntity().setName(newName);
+                this.appTaskService.updateTask(previewTask, context);
+            }
+        }
+
         appVersion.getData().setName(appDto.getName());
         appVersion.getData().setUpdateBy(context.getOperator());
         appVersion.getData().setUpdateAt(LocalDateTime.now());
