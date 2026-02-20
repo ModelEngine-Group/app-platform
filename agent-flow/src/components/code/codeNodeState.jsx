@@ -93,7 +93,7 @@ export const codeNodeState = (id, x, y, width, height, parent, drawer) => {
      * @override
      */
     self.maxNumToLink = () => {
-        return 10;
+        return 100;
     };
 
     return self;

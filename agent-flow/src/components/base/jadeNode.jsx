@@ -469,7 +469,7 @@ export const jadeNode = (id, x, y, width, height, parent, drawer) => {
    * @returns {number} 连接数。
    */
   self.maxNumToLink = () => {
-    return 1;
+    return 100;
   };
 
   /**

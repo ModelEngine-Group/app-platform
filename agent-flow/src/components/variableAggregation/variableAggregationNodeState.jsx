@@ -49,7 +49,7 @@ export const variableAggregationNodeState = (id, x, y, width, height, parent, dr
    * @override
    */
   self.maxNumToLink = () => {
-    return 10;
+    return 100;
   };
 
   return self;

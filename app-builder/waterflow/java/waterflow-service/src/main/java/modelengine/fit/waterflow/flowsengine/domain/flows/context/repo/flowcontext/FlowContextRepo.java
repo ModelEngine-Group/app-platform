@@ -92,16 +92,16 @@ public interface FlowContextRepo<T> {
     }
 
     /**
-     * updateToSent
+     * 更新context状态为SENT
      *
-     * @param contexts contexts
+     * @param contexts 上下文列表
      */
     void updateToSent(List<FlowContext<T>> contexts);
 
     /**
-     * updateToReady
+     * 更新context状态为READY
      *
-     * @param contexts contexts
+     * @param contexts 上下文列表
      */
     void updateToReady(List<FlowContext<T>> contexts);
 

@@ -305,7 +305,7 @@ export const jadeFlowPage = (div, graph, name, id) => {
    */
   self.canDragOut = (node, connector) => {
     const lines = self.getEvents().filter(s => s.fromShape === node.id && s.getDefinedFromConnector() === connector);
-    return lines && lines.length < 1;
+    return lines.length < 10;
   };
 
   /**
