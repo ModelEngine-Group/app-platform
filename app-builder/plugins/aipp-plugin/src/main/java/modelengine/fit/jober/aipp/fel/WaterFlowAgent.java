@@ -136,7 +136,7 @@ public class WaterFlowAgent extends AbstractAgent {
         if (mcpServerConfig != null) {
             String url = Validation.notBlank(ObjectUtils.cast(mcpServerConfig.get(AippConst.MCP_SERVER_URL_KEY)),
                     "The mcp url should not be empty.");
-            try (McpClient mcpClient = this.mcpClientFactory.create(McpUtils.getBaseUrl(url),
+            try (McpClient mcpClient = this.mcpClientFactory.createSse(McpUtils.getBaseUrl(url),
                     McpUtils.getSseEndpoint(url))) {
                 mcpClient.initialize();
                 Object result = mcpClient.callTool(toolRealName, JSONObject.parseObject(toolCall.arguments()));

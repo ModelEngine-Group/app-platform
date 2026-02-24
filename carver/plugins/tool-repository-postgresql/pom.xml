@@ -108,8 +108,8 @@
                 <artifactId>fit-build-maven-plugin</artifactId>
                 <version>${fit.version}</version>
                 <configuration>
-                    <category>user</category>
-                    <level>1</level>
+                    <category>system</category>
+                    <level>4</level>
                 </configuration>
                 <executions>
                     <execution>

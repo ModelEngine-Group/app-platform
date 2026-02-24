@@ -129,7 +129,7 @@ class WaterFlowAgentTest {
         }).when(chatModel).generate(any(), any());
         Map<String, Object> toolContext = MapBuilder.<String, Object>get().put("key", "value").build();
         McpClient mcpClient = mock(McpClient.class);
-        when(this.mcpClientFactory.create(baseUrl, sseEndpoint)).thenReturn(mcpClient);
+        when(this.mcpClientFactory.createSse(baseUrl, sseEndpoint)).thenReturn(mcpClient);
         when(mcpClient.callTool(realName, new HashMap<>())).thenReturn("tool result:");
 
         AiProcessFlow<Prompt, ChatMessage> flow = waterFlowAgent.buildFlow();

@@ -379,7 +379,7 @@ public class LlmComponentTest {
         tool.setDescription("desc");
         tool.setInputSchema(new HashMap<>());
         when(mcpCLient.getTools()).thenReturn(Arrays.asList(tool));
-        when(this.mcpClientFactory.create(baseUrl, sseEndpoint)).thenReturn(mcpCLient);
+        when(this.mcpClientFactory.createSse(baseUrl, sseEndpoint)).thenReturn(mcpCLient);
 
         // when
         llmComponent.handleTask(TestUtils.buildFlowDataWithExtraConfig(businessData, null));

@@ -41,7 +41,6 @@ public class DefaultToolService implements ToolService, ToolChangedObserverRegis
 
     private final ToolRepositoryInner toolRepo;
     private final DefinitionService definitionService;
-    // private final ToolChangedObserver toolChangedObserver;
     private final List<ToolChangedObserver> toolChangedObservers = new ArrayList<>();
 
     /**
@@ -49,15 +48,10 @@ public class DefaultToolService implements ToolService, ToolChangedObserverRegis
      *
      * @param toolRepo 表示持久层实例的 {@link ToolRepositoryInner}。
      * @param definitionService 表示定义服务的 {@link DefinitionService}。
-     * @param toolChangedObserver 表示工具变更监听服务的 {@link ToolChangedObserver}。
      */
-    public DefaultToolService(ToolRepositoryInner toolRepo, DefinitionService definitionService,
-            ToolChangedObserver toolChangedObserver) {
+    public DefaultToolService(ToolRepositoryInner toolRepo, DefinitionService definitionService) {
         this.toolRepo = toolRepo;
         this.definitionService = definitionService;
-        // this.toolChangedObserver = toolChangedObserver;
-        // List<Tool.Info> allTools = this.toolRepo.getAllTools();
-        // allTools.forEach(this::onToolAdded);
     }
 
     @Override
