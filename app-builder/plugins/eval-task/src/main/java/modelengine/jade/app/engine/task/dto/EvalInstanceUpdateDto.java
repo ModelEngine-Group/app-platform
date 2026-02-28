@@ -8,8 +8,8 @@ package modelengine.jade.app.engine.task.dto;
 
 import lombok.Data;
 import modelengine.fitframework.annotation.Property;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
 
 import java.time.LocalDateTime;
 

@@ -122,9 +122,9 @@ public class DefaultHttpExceptionAdviceTest {
 
     @Test
     @DisplayName("测试拦截 ConstraintViolationException")
-    @Disabled("框架校验注解无法生效")
+    // @Disabled("升级fit框架validation机制问题")
     public void shouldOkWhenConstraintViolationExceptionWithHibernate() {
-        Mockito.when(this.localeService.localize(Mockito.any(), Mockito.any())).thenReturn("test error");
+        // Mockito.when(this.localeService.localize(Mockito.any(), Mockito.any())).thenReturn("test error");
         this.response = this.mockMvc.perform(MockMvcRequestBuilders.post("/hibernate/blank")
                 .param("name", "")
                 .responseType(TypeUtils.parameterized(Result.class, new Type[] {Void.class})));
@@ -132,7 +132,7 @@ public class DefaultHttpExceptionAdviceTest {
                 .get()
                 .satisfies(objectEntity -> assertThat(objectEntity.object()).hasFieldOrPropertyWithValue("code",
                                 CommonRetCode.BAD_REQUEST.getCode())
-                        .hasFieldOrPropertyWithValue("msg", "test error")
+                        .hasFieldOrPropertyWithValue("msg", "{blank}")
                         .hasFieldOrPropertyWithValue("data", null));
     }
 }

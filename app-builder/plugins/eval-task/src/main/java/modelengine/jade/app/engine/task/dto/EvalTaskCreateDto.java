@@ -10,7 +10,7 @@ import modelengine.jade.app.engine.task.entity.EvalTaskStatusEnum;
 
 import lombok.Data;
 import modelengine.fitframework.annotation.Property;
-import jakarta.validation.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import modelengine.jade.app.engine.task.controller.EvalTaskController;
 
 /**

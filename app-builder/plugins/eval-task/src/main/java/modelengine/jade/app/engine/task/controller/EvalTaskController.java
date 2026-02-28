@@ -24,6 +24,9 @@ import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.validation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 /**
  * 表示评估任务管理接口集。
  *
@@ -32,6 +35,7 @@ import modelengine.fitframework.validation.Validated;
  */
 @Component
 @RequestMapping(path = "/eval/task", group = "评估任务管理接口")
+@Validated
 public class EvalTaskController {
     private final EvalTaskService evalTaskService;
 
@@ -50,7 +54,7 @@ public class EvalTaskController {
      * @param createDto 表示评估任务创建传输对象的 {@link EvalTaskCreateDto}。
      */
     @PostMapping(description = "创建评估任务")
-    public void createEvalTask(@RequestBody @Validated EvalTaskCreateDto createDto) {
+    public void createEvalTask(@RequestBody @Valid EvalTaskCreateDto createDto) {
         EvalTaskEntity entity = EvalTaskConvertor.INSTANCE.convertDtoToEntity(createDto);
         this.evalTaskService.createEvalTask(entity);
     }
@@ -62,7 +66,7 @@ public class EvalTaskController {
      * @return 表示评估任务查询结果的 {@link PageVo}{@code <}{@link EvalTaskEntity}{@code >}。
      */
     @GetMapping(description = "查询评估任务元数据")
-    public PageVo<EvalTaskVo> queryEvalTask(@RequestBean @Validated EvalTaskQueryParam queryParam) {
+    public PageVo<EvalTaskVo> queryEvalTask(@RequestBean @Valid EvalTaskQueryParam queryParam) {
         return this.evalTaskService.listEvalTask(queryParam);
     }
 
@@ -72,7 +76,7 @@ public class EvalTaskController {
      * @param deleteParam 表示评估任务删除参数的 {@link EvalTaskDeleteParam}。
      */
     @DeleteMapping(description = "批量删除评估任务")
-    public void deleteEvalData(@RequestBean @Validated EvalTaskDeleteParam deleteParam) {
+    public void deleteEvalData(@RequestBean @Valid EvalTaskDeleteParam deleteParam) {
         this.evalTaskService.deleteEvalTask(deleteParam.getTaskIds());
     }
 }

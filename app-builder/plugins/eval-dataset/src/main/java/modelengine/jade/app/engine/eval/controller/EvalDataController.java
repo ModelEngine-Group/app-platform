@@ -25,7 +25,7 @@ import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.validation.Validated;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 /**
  * 表示评估数据管理接口集。

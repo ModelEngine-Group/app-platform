@@ -8,9 +8,9 @@ package modelengine.jade.app.engine.task.dto;
 
 import lombok.Data;
 import modelengine.fitframework.annotation.Property;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Positive;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
 import modelengine.jade.app.engine.task.controller.EvalInstanceController;
 
 import java.util.Map;

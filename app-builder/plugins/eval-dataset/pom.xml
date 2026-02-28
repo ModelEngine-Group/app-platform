@@ -27,9 +27,8 @@
             <artifactId>fit-http-classic</artifactId>
         </dependency>
         <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-            <version>3.1.1</version>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
         </dependency>
 
 
@@ -131,6 +130,11 @@
             <groupId>modelengine.fit.jade.plugin</groupId>
             <artifactId>app-engine-http-interceptor</artifactId>
             <version>${jade.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.fitframework.plugin</groupId>
+            <artifactId>fit-validation-hibernate-javax</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

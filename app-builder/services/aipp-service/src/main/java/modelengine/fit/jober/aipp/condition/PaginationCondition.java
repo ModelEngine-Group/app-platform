@@ -12,8 +12,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import modelengine.fit.http.annotation.RequestQuery;
 import modelengine.fitframework.annotation.Property;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
 
 /**
  * 分页条件

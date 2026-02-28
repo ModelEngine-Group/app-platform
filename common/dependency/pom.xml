@@ -59,6 +59,7 @@
         <aws.version>1.12.468</aws.version>
         <opencsv.version>5.7.1</opencsv.version>
         <fastexcel.version>1.1.0</fastexcel.version>
+        <javax.validation.version>2.0.1.Final</javax.validation.version>
 
         <!-- Test framework versions -->
         <assertj.version>3.22.0</assertj.version>
@@ -117,9 +118,14 @@
                 <version>${fit.version}</version>
             </dependency>
             <dependency>
-            <groupId>jakarta.validation</groupId>
-                <artifactId>jakarta.validation-api</artifactId>
-                <version>3.1.1</version>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fitframework.plugin</groupId>
+                <artifactId>fit-validation-hibernate-javax</artifactId>
+                <version>${fit.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.fitframework</groupId>

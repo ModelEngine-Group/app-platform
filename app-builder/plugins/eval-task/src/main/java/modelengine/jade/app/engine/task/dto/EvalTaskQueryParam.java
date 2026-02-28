@@ -10,7 +10,7 @@ import modelengine.jade.common.query.PageQueryParam;
 
 import lombok.Data;
 import modelengine.fitframework.annotation.Property;
-import jakarta.validation.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 表示评估任务询参数。

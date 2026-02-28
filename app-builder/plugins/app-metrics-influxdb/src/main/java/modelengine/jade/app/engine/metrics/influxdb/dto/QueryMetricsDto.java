@@ -8,7 +8,7 @@ package modelengine.jade.app.engine.metrics.influxdb.dto;
 
 import lombok.Data;
 import modelengine.fitframework.annotation.Property;
-import jakarta.validation.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 表示查询指标数据时的查询参数。

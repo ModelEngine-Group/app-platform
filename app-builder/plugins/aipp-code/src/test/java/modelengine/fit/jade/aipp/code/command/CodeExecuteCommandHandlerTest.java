@@ -80,7 +80,7 @@ public class CodeExecuteCommandHandlerTest {
 
     @Test
     @DisplayName("校验参数值成功")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldFailWithInvalidArgs() {
         assertThatThrownBy(() -> this.commandHandler.handle(new CodeExecuteCommand(null,
                 "1",
@@ -91,7 +91,7 @@ public class CodeExecuteCommandHandlerTest {
 
     @Test
     @DisplayName("校验代码值成功")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldFailWithInvalidCode() {
         assertThatThrownBy(() -> this.commandHandler.handle(new CodeExecuteCommand(new HashMap<>(),
                 "",
@@ -102,7 +102,7 @@ public class CodeExecuteCommandHandlerTest {
 
     @Test
     @DisplayName("校验执行语言值成功")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldFailWithInvalidLanguage() {
         assertThatThrownBy(() -> this.commandHandler.handle(new CodeExecuteCommand(new HashMap<>(),
                 "1",
@@ -113,7 +113,7 @@ public class CodeExecuteCommandHandlerTest {
 
     @Test
     @DisplayName("校验 null 值成功")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldFailWithNullInput() {
         assertThatThrownBy(() -> this.commandHandler.handle(null)).isInstanceOf(ConstraintViolationException.class)
                 .extracting("message")

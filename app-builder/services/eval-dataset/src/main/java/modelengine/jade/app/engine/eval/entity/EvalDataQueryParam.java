@@ -8,7 +8,7 @@ package modelengine.jade.app.engine.eval.entity;
 
 import lombok.Data;
 import modelengine.fitframework.annotation.Property;
-import jakarta.validation.constraints.Positive;
+import javax.validation.constraints.Positive;
 import modelengine.jade.common.query.PageQueryParam;
 
 /**

@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import jakarta.validation.constraints.Size;
+import javax.validation.constraints.Size;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fitframework.annotation.Property;
 import modelengine.fitframework.util.ObjectUtils;

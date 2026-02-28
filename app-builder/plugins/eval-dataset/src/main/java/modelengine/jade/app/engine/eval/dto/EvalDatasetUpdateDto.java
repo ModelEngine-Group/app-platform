@@ -10,8 +10,8 @@ import lombok.Data;
 import modelengine.jade.app.engine.eval.controller.EvalDatasetController;
 import modelengine.fitframework.annotation.Property;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 /**
  * 表示评估数据集修改传输对象。

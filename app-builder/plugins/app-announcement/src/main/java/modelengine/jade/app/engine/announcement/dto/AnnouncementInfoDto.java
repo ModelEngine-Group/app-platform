@@ -6,8 +6,8 @@
 
 package modelengine.jade.app.engine.announcement.dto;
 
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

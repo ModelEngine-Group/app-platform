@@ -34,7 +34,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import jakarta.validation.ConstraintViolationException;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 /**
  * 默认全局异常处理器。
@@ -94,8 +95,7 @@ public class DefaultHttpExceptionAdvice implements ExceptionLocaleService {
     public Result<Void> handleException(ConstraintViolationException exception) {
         String localeMessage = exception.getConstraintViolations()
                 .stream()
-                .map(violation -> this.localeService.localize(this.getCode(violation.getMessageTemplate()),
-                        violation.getInvalidValue()))
+                .map(ConstraintViolation::getMessageTemplate)
                 .collect(Collectors.joining(", "));
         return Result.error(BAD_REQUEST.getCode(), localeMessage);
     }

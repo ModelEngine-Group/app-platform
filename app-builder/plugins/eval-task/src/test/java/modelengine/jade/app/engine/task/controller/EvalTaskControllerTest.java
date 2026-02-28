@@ -14,11 +14,14 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import modelengine.fitframework.validation.ValidationHandler;
 import modelengine.jade.app.engine.task.dto.EvalTaskCreateDto;
 import modelengine.jade.app.engine.task.entity.EvalInstanceStatusEnum;
 import modelengine.jade.app.engine.task.entity.EvalTaskStatusEnum;
 import modelengine.jade.app.engine.task.service.EvalTaskService;
 import modelengine.jade.app.engine.task.vo.EvalTaskVo;
+import modelengine.jade.common.filter.support.DefaultHttpExceptionAdvice;
+import modelengine.jade.common.globalization.LocaleService;
 import modelengine.jade.common.vo.PageVo;
 
 import modelengine.fit.http.client.HttpClassicClientResponse;
@@ -86,7 +89,7 @@ public class EvalTaskControllerTest {
 
     @Test
     @DisplayName("创建评估任务接口失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldFailWhenCreateEvalTask() {
         doNothing().when(this.evalTaskService).createEvalTask(any());
 
@@ -110,7 +113,7 @@ public class EvalTaskControllerTest {
 
     @Test
     @DisplayName("批量软删除评估任务接口失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldNotOkWhenDeleteEvalData() {
         doNothing().when(this.evalTaskService).deleteEvalTask(anyList());
         MockRequestBuilder requestBuilder =

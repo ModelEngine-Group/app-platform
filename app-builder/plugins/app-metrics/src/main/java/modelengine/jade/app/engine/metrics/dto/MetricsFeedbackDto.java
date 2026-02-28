@@ -8,8 +8,8 @@ package modelengine.jade.app.engine.metrics.dto;
 
 import modelengine.fit.http.annotation.RequestQuery;
 import modelengine.fitframework.annotation.Property;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
