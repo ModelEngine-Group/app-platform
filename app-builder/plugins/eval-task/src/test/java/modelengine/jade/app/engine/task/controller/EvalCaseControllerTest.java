@@ -106,7 +106,7 @@ public class EvalCaseControllerTest {
 
     @Test
     @DisplayName("分页查询评估用例失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldFailWhenListEvalCase() {
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/eval/task/case")
                 .param("instanceId", "1")

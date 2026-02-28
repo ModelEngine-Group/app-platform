@@ -158,7 +158,7 @@ public class EvalInstanceControllerTest {
 
     @Test
     @DisplayName("分页查询评估任务实例接口失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldFailWhenQueryEvalInstance() {
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/eval/task/instance")
                 .param("taskId", "0")
@@ -187,7 +187,7 @@ public class EvalInstanceControllerTest {
 
     @Test
     @DisplayName("更新评估任务实例接口失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldFailWhenUpdateEvalInstance() {
         doNothing().when(this.evalInstanceService).updateEvalInstance(any());
 

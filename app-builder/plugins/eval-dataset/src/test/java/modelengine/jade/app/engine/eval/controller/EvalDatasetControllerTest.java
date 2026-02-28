@@ -89,7 +89,7 @@ public class EvalDatasetControllerTest {
     }
 
     @Test
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     @DisplayName("创建评估数据集接口失败")
     void shouldNotOkWhenCreateEvalDatasetWithoutApplicationId() {
         doNothing().when(this.evalDatasetService).create(any());
@@ -154,7 +154,7 @@ public class EvalDatasetControllerTest {
 
     @Test
     @DisplayName("非法入参批量删除评估数据集接口失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldFailWhenDeleteEvalDatasetWithInvalidInput() {
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/eval/dataset")
                 .param("datasetIds", Arrays.asList("-1", "2"))
@@ -207,7 +207,7 @@ public class EvalDatasetControllerTest {
 
     @Test
     @DisplayName("缺少参数导致分页查询评估数据集接口失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldNotOkWhenQueryEvalDataset() {
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/eval/dataset")
                 .param("pageIndex", "1")
@@ -258,7 +258,7 @@ public class EvalDatasetControllerTest {
 
     @Test
     @DisplayName("参数错误导致根据 ID 查询评估数据集接口失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldNotOkWhenQueryEvalDatasetById() {
         MockRequestBuilder requestBuilder =
                 MockMvcRequestBuilders.get("/eval/dataset/-1").responseType(EvalDatasetEntity.class);
@@ -300,7 +300,7 @@ public class EvalDatasetControllerTest {
 
     @Test
     @DisplayName("缺少参数导致修改数据集信息接口失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldNotOkWhenUpdateDataset() {
         EvalDatasetUpdateDto updateDto = new EvalDatasetUpdateDto();
         updateDto.setName("name1");

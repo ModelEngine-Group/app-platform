@@ -129,7 +129,7 @@ public class KnowledgeControllerTest {
 
     @Test
     @DisplayName("pageIndex 不合法，获取 edm 知识库列表接口失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldErrWhenPageIndexIllegal() {
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/knowledge-manager/list/repos")
                 .param("groupId", "1")

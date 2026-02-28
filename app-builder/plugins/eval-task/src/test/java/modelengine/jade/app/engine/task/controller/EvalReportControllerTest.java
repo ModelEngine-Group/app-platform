@@ -104,7 +104,7 @@ public class EvalReportControllerTest {
 
     @Test
     @DisplayName("缺少参数导致查询评估数据集接口失败")
-    @Disabled("升级fit框架validation机制问题")
+    // @Disabled("升级fit框架validation机制问题")
     void shouldFailWhenQueryEvalReport() {
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/eval/task/report")
                 .responseType(TypeUtils.parameterized(PageVo.class, new Type[] {EvalReportEntity.class}));
