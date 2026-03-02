@@ -9,18 +9,18 @@ package modelengine.fit.jober.aipp.fitable;
 import static modelengine.fit.jober.aipp.TestUtils.mockFailAsyncJob;
 import static modelengine.fit.jober.aipp.TestUtils.mockResumeFlow;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockConstruction;
 
+import dev.langchain4j.model.chat.request.json.JsonObjectSchema;
 import modelengine.fel.core.chat.ChatOption;
 import modelengine.fel.core.tool.ToolInfo;
 import modelengine.fel.engine.operators.models.ChatFlowModel;
 import modelengine.fel.tool.ToolSchema;
-import modelengine.fel.tool.mcp.client.McpClient;
-import modelengine.fel.tool.mcp.client.McpClientFactory;
-import modelengine.fel.tool.mcp.entity.Tool;
 import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fel.tool.service.ToolExecuteService;
 import modelengine.fit.jade.aipp.formatter.OutputFormatterChain;
@@ -40,6 +40,7 @@ import modelengine.fit.jober.aipp.fel.WaterFlowAgent;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AippLogStreamService;
 import modelengine.fit.jober.aipp.util.JsonUtils;
+import modelengine.fit.jober.aipp.util.LangChain4jMcpClient;
 import modelengine.fit.waterflow.domain.context.StateContext;
 
 import modelengine.fel.core.chat.ChatMessage;
@@ -61,11 +62,14 @@ import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.jade.store.service.ToolService;
 
+import dev.langchain4j.agent.tool.ToolSpecification;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -103,8 +107,6 @@ public class LlmComponentTest {
     private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
     @Mock
     private AippModelCenter aippModelCenter;
-    @Mock
-    private McpClientFactory mcpClientFactory;
     @Mock
     private OutputFormatterChain formatterChain;
 
@@ -168,7 +170,7 @@ public class LlmComponentTest {
     }
 
     private AbstractAgent getWaterFlowAgent(ChatModel model) {
-        return new WaterFlowAgent(this.toolExecuteService, model, this.mcpClientFactory);
+        return new WaterFlowAgent(this.toolExecuteService, model);
     }
 
     private ChatModel buildChatStreamModel(String exceptionMsg) {
@@ -242,8 +244,7 @@ public class LlmComponentTest {
                 this.aippModelCenter,
                 this.promptBuilderChain,
                 this.appTaskInstanceService,
-                this.formatterChain,
-                this.mcpClientFactory, null);
+                this.formatterChain, null);
 
         // mock
         CountDownLatch countDownLatch = mockFailAsyncJob(flowInstanceService);
@@ -372,30 +373,35 @@ public class LlmComponentTest {
         Map<Object, Object> mcpServerInfo = MapBuilder.get().put("url", url).build();
         String serverName = "server1";
         businessData.put(AippConst.MCP_SERVERS_KEY, MapBuilder.get().put(serverName, mcpServerInfo).build());
-        McpClient mcpCLient = Mockito.mock(McpClient.class);
-        doNothing().when(mcpCLient).initialize();
-        Tool tool = new Tool();
-        tool.setName("tool1");
-        tool.setDescription("desc");
-        tool.setInputSchema(new HashMap<>());
-        when(mcpCLient.getTools()).thenReturn(Arrays.asList(tool));
-        when(this.mcpClientFactory.create(baseUrl, sseEndpoint)).thenReturn(mcpCLient);
+        
+        ToolSpecification tool = ToolSpecification.builder()
+                .name("tool1")
+                .description("desc")
+                .parameters(JsonObjectSchema.builder()
+                        .addProperties(new HashMap<>())
+                        .required(List.of())
+                        .build())
+                .build();
+        
+        try (MockedConstruction<LangChain4jMcpClient> mockedConstruction = mockConstruction(LangChain4jMcpClient.class,
+                (mock, context) -> {
+                    when(mock.getTools()).thenReturn(Arrays.asList(tool));
+                })) {
+            // when
+            llmComponent.handleTask(TestUtils.buildFlowDataWithExtraConfig(businessData, null));
 
-        // when
-        llmComponent.handleTask(TestUtils.buildFlowDataWithExtraConfig(businessData, null));
-
-        // then
-        countDownLatch.await();
-        ArgumentCaptor<ChatOption> chatOptionCaptor = ArgumentCaptor.forClass(ChatOption.class);
-        Mockito.verify(chatModel).generate(any(), chatOptionCaptor.capture());
-        ChatOption capturedChatOptions = chatOptionCaptor.getValue();
-        Assertions.assertTrue(CollectionUtils.isNotEmpty(capturedChatOptions.tools()));
-        Assertions.assertEquals(1, capturedChatOptions.tools().size());
-        ToolInfo toolInfo = capturedChatOptions.tools().get(0);
-        Assertions.assertEquals("mcp_" + serverName + "_" + tool.getName(), toolInfo.name());
-        Assertions.assertEquals(tool.getDescription(), toolInfo.description());
-        Assertions.assertEquals(tool.getInputSchema(), toolInfo.parameters());
-        Assertions.assertEquals(mcpServerInfo, toolInfo.extensions().get(AippConst.MCP_SERVER_KEY));
+            // then
+            countDownLatch.await();
+            ArgumentCaptor<ChatOption> chatOptionCaptor = ArgumentCaptor.forClass(ChatOption.class);
+            Mockito.verify(chatModel).generate(any(), chatOptionCaptor.capture());
+            ChatOption capturedChatOptions = chatOptionCaptor.getValue();
+            Assertions.assertTrue(CollectionUtils.isNotEmpty(capturedChatOptions.tools()));
+            Assertions.assertEquals(1, capturedChatOptions.tools().size());
+            ToolInfo toolInfo = capturedChatOptions.tools().get(0);
+            Assertions.assertEquals("mcp_" + serverName + "_" + tool.name(), toolInfo.name());
+            Assertions.assertEquals(tool.description(), toolInfo.description());
+            Assertions.assertEquals(mcpServerInfo, toolInfo.extensions().get(AippConst.MCP_SERVER_KEY));
+        }
     }
 
     private LlmComponent getLlmComponent(final AbstractAgent agent) {
@@ -408,8 +414,7 @@ public class LlmComponentTest {
                 this.aippModelCenter,
                 this.promptBuilderChain,
                 this.appTaskInstanceService,
-                this.formatterChain,
-                this.mcpClientFactory, null);
+                this.formatterChain, null);
     }
 
     private void prepareModel() {

@@ -20,13 +20,10 @@ import modelengine.fel.engine.flows.AiFlows;
 import modelengine.fel.engine.flows.AiProcessFlow;
 import modelengine.fel.engine.operators.patterns.AbstractAgent;
 import modelengine.fel.engine.operators.prompts.Prompts;
-import modelengine.fel.tool.mcp.client.McpClient;
-import modelengine.fel.tool.mcp.client.McpClientFactory;
-import modelengine.fel.tool.mcp.entity.Tool;
 import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
 import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
-import modelengine.fit.jober.aipp.util.McpUtils;
+import modelengine.fit.jober.aipp.util.LangChain4jMcpClient;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jade.aipp.formatter.OutputFormatterChain;
@@ -69,6 +66,9 @@ import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.fitframework.util.UuidUtils;
+
+import dev.langchain4j.model.chat.request.json.JsonObjectSchema;
+import dev.langchain4j.agent.tool.ToolSpecification;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -113,7 +113,6 @@ public class LlmComponent implements FlowableService {
     private final AippModelCenter aippModelCenter;
     private final PromptBuilderChain promptBuilderChain;
     private final AppTaskInstanceService appTaskInstanceService;
-    private final McpClientFactory mcpClientFactory;
     private final OutputFormatterChain formatterChain;
     private final AppVersionService appVersionService;
 
@@ -129,7 +128,6 @@ public class LlmComponent implements FlowableService {
      * @param aippModelCenter 表示模型中心的 {@link AippModelCenter}。
      * @param promptBuilderChain 表示提示器构造器职责链的 {@link PromptBuilderChain}。
      * @param appTaskInstanceService 表示任务实例服务的 {@link AppTaskInstanceService}。
-     * @param mcpClientFactory 表示大模型上下文客户端工厂的 {@link McpClientFactory}。
      */
     public LlmComponent(FlowInstanceService flowInstanceService,
             @Fit ToolService toolService,
@@ -141,7 +139,7 @@ public class LlmComponent implements FlowableService {
             PromptBuilderChain promptBuilderChain,
             AppTaskInstanceService appTaskInstanceService,
             OutputFormatterChain formatterChain,
-            McpClientFactory mcpClientFactory, AppVersionService appVersionService) {
+            AppVersionService appVersionService) {
         this.flowInstanceService = flowInstanceService;
         this.toolService = toolService;
         this.aippLogService = aippLogService;
@@ -157,7 +155,6 @@ public class LlmComponent implements FlowableService {
                 .close();
         this.promptBuilderChain = promptBuilderChain;
         this.appTaskInstanceService = appTaskInstanceService;
-        this.mcpClientFactory = notNull(mcpClientFactory, "The mcp client factory cannot be null.");
         this.formatterChain = formatterChain;
         this.appVersionService = appVersionService;
     }
@@ -482,12 +479,12 @@ public class LlmComponent implements FlowableService {
             String url = Validation.notBlank(ObjectUtils.cast(serverConfig.get(AippConst.MCP_SERVER_URL_KEY)),
                     "The mcp url should not be empty.");
 
-            try (McpClient mcpClient = this.mcpClientFactory.create(McpUtils.getBaseUrl(url),
-                    McpUtils.getSseEndpoint(url))) {
-                mcpClient.initialize();
-                List<Tool> tools = mcpClient.getTools();
-                result.addAll(tools.stream().map(tool -> buildMcpToolInfo(serverName, tool, serverConfig)).toList());
-            } catch (IOException exception) {
+            try (LangChain4jMcpClient mcpClient = new LangChain4jMcpClient(url)) {
+                List<ToolSpecification> tools = mcpClient.getTools();
+                result.addAll(tools.stream()
+                        .map(tool -> buildMcpToolInfo(serverName, tool, serverConfig))
+                        .toList());
+            } catch (Exception exception) {
                 throw new AippException(AippErrCode.CALL_MCP_SERVER_FAILED, exception.getMessage());
             }
         });
@@ -515,14 +512,23 @@ public class LlmComponent implements FlowableService {
                 .build();
     }
 
-    private static ToolInfo buildMcpToolInfo(String serverName, Tool tool, Map<String, Object> serverConfig) {
+    private static ToolInfo buildMcpToolInfo(String serverName, 
+            ToolSpecification tool, Map<String, Object> serverConfig) {
+        JsonObjectSchema toolParams = tool.parameters();
+        Map<String, Object> parametersMap = new HashMap<>();
+        if (toolParams != null) {
+            parametersMap.put("type", "object");
+            parametersMap.put("properties", toolParams.properties());
+            parametersMap.put("required", toolParams.required());
+        }
+        
         return ToolInfo.custom()
-                .name(buildUniqueToolName(AippConst.MCP_SERVER_TYPE, serverName, tool.getName()))
-                .description(tool.getDescription())
-                .parameters(tool.getInputSchema())
+                .name(buildUniqueToolName(AippConst.MCP_SERVER_TYPE, serverName, tool.name()))
+                .description(tool.description())
+                .parameters(parametersMap)
                 .extensions(MapBuilder.<String, Object>get()
                         .put(AippConst.MCP_SERVER_KEY, serverConfig)
-                        .put(AippConst.TOOL_REAL_NAME, tool.getName())
+                        .put(AippConst.TOOL_REAL_NAME, tool.name())
                         .build())
                 .build();
     }
