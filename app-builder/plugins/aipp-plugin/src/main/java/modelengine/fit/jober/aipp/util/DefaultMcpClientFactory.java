@@ -17,7 +17,7 @@ import modelengine.fitframework.annotation.Component;
 @Component
 public class DefaultMcpClientFactory implements McpClientFactory {
     @Override
-    public LangChain4jMcpClient apply(String url) {
+    public LangChain4jMcpClient create(String url) {
         return new LangChain4jMcpClient(url);
     }
 }

@@ -486,7 +486,7 @@ public class LlmComponent implements FlowableService {
             String url = Validation.notBlank(ObjectUtils.cast(serverConfig.get(AippConst.MCP_SERVER_URL_KEY)),
                     "The mcp url should not be empty.");
 
-            try (LangChain4jMcpClient mcpClient = this.mcpClientFactory.apply(url)) {
+            try (LangChain4jMcpClient mcpClient = this.mcpClientFactory.create(url)) {
                 List<ToolSpecification> tools = mcpClient.getTools();
                 result.addAll(tools.stream()
                         .map(tool -> buildMcpToolInfo(serverName, tool, serverConfig))

@@ -137,7 +137,7 @@ class WaterFlowAgentTest {
         doNothing().when(mockMcpClient).close();
         
         McpClientFactory mockFactory = mock(McpClientFactory.class);
-        when(mockFactory.apply(any())).thenReturn(mockMcpClient);
+        when(mockFactory.create(any())).thenReturn(mockMcpClient);
         
         WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel, mockFactory);
         

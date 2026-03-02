@@ -6,15 +6,18 @@
 
 package modelengine.fit.jober.aipp.util;
 
-import modelengine.fit.jober.aipp.util.LangChain4jMcpClient;
-
-import java.util.function.Function;
-
 /**
  * MCP 客户端工厂接口，用于创建 {@link LangChain4jMcpClient} 实例。
  *
  * @author songyongtan
  * @since 2026-03-02
  */
-public interface McpClientFactory extends Function<String, LangChain4jMcpClient> {
+public interface McpClientFactory {
+    /**
+     * 创建 MCP 客户端实例。
+     *
+     * @param url 表示 MCP 服务器的 URL。
+     * @return 返回创建的 {@link LangChain4jMcpClient} 实例。
+     */
+    LangChain4jMcpClient create(String url);
 }
