@@ -12,9 +12,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mockConstruction;
 
 import dev.langchain4j.model.chat.request.json.JsonObjectSchema;
 import modelengine.fel.core.chat.ChatOption;
@@ -69,7 +69,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -383,25 +382,26 @@ public class LlmComponentTest {
                         .build())
                 .build();
         
-        try (MockedConstruction<LangChain4jMcpClient> mockedConstruction = mockConstruction(LangChain4jMcpClient.class,
-                (mock, context) -> {
-                    when(mock.getTools()).thenReturn(Arrays.asList(tool));
-                })) {
-            // when
-            llmComponent.handleTask(TestUtils.buildFlowDataWithExtraConfig(businessData, null));
+        LangChain4jMcpClient mockMcpClient = mock(LangChain4jMcpClient.class);
+        when(mockMcpClient.getTools()).thenReturn(Arrays.asList(tool));
+        doNothing().when(mockMcpClient).close();
+        
+        llmComponent.setMcpClientFactory(clientUrl -> mockMcpClient);
+        
+        // when
+        llmComponent.handleTask(TestUtils.buildFlowDataWithExtraConfig(businessData, null));
 
-            // then
-            countDownLatch.await();
-            ArgumentCaptor<ChatOption> chatOptionCaptor = ArgumentCaptor.forClass(ChatOption.class);
-            Mockito.verify(chatModel).generate(any(), chatOptionCaptor.capture());
-            ChatOption capturedChatOptions = chatOptionCaptor.getValue();
-            Assertions.assertTrue(CollectionUtils.isNotEmpty(capturedChatOptions.tools()));
-            Assertions.assertEquals(1, capturedChatOptions.tools().size());
-            ToolInfo toolInfo = capturedChatOptions.tools().get(0);
-            Assertions.assertEquals("mcp_" + serverName + "_" + tool.name(), toolInfo.name());
-            Assertions.assertEquals(tool.description(), toolInfo.description());
-            Assertions.assertEquals(mcpServerInfo, toolInfo.extensions().get(AippConst.MCP_SERVER_KEY));
-        }
+        // then
+        countDownLatch.await();
+        ArgumentCaptor<ChatOption> chatOptionCaptor = ArgumentCaptor.forClass(ChatOption.class);
+        Mockito.verify(chatModel).generate(any(), chatOptionCaptor.capture());
+        ChatOption capturedChatOptions = chatOptionCaptor.getValue();
+        Assertions.assertTrue(CollectionUtils.isNotEmpty(capturedChatOptions.tools()));
+        Assertions.assertEquals(1, capturedChatOptions.tools().size());
+        ToolInfo toolInfo = capturedChatOptions.tools().get(0);
+        Assertions.assertEquals("mcp_" + serverName + "_" + tool.name(), toolInfo.name());
+        Assertions.assertEquals(tool.description(), toolInfo.description());
+        Assertions.assertEquals(mcpServerInfo, toolInfo.extensions().get(AippConst.MCP_SERVER_KEY));
     }
 
     private LlmComponent getLlmComponent(final AbstractAgent agent) {

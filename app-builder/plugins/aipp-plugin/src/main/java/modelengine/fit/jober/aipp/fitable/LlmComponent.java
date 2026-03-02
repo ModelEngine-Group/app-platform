@@ -115,6 +115,7 @@ public class LlmComponent implements FlowableService {
     private final AppTaskInstanceService appTaskInstanceService;
     private final OutputFormatterChain formatterChain;
     private final AppVersionService appVersionService;
+    private java.util.function.Function<String, LangChain4jMcpClient> mcpClientFactory = LangChain4jMcpClient::new;
 
     /**
      * 大模型节点构造器，内部通过提供的 agent 和 tool 构建智能体工作流。
@@ -479,7 +480,7 @@ public class LlmComponent implements FlowableService {
             String url = Validation.notBlank(ObjectUtils.cast(serverConfig.get(AippConst.MCP_SERVER_URL_KEY)),
                     "The mcp url should not be empty.");
 
-            try (LangChain4jMcpClient mcpClient = new LangChain4jMcpClient(url)) {
+            try (LangChain4jMcpClient mcpClient = this.mcpClientFactory.apply(url)) {
                 List<ToolSpecification> tools = mcpClient.getTools();
                 result.addAll(tools.stream()
                         .map(tool -> buildMcpToolInfo(serverName, tool, serverConfig))
@@ -489,6 +490,10 @@ public class LlmComponent implements FlowableService {
             }
         });
         return result;
+    }
+
+    void setMcpClientFactory(java.util.function.Function<String, LangChain4jMcpClient> mcpClientFactory) {
+        this.mcpClientFactory = mcpClientFactory;
     }
 
     private List<ToolInfo> buildToolInfos(List<String> skillNameList) {
