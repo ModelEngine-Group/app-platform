@@ -19,6 +19,7 @@ import modelengine.fel.engine.flows.AiProcessFlow;
 import modelengine.fel.tool.service.ToolExecuteService;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.util.LangChain4jMcpClient;
+import modelengine.fit.jober.aipp.util.McpClientFactory;
 import modelengine.fitframework.flowable.Choir;
 import modelengine.fitframework.util.MapBuilder;
 
@@ -26,8 +27,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockedConstruction;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -50,7 +50,6 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mockConstruction;
 
 /**
  * {@link WaterFlowAgent} 的测试。
@@ -69,7 +68,7 @@ class WaterFlowAgentTest {
     @Test
     void shouldGetResultWhenRunFlowGivenNoToolCall() {
         WaterFlowAgent waterFlowAgent =
-                new WaterFlowAgent(this.toolExecuteService, this.chatModel);
+                new WaterFlowAgent(this.toolExecuteService, this.chatModel, mock(McpClientFactory.class));
 
         String expectResult = "0123";
         doAnswer(invocation -> Choir.create(emitter -> {
@@ -89,7 +88,7 @@ class WaterFlowAgentTest {
 
     @Test
     void shouldGetResultWhenRunFlowGivenStoreToolCall() {
-        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel);
+        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel, mock(McpClientFactory.class));
 
         String expectResult = "tool result:0123";
         String realName = "realName";
@@ -118,8 +117,6 @@ class WaterFlowAgentTest {
 
     @Test
     void shouldGetResultWhenRunFlowGivenMcpToolCall() {
-        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel);
-
         String expectResult = "tool result:0123";
         String realName = "realName";
         String url = "http://localhost/sse";
@@ -139,7 +136,10 @@ class WaterFlowAgentTest {
         when(mockMcpClient.callTool(realName, "{}")).thenReturn("tool result:");
         doNothing().when(mockMcpClient).close();
         
-        waterFlowAgent.setMcpClientFactory(clientUrl -> mockMcpClient);
+        McpClientFactory mockFactory = mock(McpClientFactory.class);
+        when(mockFactory.apply(any())).thenReturn(mockMcpClient);
+        
+        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel, mockFactory);
         
         AiProcessFlow<Prompt, ChatMessage> flow = waterFlowAgent.buildFlow();
         ChatMessage result = flow.converse()

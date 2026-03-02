@@ -41,6 +41,7 @@ import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AippLogStreamService;
 import modelengine.fit.jober.aipp.util.JsonUtils;
 import modelengine.fit.jober.aipp.util.LangChain4jMcpClient;
+import modelengine.fit.jober.aipp.util.McpClientFactory;
 import modelengine.fit.waterflow.domain.context.StateContext;
 
 import modelengine.fel.core.chat.ChatMessage;
@@ -169,7 +170,7 @@ public class LlmComponentTest {
     }
 
     private AbstractAgent getWaterFlowAgent(ChatModel model) {
-        return new WaterFlowAgent(this.toolExecuteService, model);
+        return new WaterFlowAgent(this.toolExecuteService, model, mock(McpClientFactory.class));
     }
 
     private ChatModel buildChatStreamModel(String exceptionMsg) {
@@ -243,7 +244,7 @@ public class LlmComponentTest {
                 this.aippModelCenter,
                 this.promptBuilderChain,
                 this.appTaskInstanceService,
-                this.formatterChain, null);
+                this.formatterChain, null, mock(McpClientFactory.class));
 
         // mock
         CountDownLatch countDownLatch = mockFailAsyncJob(flowInstanceService);
@@ -362,7 +363,6 @@ public class LlmComponentTest {
         })).when(chatModel).generate(any(), any());
 
         AbstractAgent agent = this.getWaterFlowAgent(chatModel);
-        LlmComponent llmComponent = getLlmComponent(agent);
 
         CountDownLatch countDownLatch = mockResumeFlow(flowInstanceService);
         Map<String, Object> businessData = buildLlmTestData();
@@ -386,7 +386,10 @@ public class LlmComponentTest {
         when(mockMcpClient.getTools()).thenReturn(Arrays.asList(tool));
         doNothing().when(mockMcpClient).close();
         
-        llmComponent.setMcpClientFactory(clientUrl -> mockMcpClient);
+        McpClientFactory mockFactory = mock(McpClientFactory.class);
+        when(mockFactory.apply(any())).thenReturn(mockMcpClient);
+        
+        LlmComponent llmComponent = getLlmComponent(agent, mockFactory);
         
         // when
         llmComponent.handleTask(TestUtils.buildFlowDataWithExtraConfig(businessData, null));
@@ -405,6 +408,10 @@ public class LlmComponentTest {
     }
 
     private LlmComponent getLlmComponent(final AbstractAgent agent) {
+        return getLlmComponent(agent, mock(McpClientFactory.class));
+    }
+
+    private LlmComponent getLlmComponent(final AbstractAgent agent, McpClientFactory mcpClientFactory) {
         return new LlmComponent(this.flowInstanceService,
                 this.toolService,
                 agent,
@@ -414,7 +421,7 @@ public class LlmComponentTest {
                 this.aippModelCenter,
                 this.promptBuilderChain,
                 this.appTaskInstanceService,
-                this.formatterChain, null);
+                this.formatterChain, null, mcpClientFactory);
     }
 
     private void prepareModel() {

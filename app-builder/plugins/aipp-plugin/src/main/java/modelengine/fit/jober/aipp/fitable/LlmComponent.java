@@ -24,6 +24,7 @@ import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
 import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
 import modelengine.fit.jober.aipp.util.LangChain4jMcpClient;
+import modelengine.fit.jober.aipp.util.McpClientFactory;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.jade.store.service.ToolService;
 import modelengine.fit.jade.aipp.formatter.OutputFormatterChain;
@@ -115,7 +116,7 @@ public class LlmComponent implements FlowableService {
     private final AppTaskInstanceService appTaskInstanceService;
     private final OutputFormatterChain formatterChain;
     private final AppVersionService appVersionService;
-    private java.util.function.Function<String, LangChain4jMcpClient> mcpClientFactory = LangChain4jMcpClient::new;
+    private final McpClientFactory mcpClientFactory;
 
     /**
      * 大模型节点构造器，内部通过提供的 agent 和 tool 构建智能体工作流。
@@ -129,6 +130,9 @@ public class LlmComponent implements FlowableService {
      * @param aippModelCenter 表示模型中心的 {@link AippModelCenter}。
      * @param promptBuilderChain 表示提示器构造器职责链的 {@link PromptBuilderChain}。
      * @param appTaskInstanceService 表示任务实例服务的 {@link AppTaskInstanceService}。
+     * @param formatterChain 表示输出格式化器链的 {@link OutputFormatterChain}。
+     * @param appVersionService 表示应用版本服务的 {@link AppVersionService}。
+     * @param mcpClientFactory 表示 MCP 客户端工厂的 {@link McpClientFactory}。
      */
     public LlmComponent(FlowInstanceService flowInstanceService,
             @Fit ToolService toolService,
@@ -140,13 +144,15 @@ public class LlmComponent implements FlowableService {
             PromptBuilderChain promptBuilderChain,
             AppTaskInstanceService appTaskInstanceService,
             OutputFormatterChain formatterChain,
-            AppVersionService appVersionService) {
+            AppVersionService appVersionService,
+            McpClientFactory mcpClientFactory) {
         this.flowInstanceService = flowInstanceService;
         this.toolService = toolService;
         this.aippLogService = aippLogService;
         this.aippLogStreamService = aippLogStreamService;
         this.serializer = notNull(serializer, "The serializer cannot be nul.");
         this.aippModelCenter = aippModelCenter;
+        this.mcpClientFactory = mcpClientFactory;
 
         // handleTask从入口开始处理，callback从agent node开始处理
         this.agentFlow = AiFlows.<Tip>create()
@@ -490,10 +496,6 @@ public class LlmComponent implements FlowableService {
             }
         });
         return result;
-    }
-
-    void setMcpClientFactory(java.util.function.Function<String, LangChain4jMcpClient> mcpClientFactory) {
-        this.mcpClientFactory = mcpClientFactory;
     }
 
     private List<ToolInfo> buildToolInfos(List<String> skillNameList) {
