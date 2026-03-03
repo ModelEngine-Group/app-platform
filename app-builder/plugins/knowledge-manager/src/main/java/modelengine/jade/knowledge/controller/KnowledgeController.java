@@ -16,6 +16,8 @@ import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.validation.Validated;
+
+import javax.validation.Valid;
 import modelengine.jade.common.vo.PageVo;
 import modelengine.jade.knowledge.KnowledgeCenterService;
 import modelengine.jade.knowledge.KnowledgeI18nInfo;
@@ -45,6 +47,7 @@ import java.util.stream.Collectors;
  */
 @Component
 @RequestMapping(path = {"/knowledge-manager"})
+@Validated
 public class KnowledgeController extends AbstractController {
 
     private final KnowledgeI18nService knowledgeI18nService;
@@ -89,7 +92,7 @@ public class KnowledgeController extends AbstractController {
     @GetMapping("/list/repos")
     public PageVo<KnowledgeRepo> getRepoList(HttpClassicServerRequest httpRequest,
             @RequestParam(value = "groupId", required = false) String groupId,
-            @RequestBean @Validated ListRepoQueryParam param,
+            @RequestBean @Valid ListRepoQueryParam param,
             @RequestParam(value = "knowledgeConfigId", required = false) String knowledgeConfigId) {
         OperationContext operationContext = this.contextOf(httpRequest, "");
         String apiKey = this.knowledgeCenterService.getApiKey(knowledgeConfigId, operationContext.getOperator());

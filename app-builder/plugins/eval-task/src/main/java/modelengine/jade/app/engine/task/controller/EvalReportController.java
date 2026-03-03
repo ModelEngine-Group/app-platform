@@ -18,6 +18,8 @@ import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.validation.Validated;
 
+import javax.validation.Valid;
+
 /**
  * 表示评估任务报告管理接口。
  *
@@ -26,6 +28,7 @@ import modelengine.fitframework.validation.Validated;
  */
 @Component
 @RequestMapping(path = "/eval/task/report", group = "评估任务报告管理接口")
+@Validated
 public class EvalReportController {
     private final EvalReportService evalReportService;
 
@@ -45,7 +48,7 @@ public class EvalReportController {
      * @return 表示评估任务报告查询结果的 {@link PageVo}{@code <}{@link EvalReportEntity}{@code >}。
      */
     @GetMapping(description = "查询评估数据报告元数据")
-    public PageVo<EvalReportVo> queryEvalReport(@RequestBean @Validated EvalReportQueryParam queryParam) {
+    public PageVo<EvalReportVo> queryEvalReport(@RequestBean @Valid EvalReportQueryParam queryParam) {
         return this.evalReportService.listEvalReport(queryParam);
     }
 }

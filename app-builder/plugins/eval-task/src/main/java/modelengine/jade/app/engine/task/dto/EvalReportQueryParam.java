@@ -8,6 +8,7 @@ package modelengine.jade.app.engine.task.dto;
 
 import lombok.Data;
 import modelengine.fitframework.annotation.Property;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import modelengine.jade.app.engine.task.controller.EvalReportController;
 
@@ -21,6 +22,7 @@ import modelengine.jade.app.engine.task.controller.EvalReportController;
 @Data
 public class EvalReportQueryParam {
     @Property(description = "评估任务实例唯一标识", required = true)
+    @NotNull(message = "The instance id cannot be null.")
     @Positive(message = "The instance id is invalid.")
     private Long instanceId;
 }

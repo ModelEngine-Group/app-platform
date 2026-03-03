@@ -95,7 +95,7 @@ public class CodeExecuteCommandHandlerTest {
     void shouldFailWithInvalidCode() {
         assertThatThrownBy(() -> this.commandHandler.handle(new CodeExecuteCommand(new HashMap<>(),
                 "",
-                ProgrammingLanguage.PYTHON))).isInstanceOf(CodeExecuteCommand.class)
+                ProgrammingLanguage.PYTHON))).isInstanceOf(ConstraintViolationException.class)
                 .extracting("message")
                 .isEqualTo("handle.command.code: Code cannot be blank.");
     }

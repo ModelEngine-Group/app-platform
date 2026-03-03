@@ -14,9 +14,9 @@
         <java.version>17</java.version>
 
         <!-- Framework version -->
-        <fit.version>3.6.3</fit.version>
-        <fel.version>3.6.3</fel.version>
-        <waterflow.core.version>3.6.3</waterflow.core.version>
+        <fit.version>3.6.4-SNAPSHOT</fit.version>
+        <fel.version>3.6.4-SNAPSHOT</fel.version>
+        <waterflow.core.version>3.6.4-SNAPSHOT</waterflow.core.version>
         <waterflow.version>1.0.0-SNAPSHOT</waterflow.version>
         <carver.version>1.0.0-SNAPSHOT</carver.version>
         <store.version>1.0.0-SNAPSHOT</store.version>
@@ -51,6 +51,7 @@
         <retrofit2.version>2.10.0</retrofit2.version>
         <poi.version>5.4.0</poi.version>
         <redisson.version>3.25.2</redisson.version>
+        <netty.version>4.2.9.Final</netty.version>
         <caffeine.version>2.9.3</caffeine.version>
         <pdfbox.version>2.0.30</pdfbox.version>
         <opentelemetry.version>1.31.0</opentelemetry.version>
@@ -528,6 +529,52 @@
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
                 <version>${redisson.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-common</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-buffer</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-resolver</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-resolver-dns</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-native-unix-common</artifactId>
+                <version>${netty.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>

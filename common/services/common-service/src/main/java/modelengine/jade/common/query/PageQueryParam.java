@@ -10,9 +10,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import modelengine.fitframework.annotation.Property;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 /**
  * 表示分页查询参数的实体。
  *
@@ -24,10 +25,12 @@ import javax.validation.constraints.Max;
 @AllArgsConstructor
 public class PageQueryParam {
     @Property(description = "页码", example = "1", defaultValue = "1")
+    @NotNull(message = "页码不能为空")
     @Positive(message = "页码从1开始")
     private Integer pageIndex;
 
     @Property(description = "页面大小", example = "10", defaultValue = "10")
+    @NotNull(message = "页面大小不能为空")
     @Min(value = 1, message = "每页尺寸范围[1, 100]")
     @Max(value = 100, message = "每页尺寸范围[1, 100]")
     private Integer pageSize;

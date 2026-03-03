@@ -17,6 +17,8 @@ import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.validation.Validated;
 
+import javax.validation.Valid;
+
 /**
  * 表示评估任务用例管理接口集。
  *
@@ -25,6 +27,7 @@ import modelengine.fitframework.validation.Validated;
  */
 @Component
 @RequestMapping(path = "/eval/task/case", group = "评估任务用例管理接口")
+@Validated
 public class EvalCaseController {
     private final EvalCaseService evalCaseService;
 
@@ -44,7 +47,7 @@ public class EvalCaseController {
      * @return 表示评估任务用例查询结果的 {@link PageVo}{@code <}{@link EvalCaseVo}{@code >}。
      */
     @GetMapping(description = "查询评估数据报告元数据")
-    public PageVo<EvalCaseVo> queryEvalCase(@RequestBean @Validated EvalCaseQueryParam queryParam) {
+    public PageVo<EvalCaseVo> queryEvalCase(@RequestBean @Valid EvalCaseQueryParam queryParam) {
         return this.evalCaseService.listEvalCase(queryParam);
     }
 }

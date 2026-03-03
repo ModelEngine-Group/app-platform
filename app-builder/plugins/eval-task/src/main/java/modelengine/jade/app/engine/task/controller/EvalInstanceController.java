@@ -6,18 +6,6 @@
 
 package modelengine.jade.app.engine.task.controller;
 
-import modelengine.fit.jane.common.entity.OperationContext;
-import modelengine.fit.jober.aipp.genericable.AippRunTimeService;
-import modelengine.jade.app.engine.task.convertor.EvalInstanceConvertor;
-import modelengine.jade.app.engine.task.dto.EvalInstanceCreateDto;
-import modelengine.jade.app.engine.task.dto.EvalInstanceQueryParam;
-import modelengine.jade.app.engine.task.dto.EvalInstanceUpdateDto;
-import modelengine.jade.app.engine.task.entity.EvalInstanceEntity;
-import modelengine.jade.app.engine.task.service.EvalInstanceService;
-import modelengine.jade.authentication.context.UserContext;
-import modelengine.jade.authentication.context.UserContextHolder;
-import modelengine.jade.common.vo.PageVo;
-
 import modelengine.fit.http.annotation.GetMapping;
 import modelengine.fit.http.annotation.PostMapping;
 import modelengine.fit.http.annotation.PutMapping;
@@ -25,6 +13,7 @@ import modelengine.fit.http.annotation.RequestBean;
 import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.jane.common.entity.OperationContext;
+import modelengine.fit.jober.aipp.genericable.AippRunTimeService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.validation.Validated;
@@ -36,6 +25,9 @@ import modelengine.jade.app.engine.task.entity.EvalInstanceEntity;
 import modelengine.jade.app.engine.task.service.EvalInstanceService;
 import modelengine.jade.authentication.context.UserContext;
 import modelengine.jade.authentication.context.UserContextHolder;
+import modelengine.jade.common.vo.PageVo;
+
+import javax.validation.Valid;
 
 /**
  * 表示评估任务实例管理接口集。
@@ -45,6 +37,7 @@ import modelengine.jade.authentication.context.UserContextHolder;
  */
 @Component
 @RequestMapping(path = "/eval/task/instance", group = "评估实例管理接口")
+@Validated
 public class EvalInstanceController {
     private final EvalInstanceService evalInstanceService;
 
@@ -82,7 +75,7 @@ public class EvalInstanceController {
      * @param updateDto 表示评估任务实例信息传输对象的 {@link EvalInstanceUpdateDto}。
      */
     @PutMapping(description = "修改评估任务实例")
-    public void updateEvalInstance(@RequestBody @Validated EvalInstanceUpdateDto updateDto) {
+    public void updateEvalInstance(@RequestBody @Valid EvalInstanceUpdateDto updateDto) {
         EvalInstanceEntity entity = EvalInstanceConvertor.INSTANCE.convertDtoToEntity(updateDto);
         this.evalInstanceService.updateEvalInstance(entity);
     }
@@ -94,7 +87,7 @@ public class EvalInstanceController {
      * @return 表示评估任务实例查询结果的 {@link PageVo}{@code <}{@link EvalInstanceEntity}{@code >}。
      */
     @GetMapping(description = "分页查询评估任务实例")
-    public PageVo<EvalInstanceEntity> queryEvalInstance(@RequestBean @Validated EvalInstanceQueryParam queryParam) {
+    public PageVo<EvalInstanceEntity> queryEvalInstance(@RequestBean @Valid EvalInstanceQueryParam queryParam) {
         return this.evalInstanceService.listEvalInstance(queryParam);
     }
 

@@ -9,8 +9,6 @@ package modelengine.jade.carver.telemetry.aop.parsers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import com.alibaba.fastjson.JSONPathException;
-
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 import modelengine.fitframework.util.MapBuilder;
@@ -142,11 +140,11 @@ public class ComplexSpanAttrParserTest {
         assertThat(multiple3).isInstanceOf(Map.class).hasFieldOrPropertyWithValue("kk", "v");
 
         assertThatThrownBy(() -> this.parser.parse("k:$.k1 .k2,kk:k 11",
-                this.kvObj)).isInstanceOf(JSONPathException.class);
+                this.kvObj)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> this.parser.parse("k:$.k1.k\t2,kk:k\n11.k22", this.kvObj)).isInstanceOf(
-                JSONPathException.class);
+                IllegalArgumentException.class);
         assertThatThrownBy(() -> this.parser.parse("k:$.k1.k2,kk:k11.k\r22",
-                this.kvObj)).isInstanceOf(JSONPathException.class);
+                this.kvObj)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
