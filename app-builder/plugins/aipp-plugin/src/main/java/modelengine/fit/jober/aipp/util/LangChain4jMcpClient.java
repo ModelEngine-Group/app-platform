@@ -73,7 +73,7 @@ public class LangChain4jMcpClient implements AutoCloseable {
                     .name(toolName)
                     .arguments(arguments)
                     .build();
-            return this.mcpClient.executeTool(request);
+            return mcpClient.executeTool(request).resultText();
         } catch (Exception e) {
             throw new AippException(AippErrCode.CALL_MCP_SERVER_FAILED, 
                     StringUtils.format("Failed to call tool. [toolName={0}, url={1}]", toolName, this.url), e);

@@ -59,7 +59,7 @@
         <aws.version>1.12.468</aws.version>
         <opencsv.version>5.7.1</opencsv.version>
         <fastexcel.version>1.1.0</fastexcel.version>
-        <langchain4j.version>1.0.0-beta1</langchain4j.version>
+        <langchain4j.version>1.11.0-beta19</langchain4j.version>
 
         <!-- Test framework versions -->
         <assertj.version>3.22.0</assertj.version>
