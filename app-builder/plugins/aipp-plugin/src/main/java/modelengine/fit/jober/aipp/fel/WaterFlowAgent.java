@@ -6,9 +6,6 @@
 
 package modelengine.fit.jober.aipp.fel;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
 import modelengine.fel.core.chat.ChatMessage;
 import modelengine.fel.core.chat.ChatModel;
 import modelengine.fel.core.chat.Prompt;
@@ -22,20 +19,20 @@ import modelengine.fel.engine.flows.AiProcessFlow;
 import modelengine.fel.engine.operators.models.ChatChunk;
 import modelengine.fel.engine.operators.models.ChatFlowModel;
 import modelengine.fel.engine.operators.patterns.AbstractAgent;
-import modelengine.fel.tool.mcp.client.McpClient;
-import modelengine.fel.tool.mcp.client.McpClientFactory;
 import modelengine.fel.tool.service.ToolExecuteService;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.constants.AippConst;
+import modelengine.fit.jober.aipp.util.LangChain4jMcpClient;
+import modelengine.fit.jober.aipp.util.McpClientFactory;
 import modelengine.fit.jober.aipp.util.McpUtils;
 import modelengine.fit.waterflow.domain.context.StateContext;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.inspection.Validation;
+import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.ObjectUtils;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -61,14 +58,14 @@ public class WaterFlowAgent extends AbstractAgent {
      *
      * @param toolExecuteService 表示工具调用服务的 {@link ToolExecuteService}。
      * @param chatStreamModel 表示流式对话大模型的 {@link ChatModel}。
-     * @param mcpClientFactory 表示大模型上下文客户端工厂的 {@link McpClientFactory}。
+     * @param mcpClientFactory 表示 MCP 客户端工厂的 {@link McpClientFactory}。
      */
     public WaterFlowAgent(@Fit ToolExecuteService toolExecuteService, ChatModel chatStreamModel,
             McpClientFactory mcpClientFactory) {
         super(new ChatFlowModel(chatStreamModel, null));
         this.toolExecuteService = Validation.notNull(toolExecuteService, "The tool execute service cannot be null.");
-        this.mcpClientFactory = Validation.notNull(mcpClientFactory, "The mcp client factory cannot be null.");
         this.agentMsgKey = AGENT_MSG_KEY;
+        this.mcpClientFactory = mcpClientFactory;
     }
 
     @Override
@@ -136,12 +133,10 @@ public class WaterFlowAgent extends AbstractAgent {
         if (mcpServerConfig != null) {
             String url = Validation.notBlank(ObjectUtils.cast(mcpServerConfig.get(AippConst.MCP_SERVER_URL_KEY)),
                     "The mcp url should not be empty.");
-            try (McpClient mcpClient = this.mcpClientFactory.create(McpUtils.getBaseUrl(url),
-                    McpUtils.getSseEndpoint(url))) {
-                mcpClient.initialize();
-                Object result = mcpClient.callTool(toolRealName, JSONObject.parseObject(toolCall.arguments()));
-                return new ToolMessage(toolCall.id(), JSON.toJSONString(result));
-            } catch (IOException exception) {
+            try (LangChain4jMcpClient mcpClient = this.mcpClientFactory.create(url)) {
+                String result = mcpClient.callTool(toolRealName, toolCall.arguments());
+                return new ToolMessage(toolCall.id(), result);
+            } catch (Exception exception) {
                 throw new AippException(AippErrCode.CALL_MCP_SERVER_FAILED, exception.getMessage());
             }
         }
