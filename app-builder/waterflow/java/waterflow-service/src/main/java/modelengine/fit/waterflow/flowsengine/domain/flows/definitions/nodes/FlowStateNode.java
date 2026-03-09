@@ -54,7 +54,7 @@ public class FlowStateNode extends FlowNode {
      */
     @Override
     public FitStream.Processor<FlowData, FlowData> getProcessor(String streamId, FlowContextRepo<FlowData> repo,
-            FlowContextMessenger messenger, FlowLocks locks) {
+                                                                FlowContextMessenger messenger, FlowLocks locks) {
         if (!Optional.ofNullable(this.processor).isPresent()) {
             Node<FlowData, FlowData> node = new Node<>(streamId, this.metaId, this::stateProduce, repo, messenger,
                     locks, this.type);

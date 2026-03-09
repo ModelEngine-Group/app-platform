@@ -42,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -322,24 +323,62 @@ public class From<I> extends IdGenerator implements FitStream.Publisher<I> {
         // qualifiedWhens表示的与from节点连接的所有事件，条件节点符合条件的事件在这里筛选，在事件上处理需要下发的context
         java.util.Map<FitStream.Subscription<I, ?>, List<FlowContext<I>>> matchedContexts = new LinkedHashMap<>();
         Set<FlowContext<I>> matchedContextSet = new HashSet<>();
-        qualifiedWhens.forEach(
-                w -> {
-                    List<FlowContext<I>> afterContexts = contexts
-                            .stream()
-                            .filter(c -> w.getWhether().is(c))
-                            .peek(c -> c.setNextPositionId(w.getId()))
-                            .collect(Collectors.toList());
-                    matchedContexts.put(w, afterContexts);
-                    matchedContextSet.addAll(afterContexts);
+        List<FlowContext<I>> forkedContexts = new ArrayList<>();
+        for (FlowContext<I> contextItem : contexts) {
+            List<FitStream.Subscription<I, ?>> matchedSubscriptions = qualifiedWhens.stream()
+                    .filter(w -> w.getWhether().is(contextItem))
+                    .collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(matchedSubscriptions)) {
+                continue;
+            }
+            matchedContextSet.add(contextItem);
+            for (int index = 0; index < matchedSubscriptions.size(); index++) {
+                FitStream.Subscription<I, ?> matchedSubscription = matchedSubscriptions.get(index);
+                FlowContext<I> branchContext = index == 0 ? contextItem : contextItem.fork();
+                branchContext.setNextPositionId(matchedSubscription.getId());
+                matchedContexts.computeIfAbsent(matchedSubscription, key -> new ArrayList<>()).add(branchContext);
+                if (index > 0) {
+                    forkedContexts.add(branchContext);
                 }
-        );
+            }
+        }
+        qualifiedWhens.forEach(w -> matchedContexts.computeIfAbsent(w, key -> new ArrayList<>()));
         List<FlowContext<I>> unMatchedContexts = contexts
                 .stream()
                 .filter(c -> !matchedContextSet.contains(c))
                 .collect(Collectors.toList());
         PreSendCallbackInfo<I> callbackInfo = new PreSendCallbackInfo<>(matchedContexts, unMatchedContexts);
         preSendCallback.accept(callbackInfo);
+        persistForkedContexts(forkedContexts, matchedContexts);
         matchedContexts.forEach(FitStream.Subscription::cache);
+    }
+
+    private void persistForkedContexts(List<FlowContext<I>> forkedContexts,
+            java.util.Map<FitStream.Subscription<I, ?>, List<FlowContext<I>>> matchedContexts) {
+        if (CollectionUtils.isEmpty(forkedContexts)) {
+            return;
+        }
+        Set<String> forkedIds = forkedContexts.stream().map(FlowContext::getId).collect(Collectors.toSet());
+        List<FlowContext<I>> effectiveForkedContexts = matchedContexts.values()
+                .stream()
+                .flatMap(List::stream)
+                .filter(context -> forkedIds.contains(context.getId()))
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(effectiveForkedContexts)) {
+            return;
+        }
+        Set<String> traces = effectiveForkedContexts.stream()
+                .flatMap(context -> context.getTraceId().stream())
+                .collect(Collectors.toSet());
+        Lock lock = this.locks.getDistributedLock(this.locks.streamNodeLockKey(this.streamId, this.id,
+                "ForkContextPool"));
+        lock.lock();
+        try {
+            this.repo.updateContextPool(effectiveForkedContexts, traces);
+            this.repo.save(effectiveForkedContexts);
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**

@@ -27,6 +27,7 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.streams.callbacks.ToCa
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Blocks;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Retryable;
 import modelengine.fit.waterflow.flowsengine.utils.FlowExecutors;
+import modelengine.fit.waterflow.flowsengine.utils.FlowUtil;
 import modelengine.fit.waterflow.flowsengine.utils.PriorityThreadPool;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
@@ -34,13 +35,7 @@ import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -131,6 +126,12 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     private Boolean isAsyncJob = false;
 
     private Processors.Validator<I> validator = (i, all) -> true;
+
+    private FanInMode fanInMode = FanInMode.ANY;
+
+    private boolean fanInModeConfigured = false;
+
+    private Processors.Map<FlowContext<I>, String> mergeKeyGenerator = this::defaultMergeKey;
 
     private Blocks.Block<I> block = null;
 
@@ -389,6 +390,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         if (type == ProcessType.PROCESS && (processT == null || !processRunning)) {
             processRunning = true;
             String threadName = getThreadName(PROCESS_T_NAME_PREFIX);
+
             processT = new Thread(this::process, threadName);
             processT.setUncaughtExceptionHandler((tr, ex) -> LOG.error(tr.getName() + " : " + ex.getMessage()));
             processT.start();
@@ -546,6 +548,13 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         return Optional.ofNullable(this.postFilter).orElseGet(this::defaultFilter);
     }
 
+    private Processors.Filter<I> requestFilter(Processors.Filter<I> fallbackFilter) {
+        if (!FanInMode.ALL.equals(this.fanInMode)) {
+            return fallbackFilter;
+        }
+        return this::selectReadyMergeGroup;
+    }
+
     /**
      * defaultFilter
      *
@@ -567,6 +576,90 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         }
     }
 
+    public void setFanInMode(FanInMode fanInMode) {
+        this.fanInMode = Optional.ofNullable(fanInMode).orElse(FanInMode.ANY);
+        this.fanInModeConfigured = true;
+    }
+
+    public void setMergeKeyGenerator(Processors.Map<FlowContext<I>, String> mergeKeyGenerator) {
+        this.mergeKeyGenerator = Optional.ofNullable(mergeKeyGenerator).orElse(this::defaultMergeKey);
+    }
+
+    private <T1> String defaultMergeKey(FlowContext<T1> context) {
+        String rootId = Optional.ofNullable(context.getRootId()).orElse("");
+        String transId = Optional.ofNullable(context.getTrans()).map(trans -> trans.getId()).orElse("");
+        String traceIds = context.getTraceId().stream().sorted().collect(Collectors.joining(","));
+        return StringUtils.join("|", rootId, transId, traceIds);
+    }
+
+    private <T1> String buildMergeKey(FlowContext<T1> context) {
+        try {
+            String mergeKey = this.mergeKeyGenerator.process(ObjectUtils.cast(context));
+            if (StringUtils.isNotEmpty(mergeKey)) {
+                return mergeKey;
+            }
+        } catch (Exception exception) {
+            LOG.warn("build merge key failed for context: {}", context.getId(), exception);
+        }
+        return defaultMergeKey(context);
+    }
+
+    private <T1> List<FlowContext<T1>> filterReadyByFanIn(List<FlowContext<T1>> candidates) {
+        if (CollectionUtils.isEmpty(candidates)) {
+            return Collections.emptyList();
+        }
+        if (FanInMode.ANY.equals(this.fanInMode)) {
+            return candidates;
+        }
+
+        long expectedInputs = this.froms.stream().map(Identity::getId).distinct().count();
+        if (expectedInputs <= 1) {
+            return candidates;
+        }
+
+        Map<String, List<FlowContext<T1>>> grouped = candidates.stream().collect(Collectors.groupingBy(this::buildMergeKey));
+        Set<String> qualifiedMergeKeys = grouped.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue()
+                        .stream()
+                        .map(FlowContext::getPosition)
+                        .filter(StringUtils::isNotEmpty)
+                        .distinct()
+                        .count() >= expectedInputs)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+        return candidates.stream().filter(context -> qualifiedMergeKeys.contains(buildMergeKey(context))).collect(
+                Collectors.toList());
+    }
+
+    private <T1> List<FlowContext<T1>> selectReadyMergeGroup(List<FlowContext<T1>> candidates) {
+        if (CollectionUtils.isEmpty(candidates)) {
+            return Collections.emptyList();
+        }
+        long expectedInputs = this.froms.stream().map(Identity::getId).distinct().count();
+        if (expectedInputs <= 1) {
+            return candidates;
+        }
+        Map<String, List<FlowContext<T1>>> grouped = new LinkedHashMap<>();
+        candidates.forEach(context -> grouped.computeIfAbsent(buildMergeKey(context), key -> new ArrayList<>()).add(
+                context));
+        return grouped.values()
+                .stream()
+                .filter(group -> group.stream()
+                        .map(FlowContext::getPosition)
+                        .filter(StringUtils::isNotEmpty)
+                        .distinct()
+                        .count() >= expectedInputs)
+                .findFirst()
+                .orElseGet(Collections::emptyList);
+    }
+
+    private <T1> List<FlowContext<T1>> markReady(List<FlowContext<T1>> contexts) {
+        this.introduceToProcess(contexts);
+        return contexts.stream().filter(context -> context.getStatus() == FlowNodeStatus.READY).collect(
+                Collectors.toList());
+    }
+
     public ProcessMode getProcessMode() {
         return this.processMode;
     }
@@ -574,6 +667,10 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     @Override
     public void onSubscribe(FitStream.Subscription<?, I> subscription) {
         this.froms.add(subscription); // 将该节点的from的event加入
+        if (!this.fanInModeConfigured) {
+            long fromCount = this.froms.stream().map(Identity::getId).distinct().count();
+            this.fanInMode = fromCount > 1 ? FanInMode.ALL : FanInMode.ANY;
+        }
     }
 
     @Override
@@ -592,13 +689,14 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
                 this.afterProcess(pre, new ArrayList<>());
                 return;
             }
+            List<FlowContext<I>> processInputs = mergeProcessInputs(pre);
             if (this.isAsyncJob) {
                 beforeAsyncProcess(pre);
-                this.getProcessMode().process(this, pre);
+                this.getProcessMode().process(this, processInputs);
                 return;
             }
             logFileTest(this, "before", pre);
-            List<FlowContext<O>> after = this.getProcessMode().process(this, pre);
+            List<FlowContext<O>> after = this.getProcessMode().process(this, processInputs);
             logFileTest(this, "after", pre);
             if (!isOwnTrace(pre)) {
                 LOG.warn("[AfterProcess] The trace is not belong to this node, traceId={}.",
@@ -629,6 +727,48 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         Retryable<I> retryable = new Retryable<>(this.getRepo(), (To<I, I>) this);
         Optional.ofNullable(this.errorHandler).ifPresent(handler -> handler.handle(ex, retryable, pre));
         Optional.ofNullable(this.globalErrorHandler).ifPresent(handler -> handler.handle(ex, retryable, pre));
+    }
+
+    private List<FlowContext<I>> mergeProcessInputs(List<FlowContext<I>> pre) {
+        if (!FanInMode.ALL.equals(this.fanInMode) || pre.size() <= 1) {
+            return pre;
+        }
+        if (!(ProcessMode.MAPPING.equals(this.processMode)
+                || ProcessMode.FLATMAPPING.equals(this.processMode)
+                || ProcessMode.PRODUCING.equals(this.processMode))) {
+            return pre;
+        }
+        if (pre.stream().anyMatch(context -> !(context.getData() instanceof FlowData))) {
+            return pre;
+        }
+        FlowContext<I> baseContext = pre.get(0);
+        FlowData mergedFlowData = mergeFlowData(pre);
+        return Collections.singletonList(baseContext.convertData(ObjectUtils.cast(mergedFlowData), baseContext.getId()));
+    }
+
+    private FlowData mergeFlowData(List<FlowContext<I>> pre) {
+        FlowData first = ObjectUtils.cast(pre.get(0).getData());
+        Map<String, Object> businessData = new HashMap<>(Optional.ofNullable(first.getBusinessData()).orElseGet(HashMap::new));
+        Map<String, Object> contextData = new HashMap<>(Optional.ofNullable(first.getContextData()).orElseGet(HashMap::new));
+        Map<String, Object> passData = new HashMap<>(Optional.ofNullable(first.getPassData()).orElseGet(HashMap::new));
+
+        pre.stream().skip(1).map(FlowContext::getData).map(ObjectUtils::<FlowData>cast).forEach(flowData -> {
+            businessData.putAll(FlowUtil.mergeMaps(businessData,
+                    Optional.ofNullable(flowData.getBusinessData()).orElseGet(HashMap::new)));
+            contextData.putAll(FlowUtil.mergeMaps(contextData,
+                    Optional.ofNullable(flowData.getContextData()).orElseGet(HashMap::new)));
+            passData.putAll(FlowUtil.mergeMaps(passData,
+                    Optional.ofNullable(flowData.getPassData()).orElseGet(HashMap::new)));
+        });
+        return FlowData.builder()
+                .operator(first.getOperator())
+                .startTime(first.getStartTime())
+                .businessData(businessData)
+                .contextData(contextData)
+                .passData(passData)
+                .errorMessage(first.getErrorMessage())
+                .errorInfo(first.getErrorInfo())
+                .build();
     }
 
     private boolean isOwnTrace(List<FlowContext<I>> pre) {
@@ -907,7 +1047,8 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
             @Override
             protected <T1, R1> List<FlowContext<T1>> requestAll(To<T1, R1> to) {
                 return to.repo.requestProducingContext(to.streamId,
-                        to.froms.stream().map(Identity::getId).collect(Collectors.toList()), to.postFilter());
+                        to.froms.stream().map(Identity::getId).collect(Collectors.toList()),
+                        to.requestFilter(to.postFilter()));
             }
         },
         REDUCING {
@@ -935,7 +1076,8 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
             @Override
             protected <T1, R1> List<FlowContext<T1>> requestAll(To<T1, R1> to) {
                 return to.repo.requestMappingContext(to.streamId,
-                        to.froms.stream().map(Identity::getId).collect(Collectors.toList()), to.defaultFilter(),
+                        to.froms.stream().map(Identity::getId).collect(Collectors.toList()),
+                        to.requestFilter(to.defaultFilter()),
                         to.validator);
             }
         },
@@ -1063,10 +1205,8 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
          * @return List<FlowContext>
          */
         private <T1, R1> List<FlowContext<T1>> filterReady(To<T1, R1> to, List<FlowContext<T1>> pre) {
-            to.introduceToProcess(pre);
-            return pre.stream()
-                    .filter(context -> context.getStatus() == FlowNodeStatus.READY)
-                    .collect(Collectors.toList());
+            List<FlowContext<T1>> grouped = to.filterReadyByFanIn(pre);
+            return to.markReady(grouped);
         }
 
         /**
@@ -1098,9 +1238,24 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
             if (CollectionUtils.isEmpty(pending) || to.inParallelMode(pending)) {
                 return;
             }
+            List<FlowContext<T1>> ready = filterReady(to, pending);
+            if (CollectionUtils.isEmpty(ready)) {
+                return;
+            }
             LOG.info("[{}] process thread conflict happens for stream-id: {}, node-id: {}",
                     to.getThreadName(To.PROCESS_T_NAME_PREFIX), to.streamId, to.id);
             to.accept(ProcessType.PROCESS, pending);
         }
+    }
+
+
+    /*
+    多个数据到达后采用的处理方式
+    * */
+    public enum FanInMode {
+//        表示即到即用
+        ANY,
+//        表示所有数据全部到达之后才可以使用
+        ALL
     }
 }
