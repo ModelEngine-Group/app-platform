@@ -22,7 +22,7 @@ module.exports = {
     chunkFilename: '[name].js',
     library: {
       type: 'module',
-    }
+    },
     assetModuleFilename: 'assets/images/[name][ext]',
   },
   experiments: {
