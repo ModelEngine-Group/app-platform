@@ -20,10 +20,15 @@ module.exports = {
     path: path.resolve(rootPath, 'build'),
     filename: '[name].js',
     chunkFilename: '[name].js',
-    library: 'appengine',
-    libraryTarget: 'umd',
+    library: {
+      type: 'module',
+    },
     assetModuleFilename: 'assets/images/[name][ext]',
   },
+  experiments: {
+    outputModule: true
+  },
+  externalsType: 'module',
   module: {
     rules: [{
       test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/i,
@@ -145,6 +150,7 @@ module.exports = {
       template: path.resolve(rootPath, 'src/index.html'),
       publicPath: '',
       chunks: ['main'],
+      scriptLoading: 'module'
     }),
 
     new CopyWebpackPlugin({
