@@ -54,10 +54,12 @@ const ChoreographyHead = (props) => {
   const {
     showElsa,
     appInfo,
+    isConnectionLimitDisabled,
     updateAippCallBack,
     mashupClick,
     openDebug,
-    saveTime
+    saveTime,
+    toggleConnectionLimitDisabled,
   } = props;
   const { aippId } = useParams();
   const testStatus = useAppSelector((state) => state.flowTestStore.testStatus);
@@ -327,6 +329,12 @@ const ChoreographyHead = (props) => {
             </span>
           }
         </div>
+        {showElsa && <Button
+          className={`header-btn test-btn ${isConnectionLimitDisabled ? 'link-limit-btn-active' : ''}`}
+          disabled={testStatus === 'Running' || preview}
+          onClick={toggleConnectionLimitDisabled}>
+          {isConnectionLimitDisabled ? t('restoreConnectionLimit') : t('disableConnectionLimit')}
+        </Button>}
         {showElsa && <Button
           className='header-btn test-btn'
           disabled={testStatus === 'Running' || preview}

@@ -47,6 +47,7 @@ const Stage = (props) => {
   const { t } = useTranslation();
   const { 
     appRef, 
+    isConnectionLimitDisabled,
     setDragData, 
     showFlowChangeWarning, 
     setShowFlowChangeWarning, 
@@ -111,6 +112,9 @@ const Stage = (props) => {
       dispatch(setTestStatus(null));
     }
   }, [])
+  useEffect(() => {
+    window.agent?.setConnectionLimitDisabled?.(isConnectionLimitDisabled);
+  }, [isConnectionLimitDisabled]);
   function getQueryString(name) {
     let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
     let r = window.location.href.substr(1).match(reg);
@@ -157,6 +161,7 @@ const Stage = (props) => {
         div: stageDom,
         tenant: tenantId,
         appId: realAppId,
+        connectionLimitDisabled: isConnectionLimitDisabled,
         flowConfigData: data,
         configs: CONFIGS,
         i18n,

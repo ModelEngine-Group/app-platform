@@ -93,7 +93,7 @@ export const codeNodeState = (id, x, y, width, height, parent, drawer) => {
      * @override
      */
     self.maxNumToLink = () => {
-        return 100;
+        return self.graph?.connectionLimitDisabled ? 100 : 10;
     };
 
     return self;

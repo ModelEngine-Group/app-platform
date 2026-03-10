@@ -35,8 +35,9 @@ export class NormalNodeConnectorValidator extends Validator {
   validate() {
     const nextEvents = this.node.getNextRunnableEvents();
     const i18n = this.node.graph.i18n;
-    // 连线数量只要大于一即可
-    if (nextEvents.length < 1) {
+    const isConnectionLimitDisabled = Boolean(this.node.graph?.connectionLimitDisabled);
+    const isValid = isConnectionLimitDisabled ? nextEvents.length >= 1 : nextEvents.length === 1;
+    if (!isValid) {
       return Promise.reject({
         errorFields: [{
           errors: [`${i18n?.t('node') ?? 'node'} ${this.node.text} ${i18n?.t('problemWithConnection') ?? 'problemWithConnection'}`],
