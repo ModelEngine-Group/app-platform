@@ -241,6 +241,8 @@
   "plsEnterValidNumber": "Enter a number",
   "plsEnterNumber": "Enter a number",
   "debugRun": "Test Running",
+  "disableConnectionLimit": "Lift Link Limits",
+  "restoreConnectionLimit": "Restore Link Limits",
   "startNode": "Start Node",
   "run": "Run",
   "publish": "Release",

@@ -175,10 +175,14 @@ public class FlowDefinition {
             nodeMap.values().forEach((fromNode) -> {
                 fromNode.setParentFlow(this);
                 Optional.ofNullable(fromNode.getJober()).ifPresent(jober -> jober.setContextRepo(repo));
+
                 fromNode.getEvents().forEach(event -> {
                     //  startNode不能出现在event的to属性, endNode不能出现在event的from属性
+
                     FlowNode toNode = nodeMap.get(event.getTo());
+
                     fromNode.subscribe(streamId, flowEnv, toNode, event);
+
                 });
             });
             return getFlowNode(FlowNodeType.START).getPublisher(streamId, repo, messenger, locks);

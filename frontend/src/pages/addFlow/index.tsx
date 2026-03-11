@@ -54,6 +54,7 @@ const AddFlow = (props) => {
   const [showDebug, setShowDebug] = useState(false);
   const [showToolFlowChangeWarning, setShowToolFlowChangeWarning] = useState(false);
   const [workFlow,setWorkFlow] = useState('');
+  const [localConnectionLimitDisabled, setLocalConnectionLimitDisabled] = useState(false);
   const { tenantId, appId } = useParams();
   const [evaluateType, setEvaluateType] = useState('waterFlow');
   const readOnly = useAppSelector((state) => state.chatCommonStore.readOnly);
@@ -66,6 +67,11 @@ const AddFlow = (props) => {
     appInfo: type ? appInfo : flowInfo,
     setFlowInfo
   };
+  const isConnectionLimitDisabled = typeof props.isConnectionLimitDisabled === 'boolean'
+    ? props.isConnectionLimitDisabled
+    : localConnectionLimitDisabled;
+  const toggleConnectionLimitDisabled = props.toggleConnectionLimitDisabled
+    || (() => setLocalConnectionLimitDisabled((prev) => !prev));
   const navigate = useHistory().push;
 
   // 初始化编排数据
@@ -147,9 +153,11 @@ const AddFlow = (props) => {
           <FlowHeader
             debugTypes={debugTypes}
             handleDebugClick={handleDebugClick}
+            isConnectionLimitDisabled={isConnectionLimitDisabled}
             showDebug={showDebug}
             saveTime={saveTime}
             setShowDebug={setShowDebug}
+            toggleConnectionLimitDisabled={toggleConnectionLimitDisabled}
             workFlow={workFlow}
             types={evaluateType}
             updateAippCallBack={updateAippCallBack}
@@ -190,6 +198,7 @@ const AddFlow = (props) => {
             setDragData={setDragData}
             setEvaluateData={setEvaluateData}
             appRef={appRef}
+            isConnectionLimitDisabled={isConnectionLimitDisabled}
             setSaveTime={setSaveTime}
             flowIdRef={flowIdRef}
             elsaRunningCtl={elsaRunningCtl}

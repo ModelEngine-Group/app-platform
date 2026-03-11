@@ -61,7 +61,7 @@ public class When<I, O> extends IdGenerator implements FitStream.Subscription<I,
      * @param messenger messenger
      */
     public <R> When(String streamId, FitStream.Subscriber<O, R> to, Processors.Map<I, O> converter, Processors.Whether<I> whether, FlowContextRepo repo,
-            FlowContextMessenger messenger) {
+                    FlowContextMessenger messenger) {
         this.streamId = streamId;
         this.converter = converter == null ? input -> (O) input : converter;
         this.whether = whether == null ? i -> true : whether;
@@ -83,7 +83,7 @@ public class When<I, O> extends IdGenerator implements FitStream.Subscription<I,
      * @param messenger messenger
      */
     public <R> When(String streamId, String eventId, FitStream.Subscriber<O, R> to, Processors.Map<I, O> converter, Processors.Whether<I> whether,
-            FlowContextRepo repo, FlowContextMessenger messenger) {
+                    FlowContextRepo repo, FlowContextMessenger messenger) {
         this(streamId, to, converter, whether, repo, messenger);
         this.id = eventId;
     }

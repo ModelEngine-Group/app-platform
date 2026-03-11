@@ -80,6 +80,8 @@
   "intelligentCreate": "智能生成",
   "createWorkflow": "创建工作流",
   "debugRun": "测试运行",
+  "disableConnectionLimit": "放开连线限制",
+  "restoreConnectionLimit": "恢复连线限制",
   "support": "支持",
   "character": "字符",
   "number": "数字",

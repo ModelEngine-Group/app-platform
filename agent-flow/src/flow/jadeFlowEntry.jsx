@@ -378,6 +378,10 @@ const jadeFlowAgent = (graph) => {
     graph.destroy();
   };
 
+  self.setConnectionLimitDisabled = (disabled) => {
+    graph.connectionLimitDisabled = Boolean(disabled);
+  };
+
   return self;
 };
 
@@ -432,6 +436,7 @@ export const JadeFlow = (() => {
                        div,
                        tenant,
                        appId,
+                       connectionLimitDisabled = false,
                        flowConfigData,
                        configs,
                        i18n,
@@ -440,7 +445,7 @@ export const JadeFlow = (() => {
                      }) => {
     const graphDom = getGraphDom(div);
     const g = jadeFlowGraph(div, 'jadeFlow');
-    await configGraph(g, tenant, appId, flowConfigData, configs, i18n, importStatements);
+    await configGraph(g, tenant, appId, flowConfigData, configs, i18n, importStatements, connectionLimitDisabled);
     g.flowType = flowType;
     const pageData = g.getPageData(0);
     await g.editFlow(0, graphDom, pageData.id);
@@ -470,8 +475,9 @@ export const JadeFlow = (() => {
     return jadeFlowAgent(g);
   };
 
-  const configGraph = async (g, tenant, appId, flowConfigData, configs, i18n, importStatements) => {
+  const configGraph = async (g, tenant, appId, flowConfigData, configs, i18n, importStatements, connectionLimitDisabled = false) => {
     g.collaboration.mute = true;
+    g.connectionLimitDisabled = Boolean(connectionLimitDisabled);
     g.configs = configs;
     g.i18n = i18n;
     for (let i = 0; i < importStatements.length; i++) {

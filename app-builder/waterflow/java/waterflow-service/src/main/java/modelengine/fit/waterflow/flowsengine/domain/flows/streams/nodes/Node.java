@@ -163,7 +163,7 @@ public class Node<T, R> extends To<T, R> implements FitStream.Processor<T, R>, I
      * @param locks 流程锁
      * @return From<R>
      */
-    private From<R> initFrom(FlowContextRepo repo, FlowContextMessenger messenger, FlowLocks locks) {
+    protected From<R> initFrom(FlowContextRepo repo, FlowContextMessenger messenger, FlowLocks locks) {
         From<R> from = new From<>(this.getStreamId(), repo, messenger, locks); // node里的from跟随subscriber的streamId
         from.setId(this.getId());
         return from;

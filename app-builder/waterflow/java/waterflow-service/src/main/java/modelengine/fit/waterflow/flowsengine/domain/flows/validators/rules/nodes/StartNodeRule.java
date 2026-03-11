@@ -27,7 +27,7 @@ public class StartNodeRule implements NodeRule {
      */
     @Override
     public void apply(FlowNode flowNode) {
-        Validation.same(flowNode.getEvents().size(), EXPECT_EVENT_SIZE,
+        Validation.greaterThanOrEquals(flowNode.getEvents().size(), EXPECT_EVENT_SIZE,
                 () -> new WaterflowParamException(INVALID_START_NODE_EVENT_SIZE));
         validateNull(flowNode.getJober(), "start node jober should be null");
         validateTriggerMode(flowNode, "start node trigger mode");
