@@ -142,7 +142,7 @@ public class FlowContextMemoRepo<T> implements FlowContextRepo<T> {
         List<FlowContext<T>> all = this.contexts.stream()
                 .filter(c -> c.getStreamId().equals(streamId))
                 .filter(c -> subscriptions.contains(c.getPosition()))
-                .filter(c -> c.getStatus() == FlowNodeStatus.PENDING)
+                .filter(c -> c.getStatus() == FlowNodeStatus.PENDING || c.getStatus() == FlowNodeStatus.SKIPPED)
                 .collect(Collectors.toList());
         List<FlowContext<T>> filters = filter.process(all);
         return filters.stream().filter(c -> validator.check(c, filters)).collect(Collectors.toList());
@@ -154,7 +154,7 @@ public class FlowContextMemoRepo<T> implements FlowContextRepo<T> {
         List<FlowContext<T>> all = this.contexts.stream()
                 .filter(c -> c.getStreamId().equals(streamId))
                 .filter(c -> subscriptions.contains(c.getPosition()))
-                .filter(c -> c.getStatus() == FlowNodeStatus.PENDING)
+                .filter(c -> c.getStatus() == FlowNodeStatus.PENDING || c.getStatus() == FlowNodeStatus.SKIPPED)
                 .collect(Collectors.toList());
         return filter.process(all);
     }

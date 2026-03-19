@@ -61,6 +61,7 @@ public class AippLogStreamServiceImpl implements AippLogStreamService {
             return;
         }
         AppChatRsp appChatRsp = this.buildData(log);
+
         if (!appChatRsp.getStatus().equalsIgnoreCase(FlowTraceStatus.RUNNING.name()) && !appChatRsp.getStatus()
                 .equalsIgnoreCase(FlowTraceStatus.READY.name())) {
             this.appChatSseService.sendLastData(log.getInstanceId(), appChatRsp);

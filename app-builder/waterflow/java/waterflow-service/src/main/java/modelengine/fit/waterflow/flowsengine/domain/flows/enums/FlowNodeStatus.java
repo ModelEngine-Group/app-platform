@@ -20,6 +20,7 @@ import java.util.Set;
 public enum FlowNodeStatus {
     NEW,
     PENDING,
+    SKIPPED,
     READY, // 未更新数据库
     PROCESSING, // 未更新数据库
     ARCHIVED,
