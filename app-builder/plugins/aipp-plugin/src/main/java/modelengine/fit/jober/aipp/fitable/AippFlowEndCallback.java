@@ -14,20 +14,25 @@ import modelengine.fit.jade.aipp.formatter.support.ResponsibilityResult;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.domain.AppBuilderForm;
+import modelengine.fit.jober.aipp.domain.AppBuilderFlowGraph;
 import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
 import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
 import modelengine.fit.jober.aipp.domains.business.RunContext;
 import modelengine.fit.jober.aipp.domains.task.AppTask;
 import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
 import modelengine.fit.jober.aipp.domains.taskinstance.AppTaskInstance;
+import modelengine.fit.jober.aipp.domains.taskinstance.TaskInstanceUpdateEntity;
 import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.dto.chat.AppChatRsp;
+import modelengine.fit.jober.aipp.enums.NodeType;
 import modelengine.fit.jober.aipp.entity.AippFlowData;
 import modelengine.fit.jober.aipp.entity.AippLogData;
 import modelengine.fit.jober.aipp.enums.AippInstLogType;
 import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
 import modelengine.fit.jober.aipp.events.InsertConversationEnd;
 import modelengine.fit.jober.aipp.genericable.AppFlowFinishObserver;
+import modelengine.fit.jober.aipp.repository.AppBuilderFlowGraphRepository;
+import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.AppChatSseService;
@@ -55,6 +60,9 @@ import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.app.engine.metrics.po.ConversationRecordPo;
 import modelengine.jade.app.engine.metrics.service.ConversationRecordService;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -63,6 +71,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 流程结束回调节点
@@ -91,12 +101,16 @@ public class AippFlowEndCallback implements FlowCallbackService {
     private final AppTaskInstanceService appTaskInstanceService;
     private final AppTaskService appTaskService;
     private final AppVersionService appVersionService;
+        private final AppBuilderRuntimeInfoRepository runtimeInfoRepository;
+        private final AppBuilderFlowGraphRepository flowGraphRepository;
 
     public AippFlowEndCallback(@Fit AippLogService aippLogService, @Fit BrokerClient brokerClient,
             @Fit BeanContainer beanContainer, @Fit ConversationRecordService conversationRecordService,
             @Fit AppBuilderFormService formService, @Fit AppChatSseService appChatSseService,
             @Fit OutputFormatterChain formatterChain, @Fit AppTaskInstanceService appTaskInstanceService,
-            @Fit AppTaskService appTaskService, @Fit AppVersionService appVersionService, FitRuntime fitRuntime) {
+            @Fit AppTaskService appTaskService, @Fit AppVersionService appVersionService,
+            @Fit AppBuilderRuntimeInfoRepository runtimeInfoRepository,
+            @Fit AppBuilderFlowGraphRepository flowGraphRepository, FitRuntime fitRuntime) {
         this.formService = formService;
         this.aippLogService = aippLogService;
         this.brokerClient = brokerClient;
@@ -107,6 +121,8 @@ public class AippFlowEndCallback implements FlowCallbackService {
         this.appTaskInstanceService = appTaskInstanceService;
         this.appTaskService = appTaskService;
         this.appVersionService = appVersionService;
+                this.runtimeInfoRepository = runtimeInfoRepository;
+                this.flowGraphRepository = flowGraphRepository;
         this.fitRuntime = fitRuntime;
     }
 
@@ -125,7 +141,10 @@ public class AippFlowEndCallback implements FlowCallbackService {
                 .orElseThrow(() -> new JobberException(ErrorCodes.UN_EXCEPTED_ERROR,
                         StringUtils.format("App task[{0}] not found.", versionId)));
         String aippInstId = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_INST_ID_KEY));
-        this.saveInstance(businessData, versionId, aippInstId, context, appTask);
+        String parentCallbackId = ObjectUtils.cast(businessData.get(AippConst.PARENT_CALLBACK_ID));
+        boolean allowTerminalSignal = StringUtils.isEmpty(parentCallbackId);
+        boolean readyToTerminate = this.shouldSendLastData(contexts, appTask);
+        this.saveInstance(businessData, versionId, aippInstId, context, appTask, readyToTerminate);
         String parentInstanceId = ObjectUtils.cast(businessData.get(AippConst.PARENT_INSTANCE_ID));
         String appId = ObjectUtils.cast(appTask.getEntity().getAppId());
         businessData.put(AippConst.ATTR_APP_ID_KEY, appId);
@@ -148,19 +167,25 @@ public class AippFlowEndCallback implements FlowCallbackService {
                 returnedLogId = this.saveFormToLog(appId, businessData, endFormId, endFormVersion, formDataMap);
             }
             AppChatRsp appChatRsp = AppChatRsp.builder().chatId(chatId).atChatId(atChatId)
-                    .status(FlowTraceStatus.ARCHIVED.name())
+                                        .status(readyToTerminate ? FlowTraceStatus.ARCHIVED.name() : FlowTraceStatus.RUNNING.name())
                     .answer(Collections.singletonList(AppChatRsp.Answer.builder()
                             .content(formDataMap).type(AippInstLogType.FORM.name()).build()))
+                                        .extension(this.buildEndNodeSummary(contexts, appTask))
                     .instanceId(aippInstId).logId(returnedLogId)
                     .build();
-            this.appChatSseService.sendLastData(aippInstId, appChatRsp);
+                        if (readyToTerminate && allowTerminalSignal) {
+                                this.appChatSseService.sendLastData(aippInstId, appChatRsp);
+                        } else {
+                                this.appChatSseService.send(aippInstId, appChatRsp);
+                        }
             this.insertConversation(businessData, aippInstId, ObjectUtils.cast(businessData.get("chartsData")));
         } else {
             this.logFinalOutput(businessData, aippInstId);
+            this.sendTerminalEventIfReady(readyToTerminate && allowTerminalSignal, contexts, appTask,
+                                        businessData, context, aippInstId);
         }
 
         // 子流程 callback 主流程
-        String parentCallbackId = ObjectUtils.cast(businessData.get(AippConst.PARENT_CALLBACK_ID));
         if (StringUtils.isNotEmpty(parentCallbackId)) {
             this.brokerClient.getRouter(FlowCallbackService.class, "w8onlgq9xsw13jce4wvbcz3kbmjv3tuw")
                     .route(new FitableIdFilter(parentCallbackId))
@@ -169,13 +194,110 @@ public class AippFlowEndCallback implements FlowCallbackService {
         }
     }
 
+    private void sendTerminalEventIfReady(boolean readyToTerminate, List<Map<String, Object>> contexts, AppTask appTask,
+            Map<String, Object> businessData, OperationContext operationContext, String aippInstId) {
+        if (!readyToTerminate) {
+            return;
+        }
+        RunContext runContext = new RunContext(businessData, operationContext);
+        AppChatRsp terminalRsp = AppChatRsp.builder()
+                .chatId(runContext.getOriginChatId())
+                .atChatId(runContext.getAtChatId())
+                .status(FlowTraceStatus.ARCHIVED.name())
+                .instanceId(aippInstId)
+                .answer(Collections.emptyList())
+                .extension(this.buildEndNodeSummary(contexts, appTask))
+                .build();
+        this.appChatSseService.sendLastData(aippInstId, terminalRsp);
+    }
+
+    private boolean shouldSendLastData(List<Map<String, Object>> contexts, AppTask appTask) {
+        Set<String> configuredEndNodeIds = this.getConfiguredEndNodeIds(appTask);
+        if (configuredEndNodeIds.isEmpty()) {
+                        log.warn("Cannot resolve configured end nodes. Skip terminal event this round. taskId={0}, flowConfigId={1}",
+                                        appTask.getEntity().getTaskId(), appTask.getEntity().getFlowConfigId());
+                        return false;
+        }
+        String flowTraceId = DataUtils.getFlowTraceId(contexts);
+        Set<String> arrivedEndNodeIds = Optional.ofNullable(this.runtimeInfoRepository.selectByTraceId(flowTraceId))
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(runtimeInfo -> StringUtils.equalsIgnoreCase(runtimeInfo.getNodeType(), "END"))
+                .filter(runtimeInfo -> this.isArrivedStatus(runtimeInfo.getStatus()))
+                .map(runtimeInfo -> runtimeInfo.getNodeId())
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toSet());
+        String currentNodeId = ObjectUtils.cast(contexts.get(0).get(AippConst.BS_NODE_ID_KEY));
+        if (StringUtils.isNotBlank(currentNodeId)) {
+            arrivedEndNodeIds.add(currentNodeId);
+        }
+                return !arrivedEndNodeIds.isEmpty() && arrivedEndNodeIds.containsAll(configuredEndNodeIds);
+    }
+    
+
+        private boolean isArrivedStatus(String status) {
+                return StringUtils.equalsIgnoreCase(status, "ARCHIVED") || StringUtils.equalsIgnoreCase(status, "SKIPPED");
+        }
+
+        private Set<String> getConfiguredEndNodeIds(AppTask appTask) {
+                String flowConfigId = appTask.getEntity().getFlowConfigId();
+                if (StringUtils.isBlank(flowConfigId)) {
+                        return Collections.emptySet();
+                }
+                AppBuilderFlowGraph flowGraph = this.flowGraphRepository.selectWithId(flowConfigId);
+                if (flowGraph == null || StringUtils.isBlank(flowGraph.getAppearance())) {
+                        return Collections.emptySet();
+                }
+                JSONObject appearance = JSONObject.parseObject(flowGraph.getAppearance());
+                JSONArray pages = appearance.getJSONArray("pages");
+                if (pages == null) {
+                        return Collections.emptySet();
+                }
+                return pages.stream()
+                                .filter(JSONObject.class::isInstance)
+                                .map(JSONObject.class::cast)
+                                .map(page -> page.getJSONArray("shapes"))
+                                .filter(shapes -> shapes != null)
+                                .flatMap(List::stream)
+                                .filter(JSONObject.class::isInstance)
+                                .map(JSONObject.class::cast)
+                                .filter(shape -> StringUtils.equalsIgnoreCase(shape.getString("type"), NodeType.END_NODE.type()))
+                                .map(shape -> shape.getString("id"))
+                                .filter(StringUtils::isNotBlank)
+                                .collect(Collectors.toSet());
+        }
+
+    private Map<String, Object> buildEndNodeSummary(List<Map<String, Object>> contexts, AppTask appTask) {
+        String flowTraceId = DataUtils.getFlowTraceId(contexts);
+        List<Map<String, Object>> endNodes = Optional.ofNullable(this.runtimeInfoRepository.selectByTraceId(flowTraceId))
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(runtimeInfo -> StringUtils.equalsIgnoreCase(runtimeInfo.getNodeType(), "END"))
+                .map(runtimeInfo -> {
+                    Map<String, Object> node = new HashMap<>();
+                    node.put("nodeId", runtimeInfo.getNodeId());
+                    node.put("status", runtimeInfo.getStatus());
+                    node.put("startTime", runtimeInfo.getStartTime());
+                    node.put("endTime", runtimeInfo.getEndTime());
+                    return node;
+                })
+                .collect(Collectors.toList());
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("flowTraceId", flowTraceId);
+        summary.put("configuredEndNodeCount", this.getConfiguredEndNodeIds(appTask).size());
+        summary.put("endNodeContexts", endNodes);
+        return summary;
+    }
+
     private void saveInstance(Map<String, Object> businessData, String versionId, String aippInstId,
-            OperationContext context, AppTask appTask) {
-        this.appTaskInstanceService.update(AppTaskInstance.asUpdate(versionId, aippInstId)
-                .setFinishTime(LocalDateTime.now())
-                .setStatus(MetaInstStatusEnum.ARCHIVED.name())
-                .fetch(businessData, appTask.getEntity().getProperties())
-                .build(), context);
+            OperationContext context, AppTask appTask, boolean readyToTerminate) {
+                TaskInstanceUpdateEntity updateEntity = AppTaskInstance.asUpdate(versionId, aippInstId)
+                                .fetch(businessData, appTask.getEntity().getProperties())
+                                .setStatus(readyToTerminate ? MetaInstStatusEnum.ARCHIVED.name() : MetaInstStatusEnum.RUNNING.name());
+        if (readyToTerminate) {
+                        updateEntity.setFinishTime(LocalDateTime.now());
+        }
+                this.appTaskInstanceService.update(updateEntity.build(), context);
     }
 
     private String saveFormToLog(String appId, Map<String, Object> businessData, String endFormId,
