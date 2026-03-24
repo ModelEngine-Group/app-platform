@@ -126,19 +126,12 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     private Boolean isAsyncJob = false;
 
     private Processors.Validator<I> validator = (i, all) -> true;
-
     private FanInMode fanInMode = FanInMode.ANY;
-
-    private boolean fanInModeConfigured = false;
-
     private Processors.Map<FlowContext<I>, String> mergeKeyGenerator = this::defaultMergeKey;
 
     private Blocks.Block<I> block = null;
-
     private Processors.Filter<I> preFilter = null;
-
     private Processors.Filter<I> postFilter = null;
-
     /**
      * 该节点只做单数据处理，理解为一条数据一条数据处理，是一个mapping操作
      */
@@ -578,7 +571,6 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
 
     public void setFanInMode(FanInMode fanInMode) {
         this.fanInMode = Optional.ofNullable(fanInMode).orElse(FanInMode.ANY);
-        this.fanInModeConfigured = true;
     }
 
     public void setMergeKeyGenerator(Processors.Map<FlowContext<I>, String> mergeKeyGenerator) {
@@ -667,10 +659,8 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     @Override
     public void onSubscribe(FitStream.Subscription<?, I> subscription) {
         this.froms.add(subscription); // 将该节点的from的event加入
-        if (!this.fanInModeConfigured) {
             long fromCount = this.froms.stream().map(Identity::getId).distinct().count();
             this.fanInMode = fromCount > 1 ? FanInMode.ALL : FanInMode.ANY;
-        }
     }
 
     @Override

@@ -20,8 +20,13 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowlock.
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.FitStream;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Blocks;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Node;
+import modelengine.fit.waterflow.flowsengine.utils.FlowUtil;
 import modelengine.fitframework.log.Logger;
+import modelengine.fitframework.util.CollectionUtils;
+import modelengine.fitframework.util.ObjectUtils;
+import modelengine.fitframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +63,7 @@ public class FlowStateNode extends FlowNode {
         if (!Optional.ofNullable(this.processor).isPresent()) {
             Node<FlowData, FlowData> node = new Node<>(streamId, this.metaId, this::stateProduce, repo, messenger,
                     locks, this.type);
+
             if (!Objects.isNull(this.jober)) {
                 node.setIsAsyncJob(this.jober.isAsync());
             }
@@ -72,6 +78,50 @@ public class FlowStateNode extends FlowNode {
             setGlobalTrace(this.processor, messenger);
         }
         return this.processor;
+    }
+
+    private List<FlowContext<FlowData>> mergeProcessInputs(List<FlowContext<FlowData>> pre) {
+        if (CollectionUtils.isEmpty(pre) || pre.size() <= 1) {
+            return pre;
+        }
+        if (pre.stream().anyMatch(context -> !(context.getData() instanceof FlowData))) {
+            return pre;
+        }
+        if (pre.stream().map(FlowContext::getPosition).filter(StringUtils::isNotEmpty).distinct().count() <= 1) {
+            return pre;
+        }
+        FlowContext<FlowData> baseContext = pre.get(0);
+        FlowData mergedFlowData = mergeFlowData(pre, baseContext.getId());
+        return Collections.singletonList(
+                baseContext.convertData(ObjectUtils.cast(mergedFlowData), baseContext.getId()));
+    }
+
+    private FlowData mergeFlowData(List<FlowContext<FlowData>> pre, String baseContextId) {
+        FlowData first = pre.get(0).getData();
+        Map<String, Object> businessData = new HashMap<>(
+                Optional.ofNullable(first.getBusinessData()).orElseGet(HashMap::new));
+        Map<String, Object> contextData = new HashMap<>(
+                Optional.ofNullable(first.getContextData()).orElseGet(HashMap::new));
+        Map<String, Object> passData = new HashMap<>(Optional.ofNullable(first.getPassData()).orElseGet(HashMap::new));
+
+        pre.stream().skip(1).map(FlowContext::getData).forEach(flowData -> {
+            businessData.putAll(FlowUtil.mergeMaps(businessData,
+                    Optional.ofNullable(flowData.getBusinessData()).orElseGet(HashMap::new)));
+            contextData.putAll(FlowUtil.mergeMaps(contextData,
+                    Optional.ofNullable(flowData.getContextData()).orElseGet(HashMap::new)));
+            passData.putAll(FlowUtil.mergeMaps(passData,
+                    Optional.ofNullable(flowData.getPassData()).orElseGet(HashMap::new)));
+        });
+            contextData.put(Constant.CONTEXT_ID, baseContextId);
+        return FlowData.builder()
+                .operator(first.getOperator())
+                .startTime(first.getStartTime())
+                .businessData(businessData)
+                .contextData(contextData)
+                .passData(passData)
+                .errorMessage(first.getErrorMessage())
+                .errorInfo(first.getErrorInfo())
+                .build();
     }
 
     private List<FlowData> stateProduce(List<FlowContext<FlowData>> inputs) {

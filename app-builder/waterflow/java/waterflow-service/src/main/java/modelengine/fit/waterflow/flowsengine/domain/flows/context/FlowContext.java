@@ -26,7 +26,6 @@ public final class FlowContext<T> extends IdGenerator {
     /**
      * 通过from.offer(data)而不是.offer(context)发起的数据会新增一个trace，这个trace会延续到flow end
      */
-
     @Getter
     private final Set<String> traceId;
 
@@ -283,8 +282,8 @@ public final class FlowContext<T> extends IdGenerator {
      * @return 转换后的context
      */
     public <R> FlowContext<R> convertData(R data) {
-        FlowContext<R> context = this.copyContext(data);
-        context.previous = this.id;
+        FlowContext<R> context = this.copyContextWithoutID(data);
+        context.previous = this.previous;
         context.nextPositionId = this.nextPositionId;
         return context;
     }
@@ -298,13 +297,13 @@ public final class FlowContext<T> extends IdGenerator {
      * @return 转换后的context
      */
     public <R> FlowContext<R> convertData(R data, String id) {
-        FlowContext<R> context = this.copyContext(data);
+        FlowContext<R> context = this.copyContextWithoutID(data);
         context.previous = this.previous;
         context.id = id;
         return context;
     }
 
-    private <R> FlowContext<R> copyContext(R data) {
+    private <R> FlowContext<R> copyContextWithoutID(R data) {
         FlowContext<R> context = new FlowContext<>(this.streamId, this.rootId, data, this.traceId, this.position,
                 this.parallel, this.parallelMode, LocalDateTime.now());
         context.status = this.status;

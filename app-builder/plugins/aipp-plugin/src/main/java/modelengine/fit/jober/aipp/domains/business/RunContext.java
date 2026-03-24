@@ -91,8 +91,6 @@ public class RunContext {
                 .orElseGet(() -> CreateAppChatRequest.Context.builder().build());
         RunContext runContext = new RunContext(new HashMap<>(), context);
         runContext.putAllToBusiness(requestContext.getUserContext());
-
-//        runContext请求操作
         runContext.setUseMemory(requestContext.getUseMemory());
         runContext.setDimension(requestContext.getDimension());
         runContext.setChatId(request.getChatId());

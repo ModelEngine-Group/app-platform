@@ -349,33 +349,24 @@ public class From<I> extends IdGenerator implements FitStream.Publisher<I> {
                 .collect(Collectors.toList());
         PreSendCallbackInfo<I> callbackInfo = new PreSendCallbackInfo<>(matchedContexts, unMatchedContexts);
         preSendCallback.accept(callbackInfo);
-        persistForkedContexts(forkedContexts, matchedContexts);
+        persistForkedContexts(forkedContexts);
         matchedContexts.forEach(FitStream.Subscription::cache);
     }
 
-    private void persistForkedContexts(List<FlowContext<I>> forkedContexts,
-            java.util.Map<FitStream.Subscription<I, ?>, List<FlowContext<I>>> matchedContexts) {
+    // 依赖约束：preSendCallback 仅做只读回调，不改写 matchedContexts，因此 forkedContexts 可直接持久化。
+    private void persistForkedContexts(List<FlowContext<I>> forkedContexts) {
         if (CollectionUtils.isEmpty(forkedContexts)) {
             return;
         }
-        Set<String> forkedIds = forkedContexts.stream().map(FlowContext::getId).collect(Collectors.toSet());
-        List<FlowContext<I>> effectiveForkedContexts = matchedContexts.values()
-                .stream()
-                .flatMap(List::stream)
-                .filter(context -> forkedIds.contains(context.getId()))
-                .collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(effectiveForkedContexts)) {
-            return;
-        }
-        Set<String> traces = effectiveForkedContexts.stream()
+        Set<String> traces = forkedContexts.stream()
                 .flatMap(context -> context.getTraceId().stream())
                 .collect(Collectors.toSet());
         Lock lock = this.locks.getDistributedLock(this.locks.streamNodeLockKey(this.streamId, this.id,
                 "ForkContextPool"));
         lock.lock();
         try {
-            this.repo.updateContextPool(effectiveForkedContexts, traces);
-            this.repo.save(effectiveForkedContexts);
+            this.repo.updateContextPool(forkedContexts, traces);
+            this.repo.save(forkedContexts);
         } finally {
             lock.unlock();
         }
