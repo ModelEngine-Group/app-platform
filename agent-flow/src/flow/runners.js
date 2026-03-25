@@ -75,7 +75,7 @@ export const standardRunner = (node) => {
             return false;
         }
         const data = dataList.find(d => d.nodeId === preNode.id);
-        return data && data.status === NODE_STATUS.SUCCESS;
+        return data && (data.status === NODE_STATUS.SUCCESS || data.status === NODE_STATUS.SKIPPED);
     };
 
     return self;

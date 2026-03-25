@@ -925,6 +925,9 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         feedback(after.stream().map(context -> {
             FlowContext<O> callbackContext = context.generate(context.getData(), context.getPosition(),
                     createAt);
+            if (context.isSkippedSignal()) {
+                callbackContext.setStatus(FlowNodeStatus.SKIPPED).markSkippedSignal();
+            }
             callbackContext.setArchivedAt(archivedAt);
             callbackContext.setNextPositionId(context.getNextPositionId());
             return callbackContext;

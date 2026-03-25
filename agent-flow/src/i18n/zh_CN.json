@@ -423,6 +423,7 @@
   "running": "运行中",
   "notRunning": "未运行",
   "runFailed": "运行失败",
+  "skipped": "已跳过",
   "runResult": "运行结果",
   "closeRunResult": "收起运行结果",
   "invalidCategory": "存在不合法的类目，请先修改",
