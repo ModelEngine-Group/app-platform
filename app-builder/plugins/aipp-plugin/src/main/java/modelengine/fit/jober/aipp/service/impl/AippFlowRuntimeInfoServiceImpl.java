@@ -14,6 +14,7 @@ import modelengine.fit.jober.aipp.domains.task.AppTask;
 import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
 import modelengine.fit.jober.aipp.domains.taskinstance.AppTaskInstance;
 import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
+import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
 import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
 import modelengine.fit.jober.aipp.service.AippFlowRuntimeInfoService;
 import modelengine.fit.jober.common.ErrorCodes;
@@ -27,8 +28,11 @@ import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.StringUtils;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +44,9 @@ import java.util.stream.Collectors;
 @Component
 public class AippFlowRuntimeInfoServiceImpl implements AippFlowRuntimeInfoService {
     private static final Logger LOGGER = Logger.get(AippFlowRuntimeInfoServiceImpl.class);
+    private static final Set<String> FINISHED_NODE_STATUS = new HashSet<>(
+            Arrays.asList(FlowNodeStatus.ARCHIVED.name(), FlowNodeStatus.ERROR.name(),
+                    FlowNodeStatus.TERMINATE.name()));
 
     private final AppBuilderRuntimeInfoRepository runtimeInfoRepository;
     private final AppTaskInstanceService appTaskInstanceService;
@@ -84,15 +91,18 @@ public class AippFlowRuntimeInfoServiceImpl implements AippFlowRuntimeInfoServic
         runtimeData.setAippInstanceId(end.getInstanceId());
         runtimeData.setExecuteTime(end.getEndTime() - start.getStartTime());
         runtimeData.setNodeInfos(runtimeInfoList.stream().map(this::toNodeInfo).collect(Collectors.toList()));
-        runtimeData.setFinished(isFinished(runtimeInfoList));
+        runtimeData.setFinished(isFinished(instance, runtimeInfoList));
         return Optional.of(runtimeData);
     }
 
-    private boolean isFinished(List<AppBuilderRuntimeInfo> runtimeInfoList) {
-        return runtimeInfoList.stream()
-                .anyMatch(runtimeInfo -> runtimeInfo.getNextPositionId() == null || NodeTypes.END.getType()
-                        .equals(runtimeInfo.getNodeType()) || FlowNodeStatus.ERROR.name()
-                        .equals(runtimeInfo.getStatus()));
+    private boolean isFinished(AppTaskInstance instance, List<AppBuilderRuntimeInfo> runtimeInfoList) {
+        return instance.getEntity()
+                .getStatus()
+                .map(MetaInstStatusEnum::getMetaInstStatus)
+                .map(status -> status == MetaInstStatusEnum.ARCHIVED || status == MetaInstStatusEnum.ERROR
+                        || status == MetaInstStatusEnum.TERMINATED)
+                .orElseGet(() -> !runtimeInfoList.isEmpty() && runtimeInfoList.stream()
+                        .allMatch(runtimeInfo -> FINISHED_NODE_STATUS.contains(runtimeInfo.getStatus())));
     }
 
     private NodeInfo toNodeInfo(AppBuilderRuntimeInfo info) {
