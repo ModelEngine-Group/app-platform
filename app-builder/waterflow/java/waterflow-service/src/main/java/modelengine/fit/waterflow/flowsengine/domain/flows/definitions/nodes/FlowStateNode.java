@@ -62,7 +62,7 @@ public class FlowStateNode extends FlowNode {
                                                                 FlowContextMessenger messenger, FlowLocks locks) {
         if (!Optional.ofNullable(this.processor).isPresent()) {
             Node<FlowData, FlowData> node = new Node<>(streamId, this.metaId, this::stateProduce, repo, messenger,
-                    locks, this.type);
+                    locks, this.type, FlowData.class);
 
             if (!Objects.isNull(this.jober)) {
                 node.setIsAsyncJob(this.jober.isAsync());

@@ -128,6 +128,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     private Processors.Validator<I> validator = (i, all) -> true;
     private FanInMode fanInMode = FanInMode.ANY;
     private Processors.Map<FlowContext<I>, String> mergeKeyGenerator = this::defaultMergeKey;
+    private Processors.Merger<I> merger;
 
     private Blocks.Block<I> block = null;
     private Processors.Filter<I> preFilter = null;
@@ -577,6 +578,10 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         this.mergeKeyGenerator = Optional.ofNullable(mergeKeyGenerator).orElse(this::defaultMergeKey);
     }
 
+    public void setMerger(Processors.Merger<I> merger) {
+        this.merger = merger;
+    }
+
     private <T1> String defaultMergeKey(FlowContext<T1> context) {
         String rootId = Optional.ofNullable(context.getRootId()).orElse("");
         String transId = Optional.ofNullable(context.getTrans()).map(trans -> trans.getId()).orElse("");
@@ -728,37 +733,22 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
                 || ProcessMode.PRODUCING.equals(this.processMode))) {
             return pre;
         }
-        if (pre.stream().anyMatch(context -> !(context.getData() instanceof FlowData))) {
+//        if (this.merger == null) {
+//            this.merger = detectMerger(pre);
+//        }
+        if (this.merger == null) {
             return pre;
         }
-        FlowContext<I> baseContext = pre.get(0);
-        FlowData mergedFlowData = mergeFlowData(pre);
-        return Collections.singletonList(baseContext.convertData(ObjectUtils.cast(mergedFlowData), baseContext.getId()));
+        FlowContext<I> merged = this.merger.merge(pre);
+        return merged != null ? Collections.singletonList(merged) : pre;
     }
 
-    private FlowData mergeFlowData(List<FlowContext<I>> pre) {
-        FlowData first = ObjectUtils.cast(pre.get(0).getData());
-        Map<String, Object> businessData = new HashMap<>(Optional.ofNullable(first.getBusinessData()).orElseGet(HashMap::new));
-        Map<String, Object> contextData = new HashMap<>(Optional.ofNullable(first.getContextData()).orElseGet(HashMap::new));
-        Map<String, Object> passData = new HashMap<>(Optional.ofNullable(first.getPassData()).orElseGet(HashMap::new));
-
-        pre.stream().skip(1).map(FlowContext::getData).map(ObjectUtils::<FlowData>cast).forEach(flowData -> {
-            businessData.putAll(FlowUtil.mergeMaps(businessData,
-                    Optional.ofNullable(flowData.getBusinessData()).orElseGet(HashMap::new)));
-            contextData.putAll(FlowUtil.mergeMaps(contextData,
-                    Optional.ofNullable(flowData.getContextData()).orElseGet(HashMap::new)));
-            passData.putAll(FlowUtil.mergeMaps(passData,
-                    Optional.ofNullable(flowData.getPassData()).orElseGet(HashMap::new)));
-        });
-        return FlowData.builder()
-                .operator(first.getOperator())
-                .startTime(first.getStartTime())
-                .businessData(businessData)
-                .contextData(contextData)
-                .passData(passData)
-                .errorMessage(first.getErrorMessage())
-                .errorInfo(first.getErrorInfo())
-                .build();
+    private Processors.Merger<I> detectMerger(List<FlowContext<I>> pre) {
+        if (pre == null || pre.isEmpty()) {
+            return null;
+        }
+        Class<?> inputType = pre.get(0).getData().getClass();
+        return MergerRegistry.getInstance().getMerger(inputType);
     }
 
     private boolean isOwnTrace(List<FlowContext<I>> pre) {

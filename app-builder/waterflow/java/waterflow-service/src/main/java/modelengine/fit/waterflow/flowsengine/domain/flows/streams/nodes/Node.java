@@ -18,7 +18,9 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.streams.FitStream;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.From;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.Identity;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.Processors;
+import modelengine.fit.waterflow.flowsengine.domain.flows.streams.MergerRegistry;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.To;
+import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.callbacks.PreSendCallbackInfo;
 
 import java.util.List;
@@ -52,10 +54,44 @@ public class Node<T, R> extends To<T, R> implements FitStream.Processor<T, R>, I
         this.publisher = this.initFrom(repo, messenger, locks);
     }
 
+    /**
+     * 1->1处理节点，自动注入 Merger
+     *
+     * @param streamId stream流程ID
+     * @param processor 对应处理器
+     * @param repo 上下文持久化repo，默认在内存
+     * @param messenger 上下文事件发送器，默认在内存
+     * @param locks 流程锁
+     * @param inputType 输入数据类型，用于从 MergerRegistry 获取对应的 Merger
+     */
+    public <T1 extends T> Node(String streamId, Processors.Map<FlowContext<T>, R> processor, FlowContextRepo repo,
+            FlowContextMessenger messenger, FlowLocks locks, Class<T1> inputType) {
+        super(streamId, processor, repo, messenger, locks);
+        this.publisher = this.initFrom(repo, messenger, locks);
+        this.autoInjectMerger(inputType);
+    }
+
     public Node(String streamId, Processors.FlatMap<FlowContext<T>, R> processor, FlowContextRepo repo,
             FlowContextMessenger messenger, FlowLocks locks) {
         super(streamId, processor, repo, messenger, locks);
         this.publisher = this.initFrom(repo, messenger, locks);
+    }
+
+    /**
+     * 1->N处理节点，自动注入 Merger
+     *
+     * @param streamId stream流程ID
+     * @param processor 对应处理器
+     * @param repo 上下文持久化repo，默认在内存
+     * @param messenger 上下文事件发送器，默认在内存
+     * @param locks 流程锁
+     * @param inputType 输入数据类型，用于从 MergerRegistry 获取对应的 Merger
+     */
+    public <T1 extends T> Node(String streamId, Processors.FlatMap<FlowContext<T>, R> processor, FlowContextRepo repo,
+            FlowContextMessenger messenger, FlowLocks locks, Class<T1> inputType) {
+        super(streamId, processor, repo, messenger, locks);
+        this.publisher = this.initFrom(repo, messenger, locks);
+        this.autoInjectMerger(inputType);
     }
 
     /**
@@ -76,6 +112,26 @@ public class Node<T, R> extends To<T, R> implements FitStream.Processor<T, R>, I
     }
 
     /**
+     * 1->1处理节点，自动注入 Merger
+     *
+     * @param streamId stream流程ID
+     * @param nodeId stream流程节点ID
+     * @param processor 对应处理器
+     * @param repo 上下文持久化repo，默认在内存
+     * @param messenger 上下文事件发送器，默认在内存
+     * @param locks 流程锁
+     * @param nodeType 节点类型
+     * @param inputType 输入数据类型，用于从 MergerRegistry 获取对应的 Merger
+     */
+    public <T1 extends T> Node(String streamId, String nodeId, Processors.Map<FlowContext<T>, R> processor,
+            FlowContextRepo repo, FlowContextMessenger messenger, FlowLocks locks, FlowNodeType nodeType,
+            Class<T1> inputType) {
+        super(streamId, nodeId, processor, repo, messenger, locks, nodeType);
+        this.publisher = this.initFrom(repo, messenger, locks);
+        this.autoInjectMerger(inputType);
+    }
+
+    /**
      * m->n处理节点
      *
      * @param streamId stream流程ID
@@ -88,6 +144,23 @@ public class Node<T, R> extends To<T, R> implements FitStream.Processor<T, R>, I
             FlowContextMessenger messenger, FlowLocks locks) {
         super(streamId, processor, repo, messenger, locks);
         this.publisher = this.initFrom(repo, messenger, locks);
+    }
+
+    /**
+     * m->n处理节点，自动注入 Merger
+     *
+     * @param streamId stream流程ID
+     * @param processor 对应处理器
+     * @param repo 上下文持久化repo，默认在内存
+     * @param messenger 上下文发送器，默认在内存
+     * @param locks 流程锁
+     * @param inputType 输入数据类型，用于从 MergerRegistry 获取对应的 Merger
+     */
+    public <T1 extends T> Node(String streamId, Processors.Produce<FlowContext<T>, R> processor, FlowContextRepo repo,
+            FlowContextMessenger messenger, FlowLocks locks, Class<T1> inputType) {
+        super(streamId, processor, repo, messenger, locks);
+        this.publisher = this.initFrom(repo, messenger, locks);
+        this.autoInjectMerger(inputType);
     }
 
     /**
@@ -108,6 +181,26 @@ public class Node<T, R> extends To<T, R> implements FitStream.Processor<T, R>, I
     }
 
     /**
+     * m->n处理节点，自动注入 Merger
+     *
+     * @param streamId stream流程ID
+     * @param nodeId stream流程节点ID
+     * @param processor 对应处理器
+     * @param repo 上下文持久化repo，默认在内存
+     * @param messenger 上下文发送器，默认在内存
+     * @param locks 流程锁
+     * @param nodeType 节点类型
+     * @param inputType 输入数据类型，用于从 MergerRegistry 获取对应的 Merger
+     */
+    public <T1 extends T> Node(String streamId, String nodeId, Processors.Produce<FlowContext<T>, R> processor,
+            FlowContextRepo repo, FlowContextMessenger messenger, FlowLocks locks, FlowNodeType nodeType,
+            Class<T1> inputType) {
+        super(streamId, nodeId, processor, repo, messenger, locks, nodeType);
+        this.publisher = this.initFrom(repo, messenger, locks);
+        this.autoInjectMerger(inputType);
+    }
+
+    /**
      * n->1 处理节点
      *
      * @param streamId stream流程ID
@@ -120,6 +213,23 @@ public class Node<T, R> extends To<T, R> implements FitStream.Processor<T, R>, I
             FlowContextMessenger messenger, FlowLocks locks) {
         super(streamId, processor, repo, messenger, locks);
         this.publisher = this.initFrom(repo, messenger, locks);
+    }
+
+    /**
+     * n->1 处理节点，自动注入 Merger
+     *
+     * @param streamId stream流程ID
+     * @param processor 对应处理器
+     * @param repo 上下文持久化repo，默认在内存
+     * @param messenger 上下文发送器，默认在内存
+     * @param locks 流程锁
+     * @param inputType 输入数据类型，用于从 MergerRegistry 获取对应的 Merger
+     */
+    public <T1 extends T> Node(String streamId, Processors.Reduce<FlowContext<T>, R> processor, FlowContextRepo repo,
+            FlowContextMessenger messenger, FlowLocks locks, Class<T1> inputType) {
+        super(streamId, processor, repo, messenger, locks);
+        this.publisher = this.initFrom(repo, messenger, locks);
+        this.autoInjectMerger(inputType);
     }
 
     /**
@@ -167,6 +277,19 @@ public class Node<T, R> extends To<T, R> implements FitStream.Processor<T, R>, I
         From<R> from = new From<>(this.getStreamId(), repo, messenger, locks); // node里的from跟随subscriber的streamId
         from.setId(this.getId());
         return from;
+    }
+
+    /**
+     * 自动从 MergerRegistry 注入 Merger
+     * 仅在用户未手动设置 Merger 时注入
+     *
+     * @param inputType 输入数据类型，用于从 Registry 获取对应的 Merger
+     */
+    protected void autoInjectMerger(Class<?> inputType) {
+        Processors.Merger<T> registered = ObjectUtils.cast(MergerRegistry.getInstance().getMerger(inputType));
+        if (registered != null) {
+            this.setMerger(registered);
+        }
     }
 
     @Override

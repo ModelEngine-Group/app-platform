@@ -46,7 +46,8 @@ public class FlowForkNode extends FlowNode {
     public FitStream.Processor<FlowData, FlowData> getProcessor(String streamId, FlowContextRepo<FlowData> repo,
             FlowContextMessenger messenger, FlowLocks locks) {
         if (!Optional.ofNullable(processor).isPresent()) {
-            this.processor = new Node<>(streamId, this.metaId, this::forkJuster, repo, messenger, locks, this.type);
+            this.processor = new Node<>(streamId, this.metaId, this::forkJuster, repo, messenger, locks, this.type,
+                    FlowData.class);
             this.processor.onError(errorHandler(streamId));
         }
         return this.processor;
