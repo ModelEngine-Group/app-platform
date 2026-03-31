@@ -39,11 +39,9 @@ const AddHeader = (props) => {
   const { t } = useTranslation();
   const {
     handleDebugClick,
-    isConnectionLimitDisabled,
     workFlow,
     types,
     saveTime,
-    toggleConnectionLimitDisabled,
     updateAippCallBack,
   } = props;
   const { appInfo, setFlowInfo } = useContext(FlowContext);
@@ -135,13 +133,6 @@ const AddHeader = (props) => {
               <img src={timeImg} />
             </span>
           }
-          <Button
-            className={`header-btn test-btn ${isConnectionLimitDisabled ? 'link-limit-btn-active' : ''}`}
-            onClick={toggleConnectionLimitDisabled}
-            disabled={testStatus === 'Running'}
-          >
-            {isConnectionLimitDisabled ? t('restoreConnectionLimit') : t('disableConnectionLimit')}
-          </Button>
           <Button
             className='header-btn test-btn'
             onClick={handleDebugClick}

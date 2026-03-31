@@ -37,7 +37,6 @@ const AippIndex = () => {
   const [showChat, setShowChat] = useState(false);
   const [messageChecked, setMessageCheck] = useState(false);
   const [showFlowChangeWarning, setShowFlowChangeWarning] = useState(false);
-  const [isConnectionLimitDisabled, setIsConnectionLimitDisabled] = useState(false);
   const aippRef = useRef<any>(null);
   const inspirationRefresh = useRef<any>(false);
   const dispatch = useAppDispatch();
@@ -216,9 +215,7 @@ const AippIndex = () => {
               <ChoreographyHead
                 appInfo={appInfo}
                 showElsa={showElsa}
-                isConnectionLimitDisabled={isConnectionLimitDisabled}
                 saveTime={saveTime}
-                toggleConnectionLimitDisabled={() => setIsConnectionLimitDisabled((prev) => !prev)}
                 updateAippCallBack={updateAippCallBack}
                 mashupClick={elsaChange}
                 openDebug={openDebug}
@@ -231,13 +228,11 @@ const AippIndex = () => {
                   type='edit'
                   addFlowRef={addFlowRef}
                   appInfo={appInfo}
-                  isConnectionLimitDisabled={isConnectionLimitDisabled}
                   setSpinning={setSpinning}
                   saveTime={saveTime}
                   setSaveTime={setSaveTime}
                   showFlowChangeWarning={showFlowChangeWarning}
                   setShowFlowChangeWarning={setShowFlowChangeWarning}
-                  toggleConnectionLimitDisabled={() => setIsConnectionLimitDisabled((prev) => !prev)}
                   updateAippCallBack={updateAippCallBack}
                 />
               ) : (
