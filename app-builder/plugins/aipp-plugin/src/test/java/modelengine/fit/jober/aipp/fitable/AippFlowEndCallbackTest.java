@@ -41,6 +41,7 @@ import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.AppChatSseService;
 import modelengine.fit.jober.aipp.util.JsonUtils;
+import modelengine.fit.waterflow.spi.lock.DistributedLockProvider;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 import modelengine.fitframework.test.annotation.Mock;
@@ -49,6 +50,7 @@ import modelengine.fitframework.util.ObjectUtils;
 import modelengine.jade.app.engine.metrics.service.ConversationRecordService;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -58,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 /**
@@ -90,9 +93,19 @@ class AippFlowEndCallbackTest {
     private EndNodeStatusRepository endNodeStatusRepository;
     @Mock
     private AppBuilderFlowGraphRepository flowGraphRepository;
+    @Mock
+    private DistributedLockProvider distributedLockProvider;
+    @Mock
+    private Lock distributedLock;
 
     @Fit
     private AippFlowEndCallback aippFlowEndCallback;
+
+    @BeforeEach
+    void setUp() {
+        when(this.distributedLockProvider.get(anyString())).thenReturn(this.distributedLock);
+        when(this.distributedLock.tryLock()).thenReturn(true);
+    }
 
     @AfterEach
     void tearDown() {

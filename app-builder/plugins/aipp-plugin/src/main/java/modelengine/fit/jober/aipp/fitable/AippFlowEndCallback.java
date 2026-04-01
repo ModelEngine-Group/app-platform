@@ -44,6 +44,7 @@ import modelengine.fit.jober.common.ErrorCodes;
 import modelengine.fit.jober.common.exceptions.JobberException;
 import modelengine.fit.waterflow.domain.enums.FlowTraceStatus;
 import modelengine.fit.waterflow.spi.FlowCallbackService;
+import modelengine.fit.waterflow.spi.lock.DistributedLockProvider;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
@@ -73,6 +74,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 /**
@@ -90,6 +92,7 @@ public class AippFlowEndCallback implements FlowCallbackService {
             .put(Constant.DEFAULT, AippInstLogType.MSG)
             .put(Constant.LLM_OUTPUT, AippInstLogType.META_MSG)
             .build();
+    private static final String TERMINATE_LOCK_PREFIX = "aipp-terminate-lock:";
 
     private final AippLogService aippLogService;
     private final BrokerClient brokerClient;
@@ -104,6 +107,7 @@ public class AippFlowEndCallback implements FlowCallbackService {
     private final AppVersionService appVersionService;
     private final EndNodeStatusRepository endNodeStatusRepository;
     private final AppBuilderFlowGraphRepository flowGraphRepository;
+    private final DistributedLockProvider distributedLockProvider;
 
     public AippFlowEndCallback(@Fit AippLogService aippLogService, @Fit BrokerClient brokerClient,
             @Fit BeanContainer beanContainer, @Fit ConversationRecordService conversationRecordService,
@@ -111,7 +115,8 @@ public class AippFlowEndCallback implements FlowCallbackService {
             @Fit OutputFormatterChain formatterChain, @Fit AppTaskInstanceService appTaskInstanceService,
             @Fit AppTaskService appTaskService, @Fit AppVersionService appVersionService,
             @Fit EndNodeStatusRepository endNodeStatusRepository,
-            @Fit AppBuilderFlowGraphRepository flowGraphRepository, FitRuntime fitRuntime) {
+            @Fit AppBuilderFlowGraphRepository flowGraphRepository,
+            @Fit DistributedLockProvider distributedLockProvider, FitRuntime fitRuntime) {
         this.formService = formService;
         this.aippLogService = aippLogService;
         this.brokerClient = brokerClient;
@@ -124,6 +129,7 @@ public class AippFlowEndCallback implements FlowCallbackService {
         this.appVersionService = appVersionService;
         this.endNodeStatusRepository = endNodeStatusRepository;
         this.flowGraphRepository = flowGraphRepository;
+        this.distributedLockProvider = distributedLockProvider;
         this.fitRuntime = fitRuntime;
     }
 
@@ -175,7 +181,7 @@ public class AippFlowEndCallback implements FlowCallbackService {
                     .instanceId(aippInstId).logId(returnedLogId)
                     .build();
                         if (readyToTerminate && allowTerminalSignal) {
-                                this.appChatSseService.sendLastData(aippInstId, appChatRsp);
+                            this.sendTerminalSignalWithLock(aippInstId, appChatRsp);
                         } else {
                                 this.appChatSseService.send(aippInstId, appChatRsp);
                         }
@@ -209,7 +215,20 @@ public class AippFlowEndCallback implements FlowCallbackService {
                 .answer(Collections.emptyList())
                 .extension(this.buildEndNodeSummary(contexts, appTask))
                 .build();
-        this.appChatSseService.sendLastData(aippInstId, terminalRsp);
+        this.sendTerminalSignalWithLock(aippInstId, terminalRsp);
+    }
+
+    private void sendTerminalSignalWithLock(String aippInstId, AppChatRsp appChatRsp) {
+        String lockKey = TERMINATE_LOCK_PREFIX + aippInstId;
+        Lock lock = this.distributedLockProvider.get(lockKey);
+        if (lock.tryLock()) {
+            try {
+                this.appChatSseService.sendLastData(aippInstId, appChatRsp);
+            } finally {
+                lock.unlock();
+            }
+        }
+        // If lock acquisition fails, another thread has already sent the terminal signal, skip.
     }
 
     private boolean shouldSendLastData(List<Map<String, Object>> contexts, AppTask appTask) {
