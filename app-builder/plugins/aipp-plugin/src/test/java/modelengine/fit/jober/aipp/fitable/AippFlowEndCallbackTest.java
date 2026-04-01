@@ -36,7 +36,7 @@ import modelengine.fit.jober.aipp.factory.AppBuilderAppFactory;
 import modelengine.fit.jober.aipp.repository.AppBuilderFlowGraphRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormPropertyRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormRepository;
-import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
+import modelengine.fit.jober.aipp.repository.EndNodeStatusRepository;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.AppChatSseService;
@@ -87,7 +87,7 @@ class AippFlowEndCallbackTest {
     @Mock
     private AppTaskInstanceService appTaskInstanceService;
     @Mock
-    private AppBuilderRuntimeInfoRepository runtimeInfoRepository;
+    private EndNodeStatusRepository endNodeStatusRepository;
     @Mock
     private AppBuilderFlowGraphRepository flowGraphRepository;
 

@@ -15,6 +15,7 @@ import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.domain.AppBuilderForm;
 import modelengine.fit.jober.aipp.domain.AppBuilderFlowGraph;
+import modelengine.fit.jober.aipp.domain.EndNodeStatus;
 import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
 import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
 import modelengine.fit.jober.aipp.domains.business.RunContext;
@@ -32,7 +33,7 @@ import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
 import modelengine.fit.jober.aipp.events.InsertConversationEnd;
 import modelengine.fit.jober.aipp.genericable.AppFlowFinishObserver;
 import modelengine.fit.jober.aipp.repository.AppBuilderFlowGraphRepository;
-import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
+import modelengine.fit.jober.aipp.repository.EndNodeStatusRepository;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.AppChatSseService;
@@ -101,15 +102,15 @@ public class AippFlowEndCallback implements FlowCallbackService {
     private final AppTaskInstanceService appTaskInstanceService;
     private final AppTaskService appTaskService;
     private final AppVersionService appVersionService;
-        private final AppBuilderRuntimeInfoRepository runtimeInfoRepository;
-        private final AppBuilderFlowGraphRepository flowGraphRepository;
+    private final EndNodeStatusRepository endNodeStatusRepository;
+    private final AppBuilderFlowGraphRepository flowGraphRepository;
 
     public AippFlowEndCallback(@Fit AippLogService aippLogService, @Fit BrokerClient brokerClient,
             @Fit BeanContainer beanContainer, @Fit ConversationRecordService conversationRecordService,
             @Fit AppBuilderFormService formService, @Fit AppChatSseService appChatSseService,
             @Fit OutputFormatterChain formatterChain, @Fit AppTaskInstanceService appTaskInstanceService,
             @Fit AppTaskService appTaskService, @Fit AppVersionService appVersionService,
-            @Fit AppBuilderRuntimeInfoRepository runtimeInfoRepository,
+            @Fit EndNodeStatusRepository endNodeStatusRepository,
             @Fit AppBuilderFlowGraphRepository flowGraphRepository, FitRuntime fitRuntime) {
         this.formService = formService;
         this.aippLogService = aippLogService;
@@ -121,8 +122,8 @@ public class AippFlowEndCallback implements FlowCallbackService {
         this.appTaskInstanceService = appTaskInstanceService;
         this.appTaskService = appTaskService;
         this.appVersionService = appVersionService;
-                this.runtimeInfoRepository = runtimeInfoRepository;
-                this.flowGraphRepository = flowGraphRepository;
+        this.endNodeStatusRepository = endNodeStatusRepository;
+        this.flowGraphRepository = flowGraphRepository;
         this.fitRuntime = fitRuntime;
     }
 
@@ -214,24 +215,23 @@ public class AippFlowEndCallback implements FlowCallbackService {
     private boolean shouldSendLastData(List<Map<String, Object>> contexts, AppTask appTask) {
         Set<String> configuredEndNodeIds = this.getConfiguredEndNodeIds(appTask);
         if (configuredEndNodeIds.isEmpty()) {
-                        log.warn("Cannot resolve configured end nodes. Skip terminal event this round. taskId={0}, flowConfigId={1}",
-                                        appTask.getEntity().getTaskId(), appTask.getEntity().getFlowConfigId());
-                        return false;
+            log.warn("Cannot resolve configured end nodes. Skip terminal event this round. taskId={0}, flowConfigId={1}",
+                    appTask.getEntity().getTaskId(), appTask.getEntity().getFlowConfigId());
+            return false;
         }
         String flowTraceId = DataUtils.getFlowTraceId(contexts);
-        Set<String> arrivedEndNodeIds = Optional.ofNullable(this.runtimeInfoRepository.selectByTraceId(flowTraceId))
+        Set<String> arrivedEndNodeIds = Optional.ofNullable(this.endNodeStatusRepository.selectByTraceId(flowTraceId))
                 .orElse(Collections.emptyList())
                 .stream()
-                .filter(runtimeInfo -> StringUtils.equalsIgnoreCase(runtimeInfo.getNodeType(), "END"))
-                .filter(runtimeInfo -> this.isArrivedStatus(runtimeInfo.getStatus()))
-                .map(runtimeInfo -> runtimeInfo.getNodeId())
+                .filter(endNodeStatus -> this.isArrivedStatus(endNodeStatus.getStatus()))
+                .map(EndNodeStatus::getEndNodeId)
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.toSet());
         String currentNodeId = ObjectUtils.cast(contexts.get(0).get(AippConst.BS_NODE_ID_KEY));
         if (StringUtils.isNotBlank(currentNodeId)) {
             arrivedEndNodeIds.add(currentNodeId);
         }
-                return !arrivedEndNodeIds.isEmpty() && arrivedEndNodeIds.containsAll(configuredEndNodeIds);
+        return !arrivedEndNodeIds.isEmpty() && arrivedEndNodeIds.containsAll(configuredEndNodeIds);
     }
     
 
@@ -269,16 +269,15 @@ public class AippFlowEndCallback implements FlowCallbackService {
 
     private Map<String, Object> buildEndNodeSummary(List<Map<String, Object>> contexts, AppTask appTask) {
         String flowTraceId = DataUtils.getFlowTraceId(contexts);
-        List<Map<String, Object>> endNodes = Optional.ofNullable(this.runtimeInfoRepository.selectByTraceId(flowTraceId))
+        List<Map<String, Object>> endNodes = Optional.ofNullable(this.endNodeStatusRepository.selectByTraceId(flowTraceId))
                 .orElse(Collections.emptyList())
                 .stream()
-                .filter(runtimeInfo -> StringUtils.equalsIgnoreCase(runtimeInfo.getNodeType(), "END"))
-                .map(runtimeInfo -> {
+                .map(endNodeStatus -> {
                     Map<String, Object> node = new HashMap<>();
-                    node.put("nodeId", runtimeInfo.getNodeId());
-                    node.put("status", runtimeInfo.getStatus());
-                    node.put("startTime", runtimeInfo.getStartTime());
-                    node.put("endTime", runtimeInfo.getEndTime());
+                    node.put("nodeId", endNodeStatus.getEndNodeId());
+                    node.put("status", endNodeStatus.getStatus());
+                    node.put("startTime", endNodeStatus.getStartTime());
+                    node.put("endTime", endNodeStatus.getEndTime());
                     return node;
                 })
                 .collect(Collectors.toList());
