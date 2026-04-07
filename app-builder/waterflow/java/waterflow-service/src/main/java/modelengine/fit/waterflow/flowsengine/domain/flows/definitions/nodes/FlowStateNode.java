@@ -19,6 +19,7 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowconte
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowlock.FlowLocks;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.FitStream;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Blocks;
+import modelengine.fit.waterflow.flowsengine.domain.flows.streams.FlowDataMerger;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Node;
 import modelengine.fit.waterflow.flowsengine.utils.FlowUtil;
 import modelengine.fitframework.log.Logger;
@@ -62,7 +63,7 @@ public class FlowStateNode extends FlowNode {
                                                                 FlowContextMessenger messenger, FlowLocks locks) {
         if (!Optional.ofNullable(this.processor).isPresent()) {
             Node<FlowData, FlowData> node = new Node<>(streamId, this.metaId, this::stateProduce, repo, messenger,
-                    locks, this.type, FlowData.class);
+                    locks, this.type, new FlowDataMerger());
 
             if (!Objects.isNull(this.jober)) {
                 node.setIsAsyncJob(this.jober.isAsync());

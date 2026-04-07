@@ -19,8 +19,8 @@ import java.util.Optional;
  * FlowData 类型数据的多输入合并器
  * 用于 fan-in 场景下将多条 FlowData 输入合并为单条处理
  *
- * @author 高诗意
- * @since 2023/08/14
+ * @author 沈维枫
+ * @since 2026/04/07
  */
 public class FlowDataMerger implements Processors.Merger<FlowData> {
 

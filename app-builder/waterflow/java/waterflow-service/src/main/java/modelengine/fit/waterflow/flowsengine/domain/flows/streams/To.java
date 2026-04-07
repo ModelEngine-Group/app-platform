@@ -733,22 +733,11 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
                 || ProcessMode.PRODUCING.equals(this.processMode))) {
             return pre;
         }
-//        if (this.merger == null) {
-//            this.merger = detectMerger(pre);
-//        }
         if (this.merger == null) {
             return pre;
         }
         FlowContext<I> merged = this.merger.merge(pre);
         return merged != null ? Collections.singletonList(merged) : pre;
-    }
-
-    private Processors.Merger<I> detectMerger(List<FlowContext<I>> pre) {
-        if (pre == null || pre.isEmpty()) {
-            return null;
-        }
-        Class<?> inputType = pre.get(0).getData().getClass();
-        return MergerRegistry.getInstance().getMerger(inputType);
     }
 
     private boolean isOwnTrace(List<FlowContext<I>> pre) {
@@ -1230,12 +1219,10 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
 
 
     /*
-    多个数据到达后采用的处理方式
+    多个数据到达后采用的处理方式，ANY表示即到即用，ALL表示所有数据到来才能使用
     * */
     public enum FanInMode {
-//        表示即到即用
         ANY,
-//        表示所有数据全部到达之后才可以使用
         ALL
     }
 }

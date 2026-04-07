@@ -14,6 +14,7 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowconte
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowcontext.FlowContextRepo;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowlock.FlowLocks;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.FitStream;
+import modelengine.fit.waterflow.flowsengine.domain.flows.streams.FlowDataMerger;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Node;
 import modelengine.fitframework.log.Logger;
 
@@ -47,7 +48,7 @@ public class FlowForkNode extends FlowNode {
             FlowContextMessenger messenger, FlowLocks locks) {
         if (!Optional.ofNullable(processor).isPresent()) {
             this.processor = new Node<>(streamId, this.metaId, this::forkJuster, repo, messenger, locks, this.type,
-                    FlowData.class);
+                    new FlowDataMerger());
             this.processor.onError(errorHandler(streamId));
         }
         return this.processor;
