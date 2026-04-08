@@ -24,8 +24,10 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowconte
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowlock.FlowLocks;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowlock.FlowLocksMemo;
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeStatus;
+import modelengine.fit.waterflow.flowsengine.domain.flows.streams.Processors;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Blocks.FilterBlock;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Blocks.ValidatorBlock;
+import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Node;
 import modelengine.fitframework.util.ObjectUtils;
 
 import org.junit.jupiter.api.Assertions;
@@ -605,6 +607,134 @@ class WaterFlowsTest {
             }).close().offer(4);
             FlowsTestUtil.waitUntil(() -> result.size() == 4, MAX_WAIT_TIME_MS);
             assertEquals(4, result.size());
+        }
+
+        @Test
+        @DisplayName("流程实例节点 Merger 合并多输入数据逻辑")
+        void testNodeMergerComputation() {
+            AtomicReference<List<Integer>> result = new AtomicReference<>();
+
+            // 创建 Reduce 类型节点，使用自定义 Merger 合并多输入
+            Node<Integer, Integer> mergeNode = new Node<>(
+                    "test-merger-flow",
+                    (List<FlowContext<Integer>> inputs) -> {
+                        // processor 接收的是 Merger 合并后的单条数据
+                        result.set(inputs.stream()
+                                .map(FlowContext::getData)
+                                .collect(Collectors.toList()));
+                        return inputs.get(0).getData();
+                    },
+                    repo, messenger, locks,
+                    (List<FlowContext<Integer>> contexts) -> {
+                        if (contexts == null || contexts.isEmpty()) {
+                            return null;
+                        }
+                        int mergedValue = contexts.stream()
+                                .mapToInt(c -> c.getData())
+                                .sum();
+                        return contexts.get(0).convertData(mergedValue, contexts.get(0).getId());
+                    }
+            );
+            mergeNode.setFanInMode(modelengine.fit.waterflow.flowsengine.domain.flows.streams.To.FanInMode.ALL);
+
+            // 创建结束节点
+            Node<Integer, Integer> endNode = new Node<>(
+                    "test-merger-flow",
+                    (List<FlowContext<Integer>> inputs) -> inputs.get(0).getData(),
+                    repo, messenger, locks
+            );
+
+            // 构建拓扑: merge -> end
+            mergeNode.subscribe(endNode);
+
+            // 模拟两个分支同时发送数据到 mergeNode
+            mergeNode.offer(10);
+            mergeNode.offer(20);
+
+            // 等待合并结果 (10 + 20 = 30)
+            FlowsTestUtil.waitUntil(() -> !result.get().isEmpty(), MAX_WAIT_TIME_MS);
+            assertEquals(1, result.get().size());
+            assertEquals(30, result.get().get(0));
+        }
+
+        @Test
+        @DisplayName("流程实例自定义 Merger Lambda 实现数据合并")
+        void testCustomMergerLambda() {
+            AtomicReference<TestData> result = new AtomicReference<>();
+
+            Processors.Merger<TestData> customMerger = (List<FlowContext<TestData>> contexts) -> {
+                if (contexts == null || contexts.isEmpty()) {
+                    return null;
+                }
+                TestData merged = new TestData();
+                for (FlowContext<TestData> ctx : contexts) {
+                    TestData data = ctx.getData();
+                    merged.first(merged.f + data.f);
+                    merged.second(merged.s + data.s);
+                    merged.third(merged.t + data.t);
+                }
+                return contexts.get(0).convertData(merged, contexts.get(0).getId());
+            };
+
+            // 创建 Reduce 类型节点用于合并
+            Node<TestData, TestData> mergeNode = new Node<>(
+                    "custom-merger-test",
+                    (List<FlowContext<TestData>> inputs) -> {
+                        result.set(inputs.get(0).getData());
+                        return inputs.get(0).getData();
+                    },
+                    repo, messenger, locks,
+                    customMerger
+            );
+            mergeNode.setFanInMode(modelengine.fit.waterflow.flowsengine.domain.flows.streams.To.FanInMode.ALL);
+
+            Node<TestData, TestData> endNode = new Node<>(
+                    "custom-merger-test",
+                    (List<FlowContext<TestData>> inputs) -> inputs.get(0).getData(),
+                    repo, messenger, locks
+            );
+
+            mergeNode.subscribe(endNode);
+
+            // 发送两条数据到合并节点
+            mergeNode.offer(new TestData(1, 2, 3));
+            mergeNode.offer(new TestData(4, 5, 6));
+
+            FlowsTestUtil.waitUntil(() -> result.get() != null, MAX_WAIT_TIME_MS);
+            assertEquals(5, result.get().f);  // 1 + 4
+            assertEquals(7, result.get().s);  // 2 + 5
+            assertEquals(9, result.get().t);  // 3 + 6
+        }
+
+        @Test
+        @DisplayName("流程实例无 Merger 时节点正常流转")
+        void testNodeWithoutMerger() {
+            List<Integer> result = new ArrayList<>();
+
+            Node<Integer, Integer> node = new Node<>(
+                    "no-merger-test",
+                    (List<FlowContext<Integer>> inputs) -> inputs.get(0).getData() * 2,
+                    repo, messenger, locks
+            );
+
+            Node<Integer, Integer> endNode = new Node<>(
+                    "no-merger-test",
+                    (List<FlowContext<Integer>> inputs) -> {
+                        result.add(inputs.get(0).getData());
+                        return inputs.get(0).getData();
+                    },
+                    repo, messenger, locks
+            );
+
+            node.subscribe(endNode);
+
+            node.offer(1);
+            node.offer(2);
+
+            FlowsTestUtil.waitUntil(() -> result.size() == 2, MAX_WAIT_TIME_MS);
+            assertEquals(2, result.size());
+            assertTrue(result.contains(2));
+            assertTrue(result.contains(4));
         }
 
         private <T> Supplier<List<FlowContext<T>>> contextSupplier(FlowContextRepo<T> repo, String traceId,
