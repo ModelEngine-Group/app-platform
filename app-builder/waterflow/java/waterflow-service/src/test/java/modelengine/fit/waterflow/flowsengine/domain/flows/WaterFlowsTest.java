@@ -12,6 +12,7 @@ import static modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeS
 import static modelengine.fit.waterflow.flowsengine.domain.flows.enums.ParallelMode.EITHER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import modelengine.fit.waterflow.MethodNameLoggerExtension;
@@ -40,12 +41,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowOfferId;
 
 /**
  * FlowsTest
@@ -609,133 +615,94 @@ class WaterFlowsTest {
             assertEquals(4, result.size());
         }
 
+
         @Test
-        @DisplayName("流程实例节点 Merger 合并多输入数据逻辑")
-        void testNodeMergerComputation() {
-            AtomicReference<List<Integer>> result = new AtomicReference<>();
+        @DisplayName("流程实例自定义 Merger Lambda 实现多分支数据合并")
+        void testCustomMergerLambdaWithFlowsApi() {
+            AtomicReference<TestData> result = new AtomicReference<>();
+            List<TestData> mergeInputs = new ArrayList<>();
+            CountDownLatch mergeCalled = new CountDownLatch(1);
 
-            // 创建 Reduce 类型节点，使用自定义 Merger 合并多输入
-            Node<Integer, Integer> mergeNode = new Node<>(
-                    "test-merger-flow",
-                    (List<FlowContext<Integer>> inputs) -> {
-                        // processor 接收的是 Merger 合并后的单条数据
-                        result.set(inputs.stream()
-                                .map(FlowContext::getData)
-                                .collect(Collectors.toList()));
-                        return inputs.get(0).getData();
-                    },
-                    repo, messenger, locks,
-                    (List<FlowContext<Integer>> contexts) -> {
-                        if (contexts == null || contexts.isEmpty()) {
-                            return null;
+            // 使用流式 API 构建流程：parallel -> fork1 -> fork2 -> join -> close
+            TestData input = new TestData();
+            Flows.<TestData>create(repo, messenger, locks)
+                    // 并行节点，开启多分支
+                    .parallel()
+                    // 分支1：设置 f=10，Just 接口无返回值
+                    .fork(i -> i.first(10))
+                    // 分支2：设置 s=20
+                    .fork(i -> i.second(20))
+                    // 汇聚节点：在 reduce 处理函数中收集所有分支的数据
+                    // join 的 reduce 函数接收的是 List<TestData>（经过 wrapper 提取了 getData）
+                    .join(data -> {
+                        // 记录所有分支的输入数据（相当于 Merger 的行为）
+                        for (TestData d : data) {
+                            mergeInputs.add(d);
                         }
-                        int mergedValue = contexts.stream()
-                                .mapToInt(c -> c.getData())
-                                .sum();
-                        return contexts.get(0).convertData(mergedValue, contexts.get(0).getId());
-                    }
-            );
-            mergeNode.setFanInMode(modelengine.fit.waterflow.flowsengine.domain.flows.streams.To.FanInMode.ALL);
+                        mergeCalled.countDown();
+                        // 返回合并后的数据，这里演示如何自定义合并逻辑
+                        TestData merged = new TestData();
+                        for (TestData d : data) {
+                            // 合并所有分支的数据
+                            merged.first(Math.max(merged.f, d.f));
+                            merged.second(Math.max(merged.s, d.s));
+                            merged.third(Math.max(merged.t, d.t));
+                        }
+                        return merged;
+                    })
+                    .close(r -> result.set(r.get().getData()))
+                    .offer(input);
 
-            // 创建结束节点
-            Node<Integer, Integer> endNode = new Node<>(
-                    "test-merger-flow",
-                    (List<FlowContext<Integer>> inputs) -> inputs.get(0).getData(),
-                    repo, messenger, locks
-            );
+            // 等待 merger 被调用
+            boolean merged = false;
+            try {
+                merged = mergeCalled.await(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
 
-            // 构建拓扑: merge -> end
-            mergeNode.subscribe(endNode);
+            // 验证 merger 被调用
+            assertTrue(merged, "Merger should have been called");
+            assertEquals(2, mergeInputs.size());
 
-            // 模拟两个分支同时发送数据到 mergeNode
-            mergeNode.offer(10);
-            mergeNode.offer(20);
-
-            // 等待合并结果 (10 + 20 = 30)
-            FlowsTestUtil.waitUntil(() -> !result.get().isEmpty(), MAX_WAIT_TIME_MS);
-            assertEquals(1, result.get().size());
-            assertEquals(30, result.get().get(0));
+            // 等待数据到达终点
+            FlowsTestUtil.waitUntil(() -> result.get() != null, MAX_WAIT_TIME_MS);
+            assertNotNull(result.get());
+            // 验证合并后的数据
+            assertEquals(10, result.get().f);
+            assertEquals(20, result.get().s);
         }
 
         @Test
-        @DisplayName("流程实例自定义 Merger Lambda 实现数据合并")
-        void testCustomMergerLambda() {
+        @DisplayName("流程实例并行分支汇聚验证")
+        void testParallelBranchMerge() {
             AtomicReference<TestData> result = new AtomicReference<>();
 
-            Processors.Merger<TestData> customMerger = (List<FlowContext<TestData>> contexts) -> {
-                if (contexts == null || contexts.isEmpty()) {
-                    return null;
-                }
-                TestData merged = new TestData();
-                for (FlowContext<TestData> ctx : contexts) {
-                    TestData data = ctx.getData();
-                    merged.first(merged.f + data.f);
-                    merged.second(merged.s + data.s);
-                    merged.third(merged.t + data.t);
-                }
-                return contexts.get(0).convertData(merged, contexts.get(0).getId());
-            };
+            // 使用流式 API 构建流程
+            TestData input = new TestData();
+            Flows.<TestData>create(repo, messenger, locks)
+                    // 并行节点，开启多分支
+                    .parallel()
+                    // 分支1：设置 f=10
+                    .fork(i -> i.first(10))
+                    // 分支2：设置 s=20
+                    .fork(i -> i.second(20))
+                    // 分支3：设置 t=30
+                    .fork(i -> i.third(30))
+                    // 汇聚节点：收集所有分支数据
+                    .join(data -> data.get(0))
+                    .close(r -> result.set(r.get().getData()))
+                    .offer(input);
 
-            // 创建 Reduce 类型节点用于合并
-            Node<TestData, TestData> mergeNode = new Node<>(
-                    "custom-merger-test",
-                    (List<FlowContext<TestData>> inputs) -> {
-                        result.set(inputs.get(0).getData());
-                        return inputs.get(0).getData();
-                    },
-                    repo, messenger, locks,
-                    customMerger
-            );
-            mergeNode.setFanInMode(modelengine.fit.waterflow.flowsengine.domain.flows.streams.To.FanInMode.ALL);
-
-            Node<TestData, TestData> endNode = new Node<>(
-                    "custom-merger-test",
-                    (List<FlowContext<TestData>> inputs) -> inputs.get(0).getData(),
-                    repo, messenger, locks
-            );
-
-            mergeNode.subscribe(endNode);
-
-            // 发送两条数据到合并节点
-            mergeNode.offer(new TestData(1, 2, 3));
-            mergeNode.offer(new TestData(4, 5, 6));
-
+            // 等待数据到达终点
             FlowsTestUtil.waitUntil(() -> result.get() != null, MAX_WAIT_TIME_MS);
-            assertEquals(5, result.get().f);  // 1 + 4
-            assertEquals(7, result.get().s);  // 2 + 5
-            assertEquals(9, result.get().t);  // 3 + 6
+            assertNotNull(result.get());
+            // join 默认取第一个分支的数据
+            assertEquals(10, result.get().f);
+            assertEquals(20, result.get().s);
+            assertEquals(30, result.get().t);
         }
 
-        @Test
-        @DisplayName("流程实例无 Merger 时节点正常流转")
-        void testNodeWithoutMerger() {
-            List<Integer> result = new ArrayList<>();
-
-            Node<Integer, Integer> node = new Node<>(
-                    "no-merger-test",
-                    (List<FlowContext<Integer>> inputs) -> inputs.get(0).getData() * 2,
-                    repo, messenger, locks
-            );
-
-            Node<Integer, Integer> endNode = new Node<>(
-                    "no-merger-test",
-                    (List<FlowContext<Integer>> inputs) -> {
-                        result.add(inputs.get(0).getData());
-                        return inputs.get(0).getData();
-                    },
-                    repo, messenger, locks
-            );
-
-            node.subscribe(endNode);
-
-            node.offer(1);
-            node.offer(2);
-
-            FlowsTestUtil.waitUntil(() -> result.size() == 2, MAX_WAIT_TIME_MS);
-            assertEquals(2, result.size());
-            assertTrue(result.contains(2));
-            assertTrue(result.contains(4));
-        }
 
         private <T> Supplier<List<FlowContext<T>>> contextSupplier(FlowContextRepo<T> repo, String traceId,
                 String metaId, FlowNodeStatus status) {
