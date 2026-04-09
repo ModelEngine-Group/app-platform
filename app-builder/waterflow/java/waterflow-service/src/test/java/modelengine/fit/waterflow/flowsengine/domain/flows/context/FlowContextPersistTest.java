@@ -437,7 +437,8 @@ public class FlowContextPersistTest extends DatabaseBaseTest {
 
             String traceId = from.offer(flowData).getTraceId();
 
-            FlowNode flowNode = flowDefinition.getFlowNode(FlowNodeType.END);
+            // 第一个分支通过，流程走完全部路径：condition1→state1→condition2→state2→ender3
+            FlowNode flowNode = flowDefinition.getFlowNode("ender3");
             List<FlowContext<FlowData>> contexts = FlowsTestUtil.waitSingle(
                     contextSupplier(memRepo, streamId, traceId, flowNode.getMetaId(), FlowNodeStatus.ARCHIVED));
             List<FlowContext<FlowData>> all = this.getContextsByTraceWrapper(memRepo, traceId);
@@ -464,7 +465,8 @@ public class FlowContextPersistTest extends DatabaseBaseTest {
 
             String traceId = from.offer(flowData).getTraceId();
 
-            FlowNode flowNode = flowDefinition.getFlowNode(FlowNodeType.END);
+            // 第一个分支驳回，直接结束：condition1驳回→ender1
+            FlowNode flowNode = flowDefinition.getFlowNode("ender1");
             List<FlowContext<FlowData>> contexts = FlowsTestUtil.waitSingle(
                     contextSupplier(memRepo, streamId, traceId, flowNode.getMetaId(), FlowNodeStatus.ARCHIVED));
             List<FlowContext<FlowData>> all = this.getContextsByTraceWrapper(memRepo, traceId);
@@ -491,7 +493,8 @@ public class FlowContextPersistTest extends DatabaseBaseTest {
 
             String traceId = from.offer(flowData).getTraceId();
 
-            FlowNode flowNode = flowDefinition.getFlowNode(FlowNodeType.END);
+            // 第二个分支驳回，结束于第二个condition：condition1通过→state1→condition2驳回→ender2
+            FlowNode flowNode = flowDefinition.getFlowNode("ender2");
             List<FlowContext<FlowData>> contexts = FlowsTestUtil.waitSingle(
                     contextSupplier(memRepo, streamId, traceId, flowNode.getMetaId(), FlowNodeStatus.ARCHIVED));
             List<FlowContext<FlowData>> all = this.getContextsByTraceWrapper(memRepo, traceId);
