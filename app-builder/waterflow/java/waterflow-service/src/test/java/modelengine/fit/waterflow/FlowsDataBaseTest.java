@@ -442,7 +442,7 @@ public abstract class FlowsDataBaseTest {
             List<FlowContext<FlowData>> contexts, List<FlowContext<FlowData>> allContexts) {
         assertEquals(1, contexts.size());
         assertEquals(ARCHIVED, contexts.get(0).getStatus());
-        assertEquals(6, allContexts.size());
+        assertEquals(8, allContexts.size());
         allContexts.forEach(c -> assertEquals(ARCHIVED, c.getStatus()));
         Map<String, Object> resultBusinessData = contexts.get(0).getData().getBusinessData();
         assertTrue((boolean) getBusinessDataFromChainedKey(resultBusinessData, "cmc.approved"));
