@@ -536,6 +536,20 @@ class FlowValidatorTest extends FlowsDataBaseTest {
             assertEquals(INVALID_START_NODE_EVENT_SIZE.getErrorCode(), exception.getCode());
         }
 
+        @Test
+        @DisplayName("测试流程节点StartNodeEventGreatThan1校验成功")
+        public void testValidateStartNodeEventGreatThan1Success() {
+            Map<String, FlowNode> nodeMap = flowDefinition.getNodeMap();
+            List<FlowEvent> events = new ArrayList<>();
+            events.add(new FlowEvent());
+            events.add(new FlowEvent());
+            nodeMap.get(START_ID).setEvents(events);
+            flowDefinition.setNodeMap(nodeMap);
+
+            WaterflowParamException exception = assertThrows(WaterflowParamException.class,
+                    () -> flowNodeValidator.validate(flowDefinition));
+            assertEquals(INVALID_EVENT_CONFIG.getErrorCode(), exception.getCode());
+        }
 
         @Test
         @DisplayName("测试流程节点StartNodeJobber校验成功")
@@ -562,6 +576,20 @@ class FlowValidatorTest extends FlowsDataBaseTest {
             assertEquals(INVALID_STATE_NODE_EVENT_SIZE.getErrorCode(), exception.getCode());
         }
 
+        @Test
+        @DisplayName("测试流程节点StateNodeEventGreatThan1校验成功")
+        public void testValidateStateNodeEventGreatThan1Success() {
+            Map<String, FlowNode> nodeMap = flowDefinition.getNodeMap();
+            List<FlowEvent> events = new ArrayList<>();
+            events.add(new FlowEvent());
+            events.add(new FlowEvent());
+            nodeMap.get(STATE_ID).setEvents(events);
+            flowDefinition.setNodeMap(nodeMap);
+
+            WaterflowParamException exception = assertThrows(WaterflowParamException.class,
+                    () -> flowNodeValidator.validate(flowDefinition));
+            assertEquals( INVALID_EVENT_CONFIG.getErrorCode(), exception.getCode());
+        }
 
         @Test
         @DisplayName("测试流程节点StateNodeJobber校验成功")
