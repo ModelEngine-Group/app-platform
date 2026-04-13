@@ -8,12 +8,16 @@ package modelengine.fit.waterflow.flowsengine.domain.flows.context;
 
 import lombok.Getter;
 import lombok.Setter;
+import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeStatus;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.IdGenerator;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +30,7 @@ public final class FlowContext<T> extends IdGenerator {
     /**
      * 通过from.offer(data)而不是.offer(context)发起的数据会新增一个trace，这个trace会延续到flow end
      */
+
     @Getter
     private final Set<String> traceId;
 
@@ -304,6 +309,67 @@ public final class FlowContext<T> extends IdGenerator {
     }
 
     private <R> FlowContext<R> copyContextWithoutID(R data) {
+        FlowContext<R> context = new FlowContext<>(this.streamId, this.rootId, data, this.traceId, this.position,
+                this.parallel, this.parallelMode, LocalDateTime.now());
+        context.status = this.status;
+        context.trans = this.trans;
+        context.batchId = this.batchId;
+        context.toBatch = this.toBatch;
+        context.createAt = this.createAt;
+        context.updateAt = this.updateAt;
+        context.archivedAt = this.archivedAt;
+        return context;
+    }
+    /**
+     * 标记当前context为跳过分支，使其能够穿透普通节点继续传递到后续汇聚点。
+     *
+     * @return 当前context
+     */
+    public FlowContext<T> markSkippedSignal() {
+        if (this.data instanceof FlowData) {
+            // Fork 分支间可能共享同一个 FlowData 引用，先复制再打 skipped 标记，避免信号串扰到其他分支。
+            FlowData flowData = copyFlowData((FlowData) this.data);
+            this.data = (T) flowData;
+            Map<String, Object> passData = Optional.ofNullable(flowData.getPassData())
+                    .map(HashMap::new)
+                    .orElseGet(HashMap::new);
+            passData.put(Constant.INTERNAL_SKIPPED_SIGNAL_KEY, true);
+            flowData.setPassData(passData);
+        }
+        return this;
+    }
+
+    private FlowData copyFlowData(FlowData source) {
+        return FlowData.builder()
+                .operator(source.getOperator())
+                .startTime(source.getStartTime())
+                .businessData(Optional.ofNullable(source.getBusinessData()).map(HashMap::new).orElse(null))
+                .contextData(Optional.ofNullable(source.getContextData()).map(HashMap::new).orElse(null))
+                .passData(Optional.ofNullable(source.getPassData()).map(HashMap::new).orElse(null))
+                .errorMessage(source.getErrorMessage())
+                .errorInfo(source.getErrorInfo())
+                .build();
+    }
+
+    /**
+     * 当前context是否携带跳过分支信号。
+     *
+     * @return 是否跳过
+     */
+        public boolean isSkippedSignal() {
+        if (FlowNodeStatus.SKIPPED.equals(this.status)) {
+            return true;
+        }
+        if (!(this.data instanceof FlowData)) {
+            return false;
+        }
+        FlowData flowData = (FlowData) this.data;
+        return Boolean.TRUE.equals(Optional.ofNullable(flowData.getPassData())
+                .orElseGet(HashMap::new)
+                .get(Constant.INTERNAL_SKIPPED_SIGNAL_KEY));
+    }
+
+    private <R> FlowContext<R> copyContext(R data) {
         FlowContext<R> context = new FlowContext<>(this.streamId, this.rootId, data, this.traceId, this.position,
                 this.parallel, this.parallelMode, LocalDateTime.now());
         context.status = this.status;

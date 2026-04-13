@@ -143,9 +143,16 @@ SvgComponent.propTypes = {
 };
 
 const TimeComponent = ({shape, runStatus}) => {
+    const statusClassMap = {
+        [NODE_STATUS.SUCCESS]: 'success',
+        [NODE_STATUS.ERROR]: 'failed',
+        [NODE_STATUS.RUNNING]: 'running',
+        [NODE_STATUS.SKIPPED]: 'skipped',
+    };
+    const statusClass = statusClassMap[runStatus];
     return (<>
-        <div className={`time-text-container time-text-container-${runStatus}`}>
-            <div className={`time-text time-text-${runStatus}`}>
+        <div className={`time-text-container${statusClass ? ` time-text-container-${statusClass}` : ''}`}>
+            <div className={`time-text${statusClass ? ` time-text-${statusClass}` : ''}`}>
                 {shape.cost ? (shape.cost / 1000) + "s" : "0.000s"}
             </div>
         </div>
@@ -180,6 +187,17 @@ const getStatus = (nodeStatus) => {
         },
         getIcon: () => {
           return <Icon component={(props) => <SvgComponent {...props} SvgCom={IconRunningFailed}/>}/>;
+        },
+      };
+    case NODE_STATUS.SKIPPED:
+      return {
+        title: t('skipped'),
+        enableReport: true,
+        getTime: (shape) => {
+          return <TimeComponent shape={shape} runStatus={nodeStatus}/>;
+        },
+        getIcon: () => {
+          return <Icon component={(props) => <SvgComponent {...props} SvgCom={IconRunningUnRunning}/>}/>;
         },
       };
     case NODE_STATUS.RUNNING:

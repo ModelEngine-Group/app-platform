@@ -165,6 +165,44 @@ comment on column app_builder_form_property.data_from is '数据来源';
 comment on column app_builder_form_property.in_group is '应用所属的组';
 comment on column app_builder_form_property.description is '应用描述';
 comment on column app_builder_form_property.default_index is '属性的默认顺序';
+-- End Node Status 表
+-- 用于记录 END 节点的执行状态，解决生产环境下 RuntimeInfo 不记录导致关流判断失效的问题
+-- 创建时间: 2026-04-01
+
+CREATE TABLE IF NOT EXISTS app_builder_end_node_status
+(
+    id                    BIGSERIAL primary key,
+    trace_id             varchar(64) not null,
+    end_node_id          varchar(64) not null,
+    status               varchar(32) not null,
+    start_time           bigint not null,
+    end_time             bigint not null,
+    instance_id          varchar(64) not null,
+    flow_definition_id   varchar(64),
+    create_at            timestamp not null default current_timestamp,
+    update_at            timestamp not null default current_timestamp,
+    constraint uk_trace_end_node unique (trace_id, end_node_id)
+);
+
+-- 索引
+create index if not exists idx_end_status_trace_id on app_builder_end_node_status(trace_id);
+create index if not exists idx_end_status_instance_id on app_builder_end_node_status(instance_id);
+create index if not exists idx_end_status_trace_status on app_builder_end_node_status(trace_id, status);
+
+-- 注释
+comment on table app_builder_end_node_status is 'END节点状态记录表';
+comment on column app_builder_end_node_status.id is '主键';
+comment on column app_builder_end_node_status.trace_id is '流程追踪ID';
+comment on column app_builder_end_node_status.end_node_id is 'END节点ID';
+comment on column app_builder_end_node_status.status is '状态：ARCHIVED或SKIPPED';
+comment on column app_builder_end_node_status.start_time is '开始时间（毫秒时间戳）';
+comment on column app_builder_end_node_status.end_time is '结束时间（毫秒时间戳）';
+comment on column app_builder_end_node_status.instance_id is '实例ID';
+comment on column app_builder_end_node_status.flow_definition_id is '流程定义ID';
+comment on column app_builder_end_node_status.create_at is '创建时间';
+comment on column app_builder_end_node_status.update_at is '更新时间';
+
+
 
 create table if not exists app_builder_runtime_info
 (

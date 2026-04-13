@@ -382,7 +382,9 @@ public class LlmComponent implements FlowableService {
     }
 
     private String getStandardValue(Object value) {
-        notNull(value, "The value cannot be null.");
+        if (value == null) {
+            return "null";
+        }
         if (value instanceof String) {
             return ObjectUtils.cast(value);
         }

@@ -33,12 +33,15 @@ import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
 import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.enums.AippInstLogType;
 import modelengine.fit.jober.aipp.factory.AppBuilderAppFactory;
+import modelengine.fit.jober.aipp.repository.AppBuilderFlowGraphRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormPropertyRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormRepository;
+import modelengine.fit.jober.aipp.repository.EndNodeStatusRepository;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.AppChatSseService;
 import modelengine.fit.jober.aipp.util.JsonUtils;
+import modelengine.fit.waterflow.spi.lock.DistributedLockProvider;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 import modelengine.fitframework.test.annotation.Mock;
@@ -47,6 +50,7 @@ import modelengine.fitframework.util.ObjectUtils;
 import modelengine.jade.app.engine.metrics.service.ConversationRecordService;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -56,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 /**
@@ -84,9 +89,23 @@ class AippFlowEndCallbackTest {
     private AppTaskService appTaskService;
     @Mock
     private AppTaskInstanceService appTaskInstanceService;
+    @Mock
+    private EndNodeStatusRepository endNodeStatusRepository;
+    @Mock
+    private AppBuilderFlowGraphRepository flowGraphRepository;
+    @Mock
+    private DistributedLockProvider distributedLockProvider;
+    @Mock
+    private Lock distributedLock;
 
     @Fit
     private AippFlowEndCallback aippFlowEndCallback;
+
+    @BeforeEach
+    void setUp() {
+        when(this.distributedLockProvider.get(anyString())).thenReturn(this.distributedLock);
+        when(this.distributedLock.tryLock()).thenReturn(true);
+    }
 
     @AfterEach
     void tearDown() {

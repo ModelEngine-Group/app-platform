@@ -20,6 +20,7 @@ import java.util.Set;
 public enum FlowNodeStatus {
     NEW,
     PENDING,
+    SKIPPED,
     READY, // 未更新数据库
     PROCESSING, // 未更新数据库
     ARCHIVED,
@@ -27,7 +28,7 @@ public enum FlowNodeStatus {
     ERROR,
     RETRYABLE;
 
-    private static final Set<FlowNodeStatus> END_STATUS = new HashSet<>(Arrays.asList(ARCHIVED, ERROR, TERMINATE));
+    private static final Set<FlowNodeStatus> END_STATUS = new HashSet<>(Arrays.asList(ARCHIVED, ERROR, TERMINATE,SKIPPED));
 
     /**
      * 是否是终态
