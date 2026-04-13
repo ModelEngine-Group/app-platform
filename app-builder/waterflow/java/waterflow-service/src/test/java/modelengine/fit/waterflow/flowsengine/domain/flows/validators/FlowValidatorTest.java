@@ -28,6 +28,8 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.call
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.events.FlowEvent;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.jobers.FlowEchoJober;
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.jobers.FlowGeneralJober;
+import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowDefinitionStatus;
+import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowJoberType;
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeTriggerMode;
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeType;
 import modelengine.fit.waterflow.flowsengine.domain.flows.parsers.FlowParser;
@@ -534,21 +536,90 @@ class FlowValidatorTest extends FlowsDataBaseTest {
             WaterflowParamException exception = assertThrows(WaterflowParamException.class,
                     () -> flowNodeValidator.validate(flowDefinition));
             assertEquals(INVALID_START_NODE_EVENT_SIZE.getErrorCode(), exception.getCode());
+
+
         }
 
         @Test
-        @DisplayName("测试流程节点StartNodeEventGreatThan1校验成功")
+        @DisplayName("测试流程节点StartNodeEventGreatThan1校验放开")
         public void testValidateStartNodeEventGreatThan1Success() {
-            Map<String, FlowNode> nodeMap = flowDefinition.getNodeMap();
-            List<FlowEvent> events = new ArrayList<>();
-            events.add(new FlowEvent());
-            events.add(new FlowEvent());
-            nodeMap.get(START_ID).setEvents(events);
-            flowDefinition.setNodeMap(nodeMap);
+            FlowDefinition definition = new FlowDefinition();
+            definition.setMetaId("apimckapimckapimckapimckapimckaa");
+            definition.setName("testFlow");
+            definition.setVersion("1.0.0");
+            definition.setTenant(TENANT);
+            definition.setStatus(FlowDefinitionStatus.ACTIVE);
 
-            WaterflowParamException exception = assertThrows(WaterflowParamException.class,
-                    () -> flowNodeValidator.validate(flowDefinition));
-            assertEquals(INVALID_EVENT_CONFIG.getErrorCode(), exception.getCode());
+            Map<String, FlowNode> nodeMap = new HashMap<>();
+
+            FlowStartNode startNode = new FlowStartNode();
+            startNode.setMetaId(START_ID);
+            startNode.setName("startNode");
+            startNode.setType(FlowNodeType.START);
+            startNode.setTriggerMode(FlowNodeTriggerMode.AUTO);
+            startNode.setProperties(new HashMap<>());
+
+            List<FlowEvent> events = new ArrayList<>();
+            FlowEvent event1 = new FlowEvent();
+            event1.setMetaId("event1");
+            event1.setFrom(START_ID);
+            event1.setTo(STATE_ID);
+            events.add(event1);
+
+            FlowEvent event2 = new FlowEvent();
+            event2.setMetaId("event2");
+            event2.setFrom(START_ID);
+            event2.setTo(THIRD_STATE_ID);
+            events.add(event2);
+            startNode.setEvents(events);
+
+            FlowNode stateNode = new FlowNode() {};
+            stateNode.setMetaId(STATE_ID);
+            stateNode.setName("stateNode");
+            stateNode.setType(FlowNodeType.STATE);
+            stateNode.setTriggerMode(FlowNodeTriggerMode.AUTO);
+            stateNode.setProperties(new HashMap<>());
+            List<FlowEvent> stateEvents = new ArrayList<>();
+            FlowEvent stateEvent = new FlowEvent();
+            stateEvent.setMetaId("stateEvent");
+            stateEvent.setFrom(STATE_ID);
+            stateEvent.setTo(END_ID);
+            stateEvents.add(stateEvent);
+            stateNode.setEvents(stateEvents);
+            FlowEchoJober stateJober = new FlowEchoJober();
+            stateJober.setType(FlowJoberType.ECHO_JOBER);
+            stateJober.setFitables(new java.util.HashSet<>());
+            stateNode.setJober(stateJober);
+            nodeMap.put(STATE_ID, stateNode);
+            FlowNode thirdStateNode = new FlowNode() {};
+            thirdStateNode.setMetaId(THIRD_STATE_ID);
+            thirdStateNode.setName("thirdStateNode");
+            thirdStateNode.setType(FlowNodeType.STATE);
+            thirdStateNode.setTriggerMode(FlowNodeTriggerMode.AUTO);
+            thirdStateNode.setProperties(new HashMap<>());
+            List<FlowEvent> thirdStateEvents = new ArrayList<>();
+            FlowEvent thirdStateEvent = new FlowEvent();
+            thirdStateEvent.setMetaId("thirdStateEvent");
+            thirdStateEvent.setFrom(THIRD_STATE_ID);
+            thirdStateEvent.setTo(END_ID);
+            thirdStateEvents.add(thirdStateEvent);
+            thirdStateNode.setEvents(thirdStateEvents);
+            FlowEchoJober thirdStateJober = new FlowEchoJober();
+            thirdStateJober.setType(FlowJoberType.ECHO_JOBER);
+            thirdStateJober.setFitables(new java.util.HashSet<>());
+            thirdStateNode.setJober(thirdStateJober);
+            nodeMap.put(THIRD_STATE_ID, thirdStateNode);
+            FlowNode endNode = new FlowNode() {};
+            endNode.setMetaId(END_ID);
+            endNode.setName("endNode");
+            endNode.setType(FlowNodeType.END);
+            endNode.setTriggerMode(FlowNodeTriggerMode.AUTO);
+            endNode.setProperties(new HashMap<>());
+            endNode.setEvents(new ArrayList<>());
+            nodeMap.put(END_ID, endNode);
+            nodeMap.put(START_ID, startNode);
+            definition.setNodeMap(nodeMap);
+            assertDoesNotThrow(() -> flowNodeValidator.validate(definition));
         }
 
         @Test
@@ -565,6 +636,29 @@ class FlowValidatorTest extends FlowsDataBaseTest {
         }
 
         @Test
+        @DisplayName("测试流程节点StateNodeEventGreatThan1校验成功")
+        public void testValidateStateNodeEventGreatThan1Success() {
+            Map<String, FlowNode> nodeMap = flowDefinition.getNodeMap();
+            List<FlowEvent> events = new ArrayList<>();
+            FlowEvent event1 = new FlowEvent();
+            event1.setMetaId("event1");
+            event1.setFrom(STATE_ID);
+            event1.setTo(END_ID);
+            events.add(event1);
+
+            FlowEvent event2 = new FlowEvent();
+            event2.setMetaId("event2");
+            event2.setFrom(STATE_ID);
+            event2.setTo(END_ID);
+            events.add(event2);
+
+            nodeMap.get(STATE_ID).setEvents(events);
+            flowDefinition.setNodeMap(nodeMap);
+
+            assertDoesNotThrow(() -> flowNodeValidator.validate(flowDefinition));
+        }
+
+        @Test
         @DisplayName("测试流程节点StateNodeEventLessThan1校验成功")
         public void testValidateStateNodeEventLessThan1Success() {
             Map<String, FlowNode> nodeMap = flowDefinition.getNodeMap();
@@ -576,20 +670,6 @@ class FlowValidatorTest extends FlowsDataBaseTest {
             assertEquals(INVALID_STATE_NODE_EVENT_SIZE.getErrorCode(), exception.getCode());
         }
 
-        @Test
-        @DisplayName("测试流程节点StateNodeEventGreatThan1校验成功")
-        public void testValidateStateNodeEventGreatThan1Success() {
-            Map<String, FlowNode> nodeMap = flowDefinition.getNodeMap();
-            List<FlowEvent> events = new ArrayList<>();
-            events.add(new FlowEvent());
-            events.add(new FlowEvent());
-            nodeMap.get(STATE_ID).setEvents(events);
-            flowDefinition.setNodeMap(nodeMap);
-
-            WaterflowParamException exception = assertThrows(WaterflowParamException.class,
-                    () -> flowNodeValidator.validate(flowDefinition));
-            assertEquals( INVALID_EVENT_CONFIG.getErrorCode(), exception.getCode());
-        }
 
         @Test
         @DisplayName("测试流程节点StateNodeJobber校验成功")
