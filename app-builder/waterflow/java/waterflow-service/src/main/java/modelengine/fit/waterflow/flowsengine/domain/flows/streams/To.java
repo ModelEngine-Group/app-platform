@@ -127,6 +127,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
 
     private Processors.Validator<I> validator = (i, all) -> true;
     private FanInMode fanInMode = FanInMode.ANY;
+    private boolean fromFlowDefinition = false;
     private Processors.Map<FlowContext<I>, String> mergeKeyGenerator = this::defaultMergeKey;
     private Processors.Merger<I> merger;
 
@@ -664,8 +665,19 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     @Override
     public void onSubscribe(FitStream.Subscription<?, I> subscription) {
         this.froms.add(subscription); // 将该节点的from的event加入
+        if (this.fromFlowDefinition) {
             long fromCount = this.froms.stream().map(Identity::getId).distinct().count();
             this.fanInMode = fromCount > 1 ? FanInMode.ALL : FanInMode.ANY;
+        }
+    }
+
+    /**
+     * 设置是否来自流程定义，用于控制fanInMode的自动设置
+     *
+     * @param fromFlowDefinition 是否来自流程定义
+     */
+    public void setFromFlowDefinition(boolean fromFlowDefinition) {
+        this.fromFlowDefinition = fromFlowDefinition;
     }
 
     @Override

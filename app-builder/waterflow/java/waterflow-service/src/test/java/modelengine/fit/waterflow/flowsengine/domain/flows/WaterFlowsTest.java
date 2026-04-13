@@ -326,57 +326,57 @@ class WaterFlowsTest {
             assertEquals(0, output.get(0).s);
         }
 
-//        @Test
-//        @DisplayName("流程实例condition节点以及match节点以及others节点流转逻辑")
-//        void testFitStreamWithCondition() {
-//            List<TestData> output = new ArrayList<>();
-//            // test conditions and others for just
-//            Flows.ProcessFlow<TestData> flow = Flows.<TestData>create(repo, messenger, locks)
-//                    .conditions()
-//                    .match(i -> i.getData().f > 10)
-//                    .just(i -> i.f++)
-//                    .match(i -> i.getData().s > 10)
-//                    .map(i -> {
-//                        i.s++;
-//                        return i;
-//                    })
-//                    .others(i -> {
-//                        i.t++;
-//                        return i;
-//                    })
-//                    .close(r -> output.add(r.get().getData()));
-//            TestData input = new TestData();
-//            flow.offer(input.first(11).second(0).third(0));
-//            FlowsTestUtil.waitSingle(() -> output);
-//            assertTestData(new TestData(12, 0, 0), output);
-//            output.clear();
-//
-//            flow.offer(input.first(0).second(11).third(0));
-//            FlowsTestUtil.waitSingle(() -> output);
-//            assertTestData(new TestData(0, 12, 0), output);
-//            output.clear();
-//
-//            flow.offer(input.first(0).second(0).third(11));
-//            FlowsTestUtil.waitSingle(() -> output);
-//            assertTestData(new TestData(0, 0, 12), output);
-//
-//            // test when and others for map
-//            output.clear();
-//            flow = Flows.<TestData>create(repo, messenger, locks).when(i -> {
-//                i.f++;
-//                return i;
-//            }).map(i -> {
-//                i.f--;
-//                return i;
-//            }).conditions(i -> i.t++).match(i -> i.getData().f > 10).just(i -> i.f++).others(i -> {
-//                i.t++;
-//                output.add(i);
-//                return i;
-//            }).close();
-//            flow.offer(input.first(0).second(0).third(11));
-//            FlowsTestUtil.waitSingle(() -> output);
-//            assertTestData(new TestData(0, 0, 13), output);
-//        }
+        @Test
+        @DisplayName("流程实例condition节点以及match节点以及others节点流转逻辑")
+        void testFitStreamWithCondition() {
+            List<TestData> output = new ArrayList<>();
+            // test conditions and others for just
+            Flows.ProcessFlow<TestData> flow = Flows.<TestData>create(repo, messenger, locks)
+                    .conditions()
+                    .match(i -> i.getData().f > 10)
+                    .just(i -> i.f++)
+                    .match(i -> i.getData().s > 10)
+                    .map(i -> {
+                        i.s++;
+                        return i;
+                    })
+                    .others(i -> {
+                        i.t++;
+                        return i;
+                    })
+                    .close(r -> output.add(r.get().getData()));
+            TestData input = new TestData();
+            flow.offer(input.first(11).second(0).third(0));
+            FlowsTestUtil.waitSingle(() -> output);
+            assertTestData(new TestData(12, 0, 0), output);
+            output.clear();
+
+            flow.offer(input.first(0).second(11).third(0));
+            FlowsTestUtil.waitSingle(() -> output);
+            assertTestData(new TestData(0, 12, 0), output);
+            output.clear();
+
+            flow.offer(input.first(0).second(0).third(11));
+            FlowsTestUtil.waitSingle(() -> output);
+            assertTestData(new TestData(0, 0, 12), output);
+
+            // test when and others for map
+            output.clear();
+            flow = Flows.<TestData>create(repo, messenger, locks).when(i -> {
+                i.f++;
+                return i;
+            }).map(i -> {
+                i.f--;
+                return i;
+            }).conditions(i -> i.t++).match(i -> i.getData().f > 10).just(i -> i.f++).others(i -> {
+                i.t++;
+                output.add(i);
+                return i;
+            }).close();
+            flow.offer(input.first(0).second(0).third(11));
+            FlowsTestUtil.waitSingle(() -> output);
+            assertTestData(new TestData(0, 0, 13), output);
+        }
 
         private void assertTestData(TestData expected, List<TestData> output) {
             assertEquals(expected.f, output.get(0).f);

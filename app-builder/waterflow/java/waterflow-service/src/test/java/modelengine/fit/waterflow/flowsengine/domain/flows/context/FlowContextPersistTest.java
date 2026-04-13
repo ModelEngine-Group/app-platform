@@ -238,33 +238,33 @@ public class FlowContextPersistTest extends DatabaseBaseTest {
             Assertions.assertEquals(4, result.size());
         }
 
-//        @Test
-//        @DisplayName("测试带有condition节点流程实例持久化成功")
-//        void testFlowContextPersistWithCondition() {
-//            List<FlowData> result = new ArrayList<>();
-//            FlowData data = genFlowData("url", "www.123.com");
-//            FlowData data1 = genFlowData("applyService", "fitable");
-//
-//            Flows.ProcessFlow<FlowData> flow = Flows.<FlowData>create(REPO, MEMO_MESSENGER, LOCKS)
-//                    .conditions()
-//                    .match(i -> i.getData().getBusinessData().equals(data.getBusinessData()))
-//                    .just(i -> i.getBusinessData().put("url", "success"))
-//                    .match(i -> i.getData().getBusinessData().equals(data1.getBusinessData()))
-//                    .just(i -> i.getBusinessData().put("applyService", "success"))
-//                    .others(input -> input)
-//                    .close(r -> result.add(r.get().getData()));
-//
-//            flow.offer(data);
-//            FlowsTestUtil.waitSingle(() -> result);
-//            FlowData data2 = genFlowData("url", "success");
-//            assertEquals(data2.getBusinessData(), result.get(0).getBusinessData());
-//
-//            result.clear();
-//            flow.offer(data1);
-//            FlowsTestUtil.waitSingle(() -> result);
-//            FlowData data3 = genFlowData("applyService", "success");
-//            assertEquals(data3.getBusinessData(), result.get(0).getBusinessData());
-//        }
+        @Test
+        @DisplayName("测试带有condition节点流程实例持久化成功")
+        void testFlowContextPersistWithCondition() {
+            List<FlowData> result = new ArrayList<>();
+            FlowData data = genFlowData("url", "www.123.com");
+            FlowData data1 = genFlowData("applyService", "fitable");
+
+            Flows.ProcessFlow<FlowData> flow = Flows.<FlowData>create(REPO, MEMO_MESSENGER, LOCKS)
+                    .conditions()
+                    .match(i -> i.getData().getBusinessData().equals(data.getBusinessData()))
+                    .just(i -> i.getBusinessData().put("url", "success"))
+                    .match(i -> i.getData().getBusinessData().equals(data1.getBusinessData()))
+                    .just(i -> i.getBusinessData().put("applyService", "success"))
+                    .others(input -> input)
+                    .close(r -> result.add(r.get().getData()));
+
+            flow.offer(data);
+            FlowsTestUtil.waitSingle(() -> result);
+            FlowData data2 = genFlowData("url", "success");
+            assertEquals(data2.getBusinessData(), result.get(0).getBusinessData());
+
+            result.clear();
+            flow.offer(data1);
+            FlowsTestUtil.waitSingle(() -> result);
+            FlowData data3 = genFlowData("applyService", "success");
+            assertEquals(data3.getBusinessData(), result.get(0).getBusinessData());
+        }
 
         @Test
         @DisplayName("测试一个节点不同实例context查找某一个实例context成功")

@@ -427,13 +427,22 @@ public final class FitStream {
          */
         void onGlobalAfter(Processors.Just<Callback<FlowContext<O>>> handler);
 
-        /**
-         * 设置节点优先级
-         *
-         * @param order 优先级
-         */
-        void setOrder(int order);
+    /**
+     * 设置节点优先级
+     *
+     * @param order 优先级
+     */
+    void setOrder(int order);
+
+    /**
+     * 设置是否来自流程定义，用于控制fanInMode的自动设置
+     *
+     * @param fromFlowDefinition 是否来自流程定义
+     */
+    default void setFromFlowDefinition(boolean fromFlowDefinition) {
+        // 默认实现为空，子类可覆盖
     }
+}
 
     /**
      * publisher与subscriber之间的连接器

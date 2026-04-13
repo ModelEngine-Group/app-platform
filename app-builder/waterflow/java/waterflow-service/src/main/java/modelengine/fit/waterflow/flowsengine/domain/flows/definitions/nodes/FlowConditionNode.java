@@ -79,6 +79,7 @@ public class FlowConditionNode extends FlowNode {
     @Override
     protected void subscribe(
             FitStream.Publisher<FlowData> from, FitStream.Subscriber<FlowData, FlowData> to, FlowEvent event) {
+        to.setFromFlowDefinition(true);
         from.subscribe(event.getMetaId(), to, null, this.getWhether(from.getStreamId(), event));
     }
 

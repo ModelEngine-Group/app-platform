@@ -84,6 +84,7 @@ public class FlowParallelNode extends FlowNode {
     @Override
     protected void subscribe(FitStream.Publisher<FlowData> from, FitStream.Subscriber<FlowData, FlowData> to,
             FlowEvent event) {
+        this.joiner.setFromFlowDefinition(true);
         this.joiner.subscribe(event.getMetaId(), to);
     }
 
