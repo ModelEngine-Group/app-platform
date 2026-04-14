@@ -579,14 +579,25 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     }
 
     public void setFanInMode(To.FanInMode fanInMode) {
-        this.fanInMode = Optional.ofNullable(fanInMode).orElse(To.FanInMode.ANY);
+        fanInMode = Optional.ofNullable(fanInMode).orElse(To.FanInMode.ANY);
+        // 当设置为ALL模式时，如果froms数量为1，则自动改为ANY模式
+        if (To.FanInMode.ALL.equals(fanInMode) && this.froms.size() == 1) {
+            this.fanInMode = To.FanInMode.ANY;
+        } else {
+            this.fanInMode = fanInMode;
+        }
     }
 
     /**
      * 设置为ALL模式，强制等待所有输入数据到齐后再处理
      */
     public void setAllMode() {
-        this.fanInMode = To.FanInMode.ALL;
+        // 当设置为ALL模式时，如果froms数量为1，则自动改为ANY模式
+        if (this.froms.size() == 1) {
+            this.fanInMode = To.FanInMode.ANY;
+        } else {
+            this.fanInMode = To.FanInMode.ALL;
+        }
     }
 
     /**

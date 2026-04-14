@@ -49,7 +49,6 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeTriggerM
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeType;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.FitStream;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.Processors;
-import modelengine.fit.waterflow.flowsengine.domain.flows.streams.To;
 import modelengine.fit.waterflow.spi.FlowExceptionService;
 import modelengine.fitframework.broker.client.BrokerClient;
 import modelengine.fitframework.broker.client.filter.route.FitableIdFilter;
@@ -229,9 +228,8 @@ public abstract class FlowNode {
      * @param event {@link FlowEvent}节点之间的连线
      */
     public void subscribe(String streamId, FlowEnv flowEnv, FlowNode toNode, FlowEvent event) {
-        FitStream.Subscriber<FlowData, FlowData> toSubscriber = getTo(streamId, flowEnv.getRepo(),
-                flowEnv.getMessenger(), flowEnv.getLocks(), toNode);
-        toSubscriber.setFanInMode(To.FanInMode.ALL);
+        FitStream.Subscriber<FlowData, FlowData> toSubscriber = getTo(streamId, flowEnv.getRepo(), flowEnv.getMessenger(), flowEnv.getLocks(), toNode);
+        toSubscriber.setAllMode();
         this.subscribe(getFrom(streamId, flowEnv.getRepo(), flowEnv.getMessenger(), flowEnv.getLocks()),
                 toSubscriber, event);
     }

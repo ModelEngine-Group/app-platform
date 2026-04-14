@@ -21,7 +21,6 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.conv
 import modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes.events.FlowEvent;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.FitStream;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.Processors;
-import modelengine.fit.waterflow.flowsengine.domain.flows.streams.To;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.ConditionsNode;
 import modelengine.fit.waterflow.flowsengine.domain.flows.utils.FlowExecuteInfoUtil;
 import modelengine.fit.waterflow.flowsengine.utils.OhScriptExecutor;
@@ -81,7 +80,7 @@ public class FlowConditionNode extends FlowNode {
     protected void subscribe(
             FitStream.Publisher<FlowData> from, FitStream.Subscriber<FlowData, FlowData> to, FlowEvent event) {
         from.subscribe(event.getMetaId(), to, null, this.getWhether(from.getStreamId(), event));
-        to.setFanInMode(To.FanInMode.ALL);
+            to.setAllMode();
     }
 
     private Processors.Whether<FlowData> getWhether(String streamId, FlowEvent event) {
