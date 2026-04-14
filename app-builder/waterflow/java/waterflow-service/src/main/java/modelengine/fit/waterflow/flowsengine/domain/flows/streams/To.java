@@ -54,6 +54,14 @@ import static modelengine.fit.waterflow.ErrorCodes.FLOW_NODE_MAX_TASK;
  */
 public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> {
     /**
+     * FanIn模式枚举
+     */
+    public enum FanInMode {
+        ANY,
+        ALL
+    }
+
+    /**
      * 最大流量，也就是该节点可以处理的最大数据量
      */
     public static final int MAX_CONCURRENCY = 16;
@@ -126,8 +134,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     private Boolean isAsyncJob = false;
 
     private Processors.Validator<I> validator = (i, all) -> true;
-    private FanInMode fanInMode = FanInMode.ANY;
-    private boolean fromFlowDefinition = false;
+    private To.FanInMode fanInMode = To.FanInMode.ANY;
     private Processors.Map<FlowContext<I>, String> mergeKeyGenerator = this::defaultMergeKey;
     private Processors.Merger<I> merger;
 
@@ -544,7 +551,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     }
 
     private Processors.Filter<I> requestFilter(Processors.Filter<I> fallbackFilter) {
-        if (!FanInMode.ALL.equals(this.fanInMode)) {
+        if (!To.FanInMode.ALL.equals(this.fanInMode)) {
             return fallbackFilter;
         }
         return this::selectReadyMergeGroup;
@@ -571,8 +578,22 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         }
     }
 
-    public void setFanInMode(FanInMode fanInMode) {
-        this.fanInMode = Optional.ofNullable(fanInMode).orElse(FanInMode.ANY);
+    public void setFanInMode(To.FanInMode fanInMode) {
+        this.fanInMode = Optional.ofNullable(fanInMode).orElse(To.FanInMode.ANY);
+    }
+
+    /**
+     * 设置为ALL模式，强制等待所有输入数据到齐后再处理
+     */
+    public void setAllMode() {
+        this.fanInMode = To.FanInMode.ALL;
+    }
+
+    /**
+     * 设置为ANY模式，有数据到达即处理
+     */
+    public void setAnyMode() {
+        this.fanInMode = To.FanInMode.ANY;
     }
 
     public void setMergeKeyGenerator(Processors.Map<FlowContext<I>, String> mergeKeyGenerator) {
@@ -606,7 +627,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         if (CollectionUtils.isEmpty(candidates)) {
             return Collections.emptyList();
         }
-        if (FanInMode.ANY.equals(this.fanInMode)) {
+        if (To.FanInMode.ANY.equals(this.fanInMode)) {
             return candidates;
         }
 
@@ -664,20 +685,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
 
     @Override
     public void onSubscribe(FitStream.Subscription<?, I> subscription) {
-        this.froms.add(subscription); // 将该节点的from的event加入
-        if (this.fromFlowDefinition) {
-            long fromCount = this.froms.stream().map(Identity::getId).distinct().count();
-            this.fanInMode = fromCount > 1 ? FanInMode.ALL : FanInMode.ANY;
-        }
-    }
-
-    /**
-     * 设置是否来自流程定义，用于控制fanInMode的自动设置
-     *
-     * @param fromFlowDefinition 是否来自流程定义
-     */
-    public void setFromFlowDefinition(boolean fromFlowDefinition) {
-        this.fromFlowDefinition = fromFlowDefinition;
+        this.froms.add(subscription);
     }
 
     @Override
@@ -737,7 +745,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     }
 
     private List<FlowContext<I>> mergeProcessInputs(List<FlowContext<I>> pre) {
-        if (!FanInMode.ALL.equals(this.fanInMode) || pre.size() <= 1) {
+        if (!To.FanInMode.ALL.equals(this.fanInMode) || pre.size() <= 1) {
             return pre;
         }
         if (!(ProcessMode.MAPPING.equals(this.processMode)
@@ -1233,8 +1241,4 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     /*
     多个数据到达后采用的处理方式，ANY表示即到即用，ALL表示所有数据到来才能使用
     * */
-    public enum FanInMode {
-        ANY,
-        ALL
-    }
 }

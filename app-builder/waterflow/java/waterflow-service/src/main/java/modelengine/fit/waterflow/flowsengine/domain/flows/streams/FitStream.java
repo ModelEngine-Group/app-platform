@@ -427,22 +427,32 @@ public final class FitStream {
          */
         void onGlobalAfter(Processors.Just<Callback<FlowContext<O>>> handler);
 
-    /**
-     * 设置节点优先级
-     *
-     * @param order 优先级
-     */
-    void setOrder(int order);
+        /**
+         * 设置节点优先级
+         *
+         * @param order 优先级
+         */
+        void setOrder(int order);
 
-    /**
-     * 设置是否来自流程定义，用于控制fanInMode的自动设置
-     *
-     * @param fromFlowDefinition 是否来自流程定义
-     */
-    default void setFromFlowDefinition(boolean fromFlowDefinition) {
-        // 默认实现为空，子类可覆盖
+        /**
+         * 设置FanIn模式
+         *
+         * @param fanInMode FanIn模式
+         */
+        void setFanInMode(To.FanInMode fanInMode);
+
+        /**
+         * 设置为ALL模式，强制等待所有输入数据到齐后再处理
+         */
+        default void setAllMode() {
+        }
+
+        /**
+         * 设置为ANY模式，有数据到达即处理
+         */
+        default void setAnyMode() {
+        }
     }
-}
 
     /**
      * publisher与subscriber之间的连接器
