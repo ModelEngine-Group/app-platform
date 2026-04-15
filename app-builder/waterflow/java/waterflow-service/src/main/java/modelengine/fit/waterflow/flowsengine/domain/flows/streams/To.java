@@ -551,7 +551,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     }
 
     private Processors.Filter<I> requestFilter(Processors.Filter<I> fallbackFilter) {
-        if (!To.FanInMode.ALL.equals(this.fanInMode)) {
+        if (!To.FanInMode.ALL.equals(this.fanInMode)||this.froms.size()==1) {
             return fallbackFilter;
         }
         return this::selectReadyMergeGroup;
@@ -579,25 +579,14 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     }
 
     public void setFanInMode(To.FanInMode fanInMode) {
-        fanInMode = Optional.ofNullable(fanInMode).orElse(To.FanInMode.ANY);
-        // 当设置为ALL模式时，如果froms数量为1，则自动改为ANY模式
-        if (To.FanInMode.ALL.equals(fanInMode) && this.froms.size() == 1) {
-            this.fanInMode = To.FanInMode.ANY;
-        } else {
-            this.fanInMode = fanInMode;
-        }
+        this.fanInMode = Optional.ofNullable(fanInMode).orElse(To.FanInMode.ANY);
     }
 
     /**
      * 设置为ALL模式，强制等待所有输入数据到齐后再处理
      */
     public void setAllMode() {
-        // 当设置为ALL模式时，如果froms数量为1，则自动改为ANY模式
-        if (this.froms.size() == 1) {
-            this.fanInMode = To.FanInMode.ANY;
-        } else {
-            this.fanInMode = To.FanInMode.ALL;
-        }
+        this.fanInMode = To.FanInMode.ALL;
     }
 
     /**
@@ -756,7 +745,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     }
 
     private List<FlowContext<I>> mergeProcessInputs(List<FlowContext<I>> pre) {
-        if (!To.FanInMode.ALL.equals(this.fanInMode) || pre.size() <= 1) {
+        if (!To.FanInMode.ALL.equals(this.fanInMode)||froms.size()==1 || pre.size() <= 1) {
             return pre;
         }
         if (!(ProcessMode.MAPPING.equals(this.processMode)
