@@ -12,6 +12,7 @@ import static modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeS
 import static modelengine.fit.waterflow.flowsengine.domain.flows.enums.ParallelMode.EITHER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import modelengine.fit.waterflow.MethodNameLoggerExtension;
@@ -24,8 +25,10 @@ import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowconte
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowlock.FlowLocks;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowlock.FlowLocksMemo;
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeStatus;
+import modelengine.fit.waterflow.flowsengine.domain.flows.streams.Processors;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Blocks.FilterBlock;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Blocks.ValidatorBlock;
+import modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes.Node;
 import modelengine.fitframework.util.ObjectUtils;
 
 import org.junit.jupiter.api.Assertions;
@@ -38,12 +41,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowOfferId;
 
 /**
  * FlowsTest
@@ -606,6 +614,95 @@ class WaterFlowsTest {
             FlowsTestUtil.waitUntil(() -> result.size() == 4, MAX_WAIT_TIME_MS);
             assertEquals(4, result.size());
         }
+
+
+        @Test
+        @DisplayName("流程实例自定义 Merger Lambda 实现多分支数据合并")
+        void testCustomMergerLambdaWithFlowsApi() {
+            AtomicReference<TestData> result = new AtomicReference<>();
+            List<TestData> mergeInputs = new ArrayList<>();
+            CountDownLatch mergeCalled = new CountDownLatch(1);
+
+            // 使用流式 API 构建流程：parallel -> fork1 -> fork2 -> join -> close
+            TestData input = new TestData();
+            Flows.<TestData>create(repo, messenger, locks)
+                    // 并行节点，开启多分支
+                    .parallel()
+                    // 分支1：设置 f=10，Just 接口无返回值
+                    .fork(i -> i.first(10))
+                    // 分支2：设置 s=20
+                    .fork(i -> i.second(20))
+                    // 汇聚节点：在 reduce 处理函数中收集所有分支的数据
+                    // join 的 reduce 函数接收的是 List<TestData>（经过 wrapper 提取了 getData）
+                    .join(data -> {
+                        // 记录所有分支的输入数据（相当于 Merger 的行为）
+                        for (TestData d : data) {
+                            mergeInputs.add(d);
+                        }
+                        mergeCalled.countDown();
+                        // 返回合并后的数据，这里演示如何自定义合并逻辑
+                        TestData merged = new TestData();
+                        for (TestData d : data) {
+                            // 合并所有分支的数据
+                            merged.first(Math.max(merged.f, d.f));
+                            merged.second(Math.max(merged.s, d.s));
+                            merged.third(Math.max(merged.t, d.t));
+                        }
+                        return merged;
+                    })
+                    .close(r -> result.set(r.get().getData()))
+                    .offer(input);
+
+            // 等待 merger 被调用
+            boolean merged = false;
+            try {
+                merged = mergeCalled.await(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            // 验证 merger 被调用
+            assertTrue(merged, "Merger should have been called");
+            assertEquals(2, mergeInputs.size());
+
+            // 等待数据到达终点
+            FlowsTestUtil.waitUntil(() -> result.get() != null, MAX_WAIT_TIME_MS);
+            assertNotNull(result.get());
+            // 验证合并后的数据
+            assertEquals(10, result.get().f);
+            assertEquals(20, result.get().s);
+        }
+
+        @Test
+        @DisplayName("流程实例并行分支汇聚验证")
+        void testParallelBranchMerge() {
+            AtomicReference<TestData> result = new AtomicReference<>();
+
+            // 使用流式 API 构建流程
+            TestData input = new TestData();
+            Flows.<TestData>create(repo, messenger, locks)
+                    // 并行节点，开启多分支
+                    .parallel()
+                    // 分支1：设置 f=10
+                    .fork(i -> i.first(10))
+                    // 分支2：设置 s=20
+                    .fork(i -> i.second(20))
+                    // 分支3：设置 t=30
+                    .fork(i -> i.third(30))
+                    // 汇聚节点：收集所有分支数据
+                    .join(data -> data.get(0))
+                    .close(r -> result.set(r.get().getData()))
+                    .offer(input);
+
+            // 等待数据到达终点
+            FlowsTestUtil.waitUntil(() -> result.get() != null, MAX_WAIT_TIME_MS);
+            assertNotNull(result.get());
+            // join 默认取第一个分支的数据
+            assertEquals(10, result.get().f);
+            assertEquals(20, result.get().s);
+            assertEquals(30, result.get().t);
+        }
+
 
         private <T> Supplier<List<FlowContext<T>>> contextSupplier(FlowContextRepo<T> repo, String traceId,
                 String metaId, FlowNodeStatus status) {

@@ -198,5 +198,21 @@ public final class Processors {
          */
         boolean check(FlowContext<T> input, List<FlowContext<T>> inputs);
     }
+
+    /**
+     * 多输入数据合并器，用于 fan-in 场景下将多条输入合并为单条处理
+     *
+     * @param <T> 输入数据类型
+     */
+    @FunctionalInterface
+    public interface Merger<T> {
+        /**
+         * 将多条输入上下文合并为单条输出上下文
+         *
+         * @param contexts 待合并的上下文列表
+         * @return 合并后的单个上下文，如果无需合并则返回 null
+         */
+        FlowContext<T> merge(List<FlowContext<T>> contexts);
+    }
 }
 

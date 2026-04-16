@@ -37,7 +37,13 @@ import timeImg from '@/assets/images/ai/time.png';
 const AddHeader = (props) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const { handleDebugClick, workFlow, types, saveTime, updateAippCallBack } = props;
+  const {
+    handleDebugClick,
+    workFlow,
+    types,
+    saveTime,
+    updateAippCallBack,
+  } = props;
   const { appInfo, setFlowInfo } = useContext(FlowContext);
   const [open, setOpen] = useState(false);
   const [imgPath, setImgPath] = useState('');

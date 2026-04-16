@@ -55,9 +55,10 @@ public final class FlowsTestUtil {
      *
      * @param supplier supplier
      * @return list
+     * @throws IllegalStateException 如果在超时时间内未获取到期望的结果
      */
     public static <T> List<T> waitEmpty(Supplier<List<T>> supplier) {
-        return waitSize(supplier, 0);
+        return waitSize(supplier, 0, MAX_WAIT_TIME_MS);
     }
 
     /**
@@ -65,9 +66,22 @@ public final class FlowsTestUtil {
      *
      * @param supplier supplier
      * @return list
+     * @throws IllegalStateException 如果在超时时间内未获取到结果
      */
     public static <T> List<T> waitSingle(Supplier<List<T>> supplier) {
-        return waitSize(supplier, 1);
+        return waitSingle(supplier, MAX_WAIT_TIME_MS);
+    }
+
+    /**
+     * waitSingle with timeout
+     *
+     * @param supplier supplier
+     * @param maxWaitMs 最大等待时间
+     * @return list
+     * @throws IllegalStateException 如果在超时时间内未获取到结果
+     */
+    public static <T> List<T> waitSingle(Supplier<List<T>> supplier, int maxWaitMs) {
+        return waitSize(supplier, 1, maxWaitMs);
     }
 
     /**
@@ -76,15 +90,10 @@ public final class FlowsTestUtil {
      * @param supplier supplier
      * @param size 大小
      * @return list
+     * @throws IllegalStateException 如果在超时时间内未获取到期望的结果
      */
     public static <T> List<T> waitSize(Supplier<List<T>> supplier, int size) {
-        while (true) {
-            List<T> ts = supplier.get();
-            if (ts.size() == size) {
-                return ts;
-            }
-            SleepUtil.sleep(5);
-        }
+        return waitSize(supplier, size, MAX_WAIT_TIME_MS);
     }
 
     /**
@@ -94,6 +103,7 @@ public final class FlowsTestUtil {
      * @param size 大小
      * @param maxWaitMs 最大等待时间
      * @return list
+     * @throws IllegalStateException 如果在超时时间内未获取到期望的结果
      */
     public static <T> List<T> waitSize(Supplier<List<T>> supplier, int size, int maxWaitMs) {
         int time = 0;
@@ -106,7 +116,8 @@ public final class FlowsTestUtil {
             SleepUtil.sleep(step);
             time += step;
         }
-        return null;
+        throw new IllegalStateException(
+            "等待超时：在 " + maxWaitMs + "ms 内未获取到期望的 " + size + " 条结果，当前结果数=" + supplier.get().size());
     }
 
     /**

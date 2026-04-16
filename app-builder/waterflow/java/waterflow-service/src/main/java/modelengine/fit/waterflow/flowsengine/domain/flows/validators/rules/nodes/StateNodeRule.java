@@ -27,7 +27,7 @@ public class StateNodeRule implements NodeRule {
      */
     @Override
     public void apply(FlowNode flowNode) {
-        Validation.same(flowNode.getEvents().size(), EXPECT_EVENT_SIZE,
+        Validation.greaterThanOrEquals(flowNode.getEvents().size(), MINIMUM_EVENT_SIZE,
                 () -> new WaterflowParamException(INVALID_STATE_NODE_EVENT_SIZE));
         if (!flowNode.getTriggerMode().isAuto()) {
             Validation.notNull(flowNode.getTask(), exception("Flow node task error"));

@@ -118,6 +118,7 @@ services:
       - "./app-platform-tmp/app-builder:/var/share"
     ports:
       - "8004:8004"
+      - "5005:5005"
 
   fit-runtime-java:
     container_name: fit-runtime-java

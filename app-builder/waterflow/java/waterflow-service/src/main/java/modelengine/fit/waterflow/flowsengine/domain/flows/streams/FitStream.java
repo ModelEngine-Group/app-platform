@@ -433,6 +433,25 @@ public final class FitStream {
          * @param order 优先级
          */
         void setOrder(int order);
+
+        /**
+         * 设置FanIn模式
+         *
+         * @param fanInMode FanIn模式
+         */
+        void setFanInMode(To.FanInMode fanInMode);
+
+        /**
+         * 设置为ALL模式，强制等待所有输入数据到齐后再处理
+         */
+        default void setAllMode() {
+        }
+
+        /**
+         * 设置为ANY模式，有数据到达即处理
+         */
+        default void setAnyMode() {
+        }
     }
 
     /**

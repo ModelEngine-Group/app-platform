@@ -40,6 +40,8 @@ export const jadeFlowPage = (div, graph, name, id) => {
   self.addEventListener('COPY_SHAPE', shapeChangeListener);
   self.addEventListener('DELETE_SHAPE', shapeChangeListener);
 
+  const isConnectionLimitDisabled = () => Boolean(self.graph?.connectionLimitDisabled);
+
   /**
    * @override
    */
@@ -305,7 +307,7 @@ export const jadeFlowPage = (div, graph, name, id) => {
    */
   self.canDragOut = (node, connector) => {
     const lines = self.getEvents().filter(s => s.fromShape === node.id && s.getDefinedFromConnector() === connector);
-    return lines && lines.length < 1;
+    return lines.length < (isConnectionLimitDisabled() ? 10 : 1);
   };
 
   /**
@@ -330,7 +332,9 @@ export const jadeFlowPage = (div, graph, name, id) => {
       }
     };
 
-    return jadeEvent.fromShape !== jadeEvent.toShape && isConnectorAllowToLink() && isConnectorWithinLimit();
+    return jadeEvent.fromShape !== jadeEvent.toShape
+      && isConnectorAllowToLink()
+      && (isConnectionLimitDisabled() || isConnectorWithinLimit());
   };
 
   /**

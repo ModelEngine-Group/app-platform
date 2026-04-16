@@ -266,6 +266,29 @@ public final class FlowContext<T> extends IdGenerator {
     }
 
     /**
+     * fork一个新的context用于一拖多分支，继承当前context的运行元数据，但生成新的contextId。
+     *
+     * @return 新的分支context
+     */
+    public FlowContext<T> fork() {
+        return this.convertData(this.data);
+    }
+
+    /**
+     * convertData
+     *
+     * @param <R> 转换后的数据类型
+     * @param data 转换后的数据
+     * @return 转换后的context
+     */
+    public <R> FlowContext<R> convertData(R data) {
+        FlowContext<R> context = this.copyContextWithoutID(data);
+        context.previous = this.previous;
+        context.nextPositionId = this.nextPositionId;
+        return context;
+    }
+
+    /**
      * 用于when.convert数据时候的转换context，除了包裹的数据类型不一样，所有其他信息都一样
      *
      * @param <R> 转换后的数据类型
@@ -274,12 +297,17 @@ public final class FlowContext<T> extends IdGenerator {
      * @return 转换后的context
      */
     public <R> FlowContext<R> convertData(R data, String id) {
+        FlowContext<R> context = this.copyContextWithoutID(data);
+        context.previous = this.previous;
+        context.id = id;
+        return context;
+    }
+
+    private <R> FlowContext<R> copyContextWithoutID(R data) {
         FlowContext<R> context = new FlowContext<>(this.streamId, this.rootId, data, this.traceId, this.position,
                 this.parallel, this.parallelMode, LocalDateTime.now());
-        context.previous = this.previous;
         context.status = this.status;
         context.trans = this.trans;
-        context.id = id;
         context.batchId = this.batchId;
         context.toBatch = this.toBatch;
         context.createAt = this.createAt;

@@ -228,8 +228,10 @@ public abstract class FlowNode {
      * @param event {@link FlowEvent}节点之间的连线
      */
     public void subscribe(String streamId, FlowEnv flowEnv, FlowNode toNode, FlowEvent event) {
+        FitStream.Subscriber<FlowData, FlowData> toSubscriber = getTo(streamId, flowEnv.getRepo(), flowEnv.getMessenger(), flowEnv.getLocks(), toNode);
+        toSubscriber.setAllMode();
         this.subscribe(getFrom(streamId, flowEnv.getRepo(), flowEnv.getMessenger(), flowEnv.getLocks()),
-                getTo(streamId, flowEnv.getRepo(), flowEnv.getMessenger(), flowEnv.getLocks(), toNode), event);
+                toSubscriber, event);
     }
 
     /**

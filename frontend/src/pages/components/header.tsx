@@ -57,7 +57,7 @@ const ChoreographyHead = (props) => {
     updateAippCallBack,
     mashupClick,
     openDebug,
-    saveTime
+    saveTime,
   } = props;
   const { aippId } = useParams();
   const testStatus = useAppSelector((state) => state.flowTestStore.testStatus);

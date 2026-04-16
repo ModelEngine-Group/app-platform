@@ -25,6 +25,6 @@ public class ParallelNodeRule implements NodeRule {
      */
     @Override
     public void apply(FlowNode flowNode) {
-        Validation.same(flowNode.getEvents().size(), EXPECT_EVENT_SIZE, exception("parallel node event size"));
+        Validation.greaterThanOrEquals(flowNode.getEvents().size(), EXPECT_EVENT_SIZE, exception("parallel node event size"));
     }
 }

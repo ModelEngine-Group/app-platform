@@ -44,6 +44,7 @@ docker cp "$PLUGINS_DIR"/. app-builder-tmp:/opt/fit-framework/plugins/
 echo "Copying shared libraries..."
 docker cp "$SHARED_DIR"/. app-builder-tmp:/opt/fit-framework/shared/
 
+docker exec app-builder-tmp bash -c "rm -f /opt/fit-framework/plugins/authentication-oauth2-client-1.0.0-SNAPSHOT.jar"
 # Commit as development version
 echo "Committing development version image: ${DEV_VERSION}"
 docker commit --change='ENTRYPOINT ["/opt/fit-framework/bin/start.sh"]' app-builder-tmp ${REPO}/app-builder:${DEV_VERSION}

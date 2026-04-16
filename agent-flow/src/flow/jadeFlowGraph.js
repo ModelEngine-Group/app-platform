@@ -76,6 +76,7 @@ export const jadeFlowGraph = (div, title) => {
   const self = defaultGraph(div, title);
   self.type = 'jadeFlowGraph';
   self.pageType = 'jadeFlowPage';
+  self.connectionLimitDisabled = false;
   self.enableText = false;
   self.flowMeta = {
     exceptionFitables: ['modelengine.fit.jober.aipp.fitable.AippFlowExceptionHandler'],

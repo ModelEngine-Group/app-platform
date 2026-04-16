@@ -50,7 +50,19 @@
         {
             "type": "end",
             "metaId": "ender1",
-            "name": "",
+            "name": "结束节点1",
+            "triggerMode": "auto"
+        },
+        {
+            "type": "end",
+            "metaId": "ender2",
+            "name": "结束节点2",
+            "triggerMode": "auto"
+        },
+        {
+            "type": "end",
+            "metaId": "ender3",
+            "name": "结束节点3",
             "triggerMode": "auto"
         },
         {
@@ -96,7 +108,7 @@
             "metaId": "event6",
             "name": "审批节点2驳回",
             "from": "condition2",
-            "to": "ender1",
+            "to": "ender2",
             "conditionRule": "!businessData.get(\"committer\").get(\"approved\")"
         },
         {
@@ -104,7 +116,7 @@
             "metaId": "event7",
             "name": "结束流程",
             "from": "state2",
-            "to": "ender1"
+            "to": "ender3"
         }
     ]
 }

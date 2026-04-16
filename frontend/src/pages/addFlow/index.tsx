@@ -147,7 +147,6 @@ const AddFlow = (props) => {
           <FlowHeader
             debugTypes={debugTypes}
             handleDebugClick={handleDebugClick}
-            showDebug={showDebug}
             saveTime={saveTime}
             setShowDebug={setShowDebug}
             workFlow={workFlow}
