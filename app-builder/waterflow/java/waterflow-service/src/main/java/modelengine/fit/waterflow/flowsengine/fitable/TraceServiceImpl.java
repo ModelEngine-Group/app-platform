@@ -92,9 +92,15 @@ public class TraceServiceImpl implements FlowCallbackService, FlowExceptionServi
         contexts.forEach(context -> {
             String nodeId = getValueOfSpecifyKey(context, Constant.NODE_ID_KEY);
             FlowNodePublishInfo flowNodePublishInfo = constructFlowNodePublishInfo(context, nodeId, new FlowErrorInfo(),
-                    FlowNodeStatus.ARCHIVED.name());
+                    resolveCallbackStatus(context));
             publishNodeInfo(flowNodePublishInfo);
         });
+    }
+
+    private static String resolveCallbackStatus(Map<String, Object> context) {
+        String status = cast(context.get("status"));
+        return FlowNodeStatus.SKIPPED.name().equals(status) ? FlowNodeStatus.SKIPPED.name()
+                : FlowNodeStatus.ARCHIVED.name();
     }
 
     @Fitable("modelengine.fit.jober.fitable.FlowInfoException")

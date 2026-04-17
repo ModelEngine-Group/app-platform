@@ -139,7 +139,8 @@ public class FlowRuntimeServiceImpl implements FlowRuntimeService {
     private final BrokerClient brokerClient;
 
     private final List<String> traceRunningStatus = Arrays.asList(FlowTraceStatus.READY.name(),
-            FlowNodeStatus.NEW.name(), FlowNodeStatus.PENDING.name(), FlowNodeStatus.RETRYABLE.name());
+            FlowNodeStatus.NEW.name(), FlowNodeStatus.PENDING.name(), FlowNodeStatus.SKIPPED.name(),
+            FlowNodeStatus.RETRYABLE.name());
 
     private final FlowDefinitionQueryService definitionQueryService;
 
@@ -171,7 +172,8 @@ public class FlowRuntimeServiceImpl implements FlowRuntimeService {
     private static boolean isContextRunning(FlowContextPO flowContextPO) {
         FlowNodeStatus contextStatus = FlowNodeStatus.valueOf(flowContextPO.getStatus());
         return FlowNodeStatus.NEW.equals(contextStatus) || FlowNodeStatus.PENDING.equals(contextStatus)
-                || FlowNodeStatus.READY.equals(contextStatus) || FlowNodeStatus.RETRYABLE.equals(contextStatus);
+                || FlowNodeStatus.SKIPPED.equals(contextStatus) || FlowNodeStatus.READY.equals(contextStatus)
+                || FlowNodeStatus.RETRYABLE.equals(contextStatus);
     }
 
     @Override

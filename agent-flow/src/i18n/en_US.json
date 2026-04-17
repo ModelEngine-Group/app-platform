@@ -123,6 +123,7 @@
   "running": "Running",
   "notRunning": "Not running",
   "runFailed": "Failed",
+  "skipped": "Skipped",
   "runResult": "Running Result",
   "promptName": "Prompt Word",
   "promptTextarea": "Use {{Variable name}} to add a variable",

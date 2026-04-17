@@ -26,8 +26,8 @@ import modelengine.fit.jober.aipp.service.impl.AippFlowRuntimeInfoServiceImpl;
 import modelengine.fit.jober.entity.consts.NodeTypes;
 import modelengine.fit.runtime.entity.Parameter;
 import modelengine.fit.runtime.entity.RuntimeData;
-import modelengine.fit.waterflow.domain.enums.FlowNodeStatus;
 
+import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -150,6 +150,104 @@ public class AippFlowRuntimeInfoServiceTest {
         assertEquals(runtimeData.getNodeInfos().get(1).getErrorMsg(), "11111");
         assertEquals(runtimeData.getNodeInfos().get(1).getParameters().get(0).getInput(), "3");
         assertEquals(runtimeData.getNodeInfos().get(1).getParameters().get(0).getOutput(), "4");
+    }
+
+    @Test
+    void shouldAggregateNodeStatusToArchivedWhenAnyContextArchived() {
+        doReturn(Optional.of(AppTask.asEntity().setTaskId("version1").setAppId("app1").build())).when(
+                this.appTaskService).getLatest(anyString(), anyString(), any(OperationContext.class));
+        doReturn(Optional.of(AppTaskInstance.asEntity().setFlowTraceId("trace1").build())).when(this.appTaskInstanceService)
+                .getInstance(anyString(), anyString(), any(OperationContext.class));
+
+        List<AppBuilderRuntimeInfo> infos = new ArrayList<>();
+        infos.add(AppBuilderRuntimeInfo.builder()
+                .startTime(1)
+                .endTime(10)
+                .flowDefinitionId("flow1")
+                .traceId("trace1")
+                .nodeId("node1")
+                .instanceId("instance1")
+                .nodeType(NodeTypes.START.getType())
+                .status(FlowNodeStatus.ARCHIVED.name())
+                .published(true)
+                .build());
+        infos.add(AppBuilderRuntimeInfo.builder()
+                .startTime(11)
+                .endTime(20)
+                .flowDefinitionId("flow1")
+                .traceId("trace1")
+                .nodeId("node2")
+                .instanceId("instance1")
+                .nodeType(NodeTypes.STATE.getType())
+                .status(FlowNodeStatus.SKIPPED.name())
+                .published(true)
+                .build());
+        infos.add(AppBuilderRuntimeInfo.builder()
+                .startTime(21)
+                .endTime(30)
+                .flowDefinitionId("flow1")
+                .traceId("trace1")
+                .nodeId("node2")
+                .instanceId("instance1")
+                .nodeType(NodeTypes.STATE.getType())
+                .status(FlowNodeStatus.ARCHIVED.name())
+                .published(true)
+                .build());
+        doReturn(infos).when(this.repository).selectByTraceId(anyString());
+
+        RuntimeData runtimeData = this.service.getRuntimeData("app1", "", "instance1", new OperationContext()).get();
+
+        assertEquals(2, runtimeData.getNodeInfos().size());
+        assertEquals(FlowNodeStatus.ARCHIVED.name(), runtimeData.getNodeInfos().get(1).getStatus());
+    }
+
+    @Test
+    void shouldAggregateNodeStatusToSkippedWhenAllContextsSkipped() {
+        doReturn(Optional.of(AppTask.asEntity().setTaskId("version1").setAppId("app1").build())).when(
+                this.appTaskService).getLatest(anyString(), anyString(), any(OperationContext.class));
+        doReturn(Optional.of(AppTaskInstance.asEntity().setFlowTraceId("trace1").build())).when(this.appTaskInstanceService)
+                .getInstance(anyString(), anyString(), any(OperationContext.class));
+
+        List<AppBuilderRuntimeInfo> infos = new ArrayList<>();
+        infos.add(AppBuilderRuntimeInfo.builder()
+                .startTime(1)
+                .endTime(10)
+                .flowDefinitionId("flow1")
+                .traceId("trace1")
+                .nodeId("node1")
+                .instanceId("instance1")
+                .nodeType(NodeTypes.START.getType())
+                .status(FlowNodeStatus.ARCHIVED.name())
+                .published(true)
+                .build());
+        infos.add(AppBuilderRuntimeInfo.builder()
+                .startTime(11)
+                .endTime(20)
+                .flowDefinitionId("flow1")
+                .traceId("trace1")
+                .nodeId("node2")
+                .instanceId("instance1")
+                .nodeType(NodeTypes.STATE.getType())
+                .status(FlowNodeStatus.SKIPPED.name())
+                .published(true)
+                .build());
+        infos.add(AppBuilderRuntimeInfo.builder()
+                .startTime(21)
+                .endTime(30)
+                .flowDefinitionId("flow1")
+                .traceId("trace1")
+                .nodeId("node2")
+                .instanceId("instance1")
+                .nodeType(NodeTypes.STATE.getType())
+                .status(FlowNodeStatus.SKIPPED.name())
+                .published(true)
+                .build());
+        doReturn(infos).when(this.repository).selectByTraceId(anyString());
+
+        RuntimeData runtimeData = this.service.getRuntimeData("app1", "", "instance1", new OperationContext()).get();
+
+        assertEquals(2, runtimeData.getNodeInfos().size());
+        assertEquals(FlowNodeStatus.SKIPPED.name(), runtimeData.getNodeInfos().get(1).getStatus());
     }
 
     private void mockData() {

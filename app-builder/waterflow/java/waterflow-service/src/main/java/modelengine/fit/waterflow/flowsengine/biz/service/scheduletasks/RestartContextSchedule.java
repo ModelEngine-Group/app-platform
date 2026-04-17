@@ -152,9 +152,10 @@ public class RestartContextSchedule {
             }
             Node<FlowData, FlowData> node = flow.findNodeFromFlow(flow, context.getPosition());
             node.offer(contexts, (c) -> {});
-        } else if (Objects.equals(context.getStatus(), FlowNodeStatus.PENDING) && !flowDefinition.getNodeMap()
+        } else if ((Objects.equals(context.getStatus(), FlowNodeStatus.PENDING)
+                || Objects.equals(context.getStatus(), FlowNodeStatus.SKIPPED)) && !flowDefinition.getNodeMap()
                 .containsKey(context.getPosition())) {
-            // 线上pending状态context
+            // 线上pending/skipped状态context
             FlowNode flowNode = flowDefinition.getFromNodeByEvent(context.getPosition());
             if (flowNode.belongTo(FlowNodeType.START)) {
                 flow.offer(contexts, (c) -> {});

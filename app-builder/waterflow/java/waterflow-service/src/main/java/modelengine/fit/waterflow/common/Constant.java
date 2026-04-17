@@ -164,6 +164,11 @@ public final class Constant {
      */
     public static final String INTERNAL_EXECUTE_INFO_KEY = "executeInfo";
 
+        /**
+         * 内部跳过标记，用于让未命中的条件分支继续参与后续汇聚。
+         */
+        public static final String INTERNAL_SKIPPED_SIGNAL_KEY = "skippedSignal";
+
     /**
      * 存储系统参数的虚拟节点id
      */
@@ -231,6 +236,7 @@ public final class Constant {
             put(FlowNodeStatus.TERMINATE.toString(), CONTEXT_TERMINATE_EXCLUSIVE_STATUS_LIST);
             put(FlowNodeStatus.ERROR.toString(), CONTEXT_ERROR_EXCLUSIVE_STATUS_LIST);
             put(FlowNodeStatus.PENDING.toString(), CONTEXT_NONE_TERMINATE_EXCLUSIVE_STATUS_LIST);
+                        put(FlowNodeStatus.SKIPPED.toString(), CONTEXT_NONE_TERMINATE_EXCLUSIVE_STATUS_LIST);
             put(FlowNodeStatus.READY.toString(), CONTEXT_NONE_TERMINATE_EXCLUSIVE_STATUS_LIST);
             put(FlowNodeStatus.PROCESSING.toString(), CONTEXT_NONE_TERMINATE_EXCLUSIVE_STATUS_LIST);
             put(FlowNodeStatus.ARCHIVED.toString(), CONTEXT_ARCHIVED_EXCLUSIVE_STATUS_LIST);

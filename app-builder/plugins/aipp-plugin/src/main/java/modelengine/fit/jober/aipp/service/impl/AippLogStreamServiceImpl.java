@@ -18,8 +18,8 @@ import modelengine.fit.jober.aipp.util.SensitiveFilterTools;
 import modelengine.fit.jober.aipp.vo.AippLogVO;
 import modelengine.fit.jober.common.ErrorCodes;
 import modelengine.fit.jober.common.exceptions.JobberException;
-
 import modelengine.fit.waterflow.domain.enums.FlowTraceStatus;
+
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
@@ -61,6 +61,7 @@ public class AippLogStreamServiceImpl implements AippLogStreamService {
             return;
         }
         AppChatRsp appChatRsp = this.buildData(log);
+
         if (!appChatRsp.getStatus().equalsIgnoreCase(FlowTraceStatus.RUNNING.name()) && !appChatRsp.getStatus()
                 .equalsIgnoreCase(FlowTraceStatus.READY.name())) {
             this.appChatSseService.sendLastData(log.getInstanceId(), appChatRsp);
@@ -75,10 +76,9 @@ public class AippLogStreamServiceImpl implements AippLogStreamService {
                 .orElseThrow(() -> new JobberException(ErrorCodes.UN_EXCEPTED_ERROR,
                         StringUtils.format("App task instance[{0}] not found.", instanceId)));
 
-        // 在当前某些情况下，会出现插入log日志，但是不修改instance状态的情况.
-        // 参考modelengine.fit.jober.aipp.fitable.agent.AippFlowAgent.fetchAgentErrorMsgToMain
+        // 日志流阶段统一透出 RUNNING，避免中间态误触发前端结束动画。
         String status = log.getLogType().equals(AippInstLogType.ERROR.name())
-                ? FlowTraceStatus.ERROR.name()
+            ? FlowTraceStatus.ERROR.name()
                 : instance.getEntity().getStatus().orElse(null);
 
         AppChatRsp.Answer answer = this.buildAnswer(log);
