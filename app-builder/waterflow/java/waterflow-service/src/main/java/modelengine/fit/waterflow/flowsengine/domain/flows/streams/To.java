@@ -771,9 +771,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         }
         FlowContext<I> merged = this.merger.merge(pre);
         return merged != null ? Collections.singletonList(merged) : pre;
-        FlowContext<I> baseContext = pre.get(0);
-        FlowData mergedFlowData = mergeFlowData(pre);
-        return Collections.singletonList(baseContext.convertData(ObjectUtils.cast(mergedFlowData), baseContext.getId()));
+
     }
 
     private List<FlowContext<I>> filterExecutableInputs(List<FlowContext<I>> contexts) {
