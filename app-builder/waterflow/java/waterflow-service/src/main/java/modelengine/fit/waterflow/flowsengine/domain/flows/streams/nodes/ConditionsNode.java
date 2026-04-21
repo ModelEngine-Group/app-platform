@@ -7,9 +7,11 @@
 package modelengine.fit.waterflow.flowsengine.domain.flows.streams.nodes;
 
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowContext;
+import modelengine.fit.waterflow.flowsengine.domain.flows.context.FlowData;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowcontext.FlowContextMessenger;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowcontext.FlowContextRepo;
 import modelengine.fit.waterflow.flowsengine.domain.flows.context.repo.flowlock.FlowLocks;
+import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeStatus;
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeType;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.FitStream;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.From;
@@ -109,16 +111,21 @@ public class ConditionsNode<I> extends Node<I, I> {
                     for (int index = 0; index < subscriptions.size(); index++) {
                         FitStream.Subscription<I, ?> subscription = subscriptions.get(index);
                         boolean useOriginalContext = index == matchedIndex;
-                        FlowContext<I> branchContext = useOriginalContext ? context : context.fork();
-                        branchContext.setNextPositionId(subscription.getId());
-                        if (index != matchedIndex) {
-                            branchContext.setStatus(modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeStatus.SKIPPED)
-                                    .markSkippedSignal();
-                        }
-                        matchedContexts.computeIfAbsent(subscription, key -> new ArrayList<>()).add(branchContext);
-                        if (!useOriginalContext) {
+                        boolean isSkippedBranch = index != matchedIndex;
+                        boolean isFlowDataContext = context.getData() instanceof FlowData;
+                        // 只有 FlowData 类型且是未匹配分支时才创建 forked context 并标记 skipped
+                        // 非 FlowData 类型保持原有逻辑，未匹配分支直接忽略
+                        if (useOriginalContext) {
+                            context.setNextPositionId(subscription.getId());
+                            matchedContexts.computeIfAbsent(subscription, key -> new ArrayList<>()).add(context);
+                        } else if (isSkippedBranch && isFlowDataContext) {
+                            FlowContext<I> branchContext = context.fork();
+                            branchContext.setNextPositionId(subscription.getId());
+                            branchContext.setStatus(FlowNodeStatus.SKIPPED).markSkippedSignal();
+                            matchedContexts.computeIfAbsent(subscription, key -> new ArrayList<>()).add(branchContext);
                             forkedContexts.add(branchContext);
                         }
+                        // 非 FlowData 且未匹配的分支：直接忽略，不创建任何 context
                     }
                 });
                 List<FlowContext<I>> unMatchedContexts = contexts.stream()
