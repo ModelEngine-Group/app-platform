@@ -38,7 +38,7 @@ public class FlowHttpJober extends FlowJober {
             throw new WaterflowException(ex, ErrorCodes.FLOW_HTTP_JOBER_INVOKE_ERROR);
         }
         log.info("Remote invoke success,nodeId: {}, fitable id is {}.", this.nodeMetaId, HTTP_JOBER_FITABLE);
-        return convertToFlowData(outputs, inputs.get(0));
+        return convertToFlowData(outputs, inputs);
     }
 }
 

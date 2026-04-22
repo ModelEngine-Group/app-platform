@@ -470,7 +470,12 @@ public class FlowContextPersistTest extends DatabaseBaseTest {
             List<FlowContext<FlowData>> contexts = FlowsTestUtil.waitSingle(
                     contextSupplier(memRepo, streamId, traceId, flowNode.getMetaId(), FlowNodeStatus.ARCHIVED));
             List<FlowContext<FlowData>> all = this.getContextsByTraceWrapper(memRepo, traceId);
+            for (FlowContext<FlowData> flowDataFlowContext : all) {
+                System.out.println(flowDataFlowContext.toString());
 
+            }
+
+            System.out.println(all.size());
             assertFlowsExecutorWithConditionNodeFirstFalseBranch(flowData, contexts, all);
         }
 
@@ -526,7 +531,7 @@ public class FlowContextPersistTest extends DatabaseBaseTest {
                     contextSupplier(memRepo, streamId, traceId, flowNode.getMetaId(), FlowNodeStatus.ERROR), 1,
                     MAX_WAIT_TIME_MS);
             List<FlowContext<FlowData>> all = this.getContextsByTraceWrapper(memRepo, traceId);
-            assertFlowsExecutorStateNodeWithException(flowDefinition, metaId, contexts, all, 3, expectException);
+            assertFlowsExecutorStateNodeWithException(flowDefinition, metaId, contexts, all, 4, expectException);
         }
     }
 
@@ -840,9 +845,8 @@ public class FlowContextPersistTest extends DatabaseBaseTest {
 
             FlowNode flowNode = flowDefinition.getFlowNode(FlowNodeType.END);
             List<FlowContext<FlowData>> contexts = FlowsTestUtil.waitSize(
-                    contextSupplier(memRepo, streamId, traceId, flowNode.getMetaId(), FlowNodeStatus.ARCHIVED), 3);
+                    contextSupplier(memRepo, streamId, traceId, flowNode.getMetaId(), FlowNodeStatus.ARCHIVED), 5);
             List<FlowContext<FlowData>> all = this.getContextsByTraceWrapper(memRepo, traceId);
-
             assertFlowsExecuteProduceFromMToNForOfferOneData(contexts, all);
         }
 
@@ -878,10 +882,9 @@ public class FlowContextPersistTest extends DatabaseBaseTest {
 
             FlowNode flowNode = flowDefinition.getFlowNode(FlowNodeType.END);
             List<FlowContext<FlowData>> contexts = FlowsTestUtil.waitSize(
-                    contextSupplier(memRepo, streamId, traceId, flowNode.getMetaId(), FlowNodeStatus.ARCHIVED), 3,
+                    contextSupplier(memRepo, streamId, traceId, flowNode.getMetaId(), FlowNodeStatus.ARCHIVED), 5,
                     MAX_WAIT_TIME_MS);
             List<FlowContext<FlowData>> all = this.getContextsByTraceWrapper(memRepo, traceId);
-
             assertFlowsExecuteProduceFromMToNForOfferMultiData(contexts, all);
         }
 

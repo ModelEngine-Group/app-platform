@@ -8,6 +8,7 @@ package modelengine.fit.waterflow.flowsengine.domain.flows.context;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.flowsengine.domain.flows.enums.FlowNodeStatus;
 import modelengine.fit.waterflow.flowsengine.domain.flows.streams.IdGenerator;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
  *
  * @since 2023/08/14
  */
+@ToString
 public final class FlowContext<T> extends IdGenerator {
     /**
      * 通过from.offer(data)而不是.offer(context)发起的数据会新增一个trace，这个trace会延续到flow end
@@ -272,11 +274,17 @@ public final class FlowContext<T> extends IdGenerator {
 
     /**
      * fork一个新的context用于一拖多分支，继承当前context的运行元数据，但生成新的contextId。
+     * 对于FlowData类型的数据，需要深拷贝以避免多个fork分支共享同一个FlowData引用导致数据相互影响。
      *
      * @return 新的分支context
      */
     public FlowContext<T> fork() {
-        return this.convertData(this.data);
+        T dataToFork = this.data;
+        if (dataToFork instanceof FlowData) {
+            // FlowData 需要深拷贝，避免多个 fork 分支共享同一个 FlowData 引用导致数据相互影响
+            dataToFork = (T) copyFlowData((FlowData) this.data);
+        }
+        return this.convertData(dataToFork);
     }
 
     /**
