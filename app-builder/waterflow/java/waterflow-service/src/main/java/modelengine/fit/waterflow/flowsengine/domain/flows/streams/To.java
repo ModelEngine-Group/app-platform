@@ -912,6 +912,9 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         this.getRepo().updateProcessStatus(preContexts);
         LOG.debug("afterProcess after updateProcessStatus");
         if (CollectionUtils.isEmpty(after)) {
+            if (FlowNodeType.END.equals(this.nodeType) && CollectionUtils.isNotEmpty(preContexts)) {
+                callback(preContexts, ObjectUtils.cast(preContexts));
+            }
             return;
         }
         if (FlowNodeType.END.equals(this.nodeType)) {
@@ -937,7 +940,10 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     private void callback(List<FlowContext<I>> preContexts, List<FlowContext<O>> after) {
         LocalDateTime createAt = preContexts.get(0).getCreateAt();
         LocalDateTime archivedAt = LocalDateTime.now();
-        feedback(after.stream().map(context -> {
+        List<FlowContext<O>> contextsToFeedback = CollectionUtils.isEmpty(after)
+                ? preContexts.stream().map(c -> ObjectUtils.<FlowContext<O>>cast(c)).collect(Collectors.toList())
+                : after;
+        feedback(contextsToFeedback.stream().map(context -> {
             FlowContext<O> callbackContext = context.generate(context.getData(), context.getPosition(),
                     createAt);
             if (context.isSkippedSignal()) {

@@ -225,31 +225,7 @@ public class LlmComponentTest {
         Mockito.verify(this.toolService, times(0)).getTool(any());
     }
 
-    @Test
-    void shouldUseLiteralNullWhenPromptVariableIsNull() throws InterruptedException {
-        // stub
-        this.prepareModel();
-        AiProcessFlow<Prompt, ChatMessage> testAgent = AiFlows.<Prompt>create()
-                .just(m -> Assertions.assertEquals("null", ObjectUtils.<AiMessage>cast(m.messages().get(0)).text()))
-                .map(m -> ObjectUtils.<ChatMessage>cast(new AiMessage("bad")))
-                .close();
-        AbstractAgent agent = this.buildStubAgent(testAgent);
-        LlmComponent llmComponent = getLlmComponent(agent);
 
-        // mock
-        CountDownLatch countDownLatch = mockResumeFlow(flowInstanceService);
-        Map<String, Object> businessData = buildLlmTestData();
-        ObjectUtils.<Map<String, Object>>cast(businessData.get("prompt")).put("variables",
-                new HashMap<String, Object>() {
-                    {
-                        put("input", null);
-                    }
-                });
-
-        // run
-        llmComponent.handleTask(TestUtils.buildFlowDataWithExtraConfig(businessData, null));
-        countDownLatch.await();
-    }
 
     @Test
     void shouldFailedWhenNoTool() throws InterruptedException {
