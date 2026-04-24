@@ -37,6 +37,7 @@ import modelengine.fit.jober.aipp.repository.EndNodeStatusRepository;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.AppChatSseService;
+import modelengine.fit.jober.aipp.util.ConvertUtils;
 import modelengine.fit.jober.aipp.util.DataUtils;
 import modelengine.fit.jober.aipp.util.FormUtils;
 import modelengine.fit.jober.aipp.util.JsonUtils;
@@ -150,6 +151,7 @@ public class AippFlowEndCallback implements FlowCallbackService {
         String aippInstId = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_INST_ID_KEY));
         String parentCallbackId = ObjectUtils.cast(businessData.get(AippConst.PARENT_CALLBACK_ID));
         boolean allowTerminalSignal = StringUtils.isEmpty(parentCallbackId);
+        this.insertEndNodeStatus(contexts, aippInstId, appTask.getEntity().getFlowConfigId());
         boolean readyToTerminate = this.shouldSendLastData(contexts, appTask);
         this.saveInstance(businessData, versionId, aippInstId, context, appTask, readyToTerminate);
         String parentInstanceId = ObjectUtils.cast(businessData.get(AippConst.PARENT_INSTANCE_ID));
@@ -229,6 +231,25 @@ public class AippFlowEndCallback implements FlowCallbackService {
             }
         }
         // If lock acquisition fails, another thread has already sent the terminal signal, skip.
+    }
+
+    private void insertEndNodeStatus(List<Map<String, Object>> contexts, String aippInstId, String flowConfigId) {
+        String flowTraceId = DataUtils.getFlowTraceId(contexts);
+        String currentNodeId = ObjectUtils.cast(contexts.get(0).get(AippConst.BS_NODE_ID_KEY));
+        String status = ObjectUtils.cast(contexts.get(0).get("status"));
+        long currentTime = ConvertUtils.toLong(LocalDateTime.now());
+        EndNodeStatus endNodeStatus = EndNodeStatus.builder()
+                .traceId(flowTraceId)
+                .endNodeId(currentNodeId)
+                .status(status)
+                .startTime(currentTime)
+                .endTime(currentTime)
+                .flowDefinitionId(flowConfigId)
+                .instanceId(aippInstId)
+                .createAt(LocalDateTime.now())
+                .updateAt(LocalDateTime.now())
+                .build();
+        this.endNodeStatusRepository.insertOne(endNodeStatus);
     }
 
     private boolean shouldSendLastData(List<Map<String, Object>> contexts, AppTask appTask) {

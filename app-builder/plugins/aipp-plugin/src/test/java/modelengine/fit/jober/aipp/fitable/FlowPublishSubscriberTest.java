@@ -27,7 +27,6 @@ import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
 import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.entity.ChatSession;
 import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
-import modelengine.fit.jober.aipp.repository.EndNodeStatusRepository;
 import modelengine.fit.jober.aipp.service.AppChatSessionService;
 import modelengine.fit.jober.aipp.service.impl.RuntimeInfoServiceImpl;
 import modelengine.fit.jober.aipp.util.JsonUtils;
@@ -66,9 +65,6 @@ public class FlowPublishSubscriberTest {
     @Mock
     private AppBuilderRuntimeInfoRepository repository;
 
-    @Mock
-    private EndNodeStatusRepository endNodeStatusRepository;
-
     private FlowPublishSubscriber flowPublishSubscriber;
 
     @Mock
@@ -93,7 +89,7 @@ public class FlowPublishSubscriberTest {
     void setUp() {
         RuntimeInfoServiceImpl runtimeInfoService = new RuntimeInfoServiceImpl(null, this.appTaskService,
                 this.appTaskInstanceService, this.appVersionService);
-        this.flowPublishSubscriber = new FlowPublishSubscriber(this.repository, this.endNodeStatusRepository,
+        this.flowPublishSubscriber = new FlowPublishSubscriber(this.repository,
                 this.toolExceptionHandle, this.appChatSessionService, null, runtimeInfoService);
     }
 

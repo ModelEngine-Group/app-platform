@@ -8,12 +8,10 @@ package modelengine.fit.jober.aipp.fitable;
 
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.domain.AppBuilderRuntimeInfo;
-import modelengine.fit.jober.aipp.domain.EndNodeStatus;
 import modelengine.fit.jober.aipp.domains.business.RunContext;
 import modelengine.fit.jober.aipp.dto.chat.AppChatRsp;
 import modelengine.fit.jober.aipp.entity.ChatSession;
 import modelengine.fit.jober.aipp.repository.AppBuilderRuntimeInfoRepository;
-import modelengine.fit.jober.aipp.repository.EndNodeStatusRepository;
 import modelengine.fit.jober.aipp.service.AppChatSessionService;
 import modelengine.fit.jober.aipp.service.AppChatSseService;
 import modelengine.fit.jober.aipp.service.RuntimeInfoService;
@@ -43,10 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Component
 public class FlowPublishSubscriber implements FlowPublishService {
-    private static final String NODE_TYPE_END = "END";
-
     private final AppBuilderRuntimeInfoRepository runtimeInfoRepository;
-    private final EndNodeStatusRepository endNodeStatusRepository;
     private final RuntimeInfoService runtimeInfoService;
     private final ToolExceptionHandle toolExceptionHandle;
     private final AppChatSessionService appChatSessionService;
@@ -56,18 +51,16 @@ public class FlowPublishSubscriber implements FlowPublishService {
      * 构造函数.
      *
      * @param runtimeInfoRepository {@link AppBuilderRuntimeInfoRepository} 对象.
-     * @param endNodeStatusRepository {@link EndNodeStatusRepository} 对象.
      * @param toolExceptionHandle toolExceptionHandle
      * @param appChatSessionService {@link AppChatSessionService} 对象。
      * @param appChatSSEService {@link AppChatSseService} 对象。
      * @param runtimeInfoService {@link RuntimeInfoService} 对象.
      */
     public FlowPublishSubscriber(AppBuilderRuntimeInfoRepository runtimeInfoRepository,
-            EndNodeStatusRepository endNodeStatusRepository, @Fit ToolExceptionHandle toolExceptionHandle,
+            @Fit ToolExceptionHandle toolExceptionHandle,
             AppChatSessionService appChatSessionService, AppChatSseService appChatSSEService,
             RuntimeInfoService runtimeInfoService) {
         this.runtimeInfoRepository = runtimeInfoRepository;
-        this.endNodeStatusRepository = endNodeStatusRepository;
         this.toolExceptionHandle = toolExceptionHandle;
         this.appChatSessionService = appChatSessionService;
         this.appChatSSEService = appChatSSEService;
@@ -97,15 +90,6 @@ public class FlowPublishSubscriber implements FlowPublishService {
                                       String aippInstId) {
         Optional<ChatSession<Object>> instanceSession = this.appChatSessionService.getSession(aippInstId);
         FlowPublishContext context = flowNodePublishInfo.getFlowContext();
-        String traceId = context.getTraceId();
-        String nodeId = flowNodePublishInfo.getNodeId();
-        String nodeType = flowNodePublishInfo.getNodeType();
-
-        // END 节点无论 Debug 还是生产模式都需要写入 EndNodeStatus 表
-        if (StringUtils.equalsIgnoreCase(nodeType, NODE_TYPE_END)) {
-            this.insertEndNodeStatus(traceId, nodeId, context, flowNodePublishInfo.getFlowDefinitionId(),
-                    aippInstId);
-        }
 
         if (instanceSession.isPresent() && !instanceSession.get().isDebug()) {
             return;
@@ -120,15 +104,15 @@ public class FlowPublishSubscriber implements FlowPublishService {
             finalErrorMsg = errorInfo.getErrorMessage();
         }
         AppBuilderRuntimeInfo runtimeInfo = AppBuilderRuntimeInfo.builder()
-                .traceId(traceId)
+                .traceId(context.getTraceId())
                 .flowDefinitionId(flowNodePublishInfo.getFlowDefinitionId())
                 .instanceId(aippInstId)
-                .nodeId(nodeId)
-                .nodeType(nodeType)
+                .nodeId(flowNodePublishInfo.getNodeId())
+                .nodeType(flowNodePublishInfo.getNodeType())
                 .startTime(ConvertUtils.toLong(context.getCreateAt()))
                 .endTime(this.getEndTime(context))
                 .published(this.runtimeInfoService.isPublished(businessData))
-                .parameters(this.runtimeInfoService.buildParameters(businessData, nodeId))
+                .parameters(this.runtimeInfoService.buildParameters(businessData, flowNodePublishInfo.getNodeId()))
                 .errorMsg(finalErrorMsg)
                 .status(context.getStatus())
                 .nextPositionId(flowNodePublishInfo.getNextPositionId())
@@ -138,22 +122,6 @@ public class FlowPublishSubscriber implements FlowPublishService {
                 .updateAt(LocalDateTime.now())
                 .build();
         this.runtimeInfoRepository.insertOne(runtimeInfo);
-    }
-
-    private void insertEndNodeStatus(String traceId, String nodeId, FlowPublishContext context,
-                                     String flowDefinitionId, String instanceId) {
-        EndNodeStatus endNodeStatus = EndNodeStatus.builder()
-                .traceId(traceId)
-                .endNodeId(nodeId)
-                .status(context.getStatus())
-                .startTime(ConvertUtils.toLong(context.getCreateAt()))
-                .endTime(this.getEndTime(context))
-                .flowDefinitionId(flowDefinitionId)
-                .instanceId(instanceId)
-                .createAt(LocalDateTime.now())
-                .updateAt(LocalDateTime.now())
-                .build();
-        this.endNodeStatusRepository.insertOne(endNodeStatus);
     }
 
     private void stageBeforeHandle(FlowNodePublishInfo flowNodePublishInfo, String aippInstId, String chatId,

@@ -948,6 +948,8 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
                     createAt);
             if (context.isSkippedSignal()) {
                 callbackContext.setStatus(FlowNodeStatus.SKIPPED).markSkippedSignal();
+            } else {
+                callbackContext.setStatus(FlowNodeStatus.ARCHIVED);
             }
             callbackContext.setArchivedAt(archivedAt);
             callbackContext.setNextPositionId(context.getNextPositionId());
