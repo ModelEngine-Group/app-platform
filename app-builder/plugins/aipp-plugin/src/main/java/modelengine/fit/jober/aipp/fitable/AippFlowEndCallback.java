@@ -151,16 +151,34 @@ public class AippFlowEndCallback implements FlowCallbackService {
         String aippInstId = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_INST_ID_KEY));
         String parentCallbackId = ObjectUtils.cast(businessData.get(AippConst.PARENT_CALLBACK_ID));
         boolean allowTerminalSignal = StringUtils.isEmpty(parentCallbackId);
-        this.insertEndNodeStatus(contexts, aippInstId, appTask.getEntity().getFlowConfigId());
-        boolean readyToTerminate = this.shouldSendLastData(contexts, appTask);
+        String lockKey = TERMINATE_LOCK_PREFIX + aippInstId;
+        Lock lock = this.distributedLockProvider.get(lockKey);
+        lock.lock();
+        try {
+            this.insertEndNodeStatus(contexts, aippInstId, appTask.getEntity().getFlowConfigId());
+            boolean readyToTerminate = this.shouldSendLastData(contexts, appTask);
+            this.executeAfterReadyToTerminateCheck(contexts, businessData, versionId, aippInstId, context, appTask,
+                    readyToTerminate, allowTerminalSignal);
+        } finally {
+            lock.unlock();
+        }
+
+        // 子流程 callback 主流程
+        if (StringUtils.isNotEmpty(parentCallbackId)) {
+            this.brokerClient.getRouter(FlowCallbackService.class, "w8onlgq9xsw13jce4wvbcz3kbmjv3tuw")
+                    .route(new FitableIdFilter(parentCallbackId))
+                    .format(SerializationFormat.CBOR)
+                    .invoke(contexts);
+        }
+    }
+
+    private void executeAfterReadyToTerminateCheck(List<Map<String, Object>> contexts,
+            Map<String, Object> businessData, String versionId, String aippInstId,
+            OperationContext context, AppTask appTask, boolean readyToTerminate, boolean allowTerminalSignal) {
         this.saveInstance(businessData, versionId, aippInstId, context, appTask, readyToTerminate);
         String parentInstanceId = ObjectUtils.cast(businessData.get(AippConst.PARENT_INSTANCE_ID));
         String appId = ObjectUtils.cast(appTask.getEntity().getAppId());
         businessData.put(AippConst.ATTR_APP_ID_KEY, appId);
-        //  表明流程结果是否需要再经过模型加工，当前场景全为false。
-        //  正常情况下应该是在结束节点配上该key并放入businessData中，此处模拟该过程。
-        //  如果子流程结束后需要再经过模型加工，子流程结束节点不打印日志；否则子流程结束节点需要打印日志。
-        //  如果前一个节点是人工检查节点，并在结束节点reference到了表单，那么这里一定会打印消息。
         businessData.put(AippConst.BS_AIPP_OUTPUT_IS_NEEDED_LLM, false);
         if (businessData.containsKey(AippConst.BS_END_FORM_ID_KEY)) {
             String endFormId = ObjectUtils.cast(businessData.get(AippConst.BS_END_FORM_ID_KEY));
@@ -183,7 +201,7 @@ public class AippFlowEndCallback implements FlowCallbackService {
                     .instanceId(aippInstId).logId(returnedLogId)
                     .build();
                         if (readyToTerminate && allowTerminalSignal) {
-                            this.sendTerminalSignalWithLock(aippInstId, appChatRsp);
+                            this.doSendTerminalSignal(aippInstId, appChatRsp);
                         } else {
                                 this.appChatSseService.send(aippInstId, appChatRsp);
                         }
@@ -192,14 +210,6 @@ public class AippFlowEndCallback implements FlowCallbackService {
             this.logFinalOutput(businessData, aippInstId);
             this.sendTerminalEventIfReady(readyToTerminate && allowTerminalSignal, contexts, appTask,
                                         businessData, context, aippInstId);
-        }
-
-        // 子流程 callback 主流程
-        if (StringUtils.isNotEmpty(parentCallbackId)) {
-            this.brokerClient.getRouter(FlowCallbackService.class, "w8onlgq9xsw13jce4wvbcz3kbmjv3tuw")
-                    .route(new FitableIdFilter(parentCallbackId))
-                    .format(SerializationFormat.CBOR)
-                    .invoke(contexts);
         }
     }
 
@@ -217,7 +227,7 @@ public class AippFlowEndCallback implements FlowCallbackService {
                 .answer(Collections.emptyList())
                 .extension(this.buildEndNodeSummary(contexts, appTask))
                 .build();
-        this.sendTerminalSignalWithLock(aippInstId, terminalRsp);
+        this.doSendTerminalSignal(aippInstId, terminalRsp);
     }
 
     private void sendTerminalSignalWithLock(String aippInstId, AppChatRsp appChatRsp) {
@@ -231,6 +241,10 @@ public class AippFlowEndCallback implements FlowCallbackService {
             }
         }
         // If lock acquisition fails, another thread has already sent the terminal signal, skip.
+    }
+
+    private void doSendTerminalSignal(String aippInstId, AppChatRsp appChatRsp) {
+        this.appChatSseService.sendLastData(aippInstId, appChatRsp);
     }
 
     private void insertEndNodeStatus(List<Map<String, Object>> contexts, String aippInstId, String flowConfigId) {
