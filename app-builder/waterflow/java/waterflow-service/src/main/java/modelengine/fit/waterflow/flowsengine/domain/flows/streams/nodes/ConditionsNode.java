@@ -41,6 +41,12 @@ import java.util.stream.Collectors;
  */
 public class ConditionsNode<I> extends Node<I, I> {
     /**
+     * 是否启用 condition 分支跳过机制
+     * 启用后，未匹配的分支也会创建 forked context 并标记为 SKIPPED
+     */
+    private boolean enableConditionSkip = false;
+
+    /**
      * 1->1处理节点
      *
      * @param streamId stream流程ID
@@ -51,10 +57,26 @@ public class ConditionsNode<I> extends Node<I, I> {
      */
     public ConditionsNode(String streamId, Processors.Just<FlowContext<I>> processor, FlowContextRepo repo,
             FlowContextMessenger messenger, FlowLocks locks) {
+        this(streamId, processor, repo, messenger, locks, false);
+    }
+
+    /**
+     * 1->1处理节点
+     *
+     * @param streamId stream流程ID
+     * @param processor 对应处理器
+     * @param repo 上下文持久化repo，默认在内存
+     * @param messenger 上下文事件发送器，默认在内存
+     * @param locks 流程锁
+     * @param enableConditionSkip 是否启用 condition 分支跳过机制
+     */
+    public ConditionsNode(String streamId, Processors.Just<FlowContext<I>> processor, FlowContextRepo repo,
+            FlowContextMessenger messenger, FlowLocks locks, boolean enableConditionSkip) {
         super(streamId, i -> {
             processor.process(i);
             return i.getData();
-        }, repo, messenger, locks, () -> initFrom(streamId, repo, messenger, locks));
+        }, repo, messenger, locks, () -> initFrom(streamId, repo, messenger, locks, enableConditionSkip));
+        this.enableConditionSkip = enableConditionSkip;
     }
 
     /**
@@ -70,9 +92,41 @@ public class ConditionsNode<I> extends Node<I, I> {
      */
     public ConditionsNode(String streamId, String nodeId, Processors.Just<FlowContext<I>> processor, FlowContextRepo repo,
             FlowContextMessenger messenger, FlowLocks locks, FlowNodeType nodeType) {
-        this(streamId, processor, repo, messenger, locks);
+        this(streamId, nodeId, processor, repo, messenger, locks, nodeType, false);
+    }
+
+    /**
+     * 1->1处理节点
+     *
+     * @param streamId stream流程ID
+     * @param nodeId stream流程节点ID
+     * @param processor 对应处理器
+     * @param repo 上下文持久化repo，默认在内存
+     * @param messenger 上下文事件发送器，默认在内存
+     * @param locks 流程锁
+     * @param nodeType 节点类型
+     * @param enableConditionSkip 是否启用 condition 分支跳过机制
+     */
+    public ConditionsNode(String streamId, String nodeId, Processors.Just<FlowContext<I>> processor, FlowContextRepo repo,
+            FlowContextMessenger messenger, FlowLocks locks, FlowNodeType nodeType, boolean enableConditionSkip) {
+        super(streamId, i -> {
+            processor.process(i);
+            return i.getData();
+        }, repo, messenger, locks, () -> initFrom(streamId, repo, messenger, locks, enableConditionSkip));
         this.id = nodeId;
         this.nodeType = nodeType;
+        this.enableConditionSkip = enableConditionSkip;
+    }
+
+    /**
+     * 设置是否启用 condition 分支跳过机制
+     *
+     * @param enableConditionSkip 是否启用
+     * @return 当前节点实例，支持链式调用
+     */
+    public ConditionsNode<I> setEnableConditionSkip(boolean enableConditionSkip) {
+        this.enableConditionSkip = enableConditionSkip;
+        return this;
     }
 
     /**
@@ -84,10 +138,11 @@ public class ConditionsNode<I> extends Node<I, I> {
      * @param repo 上下文持久化repo，默认在内存
      * @param messenger 上下文事件发送器，默认在内存
      * @param locks 流程锁
+     * @param enableConditionSkip 是否启用 condition 分支跳过机制
      * @return 返回初始化后的from节点
      */
     private static <I> From<I> initFrom(String streamId, FlowContextRepo repo, FlowContextMessenger messenger,
-            FlowLocks locks) {
+            FlowLocks locks, boolean enableConditionSkip) {
         return new From<I>(streamId, repo, messenger, locks) {
             @Override
             public void offer(List<FlowContext<I>> contexts, Consumer<PreSendCallbackInfo<I>> preSendCallback) {
@@ -112,20 +167,20 @@ public class ConditionsNode<I> extends Node<I, I> {
                         FitStream.Subscription<I, ?> subscription = subscriptions.get(index);
                         boolean useOriginalContext = index == matchedIndex;
                         boolean isSkippedBranch = index != matchedIndex;
-                        boolean isFlowDataContext = context.getData() instanceof FlowData;
-                        // 只有 FlowData 类型且是未匹配分支时才创建 forked context 并标记 skipped
-                        // 非 FlowData 类型保持原有逻辑，未匹配分支直接忽略
+                        // 根据 enableConditionSkip 标记决定是否创建 skipped context
+                        // enableConditionSkip=true 时，未匹配分支创建 forked context 并标记 skipped
+                        // enableConditionSkip=false 时，非 FlowData 类型的未匹配分支直接忽略
                         if (useOriginalContext) {
                             context.setNextPositionId(subscription.getId());
                             matchedContexts.computeIfAbsent(subscription, key -> new ArrayList<>()).add(context);
-                        } else if (isSkippedBranch && isFlowDataContext) {
+                        } else if (isSkippedBranch && enableConditionSkip) {
                             FlowContext<I> branchContext = context.fork();
                             branchContext.setNextPositionId(subscription.getId());
                             branchContext.setStatus(FlowNodeStatus.SKIPPED).markSkippedSignal();
                             matchedContexts.computeIfAbsent(subscription, key -> new ArrayList<>()).add(branchContext);
                             forkedContexts.add(branchContext);
                         }
-                        // 非 FlowData 且未匹配的分支：直接忽略，不创建任何 context
+                        // enableConditionSkip=false 且未匹配分支：直接忽略，不创建任何 context
                     }
                 });
                 List<FlowContext<I>> unMatchedContexts = contexts.stream()
