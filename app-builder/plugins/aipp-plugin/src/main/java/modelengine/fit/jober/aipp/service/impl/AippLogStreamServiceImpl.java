@@ -21,6 +21,7 @@ import modelengine.fit.jober.common.exceptions.JobberException;
 import modelengine.fit.waterflow.domain.enums.FlowTraceStatus;
 
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
 
@@ -38,6 +39,8 @@ import java.util.Map;
  */
 @Component
 public class AippLogStreamServiceImpl implements AippLogStreamService {
+    private static final Logger log = Logger.get(AippLogStreamServiceImpl.class);
+
     private static final List<String> OUTPUT_WITH_MSG_WHITE_LIST = Arrays.asList(AippInstLogType.MSG.name(),
             AippInstLogType.ERROR.name(),
             AippInstLogType.META_MSG.name(),
@@ -56,58 +59,58 @@ public class AippLogStreamServiceImpl implements AippLogStreamService {
     }
 
     @Override
-    public void send(AippLogVO log) {
-        if (!log.displayable()) {
+    public void send(AippLogVO aippLog) {
+        if (!aippLog.displayable()) {
             return;
         }
-        AppChatRsp appChatRsp = this.buildData(log);
+        AppChatRsp appChatRsp = this.buildData(aippLog);
 
         if (!appChatRsp.getStatus().equalsIgnoreCase(FlowTraceStatus.RUNNING.name()) && !appChatRsp.getStatus()
                 .equalsIgnoreCase(FlowTraceStatus.READY.name())) {
-            this.appChatSseService.sendLastData(log.getInstanceId(), appChatRsp);
+            this.appChatSseService.sendLastData(aippLog.getInstanceId(), appChatRsp);
         } else {
-            this.appChatSseService.send(log.getInstanceId(), appChatRsp);
+            this.appChatSseService.send(aippLog.getInstanceId(), appChatRsp);
         }
     }
 
-    private AppChatRsp buildData(AippLogVO log) {
-        String instanceId = log.getInstanceId();
+    private AppChatRsp buildData(AippLogVO aippLog) {
+        String instanceId = aippLog.getInstanceId();
         AppTaskInstance instance = this.appTaskInstanceService.getInstanceById(instanceId, null)
                 .orElseThrow(() -> new JobberException(ErrorCodes.UN_EXCEPTED_ERROR,
                         StringUtils.format("App task instance[{0}] not found.", instanceId)));
 
         // 日志流阶段统一透出 RUNNING，避免中间态误触发前端结束动画。
-        String status = log.getLogType().equals(AippInstLogType.ERROR.name())
+        String status = aippLog.getLogType().equals(AippInstLogType.ERROR.name())
             ? FlowTraceStatus.ERROR.name()
                 : instance.getEntity().getStatus().orElse(null);
 
-        AppChatRsp.Answer answer = this.buildAnswer(log);
+        AppChatRsp.Answer answer = this.buildAnswer(aippLog);
         Map<String, Object> extensionMap = new HashMap<>();
-        extensionMap.put("isEnableLog", log.isEnableLog());
+        extensionMap.put("isEnableLog", aippLog.isEnableLog());
         return AppChatRsp.builder()
-                .chatId(log.getChatId())
-                .atChatId(log.getAtChatId())
+                .chatId(aippLog.getChatId())
+                .atChatId(aippLog.getAtChatId())
                 .status(status)
                 .instanceId(instanceId)
                 .answer(Collections.singletonList(answer))
-                .logId(log.getLogId())
+                .logId(aippLog.getLogId())
                 .extension(extensionMap)
                 .build();
     }
 
-    private AppChatRsp.Answer buildAnswer(AippLogVO log) {
+    private AppChatRsp.Answer buildAnswer(AippLogVO aippLog) {
         AppChatRsp.Answer.AnswerBuilder builder =
-                AppChatRsp.Answer.builder().type(log.getLogType()).msgId(log.getMsgId());
-        if (OUTPUT_WITH_MSG_WHITE_LIST.contains(StringUtils.toUpperCase(log.getLogType()))) {
-            Object msg = JsonUtils.parseObject(log.getLogData()).get("msg");
+                AppChatRsp.Answer.builder().type(aippLog.getLogType()).msgId(aippLog.getMsgId());
+        if (OUTPUT_WITH_MSG_WHITE_LIST.contains(StringUtils.toUpperCase(aippLog.getLogType()))) {
+            Object msg = JsonUtils.parseObject(aippLog.getLogData()).get("msg");
             if (msg instanceof String) {
                 msg = this.sensitiveFilterTools.filterString(ObjectUtils.cast(msg));
             }
             builder.content(msg);
-        } else if (JsonUtils.isValidJson(log.getLogData())) {
-            builder.content(JsonUtils.parseObject(log.getLogData()));
+        } else if (JsonUtils.isValidJson(aippLog.getLogData())) {
+            builder.content(JsonUtils.parseObject(aippLog.getLogData()));
         } else {
-            builder.content(log.getLogData());
+            builder.content(aippLog.getLogData());
         }
         return builder.build();
     }
