@@ -387,6 +387,10 @@ public class AippFlowEndCallback implements FlowCallbackService {
         if (!checkEnableLog(businessData)) {
             logType = AippInstLogType.HIDDEN_MSG;
         }
+        // META_MSG 类型已在 llmOutputConsumer 中插入过，避免重复落库
+        if (logType == AippInstLogType.META_MSG) {
+            return;
+        }
         this.aippLogService.insertLog(logType.name(), AippLogData.builder().msg(logMsg).build(), businessData);
         this.beanContainer.all(AppFlowFinishObserver.class)
                 .stream()
