@@ -157,7 +157,7 @@ const Stage = (props) => {
         div: stageDom,
         tenant: tenantId,
         appId: realAppId,
-        connectionLimitDisabled: false,
+        connectionLimitDisabled: true,
         flowConfigData: data,
         configs: CONFIGS,
         i18n,
