@@ -15,6 +15,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -164,7 +165,7 @@ class AippFlowEndCallbackTest {
     }
 
     @Test
-    void should_ok_when_callback_with_normal_formatter_chain() {
+    void should_skip_when_callback_with_llm_output_formatter() {
         AppBuilderFormPropertyRepository formPropertyRepository = mock(AppBuilderFormPropertyRepository.class);
         AppBuilderForm appBuilderForm = new AppBuilderForm(formPropertyRepository);
         when(this.formService.selectWithId(anyString())).thenReturn(appBuilderForm);
@@ -175,7 +176,8 @@ class AippFlowEndCallbackTest {
         }).when(this.formatterChain).handle(any());
 
         this.aippFlowEndCallback.callback(TestUtils.buildFlowDataWithExtraConfig(buildBusinessData(), null));
-        verify(this.aippLogService).insertLog(eq(AippInstLogType.META_MSG.name()), any(), any());
+        // META_MSG 类型已在 llmOutputConsumer 中插入过，避免重复落库
+        verify(this.aippLogService, never()).insertLog(eq(AippInstLogType.META_MSG.name()), any(), any());
     }
 
     @Test
