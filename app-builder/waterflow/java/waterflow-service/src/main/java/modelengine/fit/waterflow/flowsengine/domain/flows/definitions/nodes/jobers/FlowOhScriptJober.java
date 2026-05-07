@@ -40,6 +40,6 @@ public class FlowOhScriptJober extends FlowJober {
                 .format(SerializationFormat.CBOR)
                 .invoke(inputData);
         log.info("Remote invoke success,nodeId: {}, fitable id is {}.", this.nodeMetaId, OHSCRIPT_FITABLE);
-        return convertToFlowData(outputEntities, inputs.get(0));
+        return convertToFlowData(outputEntities, inputs);
     }
 }

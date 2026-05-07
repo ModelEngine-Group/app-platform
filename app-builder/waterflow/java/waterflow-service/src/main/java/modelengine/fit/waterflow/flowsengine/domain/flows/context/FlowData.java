@@ -10,11 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.common.utils.ByteArraySerialiseUtilV1;
 import modelengine.fitframework.log.Logger;
@@ -41,6 +37,7 @@ import static modelengine.fit.waterflow.ErrorCodes.FLOW_SYSTEM_ERROR;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class FlowData {
     private static final Logger log = Logger.get(FlowData.class);
 

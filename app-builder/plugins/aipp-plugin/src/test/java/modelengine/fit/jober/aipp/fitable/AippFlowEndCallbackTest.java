@@ -15,6 +15,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,12 +34,15 @@ import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
 import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.enums.AippInstLogType;
 import modelengine.fit.jober.aipp.factory.AppBuilderAppFactory;
+import modelengine.fit.jober.aipp.repository.AppBuilderFlowGraphRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormPropertyRepository;
 import modelengine.fit.jober.aipp.repository.AppBuilderFormRepository;
+import modelengine.fit.jober.aipp.repository.EndNodeStatusRepository;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.AppChatSseService;
 import modelengine.fit.jober.aipp.util.JsonUtils;
+import modelengine.fit.waterflow.spi.lock.DistributedLockProvider;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 import modelengine.fitframework.test.annotation.Mock;
@@ -47,6 +51,7 @@ import modelengine.fitframework.util.ObjectUtils;
 import modelengine.jade.app.engine.metrics.service.ConversationRecordService;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -56,6 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 /**
@@ -84,9 +90,23 @@ class AippFlowEndCallbackTest {
     private AppTaskService appTaskService;
     @Mock
     private AppTaskInstanceService appTaskInstanceService;
+    @Mock
+    private EndNodeStatusRepository endNodeStatusRepository;
+    @Mock
+    private AppBuilderFlowGraphRepository flowGraphRepository;
+    @Mock
+    private DistributedLockProvider distributedLockProvider;
+    @Mock
+    private Lock distributedLock;
 
     @Fit
     private AippFlowEndCallback aippFlowEndCallback;
+
+    @BeforeEach
+    void setUp() {
+        when(this.distributedLockProvider.get(anyString())).thenReturn(this.distributedLock);
+        when(this.distributedLock.tryLock()).thenReturn(true);
+    }
 
     @AfterEach
     void tearDown() {
@@ -145,7 +165,7 @@ class AippFlowEndCallbackTest {
     }
 
     @Test
-    void should_ok_when_callback_with_normal_formatter_chain() {
+    void should_skip_when_callback_with_llm_output_formatter() {
         AppBuilderFormPropertyRepository formPropertyRepository = mock(AppBuilderFormPropertyRepository.class);
         AppBuilderForm appBuilderForm = new AppBuilderForm(formPropertyRepository);
         when(this.formService.selectWithId(anyString())).thenReturn(appBuilderForm);
@@ -156,7 +176,8 @@ class AippFlowEndCallbackTest {
         }).when(this.formatterChain).handle(any());
 
         this.aippFlowEndCallback.callback(TestUtils.buildFlowDataWithExtraConfig(buildBusinessData(), null));
-        verify(this.aippLogService).insertLog(eq(AippInstLogType.META_MSG.name()), any(), any());
+        // META_MSG 类型已在 llmOutputConsumer 中插入过，避免重复落库
+        verify(this.aippLogService, never()).insertLog(eq(AippInstLogType.META_MSG.name()), any(), any());
     }
 
     @Test

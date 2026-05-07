@@ -14,23 +14,30 @@ import modelengine.fit.jade.aipp.formatter.support.ResponsibilityResult;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.domain.AppBuilderForm;
+import modelengine.fit.jober.aipp.domain.AppBuilderFlowGraph;
+import modelengine.fit.jober.aipp.domain.EndNodeStatus;
 import modelengine.fit.jober.aipp.domains.appversion.AppVersion;
 import modelengine.fit.jober.aipp.domains.appversion.service.AppVersionService;
 import modelengine.fit.jober.aipp.domains.business.RunContext;
 import modelengine.fit.jober.aipp.domains.task.AppTask;
 import modelengine.fit.jober.aipp.domains.task.service.AppTaskService;
 import modelengine.fit.jober.aipp.domains.taskinstance.AppTaskInstance;
+import modelengine.fit.jober.aipp.domains.taskinstance.TaskInstanceUpdateEntity;
 import modelengine.fit.jober.aipp.domains.taskinstance.service.AppTaskInstanceService;
 import modelengine.fit.jober.aipp.dto.chat.AppChatRsp;
+import modelengine.fit.jober.aipp.enums.NodeType;
 import modelengine.fit.jober.aipp.entity.AippFlowData;
 import modelengine.fit.jober.aipp.entity.AippLogData;
 import modelengine.fit.jober.aipp.enums.AippInstLogType;
 import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
 import modelengine.fit.jober.aipp.events.InsertConversationEnd;
 import modelengine.fit.jober.aipp.genericable.AppFlowFinishObserver;
+import modelengine.fit.jober.aipp.repository.AppBuilderFlowGraphRepository;
+import modelengine.fit.jober.aipp.repository.EndNodeStatusRepository;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.AppChatSseService;
+import modelengine.fit.jober.aipp.util.ConvertUtils;
 import modelengine.fit.jober.aipp.util.DataUtils;
 import modelengine.fit.jober.aipp.util.FormUtils;
 import modelengine.fit.jober.aipp.util.JsonUtils;
@@ -38,6 +45,7 @@ import modelengine.fit.jober.common.ErrorCodes;
 import modelengine.fit.jober.common.exceptions.JobberException;
 import modelengine.fit.waterflow.domain.enums.FlowTraceStatus;
 import modelengine.fit.waterflow.spi.FlowCallbackService;
+import modelengine.fit.waterflow.spi.lock.DistributedLockProvider;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
@@ -55,6 +63,9 @@ import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.app.engine.metrics.po.ConversationRecordPo;
 import modelengine.jade.app.engine.metrics.service.ConversationRecordService;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -62,7 +73,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 /**
  * 流程结束回调节点
@@ -79,6 +94,7 @@ public class AippFlowEndCallback implements FlowCallbackService {
             .put(Constant.DEFAULT, AippInstLogType.MSG)
             .put(Constant.LLM_OUTPUT, AippInstLogType.META_MSG)
             .build();
+    private static final String TERMINATE_LOCK_PREFIX = "aipp-terminate-lock:";
 
     private final AippLogService aippLogService;
     private final BrokerClient brokerClient;
@@ -91,12 +107,18 @@ public class AippFlowEndCallback implements FlowCallbackService {
     private final AppTaskInstanceService appTaskInstanceService;
     private final AppTaskService appTaskService;
     private final AppVersionService appVersionService;
+    private final EndNodeStatusRepository endNodeStatusRepository;
+    private final AppBuilderFlowGraphRepository flowGraphRepository;
+    private final DistributedLockProvider distributedLockProvider;
 
     public AippFlowEndCallback(@Fit AippLogService aippLogService, @Fit BrokerClient brokerClient,
             @Fit BeanContainer beanContainer, @Fit ConversationRecordService conversationRecordService,
             @Fit AppBuilderFormService formService, @Fit AppChatSseService appChatSseService,
             @Fit OutputFormatterChain formatterChain, @Fit AppTaskInstanceService appTaskInstanceService,
-            @Fit AppTaskService appTaskService, @Fit AppVersionService appVersionService, FitRuntime fitRuntime) {
+            @Fit AppTaskService appTaskService, @Fit AppVersionService appVersionService,
+            @Fit EndNodeStatusRepository endNodeStatusRepository,
+            @Fit AppBuilderFlowGraphRepository flowGraphRepository,
+            @Fit DistributedLockProvider distributedLockProvider, FitRuntime fitRuntime) {
         this.formService = formService;
         this.aippLogService = aippLogService;
         this.brokerClient = brokerClient;
@@ -107,6 +129,9 @@ public class AippFlowEndCallback implements FlowCallbackService {
         this.appTaskInstanceService = appTaskInstanceService;
         this.appTaskService = appTaskService;
         this.appVersionService = appVersionService;
+        this.endNodeStatusRepository = endNodeStatusRepository;
+        this.flowGraphRepository = flowGraphRepository;
+        this.distributedLockProvider = distributedLockProvider;
         this.fitRuntime = fitRuntime;
     }
 
@@ -125,14 +150,36 @@ public class AippFlowEndCallback implements FlowCallbackService {
                 .orElseThrow(() -> new JobberException(ErrorCodes.UN_EXCEPTED_ERROR,
                         StringUtils.format("App task[{0}] not found.", versionId)));
         String aippInstId = ObjectUtils.cast(businessData.get(AippConst.BS_AIPP_INST_ID_KEY));
-        this.saveInstance(businessData, versionId, aippInstId, context, appTask);
+        String parentCallbackId = ObjectUtils.cast(businessData.get(AippConst.PARENT_CALLBACK_ID));
+        boolean allowTerminalSignal = StringUtils.isEmpty(parentCallbackId);
+        String lockKey = TERMINATE_LOCK_PREFIX + aippInstId;
+        Lock lock = this.distributedLockProvider.get(lockKey);
+        lock.lock();
+        try {
+            this.insertEndNodeStatus(contexts, aippInstId, appTask.getEntity().getFlowConfigId());
+            boolean readyToTerminate = this.shouldSendLastData(contexts, appTask);
+            this.executeAfterReadyToTerminateCheck(contexts, businessData, versionId, aippInstId, context, appTask,
+                    readyToTerminate, allowTerminalSignal);
+        } finally {
+            lock.unlock();
+        }
+
+        // 子流程 callback 主流程
+        if (StringUtils.isNotEmpty(parentCallbackId)) {
+            this.brokerClient.getRouter(FlowCallbackService.class, "w8onlgq9xsw13jce4wvbcz3kbmjv3tuw")
+                    .route(new FitableIdFilter(parentCallbackId))
+                    .format(SerializationFormat.CBOR)
+                    .invoke(contexts);
+        }
+    }
+
+    private void executeAfterReadyToTerminateCheck(List<Map<String, Object>> contexts,
+            Map<String, Object> businessData, String versionId, String aippInstId,
+            OperationContext context, AppTask appTask, boolean readyToTerminate, boolean allowTerminalSignal) {
+        this.saveInstance(businessData, versionId, aippInstId, context, appTask, readyToTerminate);
         String parentInstanceId = ObjectUtils.cast(businessData.get(AippConst.PARENT_INSTANCE_ID));
         String appId = ObjectUtils.cast(appTask.getEntity().getAppId());
         businessData.put(AippConst.ATTR_APP_ID_KEY, appId);
-        //  表明流程结果是否需要再经过模型加工，当前场景全为false。
-        //  正常情况下应该是在结束节点配上该key并放入businessData中，此处模拟该过程。
-        //  如果子流程结束后需要再经过模型加工，子流程结束节点不打印日志；否则子流程结束节点需要打印日志。
-        //  如果前一个节点是人工检查节点，并在结束节点reference到了表单，那么这里一定会打印消息。
         businessData.put(AippConst.BS_AIPP_OUTPUT_IS_NEEDED_LLM, false);
         if (businessData.containsKey(AippConst.BS_END_FORM_ID_KEY)) {
             String endFormId = ObjectUtils.cast(businessData.get(AippConst.BS_END_FORM_ID_KEY));
@@ -148,34 +195,163 @@ public class AippFlowEndCallback implements FlowCallbackService {
                 returnedLogId = this.saveFormToLog(appId, businessData, endFormId, endFormVersion, formDataMap);
             }
             AppChatRsp appChatRsp = AppChatRsp.builder().chatId(chatId).atChatId(atChatId)
-                    .status(FlowTraceStatus.ARCHIVED.name())
+                                        .status(readyToTerminate ? FlowTraceStatus.ARCHIVED.name() : FlowTraceStatus.RUNNING.name())
                     .answer(Collections.singletonList(AppChatRsp.Answer.builder()
                             .content(formDataMap).type(AippInstLogType.FORM.name()).build()))
+                                        .extension(this.buildEndNodeSummary(contexts, appTask))
                     .instanceId(aippInstId).logId(returnedLogId)
                     .build();
-            this.appChatSseService.sendLastData(aippInstId, appChatRsp);
+                        if (readyToTerminate && allowTerminalSignal) {
+                            this.doSendTerminalSignal(aippInstId, appChatRsp);
+                        } else {
+                                this.appChatSseService.send(aippInstId, appChatRsp);
+                        }
             this.insertConversation(businessData, aippInstId, ObjectUtils.cast(businessData.get("chartsData")));
         } else {
             this.logFinalOutput(businessData, aippInstId);
-        }
-
-        // 子流程 callback 主流程
-        String parentCallbackId = ObjectUtils.cast(businessData.get(AippConst.PARENT_CALLBACK_ID));
-        if (StringUtils.isNotEmpty(parentCallbackId)) {
-            this.brokerClient.getRouter(FlowCallbackService.class, "w8onlgq9xsw13jce4wvbcz3kbmjv3tuw")
-                    .route(new FitableIdFilter(parentCallbackId))
-                    .format(SerializationFormat.CBOR)
-                    .invoke(contexts);
+            this.sendTerminalEventIfReady(readyToTerminate && allowTerminalSignal, contexts, appTask,
+                                        businessData, context, aippInstId);
         }
     }
 
+    private void sendTerminalEventIfReady(boolean readyToTerminate, List<Map<String, Object>> contexts, AppTask appTask,
+            Map<String, Object> businessData, OperationContext operationContext, String aippInstId) {
+        if (!readyToTerminate) {
+            return;
+        }
+        RunContext runContext = new RunContext(businessData, operationContext);
+        AppChatRsp terminalRsp = AppChatRsp.builder()
+                .chatId(runContext.getOriginChatId())
+                .atChatId(runContext.getAtChatId())
+                .status(FlowTraceStatus.ARCHIVED.name())
+                .instanceId(aippInstId)
+                .answer(Collections.emptyList())
+                .extension(this.buildEndNodeSummary(contexts, appTask))
+                .build();
+        this.doSendTerminalSignal(aippInstId, terminalRsp);
+    }
+
+    private void sendTerminalSignalWithLock(String aippInstId, AppChatRsp appChatRsp) {
+        String lockKey = TERMINATE_LOCK_PREFIX + aippInstId;
+        Lock lock = this.distributedLockProvider.get(lockKey);
+        if (lock.tryLock()) {
+            try {
+                this.appChatSseService.sendLastData(aippInstId, appChatRsp);
+            } finally {
+                lock.unlock();
+            }
+        }
+        // If lock acquisition fails, another thread has already sent the terminal signal, skip.
+    }
+
+    private void doSendTerminalSignal(String aippInstId, AppChatRsp appChatRsp) {
+        this.appChatSseService.sendLastData(aippInstId, appChatRsp);
+    }
+
+    private void insertEndNodeStatus(List<Map<String, Object>> contexts, String aippInstId, String flowConfigId) {
+        String flowTraceId = DataUtils.getFlowTraceId(contexts);
+        String currentNodeId = ObjectUtils.cast(contexts.get(0).get(AippConst.BS_NODE_ID_KEY));
+        String status = ObjectUtils.cast(contexts.get(0).get("status"));
+        long currentTime = ConvertUtils.toLong(LocalDateTime.now());
+        EndNodeStatus endNodeStatus = EndNodeStatus.builder()
+                .traceId(flowTraceId)
+                .endNodeId(currentNodeId)
+                .status(status)
+                .startTime(currentTime)
+                .endTime(currentTime)
+                .flowDefinitionId(flowConfigId)
+                .instanceId(aippInstId)
+                .createAt(LocalDateTime.now())
+                .updateAt(LocalDateTime.now())
+                .build();
+        this.endNodeStatusRepository.insertOne(endNodeStatus);
+    }
+
+    private boolean shouldSendLastData(List<Map<String, Object>> contexts, AppTask appTask) {
+        Set<String> configuredEndNodeIds = this.getConfiguredEndNodeIds(appTask);
+        if (configuredEndNodeIds.isEmpty()) {
+            log.warn("Cannot resolve configured end nodes. Skip terminal event this round. taskId={0}, flowConfigId={1}",
+                    appTask.getEntity().getTaskId(), appTask.getEntity().getFlowConfigId());
+            return false;
+        }
+        String flowTraceId = DataUtils.getFlowTraceId(contexts);
+        Set<String> arrivedEndNodeIds = Optional.ofNullable(this.endNodeStatusRepository.selectByTraceId(flowTraceId))
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(endNodeStatus -> this.isArrivedStatus(endNodeStatus.getStatus()))
+                .map(EndNodeStatus::getEndNodeId)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toSet());
+        String currentNodeId = ObjectUtils.cast(contexts.get(0).get(AippConst.BS_NODE_ID_KEY));
+        if (StringUtils.isNotBlank(currentNodeId)) {
+            arrivedEndNodeIds.add(currentNodeId);
+        }
+        return !arrivedEndNodeIds.isEmpty() && arrivedEndNodeIds.containsAll(configuredEndNodeIds);
+    }
+    
+
+        private boolean isArrivedStatus(String status) {
+                return StringUtils.equalsIgnoreCase(status, "ARCHIVED") || StringUtils.equalsIgnoreCase(status, "SKIPPED");
+        }
+
+        private Set<String> getConfiguredEndNodeIds(AppTask appTask) {
+                String flowConfigId = appTask.getEntity().getFlowConfigId();
+                if (StringUtils.isBlank(flowConfigId)) {
+                        return Collections.emptySet();
+                }
+                AppBuilderFlowGraph flowGraph = this.flowGraphRepository.selectWithId(flowConfigId);
+                if (flowGraph == null || StringUtils.isBlank(flowGraph.getAppearance())) {
+                        return Collections.emptySet();
+                }
+                JSONObject appearance = JSONObject.parseObject(flowGraph.getAppearance());
+                JSONArray pages = appearance.getJSONArray("pages");
+                if (pages == null) {
+                        return Collections.emptySet();
+                }
+                return pages.stream()
+                                .filter(JSONObject.class::isInstance)
+                                .map(JSONObject.class::cast)
+                                .map(page -> page.getJSONArray("shapes"))
+                                .filter(shapes -> shapes != null)
+                                .flatMap(List::stream)
+                                .filter(JSONObject.class::isInstance)
+                                .map(JSONObject.class::cast)
+                                .filter(shape -> StringUtils.equalsIgnoreCase(shape.getString("type"), NodeType.END_NODE.type()))
+                                .map(shape -> shape.getString("id"))
+                                .filter(StringUtils::isNotBlank)
+                                .collect(Collectors.toSet());
+        }
+
+    private Map<String, Object> buildEndNodeSummary(List<Map<String, Object>> contexts, AppTask appTask) {
+        String flowTraceId = DataUtils.getFlowTraceId(contexts);
+        List<Map<String, Object>> endNodes = Optional.ofNullable(this.endNodeStatusRepository.selectByTraceId(flowTraceId))
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(endNodeStatus -> {
+                    Map<String, Object> node = new HashMap<>();
+                    node.put("nodeId", endNodeStatus.getEndNodeId());
+                    node.put("status", endNodeStatus.getStatus());
+                    node.put("startTime", endNodeStatus.getStartTime());
+                    node.put("endTime", endNodeStatus.getEndTime());
+                    return node;
+                })
+                .collect(Collectors.toList());
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("flowTraceId", flowTraceId);
+        summary.put("configuredEndNodeCount", this.getConfiguredEndNodeIds(appTask).size());
+        summary.put("endNodeContexts", endNodes);
+        return summary;
+    }
+
     private void saveInstance(Map<String, Object> businessData, String versionId, String aippInstId,
-            OperationContext context, AppTask appTask) {
-        this.appTaskInstanceService.update(AppTaskInstance.asUpdate(versionId, aippInstId)
-                .setFinishTime(LocalDateTime.now())
-                .setStatus(MetaInstStatusEnum.ARCHIVED.name())
-                .fetch(businessData, appTask.getEntity().getProperties())
-                .build(), context);
+            OperationContext context, AppTask appTask, boolean readyToTerminate) {
+                TaskInstanceUpdateEntity updateEntity = AppTaskInstance.asUpdate(versionId, aippInstId)
+                                .fetch(businessData, appTask.getEntity().getProperties())
+                                .setStatus(readyToTerminate ? MetaInstStatusEnum.ARCHIVED.name() : MetaInstStatusEnum.RUNNING.name());
+        if (readyToTerminate) {
+                        updateEntity.setFinishTime(LocalDateTime.now());
+        }
+                this.appTaskInstanceService.update(updateEntity.build(), context);
     }
 
     private String saveFormToLog(String appId, Map<String, Object> businessData, String endFormId,
@@ -210,6 +386,10 @@ public class AippFlowEndCallback implements FlowCallbackService {
                 .orElse(AippInstLogType.MSG);
         if (!checkEnableLog(businessData)) {
             logType = AippInstLogType.HIDDEN_MSG;
+        }
+        // META_MSG 类型已在 llmOutputConsumer 中插入过，避免重复落库
+        if (logType == AippInstLogType.META_MSG) {
+            return;
         }
         this.aippLogService.insertLog(logType.name(), AippLogData.builder().msg(logMsg).build(), businessData);
         this.beanContainer.all(AppFlowFinishObserver.class)

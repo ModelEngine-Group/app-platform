@@ -31,6 +31,10 @@
     background-color: rgb(198, 57, 57, 0.2);
 }
 
+.time-text-container-skipped {
+    background-color: rgba(107, 109, 117, 0.16);
+}
+
 .time-text {
     font-family: SF Pro Display, -apple-system, BlinkMacSystemFont, Segoe Ul, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif;
     font-size: 12px;
@@ -50,6 +54,10 @@
 
 .time-text-failed {
     color: rgb(198, 57, 57);
+}
+
+.time-text-skipped {
+    color: rgb(107, 109, 117);
 }
 
 .button-text {

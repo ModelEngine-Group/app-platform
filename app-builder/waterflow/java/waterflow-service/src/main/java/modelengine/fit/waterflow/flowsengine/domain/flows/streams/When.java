@@ -96,11 +96,20 @@ public class When<I, O> extends IdGenerator implements FitStream.Subscription<I,
         // 将context发送到节点边上，更新为PENDING状态，等待下一个节点处理
         // 该过程不产生新的context数据，只更新context的状态
         List<FlowContext<O>> converted = contexts.stream()
-                .map(c -> c.convertData(this.converter.process(c.getData()), c.getId())
-                        .setPosition(this.getId())
-                        .setStatus(FlowNodeStatus.PENDING))
+                .map(c -> {
+                    FlowNodeStatus edgeStatus = c.isSkippedSignal() ? FlowNodeStatus.SKIPPED : FlowNodeStatus.PENDING;
+                    FlowContext<O> convertedContext = c.convertData(this.converter.process(c.getData()), c.getId())
+                            .setPosition(this.getId())
+                            .setStatus(edgeStatus);
+                    if (c.isSkippedSignal()) {
+                        convertedContext.markSkippedSignal();
+                    }
+                    return convertedContext;
+                })
                 .collect(Collectors.toList());
-        repo.updateStatus(converted, converted.get(0).getStatus().toString(), converted.get(0).getPosition());
+        converted.stream()
+                .collect(Collectors.groupingBy(FlowContext::getStatus))
+                .forEach((status, group) -> repo.updateStatus(group, status.toString(), group.get(0).getPosition()));
         messenger.send(this.to.isAuto() ? ProcessType.PROCESS : ProcessType.PRE_PROCESS, this.to, converted);
     }
 

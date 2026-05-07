@@ -64,6 +64,8 @@ public class TestUtils {
             put(AippConst.BS_EXTRA_CONFIG_KEY, extraJober);
             put(AippConst.INST_FLOW_TRACE_IDS, TEST_TRACE_IDS);
             put("contextId", "testContextId");
+            put(AippConst.BS_NODE_ID_KEY, "testEndNodeId");
+            put("status", "ARCHIVED");
         }});
         return Collections.singletonList(flowData);
     }

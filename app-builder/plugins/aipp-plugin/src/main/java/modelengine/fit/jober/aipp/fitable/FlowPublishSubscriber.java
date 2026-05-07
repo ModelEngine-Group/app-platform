@@ -57,8 +57,9 @@ public class FlowPublishSubscriber implements FlowPublishService {
      * @param runtimeInfoService {@link RuntimeInfoService} 对象.
      */
     public FlowPublishSubscriber(AppBuilderRuntimeInfoRepository runtimeInfoRepository,
-            @Fit ToolExceptionHandle toolExceptionHandle, AppChatSessionService appChatSessionService,
-            AppChatSseService appChatSSEService, RuntimeInfoService runtimeInfoService) {
+            @Fit ToolExceptionHandle toolExceptionHandle,
+            AppChatSessionService appChatSessionService, AppChatSseService appChatSSEService,
+            RuntimeInfoService runtimeInfoService) {
         this.runtimeInfoRepository = runtimeInfoRepository;
         this.toolExceptionHandle = toolExceptionHandle;
         this.appChatSessionService = appChatSessionService;
@@ -88,13 +89,12 @@ public class FlowPublishSubscriber implements FlowPublishService {
     private void stageProcessedHandle(FlowNodePublishInfo flowNodePublishInfo, Map<String, Object> businessData,
                                       String aippInstId) {
         Optional<ChatSession<Object>> instanceSession = this.appChatSessionService.getSession(aippInstId);
+        FlowPublishContext context = flowNodePublishInfo.getFlowContext();
+
         if (instanceSession.isPresent() && !instanceSession.get().isDebug()) {
             return;
         }
-        FlowPublishContext context = flowNodePublishInfo.getFlowContext();
-        String traceId = context.getTraceId();
-        String nodeId = flowNodePublishInfo.getNodeId();
-        String nodeType = flowNodePublishInfo.getNodeType();
+
         FlowErrorInfo errorInfo = flowNodePublishInfo.getErrorMsg();
         AtomicReference<Locale> locale = new AtomicReference<>(Locale.getDefault());
         instanceSession.ifPresent(session -> locale.set(session.getLocale()));
@@ -104,15 +104,15 @@ public class FlowPublishSubscriber implements FlowPublishService {
             finalErrorMsg = errorInfo.getErrorMessage();
         }
         AppBuilderRuntimeInfo runtimeInfo = AppBuilderRuntimeInfo.builder()
-                .traceId(traceId)
+                .traceId(context.getTraceId())
                 .flowDefinitionId(flowNodePublishInfo.getFlowDefinitionId())
                 .instanceId(aippInstId)
-                .nodeId(nodeId)
-                .nodeType(nodeType)
+                .nodeId(flowNodePublishInfo.getNodeId())
+                .nodeType(flowNodePublishInfo.getNodeType())
                 .startTime(ConvertUtils.toLong(context.getCreateAt()))
                 .endTime(this.getEndTime(context))
                 .published(this.runtimeInfoService.isPublished(businessData))
-                .parameters(this.runtimeInfoService.buildParameters(businessData, nodeId))
+                .parameters(this.runtimeInfoService.buildParameters(businessData, flowNodePublishInfo.getNodeId()))
                 .errorMsg(finalErrorMsg)
                 .status(context.getStatus())
                 .nextPositionId(flowNodePublishInfo.getNextPositionId())

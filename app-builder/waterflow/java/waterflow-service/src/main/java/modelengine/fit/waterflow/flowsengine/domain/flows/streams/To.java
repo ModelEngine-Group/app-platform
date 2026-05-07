@@ -461,10 +461,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     }
 
     private void handlePreProcessConcurrentConflict() {
-        List<FlowContext<I>> concurrentConflictContexts = this.preFilter()
-                .process(repo.getContextsByPosition(this.streamId,
-                        this.froms.stream().map(Identity::getId).collect(Collectors.toList()),
-                        FlowNodeStatus.PENDING.toString()));
+        List<FlowContext<I>> concurrentConflictContexts = this.preFilter().process(getPendingAndSkippedContexts());
         if (CollectionUtils.isEmpty(concurrentConflictContexts) || inParallelMode(concurrentConflictContexts)) {
             return;
         }
@@ -487,10 +484,7 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
                 locks.streamNodeLockKey(this.streamId, this.id, ProcessType.PRE_PROCESS.toString()));
         lock.lock();
         try {
-            List<FlowContext<I>> contexts = this.preFilter()
-                    .process(repo.getContextsByPosition(this.streamId,
-                            this.froms.stream().map(Identity::getId).collect(Collectors.toList()),
-                            FlowNodeStatus.PENDING.toString()));
+            List<FlowContext<I>> contexts = this.preFilter().process(getPendingAndSkippedContexts());
             contexts = filterTerminate(contexts);
             if (CollectionUtils.isEmpty(contexts)) {
                 return new ArrayList<>();
@@ -500,6 +494,20 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         } finally {
             lock.unlock();
         }
+    }
+
+    private List<FlowContext<I>> getPendingAndSkippedContexts() {
+        List<String> fromIds = this.froms.stream().map(Identity::getId).collect(Collectors.toList());
+        Map<String, FlowContext<I>> contextMap = new LinkedHashMap<>();
+        for (Object item : repo.getContextsByPosition(this.streamId, fromIds, FlowNodeStatus.PENDING.toString())) {
+            FlowContext<I> context = ObjectUtils.cast(item);
+            contextMap.put(context.getId(), context);
+        }
+        for (Object item : repo.getContextsByPosition(this.streamId, fromIds, FlowNodeStatus.SKIPPED.toString())) {
+            FlowContext<I> context = ObjectUtils.cast(item);
+            contextMap.put(context.getId(), context);
+        }
+        return new ArrayList<>(contextMap.values());
     }
 
     @Override
@@ -699,12 +707,17 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
                         String.join(",", pre.get(0).getTraceId()));
                 return;
             }
+            List<FlowContext<I>> executableInputs = filterExecutableInputs(pre);
+            if (CollectionUtils.isEmpty(executableInputs)) {
+                this.afterProcess(pre, generateSkippedOutputs(pre));
+                return;
+            }
             beforeProcess(pre);
-            if (pre.size() == 1 && pre.get(0).getData() == null) {
+            if (executableInputs.size() == 1 && executableInputs.get(0).getData() == null) {
                 this.afterProcess(pre, new ArrayList<>());
                 return;
             }
-            List<FlowContext<I>> processInputs = mergeProcessInputs(pre);
+            List<FlowContext<I>> processInputs = mergeProcessInputs(executableInputs);
             if (this.isAsyncJob) {
                 beforeAsyncProcess(pre);
                 this.getProcessMode().process(this, processInputs);
@@ -758,6 +771,46 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         }
         FlowContext<I> merged = this.merger.merge(pre);
         return merged != null ? Collections.singletonList(merged) : pre;
+
+    }
+
+    private List<FlowContext<I>> filterExecutableInputs(List<FlowContext<I>> contexts) {
+        return contexts.stream().filter(context -> !context.isSkippedSignal()).collect(Collectors.toList());
+    }
+
+    private List<FlowContext<O>> generateSkippedOutputs(List<FlowContext<I>> pre) {
+        if (CollectionUtils.isEmpty(pre) || FlowNodeType.END.equals(this.nodeType)) {
+            return Collections.emptyList();
+        }
+        FlowContext<I> baseContext = pre.get(0);
+        FlowContext<O> skippedOutput = ObjectUtils.cast(baseContext.generate(ObjectUtils.cast(baseContext.getData()),
+                this.getId(), LocalDateTime.now()).markSkippedSignal());
+        return Collections.singletonList(skippedOutput);
+    }
+
+    private FlowData mergeFlowData(List<FlowContext<I>> pre) {
+        FlowData first = ObjectUtils.cast(pre.get(0).getData());
+        Map<String, Object> businessData = new HashMap<>(Optional.ofNullable(first.getBusinessData()).orElseGet(HashMap::new));
+        Map<String, Object> contextData = new HashMap<>(Optional.ofNullable(first.getContextData()).orElseGet(HashMap::new));
+        Map<String, Object> passData = new HashMap<>(Optional.ofNullable(first.getPassData()).orElseGet(HashMap::new));
+
+        pre.stream().skip(1).map(FlowContext::getData).map(ObjectUtils::<FlowData>cast).forEach(flowData -> {
+            businessData.putAll(FlowUtil.mergeMaps(businessData,
+                    Optional.ofNullable(flowData.getBusinessData()).orElseGet(HashMap::new)));
+            contextData.putAll(FlowUtil.mergeMaps(contextData,
+                    Optional.ofNullable(flowData.getContextData()).orElseGet(HashMap::new)));
+            passData.putAll(FlowUtil.mergeMaps(passData,
+                    Optional.ofNullable(flowData.getPassData()).orElseGet(HashMap::new)));
+        });
+        return FlowData.builder()
+                .operator(first.getOperator())
+                .startTime(first.getStartTime())
+                .businessData(businessData)
+                .contextData(contextData)
+                .passData(passData)
+                .errorMessage(first.getErrorMessage())
+                .errorInfo(first.getErrorInfo())
+                .build();
     }
 
     private boolean isOwnTrace(List<FlowContext<I>> pre) {
@@ -859,6 +912,9 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
         this.getRepo().updateProcessStatus(preContexts);
         LOG.debug("afterProcess after updateProcessStatus");
         if (CollectionUtils.isEmpty(after)) {
+            if (FlowNodeType.END.equals(this.nodeType) && CollectionUtils.isNotEmpty(preContexts)) {
+                callback(preContexts, ObjectUtils.cast(preContexts));
+            }
             return;
         }
         if (FlowNodeType.END.equals(this.nodeType)) {
@@ -884,9 +940,17 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     private void callback(List<FlowContext<I>> preContexts, List<FlowContext<O>> after) {
         LocalDateTime createAt = preContexts.get(0).getCreateAt();
         LocalDateTime archivedAt = LocalDateTime.now();
-        feedback(after.stream().map(context -> {
+        List<FlowContext<O>> contextsToFeedback = CollectionUtils.isEmpty(after)
+                ? preContexts.stream().map(c -> ObjectUtils.<FlowContext<O>>cast(c)).collect(Collectors.toList())
+                : after;
+        feedback(contextsToFeedback.stream().map(context -> {
             FlowContext<O> callbackContext = context.generate(context.getData(), context.getPosition(),
                     createAt);
+            if (context.isSkippedSignal()) {
+                callbackContext.setStatus(FlowNodeStatus.SKIPPED).markSkippedSignal();
+            } else {
+                callbackContext.setStatus(FlowNodeStatus.ARCHIVED);
+            }
             callbackContext.setArchivedAt(archivedAt);
             callbackContext.setNextPositionId(context.getNextPositionId());
             return callbackContext;
@@ -1241,4 +1305,5 @@ public class To<I, O> extends IdGenerator implements FitStream.Subscriber<I, O> 
     /*
     多个数据到达后采用的处理方式，ANY表示即到即用，ALL表示所有数据到来才能使用
     * */
+
 }

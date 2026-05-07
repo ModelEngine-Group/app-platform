@@ -43,6 +43,7 @@ import modelengine.fitframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -279,19 +280,36 @@ public abstract class FlowJober {
      * convertToFlowData
      *
      * @param outputEntities outputEntities
+     * @param inputs inputs列表
+     * @return List<FlowData>
+     */
+    protected List<FlowData> convertToFlowData(List<Map<String, Object>> outputEntities, List<FlowData> inputs) {
+        List<FlowData> result = new ArrayList<>();
+        int inputSize = inputs.size();
+        for (int i = 0; i < outputEntities.size(); i++) {
+            Map<String, Object> output = outputEntities.get(i);
+            // 按索引顺序从 inputs 中获取对应的 FlowData，如果索引超出则使用第一个
+            FlowData input = i < inputSize ? inputs.get(i) : inputs.get(0);
+            result.add(FlowData.builder()
+                    .operator(input.getOperator())
+                    .startTime(input.getStartTime())
+                    .businessData(cast(output.get("businessData")))
+                    .contextData(new HashMap<>(input.getContextData()))
+                    .passData(cast(output.get("passData")))
+                    .build());
+        }
+        return result;
+    }
+
+    /**
+     * convertToFlowData
+     *
+     * @param outputEntities outputEntities
      * @param input input
      * @return List<FlowData>
      */
     protected List<FlowData> convertToFlowData(List<Map<String, Object>> outputEntities, FlowData input) {
-        return outputEntities.stream()
-                .map(output -> FlowData.builder()
-                        .operator(input.getOperator())
-                        .startTime(input.getStartTime())
-                        .businessData(cast(output.get("businessData")))
-                        .contextData(new HashMap<>(input.getContextData()))
-                        .passData(cast(output.get("passData")))
-                        .build())
-                .collect(Collectors.toList());
+        return convertToFlowData(outputEntities, Collections.singletonList(input));
     }
 
     /**

@@ -43,6 +43,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -300,10 +301,7 @@ public class FlowContextPersistRepo implements FlowContextRepo<FlowData> {
     @Override
     public List<FlowContext<FlowData>> requestMappingContext(String streamId, List<String> subscriptions,
             Filter<FlowData> filter, Validator<FlowData> validator) {
-        List<String> traces = this.traceOwnerService.getTraces();
-        List<FlowContextPO> pos = contextMapper.findBySubscriptions(streamId, subscriptions,
-                FlowNodeStatus.PENDING.toString(), traces);
-        List<FlowContext<FlowData>> all = pos.stream().map(this::serializer).collect(Collectors.toList());
+        List<FlowContext<FlowData>> all = getPendingAndSkippedBySubscriptions(streamId, subscriptions, false);
         List<FlowContext<FlowData>> filters = filter.process(all);
         return filters.stream().filter(c -> validator.check(c, filters)).collect(Collectors.toList());
     }
@@ -311,26 +309,34 @@ public class FlowContextPersistRepo implements FlowContextRepo<FlowData> {
     @Override
     public List<FlowContext<FlowData>> requestProducingContext(String streamId, List<String> subscriptions,
             Filter<FlowData> filter) {
-        List<FlowContextPO> pos;
+        List<FlowContext<FlowData>> all = getPendingAndSkippedBySubscriptions(streamId, subscriptions, useLimit);
+        List<FlowContext<FlowData>> result = filter.process(all);
+        if (result.isEmpty()) {
+            log.info("[requestProducingContext] Empty contexts. traceIds={}, pos={}, beforeSize={}, afterSize={}.",
+                StringUtils.join(',', this.traceOwnerService.getTraces()), StringUtils.join(',', subscriptions),
+                all.size(), result.size());
+        }
+        return result;
+    }
+
+        private List<FlowContext<FlowData>> getPendingAndSkippedBySubscriptions(String streamId, List<String> subscriptions,
+            boolean limited) {
         List<String> traces = this.traceOwnerService.getTraces();
         if (traces.isEmpty()) {
             log.warn("There is no trace owned.");
             return Collections.emptyList();
         }
-        if (useLimit) {
-            pos = contextMapper.findSomeBySubscriptions(streamId, subscriptions, FlowNodeStatus.PENDING.toString(),
-                    traces, defaultLimitation);
-        } else {
-            pos = contextMapper.findBySubscriptions(streamId, subscriptions, FlowNodeStatus.PENDING.toString(), traces);
+        List<FlowContextPO> pending = limited
+            ? contextMapper.findSomeBySubscriptions(streamId, subscriptions, FlowNodeStatus.PENDING.toString(),
+                traces, defaultLimitation)
+            : contextMapper.findBySubscriptions(streamId, subscriptions, FlowNodeStatus.PENDING.toString(), traces);
+        List<FlowContextPO> skipped = contextMapper.findBySubscriptions(streamId, subscriptions,
+            FlowNodeStatus.SKIPPED.toString(), traces);
+        Map<String, FlowContextPO> contextMap = new LinkedHashMap<>();
+        pending.forEach(context -> contextMap.put(context.getContextId(), context));
+        skipped.forEach(context -> contextMap.put(context.getContextId(), context));
+        return contextMap.values().stream().map(this::serializer).collect(Collectors.toList());
         }
-        List<FlowContext<FlowData>> result =
-                filter.process(pos.stream().map(this::serializer).collect(Collectors.toList()));
-        if (result.isEmpty()) {
-            log.info("[requestProducingContext] Empty contexts. traceIds={}, pos={}, beforeSize={}, afterSize={}.",
-                    StringUtils.join(',', traces), StringUtils.join(',', subscriptions), pos.size(), result.size());
-        }
-        return result;
-    }
 
     @Override
     public List<FlowContext<FlowData>> findByStreamId(String metaId, String version) {

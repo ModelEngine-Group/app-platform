@@ -67,8 +67,9 @@ public class FlowConditionNode extends FlowNode {
     public FitStream.Processor<FlowData, FlowData> getProcessor(String streamId, FlowContextRepo<FlowData> repo,
             FlowContextMessenger messenger, FlowLocks locks) {
         if (!Optional.ofNullable(this.processor).isPresent()) {
+            // AIPP 流程启用 condition 分支跳过机制，未匹配分支创建 forked context 并标记为 SKIPPED
             this.processor = new ConditionsNode<>(streamId, this.metaId, this::conditionalJuster, repo, messenger,
-                    locks, this.type);
+                    locks, this.type, true);
             this.processor.onError(errorHandler(streamId));
             setCallback(this.processor, messenger);
             setGlobalTrace(this.processor, messenger);

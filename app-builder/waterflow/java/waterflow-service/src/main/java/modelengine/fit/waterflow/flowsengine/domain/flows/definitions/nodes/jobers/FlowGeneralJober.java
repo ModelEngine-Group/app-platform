@@ -40,6 +40,6 @@ public class FlowGeneralJober extends FlowJober {
             }
             log.info("Remote invoke success,nodeId: {}, fitable id is {}.", this.nodeMetaId, fitableId);
         }
-        return convertToFlowData(outputEntities, inputs.get(0));
+        return convertToFlowData(outputEntities, inputs);
     }
 }

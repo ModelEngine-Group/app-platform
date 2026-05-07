@@ -89,8 +89,8 @@ public class FlowPublishSubscriberTest {
     void setUp() {
         RuntimeInfoServiceImpl runtimeInfoService = new RuntimeInfoServiceImpl(null, this.appTaskService,
                 this.appTaskInstanceService, this.appVersionService);
-        this.flowPublishSubscriber = new FlowPublishSubscriber(this.repository, this.toolExceptionHandle,
-                this.appChatSessionService, null, runtimeInfoService);
+        this.flowPublishSubscriber = new FlowPublishSubscriber(this.repository,
+                this.toolExceptionHandle, this.appChatSessionService, null, runtimeInfoService);
     }
 
     /**

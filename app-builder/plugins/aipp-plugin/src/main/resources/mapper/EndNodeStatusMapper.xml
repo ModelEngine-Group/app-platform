@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modelengine.fit.jober.aipp.mapper.EndNodeStatusMapper">
+    <resultMap id="BaseResultMap" type="modelengine.fit.jober.aipp.po.EndNodeStatusPo">
+        <result column="id" property="id"/>
+        <result column="trace_id" property="traceId"/>
+        <result column="end_node_id" property="endNodeId"/>
+        <result column="status" property="status"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="instance_id" property="instanceId"/>
+        <result column="flow_definition_id" property="flowDefinitionId"/>
+        <result column="create_at" property="createAt"/>
+        <result column="update_at" property="updateAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        trace_id,
+        end_node_id,
+        status,
+        start_time,
+        end_time,
+        instance_id,
+        flow_definition_id,
+        create_at,
+        update_at
+    </sql>
+
+    <insert id="insertOne" parameterType="modelengine.fit.jober.aipp.po.EndNodeStatusPo">
+        INSERT INTO app_builder_end_node_status (
+            trace_id,
+            end_node_id,
+            status,
+            start_time,
+            end_time,
+            instance_id,
+            flow_definition_id,
+            create_at,
+            update_at
+        ) VALUES (
+            #{traceId},
+            #{endNodeId},
+            #{status},
+            #{startTime},
+            #{endTime},
+            #{instanceId},
+            #{flowDefinitionId},
+            #{createAt},
+            #{updateAt}
+        )
+        ON CONFLICT (trace_id, end_node_id) DO UPDATE SET
+            status = EXCLUDED.status,
+            end_time = EXCLUDED.end_time,
+            update_at = EXCLUDED.update_at
+    </insert>
+
+    <select id="selectByTraceId"
+            resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.EndNodeStatusPo">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM app_builder_end_node_status
+        WHERE trace_id = #{traceId}
+        ORDER BY start_time ASC
+    </select>
+
+    <select id="selectByInstanceId"
+            resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.EndNodeStatusPo">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM app_builder_end_node_status
+        WHERE instance_id = #{instanceId}
+        ORDER BY start_time ASC
+    </select>
+
+    <select id="getExpiredEndNodeStatuses" resultType="long">
+        SELECT id
+        FROM app_builder_end_node_status
+        WHERE update_at <![CDATA[ < ]]>
+        NOW()::TIMESTAMP - (#{expiredDays} || ' day')::INTERVAL
+        LIMIT #{limit}
+    </select>
+
+    <delete id="deleteEndNodeStatuses">
+        DELETE FROM app_builder_end_node_status
+        WHERE id IN
+        <foreach collection="endNodeStatusIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

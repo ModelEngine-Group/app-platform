@@ -442,7 +442,7 @@ public abstract class FlowsDataBaseTest {
             List<FlowContext<FlowData>> contexts, List<FlowContext<FlowData>> allContexts) {
         assertEquals(1, contexts.size());
         assertEquals(ARCHIVED, contexts.get(0).getStatus());
-        assertEquals(6, allContexts.size());
+        assertEquals(8, allContexts.size());
         allContexts.forEach(c -> assertEquals(ARCHIVED, c.getStatus()));
         Map<String, Object> resultBusinessData = contexts.get(0).getData().getBusinessData();
         assertTrue((boolean) getBusinessDataFromChainedKey(resultBusinessData, "cmc.approved"));
@@ -461,8 +461,7 @@ public abstract class FlowsDataBaseTest {
             List<FlowContext<FlowData>> contexts, List<FlowContext<FlowData>> allContexts) {
         assertEquals(1, contexts.size());
         assertEquals(ARCHIVED, contexts.get(0).getStatus());
-        assertEquals(3, allContexts.size());
-        allContexts.forEach(c -> assertEquals(ARCHIVED, c.getStatus()));
+        assertEquals(6, allContexts.size());
         Map<String, Object> resultBusinessData = contexts.get(0).getData().getBusinessData();
         assertFalse((boolean) getBusinessDataFromChainedKey(resultBusinessData, "cmc.approved"));
         assertTrue((boolean) getBusinessDataFromChainedKey(resultBusinessData, "committer.approved"));
@@ -480,7 +479,7 @@ public abstract class FlowsDataBaseTest {
             List<FlowContext<FlowData>> contexts, List<FlowContext<FlowData>> allContexts) {
         assertEquals(1, contexts.size());
         assertEquals(ARCHIVED, contexts.get(0).getStatus());
-        assertEquals(5, allContexts.size());
+        assertEquals(8, allContexts.size());
         allContexts.forEach(c -> assertEquals(ARCHIVED, c.getStatus()));
 
         Map<String, Object> resultBusinessData = contexts.get(0).getData().getBusinessData();
@@ -651,9 +650,9 @@ public abstract class FlowsDataBaseTest {
      */
     protected void assertFlowsExecuteProduceFromMToNForOfferMultiData(List<FlowContext<FlowData>> contexts,
             List<FlowContext<FlowData>> allContexts) {
-        assertEquals(3, contexts.size());
+        assertEquals(5, contexts.size());
         contexts.forEach(c -> assertEquals(ARCHIVED, c.getStatus()));
-        assertEquals(14, allContexts.size());
+        assertEquals(17, allContexts.size());
         allContexts.forEach(c -> assertEquals(ARCHIVED, c.getStatus()));
     }
 
@@ -680,9 +679,9 @@ public abstract class FlowsDataBaseTest {
      */
     protected void assertFlowsExecuteProduceFromMToNForOfferOneData(List<FlowContext<FlowData>> contexts,
             List<FlowContext<FlowData>> allContexts) {
-        assertEquals(3, contexts.size());
+        assertEquals(5, contexts.size());
         contexts.forEach(c -> assertEquals(ARCHIVED, c.getStatus()));
-        assertEquals(10, allContexts.size());
+        assertEquals(13, allContexts.size());
         allContexts.forEach(c -> assertEquals(ARCHIVED, c.getStatus()));
     }
 
