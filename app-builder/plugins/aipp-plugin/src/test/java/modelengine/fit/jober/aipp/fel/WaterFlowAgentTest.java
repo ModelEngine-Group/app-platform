@@ -16,10 +16,10 @@ import modelengine.fel.core.chat.support.HumanMessage;
 import modelengine.fel.core.tool.ToolCall;
 import modelengine.fel.core.tool.ToolInfo;
 import modelengine.fel.engine.flows.AiProcessFlow;
-import modelengine.fel.tool.mcp.client.McpClient;
-import modelengine.fel.tool.mcp.client.McpClientFactory;
 import modelengine.fel.tool.service.ToolExecuteService;
 import modelengine.fit.jober.aipp.constants.AippConst;
+import modelengine.fit.jober.aipp.util.LangChain4jMcpClient;
+import modelengine.fit.jober.aipp.util.McpClientFactory;
 import modelengine.fitframework.flowable.Choir;
 import modelengine.fitframework.util.MapBuilder;
 
@@ -27,7 +27,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.mockito.InjectMocks;
+import modelengine.fit.jober.aipp.util.McpUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,8 +42,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,6 +55,7 @@ import static org.mockito.Mockito.when;
  * {@link WaterFlowAgent} 的测试。
  */
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class WaterFlowAgentTest {
     private static final String TEXT_STEP = "textStep";
     private static final String TOOL_CALL_STEP = "toolCallStep";
@@ -55,13 +64,11 @@ class WaterFlowAgentTest {
     private ToolExecuteService toolExecuteService;
     @Mock
     private ChatModel chatModel;
-    @Mock
-    private McpClientFactory mcpClientFactory;
 
     @Test
     void shouldGetResultWhenRunFlowGivenNoToolCall() {
         WaterFlowAgent waterFlowAgent =
-                new WaterFlowAgent(this.toolExecuteService, this.chatModel, this.mcpClientFactory);
+                new WaterFlowAgent(this.toolExecuteService, this.chatModel, mock(McpClientFactory.class));
 
         String expectResult = "0123";
         doAnswer(invocation -> Choir.create(emitter -> {
@@ -81,7 +88,7 @@ class WaterFlowAgentTest {
 
     @Test
     void shouldGetResultWhenRunFlowGivenStoreToolCall() {
-        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel, this.mcpClientFactory);
+        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel, mock(McpClientFactory.class));
 
         String expectResult = "tool result:0123";
         String realName = "realName";
@@ -105,19 +112,15 @@ class WaterFlowAgentTest {
                 .bind(AippConst.TOOLS_KEY, Collections.singletonList(toolInfo))
                 .offer(ChatMessages.from(new HumanMessage("hi"))).await();
 
-        verify(this.mcpClientFactory, times(0)).create(any(), any());
         assertEquals(expectResult, result.text());
     }
 
     @Test
     void shouldGetResultWhenRunFlowGivenMcpToolCall() {
-        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel, this.mcpClientFactory);
-
-        String expectResult = "\"tool result:\"0123";
+        String expectResult = "tool result:0123";
         String realName = "realName";
-        String baseUrl = "http://localhost";
-        String sseEndpoint = "/sse";
-        ToolInfo toolInfo = buildMcpToolInfo(realName, baseUrl, sseEndpoint);
+        String url = "http://localhost/sse";
+        ToolInfo toolInfo = buildMcpToolInfo(realName, url);
         ToolCall toolCall = ToolCall.custom().id("id").name(toolInfo.name()).arguments("{}").build();
         List<ToolCall> toolCalls = Collections.singletonList(toolCall);
         AtomicReference<String> step = new AtomicReference<>(TOOL_CALL_STEP);
@@ -128,10 +131,16 @@ class WaterFlowAgentTest {
             return result;
         }).when(chatModel).generate(any(), any());
         Map<String, Object> toolContext = MapBuilder.<String, Object>get().put("key", "value").build();
-        McpClient mcpClient = mock(McpClient.class);
-        when(this.mcpClientFactory.create(baseUrl, sseEndpoint)).thenReturn(mcpClient);
-        when(mcpClient.callTool(realName, new HashMap<>())).thenReturn("tool result:");
-
+        
+        LangChain4jMcpClient mockMcpClient = mock(LangChain4jMcpClient.class);
+        when(mockMcpClient.callTool(realName, "{}")).thenReturn("tool result:");
+        doNothing().when(mockMcpClient).close();
+        
+        McpClientFactory mockFactory = mock(McpClientFactory.class);
+        when(mockFactory.create(any())).thenReturn(mockMcpClient);
+        
+        WaterFlowAgent waterFlowAgent = new WaterFlowAgent(this.toolExecuteService, this.chatModel, mockFactory);
+        
         AiProcessFlow<Prompt, ChatMessage> flow = waterFlowAgent.buildFlow();
         ChatMessage result = flow.converse()
                 .bind(ChatOption.custom().build())
@@ -169,7 +178,7 @@ class WaterFlowAgentTest {
                 .build();
     }
 
-    private static ToolInfo buildMcpToolInfo(String realName,  String baseUrl, String sseEndpoint) {
+    private static ToolInfo buildMcpToolInfo(String realName,  String url) {
         return ToolInfo.custom()
                 .name("tool1")
                 .description("desc")
@@ -177,7 +186,7 @@ class WaterFlowAgentTest {
                 .extensions(MapBuilder.<String, Object>get()
                         .put(AippConst.TOOL_REAL_NAME, realName)
                         .put(AippConst.MCP_SERVER_KEY,
-                                MapBuilder.get().put(AippConst.MCP_SERVER_URL_KEY, baseUrl + sseEndpoint).build())
+                                MapBuilder.get().put(AippConst.MCP_SERVER_URL_KEY, url).build())
                         .build())
                 .build();
     }

@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "entity": {
+        "id": "chunk1",
+        "text": "content1",
+        "metadata": "{}"
+      },
+      "score": 0.9,
+      "primaryKey": "id"
+    },
+    {
+      "entity": {
+        "id": "chunk2",
+        "text": "content2",
+        "metadata": "{}"
+      },
+      "score": 0.8,
+      "primaryKey": "id"
+    },
+    {
+      "entity": {
+        "id": "chunk3",
+        "text": "content3",
+        "metadata": "{}"
+      },
+      "score": 0.7,
+      "primaryKey": "id"
+    }
+  ],
+  "code": "0",
+  "message": "success"
+}

@@ -134,8 +134,8 @@
             <artifactId>waterflow-graph-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.fitframework.fel</groupId>
-            <artifactId>tool-mcp-client-service</artifactId>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-mcp</artifactId>
         </dependency>
 
         <!-- Redis -->
