@@ -132,7 +132,7 @@ public class DataMateKnowledgeRepoServiceImpl implements KnowledgeRepoService {
     }
 
     private PageVoKnowledgeList queryKnowledgeList(String apiKey, ListRepoQueryParam param) {
-        int page = Math.max(param.getPageIndex() - 1, 0);
+        int page = Math.max(param.getPageIndex(), 1);
         int size = param.getPageSize();
         DataMateKnowledgeListEntity listEntity = this.executeQuery(apiKey, param.getRepoName(), page, size);
         List<DataMateKnowledgeEntity> content = listEntity.getContent() == null
