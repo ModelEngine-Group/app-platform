@@ -6,6 +6,9 @@
 
 package modelengine.jade.common.filter.support;
 
+import static modelengine.jade.authentication.context.HttpRequestUtils.AUTH_TOKEN_KEY;
+import static modelengine.jade.authentication.context.HttpRequestUtils.CSRF_TOKEN_KEY;
+
 import modelengine.fit.http.protocol.HttpRequestMethod;
 import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.http.server.HttpClassicServerResponse;
@@ -73,7 +76,9 @@ public class LoginFilter implements HttpServerFilter {
         }
         UserContext operationContext = new UserContext(this.authenticationService.getUserName(request),
                 HttpRequestUtils.getUserIp(request),
-                HttpRequestUtils.getAcceptLanguages(request));
+                HttpRequestUtils.getAcceptLanguages(request),
+                HttpRequestUtils.getCookieValue(request, AUTH_TOKEN_KEY),
+                HttpRequestUtils.getCookieValue(request, CSRF_TOKEN_KEY));
         UserContextHolder.apply(operationContext, () -> chain.doFilter(request, response));
     }
 
