@@ -126,9 +126,9 @@ public class DataMateKnowledgeBaseManagerTest {
     }
 
     @Test
-    @DisplayName("检索知识库时携带 User 请求头")
-    public void shouldAddUserHeaderWhenRetrieve() {
-        DataMateRetrievalParam param = DataMateRetrievalParam.builder().query("user").build();
+    @DisplayName("检索知识库时固定携带 admin 用户")
+    public void shouldAddAdminUserHeaderWhenRetrieve() {
+        DataMateRetrievalParam param = DataMateRetrievalParam.builder().query("admin").build();
         AtomicReference<DataMateRetrievalResult> result = new AtomicReference<>();
         UserContext context = new UserContext("test-user", "", "");
 

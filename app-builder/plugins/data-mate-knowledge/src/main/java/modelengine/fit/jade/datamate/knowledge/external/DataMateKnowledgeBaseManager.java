@@ -55,6 +55,7 @@ public class DataMateKnowledgeBaseManager {
     private static final String BEARER = "Bearer ";
     private static final String CONTENT_TYPE_JSON = "application/json";
     private static final String USER_HEADER = "User";
+    private static final String RETRIEVE_USER = "admin";
     /** 默认访问超时时间（秒）。 */
     private static final int DEFAULT_TIMEOUT_SECONDS = 30;
 
@@ -92,7 +93,7 @@ public class DataMateKnowledgeBaseManager {
         if (StringUtils.isNotEmpty(apiKey)) {
             request.headers().set(AUTHORIZATION, BEARER + apiKey);
         }
-        this.addUserHeader(request);
+        this.addCurrentUserHeader(request);
         try {
             Object object = this.httpClient.get().exchangeForEntity(request, Object.class);
             Map<String, Object> response =
@@ -122,7 +123,7 @@ public class DataMateKnowledgeBaseManager {
         if (StringUtils.isNotEmpty(apiKey)) {
             request.headers().set(AUTHORIZATION, BEARER + apiKey);
         }
-        this.addUserHeader(request);
+        this.addUserHeader(request, RETRIEVE_USER);
         request.headers().set(CONTENT_TYPE, CONTENT_TYPE_JSON);
         try {
             Object object = this.httpClient.get().exchangeForEntity(request, Object.class);
@@ -146,9 +147,13 @@ public class DataMateKnowledgeBaseManager {
         return new KnowledgeException(retCode, ex, ex.getSimpleMessage());
     }
 
-    private void addUserHeader(HttpClassicClientRequest request) {
+    private void addCurrentUserHeader(HttpClassicClientRequest request) {
         UserContext context = UserContextHolder.get();
         String userName = context == null ? StringUtils.EMPTY : context.getName();
+        this.addUserHeader(request, userName);
+    }
+
+    private void addUserHeader(HttpClassicClientRequest request, String userName) {
         log.info("DataMate request user: {}", StringUtils.isEmpty(userName) ? "<empty>" : userName);
         if (StringUtils.isEmpty(userName)) {
             return;

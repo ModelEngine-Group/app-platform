@@ -33,6 +33,7 @@ public class MockedDataMateKnowledgeBaseInnerController {
     private static final String USER_HEADER = "User";
     private static final String EXPECTED_AUTHORIZATION = "Bearer 123";
     private static final String EXPECTED_USER = "test-user";
+    private static final String EXPECTED_RETRIEVE_USER = "admin";
 
     private final ObjectSerializer serializer;
 
@@ -46,7 +47,7 @@ public class MockedDataMateKnowledgeBaseInnerController {
         if ("error".equals(param.getName())) {
             throw new HttpClientException("error");
         }
-        this.validateRequestContext(request, param.getName());
+        this.validateRequestContext(request, "user".equals(param.getName()) ? EXPECTED_USER : null);
         String resourceName = "/listRepoResult.json";
         String jsonContent = content(DataMateResponse.class, resourceName);
         return serializer.deserialize(jsonContent, Map.class);
@@ -58,17 +59,17 @@ public class MockedDataMateKnowledgeBaseInnerController {
         if ("error".equals(param.getQuery())) {
             throw new HttpClientException("error");
         }
-        this.validateRequestContext(request, param.getQuery());
+        this.validateRequestContext(request, EXPECTED_RETRIEVE_USER);
         String resourceName = "/retrieveResult.json";
         String jsonContent = content(DataMateResponse.class, resourceName);
         return serializer.deserialize(jsonContent, Map.class);
     }
 
-    private void validateRequestContext(HttpClassicServerRequest request, String testCase) {
+    private void validateRequestContext(HttpClassicServerRequest request, String expectedUser) {
         this.validate(EXPECTED_AUTHORIZATION.equals(request.headers().first(AUTHORIZATION).orElse(null)),
                 "The authorization header is incorrect.");
-        if ("user".equals(testCase)) {
-            this.validate(EXPECTED_USER.equals(request.headers().first(USER_HEADER).orElse(null)),
+        if (expectedUser != null) {
+            this.validate(expectedUser.equals(request.headers().first(USER_HEADER).orElse(null)),
                     "The User header is incorrect.");
             return;
         }
