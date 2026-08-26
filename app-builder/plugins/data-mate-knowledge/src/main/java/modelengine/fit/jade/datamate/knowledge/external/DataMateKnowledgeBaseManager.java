@@ -8,9 +8,6 @@ package modelengine.fit.jade.datamate.knowledge.external;
 
 import static modelengine.fit.http.protocol.MessageHeaderNames.AUTHORIZATION;
 import static modelengine.fit.http.protocol.MessageHeaderNames.CONTENT_TYPE;
-import static modelengine.jade.authentication.context.HttpRequestUtils.AUTH_TOKEN_KEY;
-import static modelengine.jade.authentication.context.HttpRequestUtils.CSRF_TOKEN_KEY;
-import static modelengine.jade.authentication.context.HttpRequestUtils.REAL_IP_KEY;
 import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.AUTHENTICATION_ERROR;
 import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.CLIENT_REQUEST_ERROR;
 import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.INTERNAL_SERVICE_ERROR;
@@ -18,7 +15,6 @@ import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.NOT_FOUND;
 import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.QUERY_KNOWLEDGE_ERROR;
 import static modelengine.jade.knowledge.code.KnowledgeManagerRetCode.QUERY_KNOWLEDGE_LIST_ERROR;
 
-import modelengine.fit.http.Cookie;
 import modelengine.fit.http.client.HttpClassicClient;
 import modelengine.fit.http.client.HttpClassicClientFactory;
 import modelengine.fit.http.client.HttpClassicClientRequest;
@@ -58,6 +54,7 @@ public class DataMateKnowledgeBaseManager {
     private static final Logger log = Logger.get(DataMateKnowledgeBaseManager.class);
     private static final String BEARER = "Bearer ";
     private static final String CONTENT_TYPE_JSON = "application/json";
+    private static final String USER_HEADER = "User";
     /** 默认访问超时时间（秒）。 */
     private static final int DEFAULT_TIMEOUT_SECONDS = 30;
 
@@ -95,7 +92,7 @@ public class DataMateKnowledgeBaseManager {
         if (StringUtils.isNotEmpty(apiKey)) {
             request.headers().set(AUTHORIZATION, BEARER + apiKey);
         }
-        this.addContextCookies(request);
+        this.addUserHeader(request);
         try {
             Object object = this.httpClient.get().exchangeForEntity(request, Object.class);
             Map<String, Object> response =
@@ -125,7 +122,7 @@ public class DataMateKnowledgeBaseManager {
         if (StringUtils.isNotEmpty(apiKey)) {
             request.headers().set(AUTHORIZATION, BEARER + apiKey);
         }
-        this.addContextCookies(request);
+        this.addUserHeader(request);
         request.headers().set(CONTENT_TYPE, CONTENT_TYPE_JSON);
         try {
             Object object = this.httpClient.get().exchangeForEntity(request, Object.class);
@@ -149,21 +146,12 @@ public class DataMateKnowledgeBaseManager {
         return new KnowledgeException(retCode, ex, ex.getSimpleMessage());
     }
 
-    private void addContextCookies(HttpClassicClientRequest request) {
+    private void addUserHeader(HttpClassicClientRequest request) {
         UserContext context = UserContextHolder.get();
-        if (context == null) {
+        if (context == null || StringUtils.isEmpty(context.getName())) {
             return;
         }
-        this.addCookieIfNotEmpty(request, AUTH_TOKEN_KEY, context.getAuthToken());
-        this.addCookieIfNotEmpty(request, CSRF_TOKEN_KEY, context.getCsrfToken());
-        this.addCookieIfNotEmpty(request, REAL_IP_KEY, context.getIp());
-    }
-
-    private void addCookieIfNotEmpty(HttpClassicClientRequest request, String name, String value) {
-        if (StringUtils.isEmpty(value)) {
-            return;
-        }
-        request.cookies().add(Cookie.builder().name(name).value(value).build());
+        request.headers().set(USER_HEADER, context.getName());
     }
 
     private HttpClassicClient getHttpClient() {

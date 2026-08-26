@@ -8,11 +8,7 @@ package modelengine.fit.jade.datamate.knowledge;
 
 import static modelengine.fit.http.protocol.MessageHeaderNames.AUTHORIZATION;
 import static modelengine.fitframework.util.IoUtils.content;
-import static modelengine.jade.authentication.context.HttpRequestUtils.AUTH_TOKEN_KEY;
-import static modelengine.jade.authentication.context.HttpRequestUtils.CSRF_TOKEN_KEY;
-import static modelengine.jade.authentication.context.HttpRequestUtils.REAL_IP_KEY;
 
-import modelengine.fit.http.Cookie;
 import modelengine.fit.http.annotation.PostMapping;
 import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
@@ -34,10 +30,9 @@ import java.util.Map;
 @Component
 @RequestMapping(path = "/v2", group = "DataMate知识库内部接口打桩")
 public class MockedDataMateKnowledgeBaseInnerController {
+    private static final String USER_HEADER = "User";
     private static final String EXPECTED_AUTHORIZATION = "Bearer 123";
-    private static final String EXPECTED_AUTH_TOKEN = "auth-token";
-    private static final String EXPECTED_CSRF_TOKEN = "csrf-token";
-    private static final String EXPECTED_REAL_IP = "203.0.113.10";
+    private static final String EXPECTED_USER = "test-user";
 
     private final ObjectSerializer serializer;
 
@@ -72,30 +67,12 @@ public class MockedDataMateKnowledgeBaseInnerController {
     private void validateRequestContext(HttpClassicServerRequest request, String testCase) {
         this.validate(EXPECTED_AUTHORIZATION.equals(request.headers().first(AUTHORIZATION).orElse(null)),
                 "The authorization header is incorrect.");
-        if ("cookie".equals(testCase)) {
-            this.validateCookie(request, AUTH_TOKEN_KEY, EXPECTED_AUTH_TOKEN);
-            this.validateCookie(request, CSRF_TOKEN_KEY, EXPECTED_CSRF_TOKEN);
-            this.validateCookie(request, REAL_IP_KEY, EXPECTED_REAL_IP);
+        if ("user".equals(testCase)) {
+            this.validate(EXPECTED_USER.equals(request.headers().first(USER_HEADER).orElse(null)),
+                    "The User header is incorrect.");
             return;
         }
-        if ("partial-cookie".equals(testCase)) {
-            this.validateCookie(request, AUTH_TOKEN_KEY, EXPECTED_AUTH_TOKEN);
-            this.validateMissingCookie(request, CSRF_TOKEN_KEY);
-            this.validateMissingCookie(request, REAL_IP_KEY);
-            return;
-        }
-        this.validateMissingCookie(request, AUTH_TOKEN_KEY);
-        this.validateMissingCookie(request, CSRF_TOKEN_KEY);
-        this.validateMissingCookie(request, REAL_IP_KEY);
-    }
-
-    private void validateCookie(HttpClassicServerRequest request, String name, String expectedValue) {
-        String actualValue = request.cookies().get(name).map(Cookie::value).orElse(null);
-        this.validate(expectedValue.equals(actualValue), "The cookie is incorrect: " + name);
-    }
-
-    private void validateMissingCookie(HttpClassicServerRequest request, String name) {
-        this.validate(request.cookies().get(name).isEmpty(), "The cookie should be absent: " + name);
+        this.validate(request.headers().first(USER_HEADER).isEmpty(), "The User header should be absent.");
     }
 
     private void validate(boolean expression, String message) {

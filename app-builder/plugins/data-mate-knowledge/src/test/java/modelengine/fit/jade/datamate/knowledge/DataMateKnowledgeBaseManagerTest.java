@@ -85,23 +85,23 @@ public class DataMateKnowledgeBaseManagerTest {
     }
 
     @Test
-    @DisplayName("查询知识库列表时携带认证 Cookie 和真实 IP")
-    public void shouldAddContextCookiesWhenListRepo() {
-        DataMateKnowledgeListQueryParam param = DataMateKnowledgeListQueryParam.builder().name("cookie").build();
+    @DisplayName("查询知识库列表时携带 User 请求头")
+    public void shouldAddUserHeaderWhenListRepo() {
+        DataMateKnowledgeListQueryParam param = DataMateKnowledgeListQueryParam.builder().name("user").build();
         DataMateKnowledgeListEntity entity = this.executeListWithContext(param,
-                new UserContext("user", "203.0.113.10", "zh-CN", "auth-token", "csrf-token"));
+                new UserContext("test-user", "", ""));
 
         assertThat(entity.getContent()).hasSize(2);
         assertThat(UserContextHolder.get()).isNull();
     }
 
     @Test
-    @DisplayName("查询知识库列表时忽略缺失的 Cookie")
-    public void shouldOmitMissingContextCookiesWhenListRepo() {
+    @DisplayName("用户名缺失时不添加 User 请求头")
+    public void shouldOmitUserHeaderWhenUserNameMissing() {
         DataMateKnowledgeListQueryParam param =
-                DataMateKnowledgeListQueryParam.builder().name("partial-cookie").build();
+                DataMateKnowledgeListQueryParam.builder().name("missing-user").build();
         DataMateKnowledgeListEntity entity = this.executeListWithContext(param,
-                new UserContext("user", "", "zh-CN", "auth-token", null));
+                new UserContext("", "", ""));
 
         assertThat(entity.getContent()).hasSize(2);
     }
@@ -126,11 +126,11 @@ public class DataMateKnowledgeBaseManagerTest {
     }
 
     @Test
-    @DisplayName("检索知识库时携带认证 Cookie 和真实 IP")
-    public void shouldAddContextCookiesWhenRetrieve() {
-        DataMateRetrievalParam param = DataMateRetrievalParam.builder().query("cookie").build();
+    @DisplayName("检索知识库时携带 User 请求头")
+    public void shouldAddUserHeaderWhenRetrieve() {
+        DataMateRetrievalParam param = DataMateRetrievalParam.builder().query("user").build();
         AtomicReference<DataMateRetrievalResult> result = new AtomicReference<>();
-        UserContext context = new UserContext("user", "203.0.113.10", "zh-CN", "auth-token", "csrf-token");
+        UserContext context = new UserContext("test-user", "", "");
 
         UserContextHolder.apply(context, () -> result.set(this.manager.retrieve(this.apiKey, param)));
 

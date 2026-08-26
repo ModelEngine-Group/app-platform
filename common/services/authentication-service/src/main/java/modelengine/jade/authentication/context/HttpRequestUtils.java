@@ -23,15 +23,6 @@ import java.util.stream.Stream;
  * @since 2024-08-07
  */
 public class HttpRequestUtils {
-    /** 认证令牌 Cookie 名称。 */
-    public static final String AUTH_TOKEN_KEY = "__Host-X-Auth-Token";
-
-    /** CSRF 令牌 Cookie 名称。 */
-    public static final String CSRF_TOKEN_KEY = "__Host-X-Csrf-Token";
-
-    /** 真实 IP 请求头和 Cookie 名称。 */
-    public static final String REAL_IP_KEY = "X-Real-IP";
-
     private static final String UNKNOWN_IP = "unknown";
 
     /**
@@ -56,8 +47,7 @@ public class HttpRequestUtils {
      * @return 表示用户 ip 的{@link String}。
      */
     public static String getUserIp(HttpClassicServerRequest request) {
-        return compute(Arrays.asList(HttpRequestUtils::getRealIp,
-                HttpRequestUtils::getForwardedIp,
+        return compute(Arrays.asList(HttpRequestUtils::getForwardedIp,
                 HttpRequestUtils::getProxyClientIp,
                 HttpRequestUtils::getWlProxyClientIp,
                 HttpRequestUtils::getHttpClientIp,
@@ -80,17 +70,6 @@ public class HttpRequestUtils {
                 .flatMap(request.headers()::first);
     }
 
-    /**
-     * 获取 Cookie 值。
-     *
-     * @param request 表示请求的 {@link HttpClassicServerRequest}。
-     * @param name 表示 Cookie 名称的 {@link String}。
-     * @return 表示 Cookie 值的 {@link String}。
-     */
-    public static String getCookieValue(HttpClassicServerRequest request, String name) {
-        return request.cookies().get(name).map(Cookie::value).orElse(StringUtils.EMPTY);
-    }
-
     private static String compute(List<Function<HttpClassicServerRequest, Optional<String>>> mappers,
             HttpClassicServerRequest request) {
         Optional<String> optional = Optional.empty();
@@ -100,13 +79,7 @@ public class HttpRequestUtils {
                 break;
             }
         }
-        return optional.orElseGet(() -> Optional.ofNullable(request.remoteAddress())
-                .map(address -> address.hostAddress())
-                .orElse(StringUtils.EMPTY));
-    }
-
-    private static Optional<String> getRealIp(HttpClassicServerRequest request) {
-        return getSingleIpFromHeader(request, REAL_IP_KEY);
+        return optional.orElseGet(() -> request.remoteAddress().hostAddress());
     }
 
     private static Optional<String> getForwardedIp(HttpClassicServerRequest request) {
@@ -120,26 +93,22 @@ public class HttpRequestUtils {
     }
 
     private static Optional<String> getProxyClientIp(HttpClassicServerRequest request) {
-        return getSingleIpFromHeader(request, "Proxy-Client-IP");
+        return header(request, "Proxy-Client-IP").filter(HttpRequestUtils::knownIp);
     }
 
     private static Optional<String> getWlProxyClientIp(HttpClassicServerRequest request) {
-        return getSingleIpFromHeader(request, "WL-Proxy-Client-IP");
+        return header(request, "WL-Proxy-Client-IP").filter(HttpRequestUtils::knownIp);
     }
 
     private static Optional<String> getHttpClientIp(HttpClassicServerRequest request) {
-        return getSingleIpFromHeader(request, "HTTP_CLIENT_IP");
+        return header(request, "HTTP_CLIENT_IP").filter(HttpRequestUtils::knownIp);
     }
 
     private static Optional<String> getHttpForwardedFor(HttpClassicServerRequest request) {
-        return getSingleIpFromHeader(request, "HTTP_X_FORWARDED_FOR");
-    }
-
-    private static Optional<String> getSingleIpFromHeader(HttpClassicServerRequest request, String name) {
-        return header(request, name).map(StringUtils::trim).filter(HttpRequestUtils::knownIp);
+        return header(request, "HTTP_X_FORWARDED_FOR").filter(HttpRequestUtils::knownIp);
     }
 
     private static boolean knownIp(String ip) {
-        return StringUtils.isNotEmpty(ip) && !StringUtils.equalsIgnoreCase(ip, UNKNOWN_IP);
+        return !StringUtils.equalsIgnoreCase(ip, UNKNOWN_IP);
     }
 }
