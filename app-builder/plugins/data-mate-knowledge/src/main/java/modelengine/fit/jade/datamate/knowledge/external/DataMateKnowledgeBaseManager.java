@@ -148,10 +148,12 @@ public class DataMateKnowledgeBaseManager {
 
     private void addUserHeader(HttpClassicClientRequest request) {
         UserContext context = UserContextHolder.get();
-        if (context == null || StringUtils.isEmpty(context.getName())) {
+        String userName = context == null ? StringUtils.EMPTY : context.getName();
+        log.info("DataMate request user: {}", StringUtils.isEmpty(userName) ? "<empty>" : userName);
+        if (StringUtils.isEmpty(userName)) {
             return;
         }
-        request.headers().set(USER_HEADER, context.getName());
+        request.headers().set(USER_HEADER, userName);
     }
 
     private HttpClassicClient getHttpClient() {
