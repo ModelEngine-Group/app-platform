@@ -10,9 +10,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import modelengine.fit.jade.datamate.knowledge.dto.DataMateKnowledgeListQueryParam;
 import modelengine.fit.jade.datamate.knowledge.entity.DataMateKnowledgeEntity;
 import modelengine.fit.jade.datamate.knowledge.entity.DataMateKnowledgeListEntity;
 import modelengine.fit.jade.datamate.knowledge.entity.DataMateRetrievalChunksEntity;
@@ -36,6 +39,7 @@ import modelengine.jade.knowledge.support.FlatKnowledgeOption;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +74,7 @@ class DataMateKnowledgeRepoServiceImplTest {
                 .build();
 
         DataMateKnowledgeListEntity listEntity = DataMateKnowledgeListEntity.builder()
-                .page(0)
+                .page(1)
                 .size(10)
                 .totalElements(1)
                 .totalPages(1)
@@ -83,6 +87,7 @@ class DataMateKnowledgeRepoServiceImplTest {
         param.setRepoName("test");
 
         when(knowledgeBaseManager.listRepos(anyString(), any())).thenReturn(listEntity);
+        clearInvocations(knowledgeBaseManager);
 
         PageVo<KnowledgeRepo> result = knowledgeRepoService.listRepos(API_KEY, param);
 
@@ -91,13 +96,17 @@ class DataMateKnowledgeRepoServiceImplTest {
         assertThat(result.getItems().get(0))
                 .extracting(KnowledgeRepo::id, KnowledgeRepo::name, KnowledgeRepo::description, KnowledgeRepo::type)
                 .containsExactly("kb-1", "测试知识库", "描述", "embedding-v1");
+        ArgumentCaptor<DataMateKnowledgeListQueryParam> queryParamCaptor =
+                ArgumentCaptor.forClass(DataMateKnowledgeListQueryParam.class);
+        verify(knowledgeBaseManager).listRepos(anyString(), queryParamCaptor.capture());
+        assertThat(queryParamCaptor.getValue().getPage()).isEqualTo(1);
     }
 
     @Test
     @DisplayName("listRepos - 列表为空时返回空分页")
     void shouldReturnEmptyPageWhenContentEmpty() {
         DataMateKnowledgeListEntity listEntity = DataMateKnowledgeListEntity.builder()
-                .page(0)
+                .page(1)
                 .size(10)
                 .totalElements(0)
                 .totalPages(0)
@@ -120,7 +129,7 @@ class DataMateKnowledgeRepoServiceImplTest {
     @DisplayName("listRepos - content 为 null 时按空列表处理")
     void shouldReturnEmptyPageWhenContentNull() {
         DataMateKnowledgeListEntity listEntity = DataMateKnowledgeListEntity.builder()
-                .page(0)
+                .page(1)
                 .size(10)
                 .totalElements(0)
                 .totalPages(0)
@@ -143,7 +152,7 @@ class DataMateKnowledgeRepoServiceImplTest {
     @DisplayName("listRepos - totalElements 为 null 时 total 为 0")
     void shouldUseZeroTotalWhenTotalElementsNull() {
         DataMateKnowledgeListEntity listEntity = DataMateKnowledgeListEntity.builder()
-                .page(0)
+                .page(1)
                 .size(10)
                 .totalElements(null)
                 .totalPages(null)

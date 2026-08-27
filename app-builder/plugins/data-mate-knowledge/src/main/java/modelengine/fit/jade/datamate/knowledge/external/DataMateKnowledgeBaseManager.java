@@ -35,6 +35,8 @@ import modelengine.fitframework.util.LazyLoader;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.jade.authentication.context.UserContext;
+import modelengine.jade.authentication.context.UserContextHolder;
 import modelengine.jade.knowledge.code.KnowledgeManagerRetCode;
 import modelengine.jade.knowledge.exception.KnowledgeException;
 
@@ -52,6 +54,8 @@ public class DataMateKnowledgeBaseManager {
     private static final Logger log = Logger.get(DataMateKnowledgeBaseManager.class);
     private static final String BEARER = "Bearer ";
     private static final String CONTENT_TYPE_JSON = "application/json";
+    private static final String USER_HEADER = "User";
+    private static final String RETRIEVE_USER = "admin";
     /** 默认访问超时时间（秒）。 */
     private static final int DEFAULT_TIMEOUT_SECONDS = 30;
 
@@ -89,6 +93,7 @@ public class DataMateKnowledgeBaseManager {
         if (StringUtils.isNotEmpty(apiKey)) {
             request.headers().set(AUTHORIZATION, BEARER + apiKey);
         }
+        this.addCurrentUserHeader(request);
         try {
             Object object = this.httpClient.get().exchangeForEntity(request, Object.class);
             Map<String, Object> response =
@@ -118,6 +123,7 @@ public class DataMateKnowledgeBaseManager {
         if (StringUtils.isNotEmpty(apiKey)) {
             request.headers().set(AUTHORIZATION, BEARER + apiKey);
         }
+        this.addUserHeader(request, RETRIEVE_USER);
         request.headers().set(CONTENT_TYPE, CONTENT_TYPE_JSON);
         try {
             Object object = this.httpClient.get().exchangeForEntity(request, Object.class);
@@ -141,6 +147,20 @@ public class DataMateKnowledgeBaseManager {
         return new KnowledgeException(retCode, ex, ex.getSimpleMessage());
     }
 
+    private void addCurrentUserHeader(HttpClassicClientRequest request) {
+        UserContext context = UserContextHolder.get();
+        String userName = context == null ? StringUtils.EMPTY : context.getName();
+        this.addUserHeader(request, userName);
+    }
+
+    private void addUserHeader(HttpClassicClientRequest request, String userName) {
+        log.info("DataMate request user: {}", StringUtils.isEmpty(userName) ? "<empty>" : userName);
+        if (StringUtils.isEmpty(userName)) {
+            return;
+        }
+        request.headers().set(USER_HEADER, userName);
+    }
+
     private HttpClassicClient getHttpClient() {
         int timeoutMs = this.timeoutSeconds * 1000;
         Map<String, Object> custom = MapBuilder.<String, Object>get()
@@ -155,4 +175,3 @@ public class DataMateKnowledgeBaseManager {
                 .build());
     }
 }
-
