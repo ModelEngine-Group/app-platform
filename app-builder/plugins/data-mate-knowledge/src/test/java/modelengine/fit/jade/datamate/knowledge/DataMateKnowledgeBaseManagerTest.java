@@ -17,6 +17,8 @@ import modelengine.fit.jade.datamate.knowledge.entity.DataMateKnowledgeListEntit
 import modelengine.fit.jade.datamate.knowledge.entity.DataMateRetrievalChunksEntity;
 import modelengine.fit.jade.datamate.knowledge.entity.DataMateRetrievalResult;
 import modelengine.fit.jade.datamate.knowledge.external.DataMateKnowledgeBaseManager;
+import modelengine.jade.authentication.context.UserContext;
+import modelengine.jade.authentication.context.UserContextHolder;
 import modelengine.jade.knowledge.exception.KnowledgeException;
 
 import org.junit.jupiter.api.AfterEach;
@@ -31,6 +33,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 表示 {@link DataMateKnowledgeBaseManager} 的测试集。
@@ -82,6 +85,28 @@ public class DataMateKnowledgeBaseManagerTest {
     }
 
     @Test
+    @DisplayName("查询知识库列表时携带 User 请求头")
+    public void shouldAddUserHeaderWhenListRepo() {
+        DataMateKnowledgeListQueryParam param = DataMateKnowledgeListQueryParam.builder().name("user").build();
+        DataMateKnowledgeListEntity entity = this.executeListWithContext(param,
+                new UserContext("test-user", "", ""));
+
+        assertThat(entity.getContent()).hasSize(2);
+        assertThat(UserContextHolder.get()).isNull();
+    }
+
+    @Test
+    @DisplayName("用户名缺失时不添加 User 请求头")
+    public void shouldOmitUserHeaderWhenUserNameMissing() {
+        DataMateKnowledgeListQueryParam param =
+                DataMateKnowledgeListQueryParam.builder().name("missing-user").build();
+        DataMateKnowledgeListEntity entity = this.executeListWithContext(param,
+                new UserContext("", "", ""));
+
+        assertThat(entity.getContent()).hasSize(2);
+    }
+
+    @Test
     @DisplayName("查询知识库列表失败，抛出异常")
     public void shouldFailWhenListRepoThrowException() {
         DataMateKnowledgeListQueryParam param = DataMateKnowledgeListQueryParam.builder().name("error").build();
@@ -101,11 +126,31 @@ public class DataMateKnowledgeBaseManagerTest {
     }
 
     @Test
+    @DisplayName("检索知识库时固定携带 admin 用户")
+    public void shouldAddAdminUserHeaderWhenRetrieve() {
+        DataMateRetrievalParam param = DataMateRetrievalParam.builder().query("admin").build();
+        AtomicReference<DataMateRetrievalResult> result = new AtomicReference<>();
+        UserContext context = new UserContext("test-user", "", "");
+
+        UserContextHolder.apply(context, () -> result.set(this.manager.retrieve(this.apiKey, param)));
+
+        assertThat(result.get().getData()).hasSize(3);
+        assertThat(UserContextHolder.get()).isNull();
+    }
+
+    @Test
     @DisplayName("检索知识库失败，抛出异常")
     public void shouldFailWhenRetrieveThrowException() {
         DataMateRetrievalParam param = DataMateRetrievalParam.builder().query("error").build();
         assertThatThrownBy(() -> this.manager.retrieve(apiKey, param)).isInstanceOf(KnowledgeException.class)
                 .extracting("code")
                 .isEqualTo(130703005);
+    }
+
+    private DataMateKnowledgeListEntity executeListWithContext(DataMateKnowledgeListQueryParam param,
+            UserContext context) {
+        AtomicReference<DataMateKnowledgeListEntity> entity = new AtomicReference<>();
+        UserContextHolder.apply(context, () -> entity.set(this.manager.listRepos(this.apiKey, param)));
+        return entity.get();
     }
 }

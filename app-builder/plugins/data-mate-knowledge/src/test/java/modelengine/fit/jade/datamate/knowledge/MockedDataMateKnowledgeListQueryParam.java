@@ -19,7 +19,7 @@ import modelengine.fitframework.serialization.annotation.SerializeStrategy;
 @SerializeStrategy(include = SerializeStrategy.Include.NON_NULL)
 public class MockedDataMateKnowledgeListQueryParam {
     /**
-     * 页码，从0开始。
+     * 页码，从1开始。
      */
     private Integer page;
 
