@@ -213,11 +213,6 @@ public enum AippErrCode implements ErrorCode, RetCode {
     INVALID_OPERATION(90002913, "系统错误，应用信息为空，请联系管理员。"),
 
     /**
-     * 该应用已经成功发布过，无法修改应用名称
-     */
-    APP_NAME_HAS_PUBLISHED(90002914, "该应用已经成功发布过，无法修改应用名称。"),
-
-    /**
      * 禁止使用更低的版本号
      */
     NEW_VERSION_IS_LOWER(90002915, "禁止使用更低的版本号。"),

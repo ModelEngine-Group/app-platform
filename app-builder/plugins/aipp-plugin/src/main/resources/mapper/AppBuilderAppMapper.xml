@@ -90,7 +90,7 @@
         select
         <include refid="Base_Column_List"/>
         from (
-            SELECT DISTINCT ON ( "name" ) * FROM app_builder_app where tenant_id = #{tenantId} and is_deleted = 0
+            SELECT DISTINCT ON ( "app_suite_id" ) * FROM app_builder_app where tenant_id = #{tenantId} and is_deleted = 0
             <if test="cond.type != null">
                 and type = #{cond.type}
             </if>
@@ -104,7 +104,6 @@
                     </when>
                     <when test="cond.state == 'inactive'">
                         and state = #{cond.state}
-                        and (attributes ->> 'latest_version') is null
                     </when>
                 </choose>
             </if>
@@ -130,7 +129,7 @@
                 and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
             </if>
             ORDER BY
-                "name", update_at DESC
+                "app_suite_id", update_at DESC
         ) as sub
         WHERE <include refid="appTypeCondition"/>
         ORDER BY update_at DESC offset #{offset} limit #{limit}
@@ -176,7 +175,7 @@
     <select id="countByTenantId" resultType="long">
         select count(*) from (
         select
-        DISTINCT ON (name) *
+        DISTINCT ON (app_suite_id) *
         from app_builder_app
         where tenant_id = #{tenantId} and is_deleted = 0
         <if test="cond.type != null">
@@ -189,7 +188,6 @@
                 </when>
                 <when test="cond.state == 'inactive'">
                     and state != 'active'
-                    and (attributes ->> 'latest_version') is null
                 </when>
             </choose>
         </if>
@@ -211,6 +209,7 @@
         <if test="cond.userGroupId != null and cond.userGroupId != '*allGroupUser*'">
             and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
         </if>
+        ORDER BY app_suite_id, update_at DESC
         ) as latest_records WHERE <include refid="appTypeCondition"/>;
     </select>
 

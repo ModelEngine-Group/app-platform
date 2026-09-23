@@ -513,6 +513,9 @@ public class AppVersionServiceTest {
         doNothing().when(this.uploadedFileManageService).changeRemovable(anyString(), anyInt());
         doNothing().when(this.appBuilderAppMapper).updateOne(any());
 
+        // Mock getPreviewTasks to return empty list (no name change in this test)
+        when(this.appTaskService.getPreviewTasks(anyString(), any())).thenReturn(Collections.emptyList());
+
         // when.
         OperationContext context = new OperationContext();
         context.setOperator("zy");
@@ -531,6 +534,50 @@ public class AppVersionServiceTest {
         assertEquals(AppState.INACTIVE.getName(), data.getState());
         assertEquals("1.0.0", data.getVersion());
         verify(this.uploadedFileManageService, times(2)).changeRemovable(anyString(), anyInt());
+    }
+
+    @Test
+    @DisplayName("测试 update version with name change")
+    public void testUpdateVersionWithNameChange() {
+        // given.
+        AppBuilderAppPo data = AppBuilderAppPo.builder()
+                .appSuiteId("app_1")
+                .name("oldAppName")
+                .state(AppState.IMPORTING.getName())
+                .build();
+        AppVersion appVersion = mock(AppVersion.class);
+        when(this.appBuilderAppMapper.selectWithId(anyString())).thenReturn(data);
+        when(this.appVersionFactory.create(any(), any())).thenReturn(appVersion);
+        when(appVersion.getData()).thenReturn(data);
+        when(appVersion.getIcon()).thenReturn("icon1");
+        doNothing().when(appVersion).putAttributes(any());
+
+        doNothing().when(this.appBuilderAppMapper).updateOne(any());
+        doNothing().when(this.uploadedFileManageService).changeRemovable(anyString(), anyInt());
+
+        // Mock preview tasks
+        AppTask previewTask = mock(AppTask.class);
+        when(previewTask.getEntity()).thenReturn(AppTask.asEntity());
+        when(this.appTaskService.getPreviewTasks(eq("app_1"), any())).thenReturn(List.of(previewTask));
+        doNothing().when(this.appTaskService).updateTask(any(), any());
+
+        // when.
+        OperationContext context = new OperationContext();
+        context.setOperator("zy");
+        this.appVersionService.update("app_version_1", AppBuilderAppDto.builder()
+                .name("newAppName")
+                .type(AppTypeEnum.APP.code())
+                .appType(NORMAL.name())
+                .state(AppState.INACTIVE.getName())
+                .version("1.0.0")
+                .build(), context);
+
+        // then.
+        assertEquals("newAppName", data.getName());
+        assertEquals("zy", data.getUpdateBy());
+        // Verify that preview task was updated
+        verify(this.appTaskService, times(1)).getPreviewTasks(eq("app_1"), any());
+        verify(this.appTaskService, times(1)).updateTask(eq(previewTask), any());
     }
 
     @Test
