@@ -5,6 +5,7 @@
 # ======================================================================================================================
 import json
 import re
+import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence
@@ -63,6 +64,10 @@ def _get_tavily_api_key() -> str:
 
 @value('internet-search.api-key.linkup')
 def _get_linkup_api_key() -> str:
+    pass
+
+@value('internet-search.api-key.specstream')
+def _get_specstream_api_key() -> str:
     pass
 
 
@@ -223,6 +228,46 @@ def _search_linkup(query: str, api_key: str, max_results: int, max_snippet_chars
     return items
 
 
+def _search_specstream(query: str, api_key: str, max_results: int, max_snippet_chars: int) -> List[SearchItem]:
+    """在 SpecStream 中搜索"""
+    items: List[SearchItem] = []
+    try:
+        resp = requests.post(
+            "https://api.specstream.ai/v1/web-search",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={"q": query, "num": max_results, "passages": True},
+            timeout=30,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        for i, r in enumerate((data.get("sources") or [])[:max_results]):
+            if not isinstance(r, dict):
+                continue
+            raw_text = r.get("excerpt") or r.get("snippet") or ""
+            text = _truncate(raw_text, max_snippet_chars)
+            summary = _extract_summary(text)
+            items.append(
+                SearchItem(
+                    id=f"specstream_{i}",
+                    text=text,
+                    score=12.0,
+                    metadata={
+                        "fileName": r.get("title") or "",
+                        "url": r.get("url") or "",
+                        "source": "specstream",
+                        "published_date": r.get("published"),
+                        "summary": summary,
+                    },
+                )
+            )
+    except Exception as e:
+        sys_plugin_logger.warning(f'Failed to search in SpecStream tool: {str(e)}')
+    return items
+
+
 def _internet_search(
         query: str,
         api_keys: Dict[str, str],
@@ -233,7 +278,7 @@ def _internet_search(
     """Run internet search via selected providers and return unified items with individual summaries."""
     selected = list(providers) if providers is not None else []
     if not selected:
-        for name in ("exa", "tavily", "linkup"):
+        for name in ("exa", "tavily", "linkup", "specstream"):
             if api_keys.get(name):
                 selected.append(name)
 
@@ -245,6 +290,8 @@ def _internet_search(
         search_tasks.append(("tavily", _search_tavily, api_keys["tavily"]))
     if "linkup" in selected and api_keys.get("linkup"):
         search_tasks.append(("linkup", _search_linkup, api_keys["linkup"]))
+    if "specstream" in selected and api_keys.get("specstream"):
+        search_tasks.append(("specstream", _search_specstream, api_keys["specstream"]))
 
     # 使用线程池并行执行搜索
     items: List[SearchItem] = []
@@ -315,8 +362,9 @@ def search_online(query: str) -> List[SearchItem]:
                 "exa": _get_exa_api_key(),
                 "tavily": _get_tavily_api_key(),
                 "linkup": _get_linkup_api_key(),
+                "specstream": _get_specstream_api_key(),
             },
-            providers=["exa", "tavily", "linkup"],
+            providers=["exa", "tavily", "linkup", "specstream"],
             max_results_per_provider=_get_max_results_per_provider(),
         )
     except Exception:
